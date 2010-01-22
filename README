@@ -1,0 +1,8 @@
+Simple REST Client for Google Chrome
+=======
+Simple REST Client is an extension for Google Chrome to help construct custom
+HTTP requests to directly test your web services. Download is available at
+http://chrome.google.com/extensions/detail/fhjcajmcbmldlhcimfajhfbgofnpcjmb
+
+Simple REST Client for Google Chrome is licensed under the Apache Licence,
+Version 2.0 (http://www.apache.org/licenses/LICENSE-2.0.html).
