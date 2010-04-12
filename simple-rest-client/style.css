@@ -8,7 +8,6 @@ body {
  font-size: 100%;
  line-height: 1.5;
  margin: 0 auto;
- max-width: 50em;
  padding: 10px;
 }
 section {
@@ -16,16 +15,16 @@ section {
 }
 header {
  display: block;
- font-size: 85%;
+ font-size: 13px;
  min-height: 2em;
 }
 header h1 {
- background: url(icon_48.png) no-repeat left;
- height: 50px;
- margin-bottom: 0px;
+ background: url(icon_32.png) no-repeat left;
+ height: 30px;
+ margin-bottom: 10px;
  margin-top: 0px;
- padding-left: 55px;
- padding-top: 18px;
+ padding-left: 40px;
+ padding-top: 5px;
 }
 footer {
  display: block;
@@ -65,7 +64,7 @@ input[type=text], textarea {
  border: 1px solid #bbb;
  margin: 0;
  padding-left: 3px;
- width: 85%;
+ font-size: 13px;
 }
 input[type=button] {
  float: right;
@@ -90,4 +89,11 @@ textarea {
  margin-top: 0.1em;
  min-height: 20px;
  width: 80px;
+}
+#responseData {
+ min-height:20px;
+ border: 1px solid #BBB;
+ padding-left: 3px;
+ overflow: auto;
+ position:relative;
 }

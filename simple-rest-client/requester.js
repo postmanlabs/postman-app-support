@@ -1,3 +1,13 @@
+function grow(id) {
+  var textarea = document.getElementById(id);
+  var newHeight = textarea.scrollHeight;
+  var currentHeight = textarea.clientHeight;
+  if (newHeight == 0 || $("#"+id).val() == "") {
+    newHeight = 20;
+  }
+  textarea.style.height = newHeight + 'px';
+}
+
 function clearFields() {
   $("#response").css("display", "");
   $("#loader").css("display", "");
@@ -5,7 +15,12 @@ function clearFields() {
 
   $("#responseStatus").html("");
   $("#responseHeaders").val("");
-  $("#responseData").val("");
+  $("#codeData").text("");
+
+  $("#responseHeaders").height(20);
+  $("#headers").height(20);
+  $("#postputdata").height(20);
+
   $("#respHeaders").css("display", "none");
   $("#respData").css("display", "none");
 }
@@ -31,14 +46,16 @@ function sendRequest() {
       }
     }
     catch(e){
+      console.log(e);
       $("#responseStatus").html("<span style=\"color:#FF0000\">"+chrome.i18n.getMessage("bad_request")+"</span>");
       $("#respHeaders").css("display", "none");
       $("#respData").css("display", "none");
-    
+
       $("#loader").css("display", "none");
       $("#responsePrint").css("display", "");
     }
   } else {
+    console.log("no uri");
     $("#responseStatus").html("<span style=\"color:#FF0000\">"+chrome.i18n.getMessage("bad_request")+"</span>");
     $("#respHeaders").css("display", "none");
     $("#respData").css("display", "none");
@@ -49,16 +66,28 @@ function sendRequest() {
 }
 
 function readResponse() {
+  grow('headers');
+  grow('postputdata');
   if (this.readyState == 4) {
     try {
+      if(this.status == 0) {
+        throw('Status = 0');
+      }
       $("#responseStatus").html(this.status);
-      $("#responseHeaders").val(this.getAllResponseHeaders());
-      $("#responseData").val(this.responseText);
+      $("#responseHeaders").val(jQuery.trim(this.getAllResponseHeaders()));
+      $("#codeData").html(jQuery.trim(this.responseText).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'));
+
       $("#respHeaders").css("display", "");
       $("#respData").css("display", "");
 
       $("#loader").css("display", "none");
       $("#responsePrint").css("display", "");
+
+      grow('responseHeaders');
+
+      $.chili.options.automatic.active = false;
+      $.chili.options.decoration.lineNumbers = false;
+      var $chili = $('#codeData').chili();
     }
     catch(e) {
       $("#responseStatus").html("No response.");
@@ -80,17 +109,24 @@ function toggleData() {
 }
 
 function init() {
+  $("#url").width($("#purl").width()-80-30);
+  $("#headers").width($("#pheaders").width()-80-30);
+  $("#postputdata").width($("#data").width()-80-30);
+
+  $("#responseHeaders").width($("#respHeaders").width()-80-30);
+  $("#responseData").width($("#respHeaders").width()-80-30);
+
   $("#response").css("display", "none");
   $("#loader").css("display", "");
   $("#responsePrint").css("display", "none");
   $("#sep").css("display", "none");
 
   $("#data").css("display", "none");
-  
+
   $("#responseStatus").html("");
   $("#respHeaders").css("display", "none");
   $("#respData").css("display", "none");
-  
+
   $("#submit").click(function() { sendRequest(); return false; });
   $("#reset").click(function() { location.reload(); });
   $(".radio").change(function() { toggleData(); });
@@ -100,11 +136,11 @@ function init() {
 function lang() {
   $('._msg_').each(function () {
     var val = $(this).html();
-    $(this).html(chrome.i18n.getMessage(val));  
+    $(this).html(chrome.i18n.getMessage(val));
   });
   $('._msg_val_').each(function () {
     var val = $(this).val();
-    $(this).val(chrome.i18n.getMessage(val));  
+    $(this).val(chrome.i18n.getMessage(val));
   });
 }
 

@@ -13,6 +13,8 @@
       (function(){if(!/*@cc_on!@*/0)return;var e = "abbr,article,aside,audio,bb,canvas,datagrid,datalist,details,dialog,eventsource,figure,footer,header,mark,menu,meter,nav,output,progress,section,time,video".split(','),i=e.length;while (i--){document.createElement(e[i])}})()
     //]]>
     </script>
+    <script type="text/javascript" src="jquery.chili.min.js"></script>
+    <script type="text/javascript" src="jquery.chili.recipes.js"></script>
     <script type="text/javascript" src="requester.js"></script>
   </head>
   <body>
@@ -22,7 +24,7 @@
     <section id="request">
       <fieldset>
         <legend class="_msg_">request</legend>  
-        <p>
+        <p id="purl">
           <label for="url" class="_msg_">url</label> 
           <input type="text" name="url" id="url" tabindex="1">
         </p>
@@ -35,13 +37,13 @@
           <label class="labelvert" for="head"><input class="radio" type="radio" value="head" name="method" id="head" tabindex="2"> HEAD</label>
           <label class="labelvert" for="options"><input class="radio" type="radio" value="options" name="method" id="options" tabindex="2"> OPTIONS</label>
         </p>
-        <p>
+        <p id="pheaders">
           <label for="headers" class="_msg_">headers</label>
-          <textarea name="headers" id="headers" tabindex="3"></textarea>
+          <textarea name="headers" id="headers" tabindex="3" onkeyup="grow('headers');"></textarea>
         </p>
         <p id="data">
           <label for="postputdata" class="_msg_">data</label>
-          <textarea name="data" id="postputdata" tabindex="4"></textarea>
+          <textarea name="data" id="postputdata" tabindex="4" onkeyup="grow('postputdata');"></textarea>
         </p>
         <p>
           <input class="_msg_val_" type="button" value="send" id="submit" tabindex="5"> <input class="_msg_val_" type="button" value="clear" id="reset"> 
@@ -54,18 +56,20 @@
         <legend class="_msg_">response</legend>
         <div id="loader" class="_msg_">processing</div>
         <div id="responsePrint">
-          <p>
+          <p id="pstatus">
             <label class="_msg_">status</label> 
             <span id="responseStatus">&nbsp;</span>
           </p>
           <p id="respHeaders">
             <label for="responseHeaders" class="_msg_">headers</label> 
-            <textarea name="responseHeaders" id="responseHeaders" tabindex="63"></textarea>
+            <textarea name="responseHeaders" id="responseHeaders" tabindex="6" onkeyup="grow('responseHeaders');"></textarea>
           </p>
-          <p id="respData">
+          <div id="respData">
             <label for="responseData" class="_msg_">data</label>
-            <textarea name="responseData" id="responseData" tabindex="7"></textarea>
-          </p>
+            <div name="responseData" id="responseData" contenteditable="true">
+              <pre><code name="codeData" id="codeData" class="chili-lang-html">&nbsp;</code></pre>
+            </div>
+          </div>
         </div>
       </fieldset>
     </section>

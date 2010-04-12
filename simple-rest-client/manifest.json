@@ -1,6 +1,6 @@
 {
   "name": "__MSG_name__",
-  "version": "1.0.1",
+  "version": "1.1",
   
   "description": "__MSG_description__",
   "icons": {
@@ -9,8 +9,15 @@
     "48": "icon_48.png",
     "128": "icon_128.png"
   },
+
+  "browser_action": {
+    "default_icon": "icon_16.png",
+    "default_title": "__MSG_name__"
+  },
+
   "default_locale": "en",
 
   "options_page": "index.html",
+  "background_page": "background.html",
   "permissions": ["tabs", "http://*/*", "https://*/*"]
 }

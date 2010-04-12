@@ -1,6 +1,6 @@
 {
   "name": {"message": "Simple REST Client"},
-  "description": {"message": "Construct custom HTTP requests to directly test your web services. Just click on the Options button to access the client."},
+  "description": {"message": "Construct custom HTTP requests to directly test your web services."},
   "request": {"message": "Request"},
   "url": {"message": "URL:"},
   "method": {"message": "Method:"},

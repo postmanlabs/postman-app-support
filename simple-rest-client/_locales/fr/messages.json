@@ -1,6 +1,6 @@
 {
   "name": {"message": "Client REST simple"},
-  "description": {"message": "Constuisez vos requêtes HTTP pour tester directement vos services web. Cliquez sur le bouton Options pour accéder au client."},
+  "description": {"message": "Constuisez vos requêtes HTTP pour tester directement vos services web."},
   "request": {"message": "Requête"},
   "url": {"message": "URL:"},
   "method": {"message": "Méthode:"},
