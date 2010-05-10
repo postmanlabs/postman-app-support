@@ -75,6 +75,11 @@ function readResponse() {
       }
       $("#responseStatus").html(this.status);
       $("#responseHeaders").val(jQuery.trim(this.getAllResponseHeaders()));
+      var debugurl = /X-Debug-URL: (.*)/i.exec($("#responseHeaders").val());
+      if (debugurl) {
+	  $("#debugLink").attr('href', debugurl[1]).html(debugurl[1]);
+	  $("#debugLinks").css("display", "");
+      }
       $("#codeData").html(jQuery.trim(this.responseText).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'));
 
       $("#respHeaders").css("display", "");

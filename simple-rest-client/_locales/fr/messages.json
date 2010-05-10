@@ -2,6 +2,7 @@
   "name": {"message": "Client REST simple"},
   "description": {"message": "Constuisez vos requêtes HTTP pour tester directement vos services web."},
   "request": {"message": "Requête"},
+  "debuglink": {"message": "Lien de débogage"},
   "url": {"message": "URL:"},
   "method": {"message": "Méthode:"},
   "headers": {"message": "En-têtes:"},
