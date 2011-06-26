@@ -226,14 +226,30 @@ function saveRequest(url, method, headers) {
 
     requests[requests.length] = requestItem;
     localStorage[keyRequests] = JSON.stringify(requests);
-    addRequestToHistory(url, id);
+    addRequestToHistory(url, id, "top");
 }
 
-function addRequestToHistory(url, id) {
-    var itemString = "<li><a href=\"javascript:void(0);\"";
+function addRequestToHistory(url, id, position) {
+    var itemString = "<li id=\"itemContainer-" + id + "\"><a href=\"javascript:void(0);\"";
     itemString += " onclick=\"loadRequest('" + id + "')\" ";
-    itemString += "class=\"itemLink\" id=\"item-" + id + "\">" + url + "</a></li>";
-    $("#historyItems").prepend(itemString);
+    itemString += "class=\"itemLink\" id=\"item-" + id + "\">" + url + "</a>";
+    itemString += " <a href=\"javascript:void(0);\"";
+    itemString += " onclick=\"deleteRequest('" + id + "')\" ";
+    itemString += "class=\"itemDeleteLink\" id=\"itemDeleteLink-" + id + "\">" + "Delete" + "</a>";
+    itemString += "</a>";
+    itemString += "</li>";
+
+    if(position === 'top') {
+        $("#historyItems").prepend(itemString);
+    }
+    else {
+        $("#historyItems").append(itemString);
+    }
+
+}
+
+function removeRequestFromHistory(id) {
+    $('#itemContainer-' + id).fadeOut();
 }
 
 function getAllSavedRequests() {
@@ -246,10 +262,7 @@ function getAllSavedRequests() {
     for(var i = itemCount - 1; i >= 0; i--) {
         url = requests[i].url;
         id = requests[i].id;
-        itemString = "<li><a href=\"javascript:void(0);\"";
-        itemString += " onclick=\"loadRequest('" + id + "')\" ";
-        itemString += "class=\"itemLink\" id=\"item-" + id + "\">" + url + "</a></li>";
-        $("#historyItems").append(itemString);
+        addRequestToHistory(url, id, "bottom");
     }
 }
 
@@ -262,10 +275,26 @@ function loadRequest(id) {
     }
 
     $('#url').val(requests[i].url);
-//    $('input[name="' + requests[i].method + '"]').attr('checked', true);
     $('input[name="method"]').attr("checked", false);
     $('input[id="' + requests[i].method + '"]').attr("checked", true);
     $('#headers').val(requests[i].headers);
+}
+
+function deleteRequest(id) {
+    var itemCount = requests.length;
+    for(var i = itemCount - 1; i >= 0; i--) {
+        if(requests[i].id === id) {
+            break;
+        }
+    }
+
+    removeRequestFromHistory(requests[i].id);
+    requests.splice(i, 1);
+    saveRequestsToLocalStorage();
+}
+
+function saveRequestsToLocalStorage() {
+    localStorage[keyRequests] = JSON.stringify(requests);
 }
 
 function lang() {
