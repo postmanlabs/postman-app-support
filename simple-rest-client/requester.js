@@ -293,8 +293,18 @@ function deleteRequest(id) {
     saveRequestsToLocalStorage();
 }
 
+function deleteAllRequests() {
+    requests = [];
+    saveRequestsToLocalStorage();
+    $("#historyItems li").fadeOut();
+}
+
 function saveRequestsToLocalStorage() {
     localStorage[keyRequests] = JSON.stringify(requests);
+}
+
+function copyToClipboard(data) {
+    
 }
 
 function lang() {
