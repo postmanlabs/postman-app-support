@@ -34,8 +34,18 @@
             <p id="purl">
                 <label for="url" class="_msg_">url</label>
                 <input type="text" name="url" id="url" tabindex="1">
+                <a href="javascript:void(0);" id="editParamsButton" onclick="showParamsEditor('url')">Edit params</a>
             </p>
 
+            <div id="urlParamsEditor">
+                <div id="urlParamsFields"></div>
+                <div id="urlParamsEditorActions">
+                    <input type="button" id="addUrlParamButton" name="addUrlParams" value="Add parameter" onclick="addParamInEditor('url')"/>
+                    <input type="button" id="submitUrlParamsButton" name="submitUrlParams" value="Change" onclick="setParamsFromEditor('url')"/>
+                    <input type="button" id="cancelUrlParamsButton" name="closeUrlParams" value="Close" onclick="closeParamsEditor('url')"/>
+                </div>
+            </div>
+            
             <p id="methods">
                 <label class="_msg_">method</label>
                 <label class="labelvert" for="get"><input class="radio" type="radio" checked="" value="get"
@@ -56,10 +66,21 @@
                 <label for="headers" class="_msg_">headers</label>
                 <textarea name="headers" id="headers" tabindex="3" onkeyup="grow('headers');"></textarea>
             </p>
+
             <p id="data">
                 <label for="postputdata" class="_msg_">data</label>
-                <textarea name="data" id="postputdata" tabindex="4" onkeyup="grow('postputdata');"></textarea>
+                <a href="javascript:void(0);" id="editBodyParamsButton" onclick="showParamsEditor('body')">Edit params</a>
+                <textarea name="data" id="body" tabindex="4" onkeyup="grow('body');"></textarea>
             </p>
+
+            <div id="bodyParamsEditor">
+                <div id="bodyParamsFields"></div>
+                <div id="bodyParamsEditorActions">
+                    <input type="button" id="addBodyParamButton" name="addBodyParams" value="Add parameter" onclick="addParamInEditor('body')"/>
+                    <input type="button" id="submitBodyParamsButton" name="submitBodyParams" value="Change" onclick="setParamsFromEditor('body')"/>
+                    <input type="button" id="cancelBodyParamsButton" name="closeBodyParams" value="Close" onclick="closeParamsEditor('body')"/>
+                </div>
+            </div>
 
             <p>
                 <input class="_msg_val_" type="button" value="send" id="submit" tabindex="5">

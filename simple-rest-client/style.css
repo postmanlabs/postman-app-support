@@ -82,7 +82,6 @@ input[type=text], textarea {
 }
 
 input[type=button] {
-    float: right;
     margin-right: 25px;
 }
 
@@ -130,4 +129,9 @@ textarea {
 #history {
     float: left;
     margin-left: 20px;
+}
+
+#urlParamsEditor,
+#bodyParamsEditor {
+    display: none;
 }

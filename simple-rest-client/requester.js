@@ -90,8 +90,7 @@ function sendRequest() {
 
             var url = $("#url").val();
             var method = $("input[type=radio]:checked").val();
-
-            saveRequest(url, method, headers);
+            var data = "";
 
             headers = headers.split("\n");
             for (var i = 0; i < headers.length; i++) {
@@ -99,11 +98,15 @@ function sendRequest() {
                 if (header[1])
                     xhr.setRequestHeader(header[0], header[1]);
             }
+
             if (jQuery.inArray($("input[type=radio]:checked").val(), ["post", "put"]) > -1) {
-                xhr.send($("#postputdata").val());
+                xhr.send($("#body").val());
+                data = $("#body").val();
             } else {
                 xhr.send("");
             }
+
+            saveRequest(url, method, headers, data);
         }
         catch(e) {
             console.log(e);
@@ -127,7 +130,6 @@ function sendRequest() {
 
 function readResponse() {
     grow('headers');
-    grow('postputdata');
     if (this.readyState == 4) {
         try {
             if (this.status == 0) {
@@ -176,7 +178,7 @@ function toggleData() {
 function init() {
     $("#url").width($("#purl").width() - 80 - 30);
     $("#headers").width($("#pheaders").width() - 80 - 30);
-    $("#postputdata").width($("#data").width() - 80 - 30);
+    $("#body").width($("#data").width() - 80 - 30);
 
     $("#responseHeaders").width($("#respHeaders").width() - 80 - 30);
     $("#responseData").width($("#respHeaders").width() - 80 - 30);
@@ -215,13 +217,14 @@ function init() {
 }
 
 //History management functions
-function saveRequest(url, method, headers) {
+function saveRequest(url, method, headers, data) {
     var id = guid();
     var requestItem = {
         "id": id,
         "url": url,
         "method": method,
-        "headers": headers
+        "headers": headers,
+        "data": data
     };
 
     requests[requests.length] = requestItem;
@@ -274,12 +277,31 @@ function loadRequest(id) {
         }
     }
 
+    var method = requests[i].method;
+
     $('#url').val(requests[i].url);
     $('input[name="method"]').attr("checked", false);
-    $('input[id="' + requests[i].method + '"]').attr("checked", true);
+    $('input[id="' + method + '"]').attr("checked", true);
     $('#headers').val(requests[i].headers);
+    $('#urlParamsEditor').css("display", "none");
+    $('#bodyParamsEditor').css("display", "none");
+
+    if(method === 'post' || method === 'put') {
+        $('#data').val(requests[i].data);
+        $('#data').css("display", "block");
+    }
+    else {
+        $('#data').css("display", "none");
+    }
+
+    clearResponse();
 }
 
+function clearResponse() {
+    $('#responseStatus').html('');
+    $('#responseHeaders').html('');
+    $('#codeData').html('');
+}
 function deleteRequest(id) {
     var itemCount = requests.length;
     for(var i = itemCount - 1; i >= 0; i--) {
@@ -303,10 +325,6 @@ function saveRequestsToLocalStorage() {
     localStorage[keyRequests] = JSON.stringify(requests);
 }
 
-function copyToClipboard(data) {
-    
-}
-
 function lang() {
     $('._msg_').each(function () {
         var val = $(this).html();
@@ -323,6 +341,86 @@ function S4() {
 }
 function guid() {
    return (S4()+S4()+"-"+S4()+"-"+S4()+"-"+S4()+"-"+S4()+S4()+S4());
+}
+
+function getUrlVars(url)
+{
+    var vars = [], hash;
+    var hashes = url.slice(url.indexOf('?') + 1).split('&');
+
+    for(var i = 0; i < hashes.length; i++)
+    {
+        hash = hashes[i].split('=');
+        vars[hash[0]] = hash[1];
+    }
+
+    return vars;
+}
+
+function setParamsFromEditor(section) {
+    var keys = $('input[id|="' + section + '-key"]');
+    var paramString = "";
+
+    $('input[id|="' + section + '-key"]').each(function() {
+        var val = $(this).next().val();
+
+        if(val !== "" && $(this).val() !== "") {
+            paramString += $(this).val() + "=" + val + "&";
+        }
+    });
+
+    paramString = paramString.substr(0, paramString.length - 1);
+
+    if(section === 'url') {
+        var url = $('#url').val();
+        var baseUrl = url.split("?")[0];
+        $('#' + section).val(baseUrl + "?" + paramString);
+    }
+    else if(section === 'body') {
+        var body = $('#body').val();
+        $('#' + section).val(paramString);
+    }
+
+}
+
+
+function showParamsEditor(section) {
+    var url = $('#' + section).val();
+    var params = getUrlVars(url);
+    var editorHtml = "";
+    var i = 0;
+
+    for(var index in params) {
+        if(params[index] == undefined) continue;
+        editorHtml += "<div id=\"" + section + "Param-" + i + "\">";
+        editorHtml += "<input type=\"text\" name=\"key\" id=\"" + section + "-key-" + i + "\" value=\"" + index + "\"/>";
+        editorHtml += "<input type=\"text\" name=\"val\" id=\"" + section + "-val-" + i + "\" value=\"" + params[index] + "\"/>";
+        editorHtml += "<a href=\"javascript:void(0);\" onclick=\"deleteParam(" + i + ", \"" + section + ")\">Delete</a>";
+        editorHtml += "</div>";
+        i++;
+    }
+
+    $('#' + section + 'ParamsFields').html(editorHtml);
+    $('#' + section + 'ParamsEditor').fadeIn();
+}
+
+function deleteParam(index, section) {
+    $('#' + section + 'Param-' + index).remove();
+}
+
+function closeParamsEditor(section) {
+    $('#' + section + 'ParamsEditor').fadeOut();
+}
+
+function addParamInEditor(section) {
+    var newElementHtml = "";
+    var i = $('#' + section + 'ParamsFields').children().length;
+    newElementHtml += "<div id=\"" + section + "Param-" + i + "\">";
+    newElementHtml += "<input type=\"text\" name=\"key\" id=\"" + section + "-key-" + i + "\" value=\"" + "key" + "\"/>";
+    newElementHtml += "<input type=\"text\" name=\"val\" id=\"" + section + "-val-" + i + "\" value=\"" + "val" + "\"/>";
+    newElementHtml += "<a href=\"javascript:void(0);\" onclick=\"deleteParam(" + i + ", \"" + section + ")\">Delete</a>";
+    newElementHtml += "</div>";
+    $('#' + section + 'ParamsFields').append(newElementHtml);
 }
 
 $(document).ready(function() {
