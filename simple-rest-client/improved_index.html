@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>Improved REST Client</title>
+    <link rel="stylesheet" type="text/css" href="improved_style.css"/>
+    <script type="text/javascript" src="jquery.min.js"></script>
+    <script type="text/javascript">
+        //<![CDATA[
+        // Help IE style HTML5. This makes me sad.
+        // See http://remysharp.com/2009/01/07/html5-enabling-script/
+        (function() {
+            if (!/*@cc_on!@*/0)return;
+            var e = "abbr,article,aside,audio,bb,canvas,datagrid,datalist,details,dialog,eventsource,figure,footer,header,mark,menu,meter,nav,output,progress,section,time,video".split(','),i = e.length;
+            while (i--) {
+                document.createElement(e[i])
+            }
+        })()
+        //]]>
+    </script>
+    <script type="text/javascript" src="jquery.chili.min.js"></script>
+    <script type="text/javascript" src="jquery.chili.recipes.js"></script>
+    <script type="text/javascript" src="requester.js"></script> 
+</head>
+<body>
+<header>
+    <h1 class="_msg_"> <img src="..\resources\postman.jpg" alt="POSTMAN"/><span class="smallheadertext" > An HTTP client to test web services</span></h1>
+</header>
+<div id="main">
+    <section id="request">
+        <fieldset>
+            <legend class="headerText"><img src="..\resources\request.jpg" alt="REQUEST" /></legend>
+            <p id="purl">
+                <label for="url" class="labelText">URL</label>
+                <span class="buttonLayout"><a href="javascript:void(0);" class="editTextButton" onclick="showParamsEditor('url')">Edit params</a>
+                </span>
+                <p>
+                <input type="text" name="url" id="url" tabindex="1" class="inputText">
+                </p>
+            </p>
+
+            <div id="urlParamsEditor">
+                <div id="urlParamsFields"></div>
+                <div id="urlParamsEditorActions">
+                    <input type="button" id="addUrlParamButton" name="addUrlParams" value="Add parameter" onclick="addParamInEditor('url')"/>
+                    <input type="button" id="submitUrlParamsButton" name="submitUrlParams" value="Change" onclick="setParamsFromEditor('url')"/>
+                    <input type="button" id="cancelUrlParamsButton" name="closeUrlParams" value="Close" onclick="closeParamsEditor('url')"/>
+                </div>
+            </div>
+            
+            <p id="methods">
+                <label class="labelText">Method</label>
+                <p>
+                <label class="labelvert" for="get"><input class="radio" type="radio" checked="" value="get"
+                                                          name="method" id="get" tabindex="2"> GET</label>
+                <label class="labelvert" for="post"><input class="radio" type="radio" value="post" name="method"
+                                                           id="post" tabindex="2"> POST</label>
+                <label class="labelvert" for="put"><input class="radio" type="radio" value="put" name="method" id="put"
+                                                          tabindex="2"> PUT</label>
+                <label class="labelvert" for="delete"><input class="radio" type="radio" value="delete" name="method"
+                                                             id="delete" tabindex="2"> DELETE</label>
+                <label class="labelvert" for="head"><input class="radio" type="radio" value="head" name="method"
+                                                           id="head" tabindex="2"> HEAD</label>
+                <label class="labelvert" for="options"><input class="radio" type="radio" value="options" name="method"
+                                                              id="options" tabindex="2"> OPTIONS</label>
+                </p>
+            </p>
+
+            <div id="pheaders">
+                <label for="headers" class="labelText">Headers</label>
+                <div class="buttonLayout">
+                    <a href="javascript:void(0);" class="editTextButton" onclick="showParamsEditor('url')" style="margin-right:5px">Add a Header</a>
+                    <a href="javascript:void(0);" class="editTextButton" onclick="showParamsEditor('url')" style="margin-left:5px">Edit Header</a>
+                </div>
+                <p>
+                    <textarea name="headers" id="headers" tabindex="3" class="inputText" onkeyup="grow('headers');"></textarea>
+                </p>
+            </div>
+
+            <div id="bluebuttonlayout">
+                <p>
+                    <input class="blueButton" type="button" value="Clear" id="reset">
+                    <input class="blueButton" type="button" style="float:right" value="Send Request" id="submit" tabindex="5">
+                </p>
+            </div>
+        </fieldset>
+    </section>
+    
+    <section id="response">
+        <fieldset>
+            <legend class="headerText"><img src="..\resources\response.jpg" alt="RESPONSE" /></legend>
+
+            <div id="responsePrint">
+                <p>
+                    <div id="pstatus">
+                        <label class="labelText"> Status </label>
+                        <label class="labelText" style="padding-left:20px">200 OK</label>
+                        <a href="javascript:void(0);" onclick="showParamsEditor('url')" class="infoText" style="padding-left:10px;">What this means</a>
+                    </div>
+                </p>
+                
+                <p id="respHeaders">
+                    <label for="responseHeaders" class="labelText">Headers</label>
+                    <p>
+                    <textarea name="responseHeaders" id="responseHeaders" tabindex="6"
+                              onkeyup="grow('responseHeaders');" class="inputText"></textarea>
+                    </p>
+                </p>
+
+                <p id="debugLinks" style="display: none;">
+                    <label for="debugLink" class="_msg_">debuglink</label>
+                    <a href="" id="debugLink"></a>
+                </p>
+
+                <div id="respData" style="display:none">
+                    <label for="responseData" class="labelText">Data</label>
+                    <div name="responseData" id="responseData" contenteditable="true">
+                        <pre><code name="codeData" id="codeData" class="chili-lang-html">&nbsp;</code></pre>
+                    </div>
+                </div>
+            </div>
+
+
+            <p id="data">
+                <label for="postputdata" class="labelText">Data</label>
+                <p>
+                <textarea name="data" id="body" tabindex="4" onkeyup="grow('body');" class="inputText"></textarea>
+                </p>
+            </p>
+
+
+            <div id="bodyParamsEditor">
+                <div id="bodyParamsFields"></div>
+                <div id="bodyParamsEditorActions">
+                    <input type="button" id="addBodyParamButton" name="addBodyParams" value="Add parameter" onclick="addParamInEditor('body')"/>
+                    <input type="button" id="submitBodyParamsButton" name="submitBodyParams" value="Change" onclick="setParamsFromEditor('body')"/>
+                    <input type="button" id="cancelBodyParamsButton" name="closeBodyParams" value="Close" onclick="closeParamsEditor('body')"/>
+                </div>
+            </div>
+
+            
+
+        </fieldset>
+    </section>
+</div>
+<div id="history">
+    <div style="padding-top:20px">
+    <label class="headerText" style="padding-left:10px"> <img src="..\resources\history.jpg" alt="HISTORY" /></label>
+    <a href="javascript:void(0);" onclick="deleteAllRequests()" class="editTextButton" style="float:right;margin-right:10px">
+        Delete all
+    </a>
+        <ul id="historyItems">
+            <li id="li1" class="historyItemSelected">Abababab</li>
+            <li id="li2" class="historyItem">Abababab</li>
+            <li id="li3" class="historyItem">Abababab</li>
+            <li id="li4" class="historyItem">Abababab</li>
+        </ul>
+    </div>
+</div>
+</body>
+<script text="text/javascript">
+    $(":input:first").focus();
+</script>
+</html>
