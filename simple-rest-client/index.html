@@ -3,8 +3,7 @@
 <head>
     <meta charset="utf-8"/>
     <title>Improved REST Client</title>
-    <link rel="stylesheet" type="text/css" href="reset.min.css"/>
-    <link rel="stylesheet" type="text/css" href="style.css"/>
+    <link rel="stylesheet" type="text/css" href="improved_style.css"/>
     <script type="text/javascript" src="jquery.min.js"></script>
     <script type="text/javascript">
         //<![CDATA[
@@ -25,94 +24,141 @@
 </head>
 <body>
 <header>
-    <h1 class="_msg_">name</h1>
+    <div id="logo">
+        <img src="images/postman.jpg" alt="POSTMAN"/>
+        <span class="smallheadertext"> An HTTP client to test web services</span>
+    </div>
 </header>
 <div id="main">
     <section id="request">
         <fieldset>
-            <legend class="_msg_">request</legend>
-            <p id="purl">
-                <label for="url" class="_msg_">url</label>
-                <input type="text" name="url" id="url" tabindex="1">
-                <a href="javascript:void(0);" id="editParamsButton" onclick="showParamsEditor('url')">Edit params</a>
-            </p>
+            <legend class="headerText"><img src="images/request.jpg" alt="REQUEST"/></legend>
+            <div id="purl">
+                <label for="url" class="labelText">URL</label>
+                <span class="buttonLayout"><a href="javascript:void(0);" class="editTextButton"
+                                              onclick="showParamsEditor('url')">Edit params</a></span>
+
+                <p>
+                    <input type="text" name="url" id="url" tabindex="1" class="inputText">
+                </p>
+            </div>
 
             <div id="urlParamsEditor">
                 <div id="urlParamsFields"></div>
                 <div id="urlParamsEditorActions">
-                    <input type="button" id="addUrlParamButton" name="addUrlParams" value="Add parameter" onclick="addParamInEditor('url')"/>
-                    <input type="button" id="submitUrlParamsButton" name="submitUrlParams" value="Change" onclick="setParamsFromEditor('url')"/>
-                    <input type="button" id="cancelUrlParamsButton" name="closeUrlParams" value="Close" onclick="closeParamsEditor('url')"/>
+                    <input type="button" id="addUrlParamButton" name="addUrlParams" value="Add parameter"
+                           onclick="addParamInEditor('url')"/>
+                    <input type="button" id="submitUrlParamsButton" name="submitUrlParams" value="Change"
+                           onclick="setParamsFromEditor('url')"/>
+                    <input type="button" id="cancelUrlParamsButton" name="closeUrlParams" value="Close"
+                           onclick="closeParamsEditor('url')"/>
                 </div>
             </div>
+
+            <div id="methods">
+                <label class="labelText">Method</label>
+
+                <p>
+                    <label class="labelvert" for="get"><input class="radio" type="radio" checked="" value="get"
+                                                              name="method" id="get" tabindex="2"> GET</label>
+                    <label class="labelvert" for="post"><input class="radio" type="radio" value="post" name="method"
+                                                               id="post" tabindex="2"> POST</label>
+                    <label class="labelvert" for="put"><input class="radio" type="radio" value="put" name="method" id="put"
+                                                              tabindex="2"> PUT</label>
+                    <label class="labelvert" for="delete"><input class="radio" type="radio" value="delete" name="method"
+                                                                 id="delete" tabindex="2"> DELETE</label>
+                    <label class="labelvert" for="head"><input class="radio" type="radio" value="head" name="method"
+                                                               id="head" tabindex="2"> HEAD</label>
+                    <label class="labelvert" for="options"><input class="radio" type="radio" value="options" name="method"
+                                                                  id="options" tabindex="2"> OPTIONS</label>
+                </p>
+            </div>
+
+            <div id="pheaders">
+                <label for="headers" class="labelText">Headers</label>
+
+                <div class="buttonLayout">
+                    <a href="javascript:void(0);" class="editTextButton" onclick="showParamsEditor('headers')"
+                       style="margin-left:5px">Edit Header</a>
+                </div>
+                <p>
+                    <textarea name="headers" id="headers" tabindex="3" class="inputText"></textarea>
+                </p>
+            </div>
+
+            <div id="headersParamsEditor">
+                <div id="headersParamsFields"></div>
+                <div id="headersParamsEditorActions">
+                    <input type="button" id="addHeaderParamButton" name="addBodyParams" value="Add parameter"
+                           onclick="addParamInEditor('headers')"/>
+                    <input type="button" id="submitHeaderParamsButton" name="submitBodyParams" value="Change"
+                           onclick="setParamsFromEditor('headers')"/>
+                    <input type="button" id="cancelHeaderParamsButton" name="closeBodyParams" value="Close"
+                           onclick="closeParamsEditor('headers')"/>
+                </div>
+            </div>
+
+            <div id="data">
+                <label for="body" class="labelText">Data</label>
             
-            <p id="methods">
-                <label class="_msg_">method</label>
-                <label class="labelvert" for="get"><input class="radio" type="radio" checked="" value="get"
-                                                          name="method" id="get" tabindex="2"> GET</label>
-                <label class="labelvert" for="post"><input class="radio" type="radio" value="post" name="method"
-                                                           id="post" tabindex="2"> POST</label>
-                <label class="labelvert" for="put"><input class="radio" type="radio" value="put" name="method" id="put"
-                                                          tabindex="2"> PUT</label>
-                <label class="labelvert" for="delete"><input class="radio" type="radio" value="delete" name="method"
-                                                             id="delete" tabindex="2"> DELETE</label>
-                <label class="labelvert" for="head"><input class="radio" type="radio" value="head" name="method"
-                                                           id="head" tabindex="2"> HEAD</label>
-                <label class="labelvert" for="options"><input class="radio" type="radio" value="options" name="method"
-                                                              id="options" tabindex="2"> OPTIONS</label>
-            </p>
+                <div class="buttonLayout">
+                    <a href="javascript:void(0);" class="editTextButton" onclick="showParamsEditor('body')"
+                       style="margin-left:5px">Edit parameter</a>
+                </div>
+                <p>
+                    <textarea name="data" id="body" tabindex="4" class="inputText"></textarea>
+                </p>
+            </div>
 
-            <p id="pheaders">
-                <label for="headers" class="_msg_">headers</label>
-                <textarea name="headers" id="headers" tabindex="3" onkeyup="grow('headers');"></textarea>
-            </p>
-
-            <p id="data">
-                <label for="postputdata" class="_msg_">data</label>
-                <a href="javascript:void(0);" id="editBodyParamsButton" onclick="showParamsEditor('body')">Edit params</a>
-                <textarea name="data" id="body" tabindex="4" onkeyup="grow('body');"></textarea>
-            </p>
 
             <div id="bodyParamsEditor">
                 <div id="bodyParamsFields"></div>
                 <div id="bodyParamsEditorActions">
-                    <input type="button" id="addBodyParamButton" name="addBodyParams" value="Add parameter" onclick="addParamInEditor('body')"/>
-                    <input type="button" id="submitBodyParamsButton" name="submitBodyParams" value="Change" onclick="setParamsFromEditor('body')"/>
-                    <input type="button" id="cancelBodyParamsButton" name="closeBodyParams" value="Close" onclick="closeParamsEditor('body')"/>
+                    <input type="button" id="addBodyParamButton" name="addBodyParams" value="Add parameter"
+                           onclick="addParamInEditor('body')"/>
+                    <input type="button" id="submitBodyParamsButton" name="submitBodyParams" value="Change"
+                           onclick="setParamsFromEditor('body')"/>
+                    <input type="button" id="cancelBodyParamsButton" name="closeBodyParams" value="Close"
+                           onclick="closeParamsEditor('body')"/>
                 </div>
             </div>
 
-            <p>
-                <input class="_msg_val_" type="button" value="send" id="submit" tabindex="5">
-                <input class="_msg_val_" type="button" value="clear" id="reset">
-            </p>
+            <div id="bluebuttonlayout">
+                <p>
+                    <input class="blueButton" type="button" value="Clear" id="reset">
+                    <input class="blueButton" type="button" style="float:right" value="Send Request" id="submit"
+                           tabindex="5">
+                </p>
+            </div>
         </fieldset>
     </section>
-    <hr id="sep"/>
 
     <section id="response">
         <fieldset>
-            <legend class="_msg_">response</legend>
-            <div id="loader" class="_msg_">processing</div>
-            <div id="responsePrint">
-                <p id="pstatus">
-                    <label class="_msg_">status</label>
-                    <span id="responseStatus">&nbsp;</span>
-                </p>
+            <legend class="headerText"><img src="images/response.jpg" alt="RESPONSE"/></legend>
 
-                <p id="respHeaders">
-                    <label for="responseHeaders" class="_msg_">headers</label>
-                    <textarea name="responseHeaders" id="responseHeaders" tabindex="6"
-                              onkeyup="grow('responseHeaders');"></textarea>
-                </p>
+            <div id="responsePrint">
+                <div id="pstatus">
+                    <label class="labelText"> Status </label>
+                    <label class="labelText" style="padding-left:20px">200 OK</label>
+                </div>
+
+                <div id="respHeaders">
+                    <label for="responseHeaders" class="labelText">Headers</label>
+
+                    <p>
+                        <textarea name="responseHeaders" id="responseHeaders" tabindex="6" class="inputText"></textarea>
+                    </p>
+                </div>
 
                 <p id="debugLinks" style="display: none;">
                     <label for="debugLink" class="_msg_">debuglink</label>
                     <a href="" id="debugLink"></a>
                 </p>
 
-                <div id="respData">
-                    <label for="responseData" class="_msg_">data</label>
+                <div id="respData" style="display:none">
+                    <label for="responseData" class="labelText">Data</label>
+
                     <div name="responseData" id="responseData" contenteditable="true">
                         <pre><code name="codeData" id="codeData" class="chili-lang-html">&nbsp;</code></pre>
                     </div>
@@ -122,15 +168,15 @@
     </section>
 </div>
 <section id="history">
-    <h2>History</h2>
-    <a href="javascript:void(0);" onclick="deleteAllRequests()">Delete all</a>
-    <ul id="historyItems">
-</ul>
+    <div id="historyContainer">
+        <label class="headerText" style="padding-left:10px"> <img src="images/history.jpg" alt="History"/></label>
+        <a href="javascript:void(0);" onclick="deleteAllRequests()" class="editTextButton" style="float:right;margin-right:10px">
+            Delete all
+        </a>
+        <ul id="historyItems">
+        </ul>
+    </div>
 </section>
-<footer>
-    <p>Copyright &copy; 2010 <a href="http://www.jeremyselier.com">Jeremy Selier</a> - <span class="_msg_">source</span>
-        - <span class="_msg_">icon</span></p>
-</footer>
 </body>
 <script text="text/javascript">
     $(":input:first").focus();

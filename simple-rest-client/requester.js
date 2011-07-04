@@ -51,6 +51,7 @@ var keyItemCount = "imRestClient.itemCount";
 var keyItemBase = "imRestClient.item";
 var keyRequests = "imRestClient.requests";
 var requests;
+var bodyFileData;
 
 function grow(id) {
     var textarea = document.getElementById(id);
@@ -79,6 +80,19 @@ function clearFields() {
     $("#respData").css("display", "none");
 }
 
+function handleFileSelect(evt) {
+    var files = evt.target.files;
+    var reader = new FileReader();
+    var f = files[0];
+
+    reader.onload = (function(theFile) {
+        return function(e) {
+            bodyFileData = e.target.result;
+        };
+    })(f);
+    reader.readAsText(f);
+}
+
 function sendRequest() {
     clearFields();
     if ($("#url").val() != "") {
@@ -91,17 +105,31 @@ function sendRequest() {
             var url = $("#url").val();
             var method = $("input[type=radio]:checked").val();
             var data = "";
+            var bodyData = "";
 
             headers = headers.split("\n");
             for (var i = 0; i < headers.length; i++) {
                 var header = headers[i].split(": ");
-                if (header[1])
+                if (header[1]) {
                     xhr.setRequestHeader(header[0], header[1]);
+                    alert(header[0] + " " + header[1]);
+                }
+
             }
 
             if (jQuery.inArray($("input[type=radio]:checked").val(), ["post", "put"]) > -1) {
-                xhr.send($("#body").val());
-                data = $("#body").val();
+                if(!bodyFileData) {
+                    data = $("#body").val();
+                    bodyData = data;
+                }
+                else {
+                    bodyData = bodyFileData;
+                    alert(bodyData);
+                    data = "";
+                }
+
+                //Check if a file is being sent
+                xhr.send(bodyData);
             } else {
                 xhr.send("");
             }
@@ -129,7 +157,6 @@ function sendRequest() {
 }
 
 function readResponse() {
-    grow('headers');
     if (this.readyState == 4) {
         try {
             if (this.status == 0) {
@@ -155,6 +182,7 @@ function readResponse() {
             $.chili.options.automatic.active = false;
             $.chili.options.decoration.lineNumbers = false;
             var $chili = $('#codeData').chili();
+            $('#history').css("height", $('#main').height());
         }
         catch(e) {
             $("#responseStatus").html("No response.");
@@ -214,6 +242,8 @@ function init() {
         localStorage[keyRequests] = JSON.stringify(r);
     }
 
+    //Initialize file input handler
+//    $("bodyFile").addEventListener("change", handleFileSelect, false);
 }
 
 //History management functions
@@ -229,17 +259,22 @@ function saveRequest(url, method, headers, data) {
 
     requests[requests.length] = requestItem;
     localStorage[keyRequests] = JSON.stringify(requests);
-    addRequestToHistory(url, id, "top");
+    addRequestToHistory(url, method, id, "top");
+    addHistoryListeners();
 }
 
-function addRequestToHistory(url, id, position) {
+function addRequestToHistory(url, method, id, position) {
     var itemString = "<li id=\"itemContainer-" + id + "\"><a href=\"javascript:void(0);\"";
     itemString += " onclick=\"loadRequest('" + id + "')\" ";
     itemString += "class=\"itemLink\" id=\"item-" + id + "\">" + url + "</a>";
     itemString += " <a href=\"javascript:void(0);\"";
     itemString += " onclick=\"deleteRequest('" + id + "')\" ";
-    itemString += "class=\"itemDeleteLink\" id=\"itemDeleteLink-" + id + "\">" + "Delete" + "</a>";
+    itemString += "class=\"itemDeleteLink\" id=\"itemDeleteLink-" + id + "\">";
+    itemString += "<img src=\"images/delete.png\"/>";
     itemString += "</a>";
+    itemString += "</a>";
+    method = method.toUpperCase();
+    itemString += " <a class=\"itemRequestType\">" + method + "</span>";
     itemString += "</li>";
 
     if(position === 'top') {
@@ -252,7 +287,7 @@ function addRequestToHistory(url, id, position) {
 }
 
 function removeRequestFromHistory(id) {
-    $('#itemContainer-' + id).fadeOut();
+    $('#itemContainer-' + id).remove();
 }
 
 function getAllSavedRequests() {
@@ -265,8 +300,11 @@ function getAllSavedRequests() {
     for(var i = itemCount - 1; i >= 0; i--) {
         url = requests[i].url;
         id = requests[i].id;
-        addRequestToHistory(url, id, "bottom");
+        method = requests[i].method;
+        addRequestToHistory(url, method, id, "bottom");
     }
+
+    addHistoryListeners();
 }
 
 function loadRequest(id) {
@@ -285,6 +323,7 @@ function loadRequest(id) {
     $('#headers').val(requests[i].headers);
     $('#urlParamsEditor').css("display", "none");
     $('#bodyParamsEditor').css("display", "none");
+    $('#response').css("display", "none");
 
     if(method === 'post' || method === 'put') {
         $('#data').val(requests[i].data);
@@ -377,12 +416,13 @@ function setParamsFromEditor(section) {
         $('#' + section).val(baseUrl + "?" + paramString);
     }
     else if(section === 'body') {
-        var body = $('#body').val();
+        $('#' + section).val(paramString);
+    }
+    else if(section === 'headers') {
         $('#' + section).val(paramString);
     }
 
 }
-
 
 function showParamsEditor(section) {
     var url = $('#' + section).val();
@@ -429,3 +469,18 @@ $(document).ready(function() {
     getAllSavedRequests();
 });
 
+function addHistoryListeners() {
+    $('#historyItems li').mouseenter(function() {
+        var deleteEl = jQuery('.itemDeleteLink', this);
+        var methodEl = jQuery('.itemRequestType', this);
+        deleteEl.css('display', 'block');
+        methodEl.css('display', 'block');
+    });
+
+    $('#historyItems li').mouseleave(function() {
+        var deleteEl = jQuery('.itemDeleteLink', this);
+        var methodEl = jQuery('.itemRequestType', this);
+        deleteEl.css('display', 'none');
+        methodEl.css('display', 'none');
+    });
+}
