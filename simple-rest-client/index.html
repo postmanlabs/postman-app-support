@@ -43,11 +43,10 @@
                 </p>
             </div>
 
-            <div id="urlParamsEditor">
-                <div id="urlParamsFields"></div>
-                <div id="urlParamsEditorActions">
-                    <input type="button" id="addUrlParamButton" name="addUrlParams" value="Add parameter"
-                           onclick="addParamInEditor('url')"/>
+            <div id="url-ParamsEditor" class="paramsEditor">
+                <h4>Edit Params</h4>
+                <div id="url-ParamsFields" class="editorFields"></div>
+                <div id="url-ParamsEditorActions">
                     <input type="button" id="submitUrlParamsButton" name="submitUrlParams" value="Change"
                            onclick="setParamsFromEditor('url')"/>
                     <input type="button" id="cancelUrlParamsButton" name="closeUrlParams" value="Close"
@@ -79,18 +78,16 @@
 
                 <div class="buttonLayout">
                     <a href="javascript:void(0);" class="editTextButton" onclick="showParamsEditor('headers')"
-                       style="margin-left:5px">Edit Header</a>
+                       style="margin-left:5px">Edit headers</a>
                 </div>
                 <p>
                     <textarea name="headers" id="headers" tabindex="3" class="inputText"></textarea>
                 </p>
             </div>
 
-            <div id="headersParamsEditor">
-                <div id="headersParamsFields"></div>
-                <div id="headersParamsEditorActions">
-                    <input type="button" id="addHeaderParamButton" name="addBodyParams" value="Add parameter"
-                           onclick="addParamInEditor('headers')"/>
+            <div id="headers-ParamsEditor" class="paramsEditor">
+                <div id="headers-ParamsFields" class="editorFields"></div>
+                <div id="headers-ParamsEditorActions">
                     <input type="button" id="submitHeaderParamsButton" name="submitBodyParams" value="Change"
                            onclick="setParamsFromEditor('headers')"/>
                     <input type="button" id="cancelHeaderParamsButton" name="closeBodyParams" value="Close"
@@ -111,11 +108,9 @@
             </div>
 
 
-            <div id="bodyParamsEditor">
-                <div id="bodyParamsFields"></div>
-                <div id="bodyParamsEditorActions">
-                    <input type="button" id="addBodyParamButton" name="addBodyParams" value="Add parameter"
-                           onclick="addParamInEditor('body')"/>
+            <div id="body-ParamsEditor" class="paramsEditor">
+                <div id="body-ParamsFields" class="editorFields"></div>
+                <div id="body-ParamsEditorActions">
                     <input type="button" id="submitBodyParamsButton" name="submitBodyParams" value="Change"
                            onclick="setParamsFromEditor('body')"/>
                     <input type="button" id="cancelBodyParamsButton" name="closeBodyParams" value="Close"
@@ -125,7 +120,6 @@
 
             <div id="bluebuttonlayout">
                 <p>
-                    <input class="blueButton" type="button" value="Clear" id="reset">
                     <input class="blueButton" type="button" style="float:right" value="Send Request" id="submit"
                            tabindex="5">
                 </p>

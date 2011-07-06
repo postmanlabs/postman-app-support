@@ -104,9 +104,9 @@ fieldset {
     margin-left: 0px;
 }
 
-#urlParamsEditor,
-#bodyParamsEditor,
-#headersParamsEditor {
+#url-ParamsEditor,
+#body-ParamsEditor,
+#headers-ParamsEditor {
     display: none;
 }
 
@@ -232,4 +232,21 @@ fieldset {
 
 #pstatus {
     margin-top: 5px;
+}
+
+.paramsEditor {
+    margin-bottom: 10px;
+}
+
+.paramsEditor h4 {
+    font-size: 11px;
+    margin-top: 2px;
+    margin-bottom: 4px;
+}
+.paramsEditor input {
+    padding: 5px;
+}
+
+.paramsEditor .deleteButton {
+    margin-left: 10px;
 }

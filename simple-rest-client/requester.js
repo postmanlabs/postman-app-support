@@ -399,10 +399,8 @@ function getUrlVars(url)
 function setParamsFromEditor(section) {
     var keys = $('input[id|="' + section + '-key"]');
     var paramString = "";
-
-    $('input[id|="' + section + '-key"]').each(function() {
-        var val = $(this).next().val();
-
+    $('input[name*=' + section + '[key]]').each(function() {
+        var val = $(this).next().val(); 
         if(val !== "" && $(this).val() !== "") {
             paramString += $(this).val() + "=" + val + "&";
         }
@@ -432,35 +430,45 @@ function showParamsEditor(section) {
 
     for(var index in params) {
         if(params[index] == undefined) continue;
-        editorHtml += "<div id=\"" + section + "Param-" + i + "\">";
-        editorHtml += "<input type=\"text\" name=\"key\" id=\"" + section + "-key-" + i + "\" value=\"" + index + "\"/>";
-        editorHtml += "<input type=\"text\" name=\"val\" id=\"" + section + "-val-" + i + "\" value=\"" + params[index] + "\"/>";
-        editorHtml += "<a href=\"javascript:void(0);\" onclick=\"deleteParam(" + i + ", \"" + section + ")\">Delete</a>";
+        editorHtml += "<div>";
+        editorHtml += "<input type=\"text\" name=\"" + section + "[key][]\" placeholder=\"key\" value=\"" + index + "\"/>";
+        editorHtml += "<input type=\"text\" name=\"" + section + "[value][]\" placeholder=\"val\" value=\"" + params[index] + "\"/>";
+        editorHtml += "<a href=\"javascript:void(0);\" class=\"deleteParam\">";
+        editorHtml += "<img class=\"deleteButton\" src=\"images/delete.png\"/>";
+        editorHtml += "</a>";
         editorHtml += "</div>";
         i++;
     }
 
-    $('#' + section + 'ParamsFields').html(editorHtml);
-    $('#' + section + 'ParamsEditor').fadeIn();
+    editorHtml += "<div>";
+    editorHtml += "<input type=\"text\" name=\"" + section + "[key][]\"";
+    editorHtml += "placeholder=\"key\"/>";
+    editorHtml += "<input type=\"text\" name=\"" + section + "[value][]\"";
+    editorHtml += "placeholder=\"value\"/>";
+    editorHtml += "</div>";
+
+    $('#' + section + '-ParamsFields').html(editorHtml);
+    $('#' + section + '-ParamsEditor').fadeIn();
+
+    addEditorListeners();
 }
 
-function deleteParam(index, section) {
-    $('#' + section + 'Param-' + index).remove();
+function deleteParam(section) {
+    alert("To delete " + section + " param");
 }
 
 function closeParamsEditor(section) {
-    $('#' + section + 'ParamsEditor').fadeOut();
+    $('#' + section + '-ParamsEditor').css("display", "none");
 }
 
 function addParamInEditor(section) {
     var newElementHtml = "";
-    var i = $('#' + section + 'ParamsFields').children().length;
-    newElementHtml += "<div id=\"" + section + "Param-" + i + "\">";
-    newElementHtml += "<input type=\"text\" name=\"key\" id=\"" + section + "-key-" + i + "\" value=\"" + "key" + "\"/>";
-    newElementHtml += "<input type=\"text\" name=\"val\" id=\"" + section + "-val-" + i + "\" value=\"" + "val" + "\"/>";
-    newElementHtml += "<a href=\"javascript:void(0);\" onclick=\"deleteParam(" + i + ", \"" + section + ")\">Delete</a>";
+    newElementHtml += "<div>";
+    newElementHtml += "<input type=\"text\" name=\"" + section + "[key][]\" placeholder=\"" + "key" + "\"/>";
+    newElementHtml += "<input type=\"text\" name=\"" + section + "[value][]\" placeholder=\"" + "value" + "\"/>";
     newElementHtml += "</div>";
-    $('#' + section + 'ParamsFields').append(newElementHtml);
+    $('#' + section + '-ParamsFields').append(newElementHtml);
+    addEditorListeners();
 }
 
 $(document).ready(function() {
@@ -483,4 +491,31 @@ function addHistoryListeners() {
         deleteEl.css('display', 'none');
         methodEl.css('display', 'none');
     });
+}
+
+function addEditorListeners() {
+    $('.editorFields div:last input').focus(function() {
+        $('.editorFields div:last input').unbind('focus');
+
+        //Select parent element
+        var fieldsParent = $(this).parents(".editorFields");
+
+        var id = fieldsParent.attr("id");
+        var section = id.split("-")[0];
+        var parent = $(this).parent();
+
+        //Add a delete link
+        var deleteHtml = "<a href=\"javascript:void(0);\" class=\"deleteParam\">";
+        deleteHtml += "<img class=\"deleteButton\" src=\"images/delete.png\"/>";
+        deleteHtml += "</a>";
+        parent.append(deleteHtml);
+
+        addParamInEditor(section);
+    });
+
+
+    $('.deleteParam').click(function() {
+        $(this).parent().remove();
+    });
+
 }
