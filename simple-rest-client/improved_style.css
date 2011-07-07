@@ -250,3 +250,27 @@ fieldset {
 .paramsEditor .deleteButton {
     margin-left: 10px;
 }
+
+#headers {
+    height: 135px;
+}
+
+#bodyFileButton {
+    opacity: 0.5;
+}
+
+#bodyFileButton:hover {
+    opacity: 1;
+}
+
+#bodyRawButton {
+    opacity: 0.5;
+}
+
+#bodyRawButton:hover {
+    opacity: 1;
+}
+
+#bodyDataContainer {
+    margin-top: 20px;
+}

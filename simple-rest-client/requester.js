@@ -52,6 +52,7 @@ var keyItemBase = "imRestClient.item";
 var keyRequests = "imRestClient.requests";
 var requests;
 var bodyFileData;
+var dataMode = "params";
 
 function grow(id) {
     var textarea = document.getElementById(id);
@@ -198,7 +199,9 @@ function readResponse() {
 function toggleData() {
     if (jQuery.inArray($("input[type=radio]:checked").val(), ["post", "put"]) > -1) {
         $("#data").css("display", "");
+        showParamsEditor('body');
     } else {
+        closeParamsEditor('body')
         $("#data").css("display", "none");
     }
 }
@@ -384,6 +387,10 @@ function guid() {
 
 function getUrlVars(url)
 {
+    if(url == null) {
+        return "";
+    }
+    
     var vars = [], hash;
     var hashes = url.slice(url.indexOf('?') + 1).split('&');
 
@@ -402,7 +409,13 @@ function setParamsFromEditor(section) {
     $('input[name*=' + section + '[key]]').each(function() {
         var val = $(this).next().val(); 
         if(val !== "" && $(this).val() !== "") {
-            paramString += $(this).val() + "=" + val + "&";
+            if(section !== 'headers') {
+                paramString += $(this).val() + "=" + val + "&";
+            }
+            else {
+                paramString += $(this).val() + ": " + val + "\n";
+            }
+
         }
     });
 
@@ -433,7 +446,7 @@ function showParamsEditor(section) {
         editorHtml += "<div>";
         editorHtml += "<input type=\"text\" name=\"" + section + "[key][]\" placeholder=\"key\" value=\"" + index + "\"/>";
         editorHtml += "<input type=\"text\" name=\"" + section + "[value][]\" placeholder=\"val\" value=\"" + params[index] + "\"/>";
-        editorHtml += "<a href=\"javascript:void(0);\" class=\"deleteParam\">";
+        editorHtml += "<a href=\"javascript:void(0);\" class=\"deleteParam\" tabIndex=\"-1\">";
         editorHtml += "<img class=\"deleteButton\" src=\"images/delete.png\"/>";
         editorHtml += "</a>";
         editorHtml += "</div>";
@@ -450,7 +463,7 @@ function showParamsEditor(section) {
     $('#' + section + '-ParamsFields').html(editorHtml);
     $('#' + section + '-ParamsEditor').fadeIn();
 
-    addEditorListeners();
+    addEditorListeners(section);
 }
 
 function deleteParam(section) {
@@ -458,6 +471,8 @@ function deleteParam(section) {
 }
 
 function closeParamsEditor(section) {
+    $('#' + section + '-ParamsFields div:last input').unbind('focus');
+    $('#' + section + '-ParamsFields input').unbind('blur');
     $('#' + section + '-ParamsEditor').css("display", "none");
 }
 
@@ -468,7 +483,7 @@ function addParamInEditor(section) {
     newElementHtml += "<input type=\"text\" name=\"" + section + "[value][]\" placeholder=\"" + "value" + "\"/>";
     newElementHtml += "</div>";
     $('#' + section + '-ParamsFields').append(newElementHtml);
-    addEditorListeners();
+    addEditorListeners(section);
 }
 
 $(document).ready(function() {
@@ -493,19 +508,19 @@ function addHistoryListeners() {
     });
 }
 
-function addEditorListeners() {
-    $('.editorFields div:last input').focus(function() {
-        $('.editorFields div:last input').unbind('focus');
-
+function addEditorListeners(section) {
+    $('#' + section + '-ParamsFields div:last input').focus(function() {
         //Select parent element
         var fieldsParent = $(this).parents(".editorFields");
-
         var id = fieldsParent.attr("id");
         var section = id.split("-")[0];
+
+        $('#' + section + '-ParamsFields div:last input').unbind('focus');
+
         var parent = $(this).parent();
 
         //Add a delete link
-        var deleteHtml = "<a href=\"javascript:void(0);\" class=\"deleteParam\">";
+        var deleteHtml = "<a href=\"javascript:void(0);\" class=\"deleteParam\" tabIndex=\"-1\">";
         deleteHtml += "<img class=\"deleteButton\" src=\"images/delete.png\"/>";
         deleteHtml += "</a>";
         parent.append(deleteHtml);
@@ -513,9 +528,52 @@ function addEditorListeners() {
         addParamInEditor(section);
     });
 
-
-    $('.deleteParam').click(function() {
-        $(this).parent().remove();
+    $('#' + section + '-ParamsFields div input').blur(function() {
+        var fieldsParent = $(this).parents(".editorFields");
+        var id = fieldsParent.attr("id");
+        var section = id.split("-")[0];
+        setParamsFromEditor(section);
     });
 
+
+    $('.deleteParam').click(function() {
+        var fieldsParent = $(this).parents(".editorFields");
+        var id = fieldsParent.attr("id");
+        var section = id.split("-")[0];
+        $(this).parent().remove();
+        setParamsFromEditor(section);
+    });
+
+}
+
+function showBodyParamsEditor() {
+    dataMode = "params";
+    showParamsEditor('body');
+    $('#bodyParamsButton').css('opacity', 1);
+    $('#bodyFileButton').css('opacity', 0.5);
+    $('#bodyRawButton').css('opacity', 0.5);
+
+    var containerHtml = '<textarea name="data" id="body" tabindex="4" class="inputText"></textarea>';
+    $('#bodyDataContainer').html(containerHtml);
+}
+
+function showFileSelector() {
+    dataMode = "file";
+    closeParamsEditor('body');
+    $('#bodyParamsButton').css('opacity', 0.5);
+    $('#bodyFileButton').css('opacity', 1);
+    $('#bodyRawButton').css('opacity', 0.5);
+    var containerHtml = '<input type="file" name="file"/>';
+    $('#bodyDataContainer').html(containerHtml);
+}
+
+function showRawEditor() {
+    dataMode = "raw";
+    closeParamsEditor('body');
+    $('#bodyParamsButton').css('opacity', 0.5);
+    $('#bodyFileButton').css('opacity', 0.5);
+    $('#bodyRawButton').css('opacity', 1);
+
+    var containerHtml = '<textarea name="data" id="body" tabindex="4" class="inputText"></textarea>';
+    $('#bodyDataContainer').html(containerHtml);
 }

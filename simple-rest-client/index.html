@@ -47,8 +47,6 @@
                 <h4>Edit Params</h4>
                 <div id="url-ParamsFields" class="editorFields"></div>
                 <div id="url-ParamsEditorActions">
-                    <input type="button" id="submitUrlParamsButton" name="submitUrlParams" value="Change"
-                           onclick="setParamsFromEditor('url')"/>
                     <input type="button" id="cancelUrlParamsButton" name="closeUrlParams" value="Close"
                            onclick="closeParamsEditor('url')"/>
                 </div>
@@ -88,8 +86,6 @@
             <div id="headers-ParamsEditor" class="paramsEditor">
                 <div id="headers-ParamsFields" class="editorFields"></div>
                 <div id="headers-ParamsEditorActions">
-                    <input type="button" id="submitHeaderParamsButton" name="submitBodyParams" value="Change"
-                           onclick="setParamsFromEditor('headers')"/>
                     <input type="button" id="cancelHeaderParamsButton" name="closeBodyParams" value="Close"
                            onclick="closeParamsEditor('headers')"/>
                 </div>
@@ -99,20 +95,22 @@
                 <label for="body" class="labelText">Data</label>
             
                 <div class="buttonLayout">
-                    <a href="javascript:void(0);" class="editTextButton" onclick="showParamsEditor('body')"
-                       style="margin-left:5px">Edit parameter</a>
+                    <a href="javascript:void(0);" class="editTextButton" onclick="showBodyParamsEditor()"
+                       id="bodyParamsButton" style="margin-left:5px">Params</a>
+                    <a href="javascript:void(0);" class="editTextButton" onclick="showFileSelector()"
+                       id="bodyFileButton" style="margin-left:5px">File</a>
+                    <a href="javascript:void(0);" class="editTextButton" onclick="showRawEditor()"
+                       id="bodyRawButton" style="margin-left:5px">Raw body</a>
                 </div>
-                <p>
+                <div id="bodyDataContainer">
                     <textarea name="data" id="body" tabindex="4" class="inputText"></textarea>
-                </p>
+                </div>
             </div>
 
 
             <div id="body-ParamsEditor" class="paramsEditor">
                 <div id="body-ParamsFields" class="editorFields"></div>
                 <div id="body-ParamsEditorActions">
-                    <input type="button" id="submitBodyParamsButton" name="submitBodyParams" value="Change"
-                           onclick="setParamsFromEditor('body')"/>
                     <input type="button" id="cancelBodyParamsButton" name="closeBodyParams" value="Close"
                            onclick="closeParamsEditor('body')"/>
                 </div>
