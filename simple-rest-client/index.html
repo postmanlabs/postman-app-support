@@ -47,7 +47,10 @@
                 <h4>Edit Params</h4>
                 <div id="url-ParamsFields" class="editorFields"></div>
                 <div id="url-ParamsEditorActions">
-                    <input type="button" id="cancelUrlParamsButton" name="closeUrlParams" value="Close"
+                    <input type="button" id="cancelUrlParamsButton"
+                           name="closeUrlParams"
+                           value="Close"
+                           placeholder="URL..."
                            onclick="closeParamsEditor('url')"/>
                 </div>
             </div>
@@ -110,10 +113,6 @@
 
             <div id="body-ParamsEditor" class="paramsEditor">
                 <div id="body-ParamsFields" class="editorFields"></div>
-                <div id="body-ParamsEditorActions">
-                    <input type="button" id="cancelBodyParamsButton" name="closeBodyParams" value="Close"
-                           onclick="closeParamsEditor('body')"/>
-                </div>
             </div>
 
             <div id="bluebuttonlayout">
@@ -130,9 +129,14 @@
             <legend class="headerText"><img src="images/response.jpg" alt="RESPONSE"/></legend>
 
             <div id="responsePrint">
+                <div id="ptime">
+                    <label class="labelText">Time</label>
+                    <span>0 millisecs</span>
+                </div>
+
                 <div id="pstatus">
-                    <label class="labelText"> Status </label>
-                    <label class="labelText" style="padding-left:20px">200 OK</label>
+                    <label class="labelText">Status</label>
+                    <span>200 OK</span>
                 </div>
 
                 <div id="respHeaders">

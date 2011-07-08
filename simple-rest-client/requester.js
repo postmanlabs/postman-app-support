@@ -53,6 +53,8 @@ var keyRequests = "imRestClient.requests";
 var requests;
 var bodyFileData;
 var dataMode = "params";
+var requestStartTime = 0;
+var requestEndTime = 0;
 
 function grow(id) {
     var textarea = document.getElementById(id);
@@ -101,6 +103,7 @@ function sendRequest() {
         xhr.onreadystatechange = readResponse;
         try {
             xhr.open($("input[type=radio]:checked").val(), $("#url").val(), true);
+            
             var headers = $("#headers").val();
 
             var url = $("#url").val();
@@ -113,20 +116,18 @@ function sendRequest() {
                 var header = headers[i].split(": ");
                 if (header[1]) {
                     xhr.setRequestHeader(header[0], header[1]);
-                    alert(header[0] + " " + header[1]);
                 }
 
             }
 
             if (jQuery.inArray($("input[type=radio]:checked").val(), ["post", "put"]) > -1) {
-                if(!bodyFileData) {
+                if (dataMode === 'params') {
                     data = $("#body").val();
                     bodyData = data;
                 }
-                else {
-                    bodyData = bodyFileData;
-                    alert(bodyData);
-                    data = "";
+                else if(dataMode === 'file') {
+                    bodyData = new FormData();
+                    bodyData.append($('#bodyFileKey').val(), document.getElementById('bodyFile').files[0]);
                 }
 
                 //Check if a file is being sent
@@ -135,6 +136,7 @@ function sendRequest() {
                 xhr.send("");
             }
 
+            requestStartTime = new Date().getTime();
             saveRequest(url, method, headers, data);
         }
         catch(e) {
@@ -180,6 +182,9 @@ function readResponse() {
 
             grow('responseHeaders');
 
+            requestEndTime = new Date().getTime();
+            var diff = requestEndTime - requestStartTime;
+            $('#pTimeDiff').html(diff + " ms");
             $.chili.options.automatic.active = false;
             $.chili.options.decoration.lineNumbers = false;
             var $chili = $('#codeData').chili();
@@ -199,7 +204,7 @@ function readResponse() {
 function toggleData() {
     if (jQuery.inArray($("input[type=radio]:checked").val(), ["post", "put"]) > -1) {
         $("#data").css("display", "");
-        showParamsEditor('body');
+        showBodyParamsEditor();
     } else {
         closeParamsEditor('body')
         $("#data").css("display", "none");
@@ -240,7 +245,7 @@ function init() {
     });
 
     //Initialize the localStarage requsts array if not present
-    if(!localStorage[keyRequests]) {
+    if (!localStorage[keyRequests]) {
         var r = [];
         localStorage[keyRequests] = JSON.stringify(r);
     }
@@ -280,7 +285,7 @@ function addRequestToHistory(url, method, id, position) {
     itemString += " <a class=\"itemRequestType\">" + method + "</span>";
     itemString += "</li>";
 
-    if(position === 'top') {
+    if (position === 'top') {
         $("#historyItems").prepend(itemString);
     }
     else {
@@ -296,11 +301,11 @@ function removeRequestFromHistory(id) {
 function getAllSavedRequests() {
     var url;
     var itemString;
-    
+
     requests = JSON.parse(localStorage[keyRequests]);
     var itemCount = requests.length;
 
-    for(var i = itemCount - 1; i >= 0; i--) {
+    for (var i = itemCount - 1; i >= 0; i--) {
         url = requests[i].url;
         id = requests[i].id;
         method = requests[i].method;
@@ -312,8 +317,8 @@ function getAllSavedRequests() {
 
 function loadRequest(id) {
     var itemCount = requests.length;
-    for(var i = itemCount - 1; i >= 0; i--) {
-        if(requests[i].id === id) {
+    for (var i = itemCount - 1; i >= 0; i--) {
+        if (requests[i].id === id) {
             break;
         }
     }
@@ -328,7 +333,7 @@ function loadRequest(id) {
     $('#bodyParamsEditor').css("display", "none");
     $('#response').css("display", "none");
 
-    if(method === 'post' || method === 'put') {
+    if (method === 'post' || method === 'put') {
         $('#data').val(requests[i].data);
         $('#data').css("display", "block");
     }
@@ -346,8 +351,8 @@ function clearResponse() {
 }
 function deleteRequest(id) {
     var itemCount = requests.length;
-    for(var i = itemCount - 1; i >= 0; i--) {
-        if(requests[i].id === id) {
+    for (var i = itemCount - 1; i >= 0; i--) {
+        if (requests[i].id === id) {
             break;
         }
     }
@@ -379,23 +384,21 @@ function lang() {
 }
 
 function S4() {
-   return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
+    return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
 }
 function guid() {
-   return (S4()+S4()+"-"+S4()+"-"+S4()+"-"+S4()+"-"+S4()+S4()+S4());
+    return (S4() + S4() + "-" + S4() + "-" + S4() + "-" + S4() + "-" + S4() + S4() + S4());
 }
 
-function getUrlVars(url)
-{
-    if(url == null) {
+function getUrlVars(url) {
+    if (url == null) {
         return "";
     }
-    
+
     var vars = [], hash;
     var hashes = url.slice(url.indexOf('?') + 1).split('&');
 
-    for(var i = 0; i < hashes.length; i++)
-    {
+    for (var i = 0; i < hashes.length; i++) {
         hash = hashes[i].split('=');
         vars[hash[0]] = hash[1];
     }
@@ -407,9 +410,9 @@ function setParamsFromEditor(section) {
     var keys = $('input[id|="' + section + '-key"]');
     var paramString = "";
     $('input[name*=' + section + '[key]]').each(function() {
-        var val = $(this).next().val(); 
-        if(val !== "" && $(this).val() !== "") {
-            if(section !== 'headers') {
+        var val = $(this).next().val();
+        if (val !== "" && $(this).val() !== "") {
+            if (section !== 'headers') {
                 paramString += $(this).val() + "=" + val + "&";
             }
             else {
@@ -421,15 +424,15 @@ function setParamsFromEditor(section) {
 
     paramString = paramString.substr(0, paramString.length - 1);
 
-    if(section === 'url') {
+    if (section === 'url') {
         var url = $('#url').val();
         var baseUrl = url.split("?")[0];
         $('#' + section).val(baseUrl + "?" + paramString);
     }
-    else if(section === 'body') {
+    else if (section === 'body') {
         $('#' + section).val(paramString);
     }
-    else if(section === 'headers') {
+    else if (section === 'headers') {
         $('#' + section).val(paramString);
     }
 
@@ -441,8 +444,8 @@ function showParamsEditor(section) {
     var editorHtml = "";
     var i = 0;
 
-    for(var index in params) {
-        if(params[index] == undefined) continue;
+    for (var index in params) {
+        if (params[index] == undefined) continue;
         editorHtml += "<div>";
         editorHtml += "<input type=\"text\" name=\"" + section + "[key][]\" placeholder=\"key\" value=\"" + index + "\"/>";
         editorHtml += "<input type=\"text\" name=\"" + section + "[value][]\" placeholder=\"val\" value=\"" + params[index] + "\"/>";
@@ -486,10 +489,36 @@ function addParamInEditor(section) {
     addEditorListeners(section);
 }
 
+function addHeaderListeners() {
+    $('#headers').focus(function() {
+        $('#headers').css("height", "135px");
+    });
+
+    $('#headers').blur(function() {
+        $('#headers').css("height", "35px");
+    });
+}
+
+function addBodyListeners() {
+    $('#body').focus(function() {
+        $('#body').css("height", "135px");
+    });
+
+    $('#body').blur(function() {
+        $('#body').css("height", "35px");
+    });
+}
+
+function removeBodyListeners() {
+    $('#body').unbind("focus");
+    $('#body').unbind("blur");
+}
+
 $(document).ready(function() {
     lang();
     init();
     getAllSavedRequests();
+    addHeaderListeners();
 });
 
 function addHistoryListeners() {
@@ -555,6 +584,9 @@ function showBodyParamsEditor() {
 
     var containerHtml = '<textarea name="data" id="body" tabindex="4" class="inputText"></textarea>';
     $('#bodyDataContainer').html(containerHtml);
+    
+    removeBodyListeners();
+    addBodyListeners();
 }
 
 function showFileSelector() {
@@ -563,8 +595,11 @@ function showFileSelector() {
     $('#bodyParamsButton').css('opacity', 0.5);
     $('#bodyFileButton').css('opacity', 1);
     $('#bodyRawButton').css('opacity', 0.5);
-    var containerHtml = '<input type="file" name="file"/>';
+    var containerHtml = '<input type="text" name="bodyFileKey" id="bodyFileKey" placeholder="key"/>';
+    containerHtml += '<input type="file" name="bodyFile" id="bodyFile" onchange="fileSelected()"/>';
     $('#bodyDataContainer').html(containerHtml);
+
+    removeBodyListeners();
 }
 
 function showRawEditor() {
@@ -576,4 +611,12 @@ function showRawEditor() {
 
     var containerHtml = '<textarea name="data" id="body" tabindex="4" class="inputText"></textarea>';
     $('#bodyDataContainer').html(containerHtml);
+
+    removeBodyListeners();
+    addBodyListeners();
+}
+
+function fileSelected() {
+    var file = document.getElementById('bodyFile').files[0];
+    //Do something when the file is selected
 }
