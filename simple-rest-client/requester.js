@@ -184,7 +184,7 @@ function readResponse() {
 
             requestEndTime = new Date().getTime();
             var diff = requestEndTime - requestStartTime;
-            $('#pTimeDiff').html(diff + " ms");
+            $('#ptime span').html(diff + " ms");
             $.chili.options.automatic.active = false;
             $.chili.options.decoration.lineNumbers = false;
             var $chili = $('#codeData').chili();
@@ -256,7 +256,6 @@ function init() {
 
 //History management functions
 function saveRequest(url, method, headers, data) {
-    var id = guid();
     var requestItem = {
         "id": id,
         "url": url,
@@ -447,8 +446,8 @@ function showParamsEditor(section) {
     for (var index in params) {
         if (params[index] == undefined) continue;
         editorHtml += "<div>";
-        editorHtml += "<input type=\"text\" name=\"" + section + "[key][]\" placeholder=\"key\" value=\"" + index + "\"/>";
-        editorHtml += "<input type=\"text\" name=\"" + section + "[value][]\" placeholder=\"val\" value=\"" + params[index] + "\"/>";
+        editorHtml += "<input type=\"text\" name=\"" + section + "[key][]\" class=\"key\" placeholder=\"key\" value=\"" + index + "\"/>";
+        editorHtml += "<input type=\"text\" name=\"" + section + "[value][]\" class=\"value\" placeholder=\"val\" value=\"" + params[index] + "\"/>";
         editorHtml += "<a href=\"javascript:void(0);\" class=\"deleteParam\" tabIndex=\"-1\">";
         editorHtml += "<img class=\"deleteButton\" src=\"images/delete.png\"/>";
         editorHtml += "</a>";
@@ -458,9 +457,9 @@ function showParamsEditor(section) {
 
     editorHtml += "<div>";
     editorHtml += "<input type=\"text\" name=\"" + section + "[key][]\"";
-    editorHtml += "placeholder=\"key\"/>";
+    editorHtml += "class=\"key\" placeholder=\"key\"/>";
     editorHtml += "<input type=\"text\" name=\"" + section + "[value][]\"";
-    editorHtml += "placeholder=\"value\"/>";
+    editorHtml += "class=\"value\" placeholder=\"value\"/>";
     editorHtml += "</div>";
 
     $('#' + section + '-ParamsFields').html(editorHtml);
@@ -476,14 +475,15 @@ function deleteParam(section) {
 function closeParamsEditor(section) {
     $('#' + section + '-ParamsFields div:last input').unbind('focus');
     $('#' + section + '-ParamsFields input').unbind('blur');
+    $('#' + section + '-ParamsEditor input.key').autocomplete("destroy");
     $('#' + section + '-ParamsEditor').css("display", "none");
 }
 
 function addParamInEditor(section) {
     var newElementHtml = "";
     newElementHtml += "<div>";
-    newElementHtml += "<input type=\"text\" name=\"" + section + "[key][]\" placeholder=\"" + "key" + "\"/>";
-    newElementHtml += "<input type=\"text\" name=\"" + section + "[value][]\" placeholder=\"" + "value" + "\"/>";
+    newElementHtml += "<input type=\"text\" name=\"" + section + "[key][]\" class=\"key\" placeholder=\"" + "key" + "\"/>";
+    newElementHtml += "<input type=\"text\" name=\"" + section + "[value][]\" class=\"value\" placeholder=\"" + "value" + "\"/>";
     newElementHtml += "</div>";
     $('#' + section + '-ParamsFields').append(newElementHtml);
     addEditorListeners(section);
@@ -573,6 +573,9 @@ function addEditorListeners(section) {
         setParamsFromEditor(section);
     });
 
+    if(section === 'headers') {
+        addHeaderAutoComplete();
+    }
 }
 
 function showBodyParamsEditor() {
@@ -584,7 +587,7 @@ function showBodyParamsEditor() {
 
     var containerHtml = '<textarea name="data" id="body" tabindex="4" class="inputText"></textarea>';
     $('#bodyDataContainer').html(containerHtml);
-    
+
     removeBodyListeners();
     addBodyListeners();
 }
@@ -619,4 +622,50 @@ function showRawEditor() {
 function fileSelected() {
     var file = document.getElementById('bodyFile').files[0];
     //Do something when the file is selected
+}
+
+//Headesrs list from Wikipedia http://en.wikipedia.org/wiki/List_of_HTTP_header_fields
+function addHeaderAutoComplete() {
+    var availableHeaders = [
+        //Standard headers
+        "Accept",
+        "Accept-Charset",
+        "Accept-Encoding",
+        "Accept-Language",
+        "Authorization",
+        "Cache-Control",
+        "Connection",
+        "Cookie",
+        "Content-Length",
+        "Content-MD5",
+        "Content-Type",
+        "Date",
+        "Expect",
+        "From",
+        "Host",
+        "If-Match",
+        "If-Modified-Since",
+        "If-None-Match",
+        "If-Range",
+        "If-Unmodified-Since",
+        "Max-Forwards",
+        "Pragma",
+        "Proxy-Authorization",
+        "Range",
+        "Referer",
+        "TE",
+        "Upgrade",
+        "User-Agent",
+        "Via",
+        "Warning",
+        //Non standard headers
+        "X-Requested-With",
+        "X-Do-Not-Track",
+        "DNT",
+    ];
+
+    $( "#headers-ParamsFields .key" ).autocomplete({
+        source: availableHeaders,
+        delay: 50
+    });
 }
