@@ -1,7 +1,6 @@
 POSTMan for Google Chrome
 =======
-POSTMan is a tool to help developers play around with HTTP requests. POSTMan's UI is very intuitive to build complex
-HTTP requests.
+POSTMan is a tool to help developers play around with HTTP requests. POSTMan's UI is very intuitive to build complex HTTP requests.
 
 Features include:
 
@@ -11,8 +10,7 @@ Features include:
 4. Response time
 5. Auto complete for standard HTTP headers.
 
-POSTMan is a fork of the Simple Rest Client for Google Chrome. I will update this README as I get to know more about
-the Apache License.
+POSTMan is a fork of the Simple Rest Client for Google Chrome. I will update this README as I get to know more about the Apache License.
 
 POSTMan for Google Chrome is licensed under the Apache Licence,
 Version 2.0 (http://www.apache.org/licenses/LICENSE-2.0.html).
