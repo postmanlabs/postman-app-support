@@ -256,6 +256,7 @@ function init() {
 
 //History management functions
 function saveRequest(url, method, headers, data) {
+    var id = guid();
     var requestItem = {
         "id": id,
         "url": url,
@@ -300,6 +301,8 @@ function removeRequestFromHistory(id) {
 function getAllSavedRequests() {
     var url;
     var itemString;
+    var id;
+    var method;
 
     requests = JSON.parse(localStorage[keyRequests]);
     var itemCount = requests.length;
@@ -329,15 +332,16 @@ function loadRequest(id) {
     $('input[id="' + method + '"]').attr("checked", true);
     $('#headers').val(requests[i].headers);
     $('#urlParamsEditor').css("display", "none");
-    $('#bodyParamsEditor').css("display", "none");
     $('#response').css("display", "none");
 
     if (method === 'post' || method === 'put') {
         $('#data').val(requests[i].data);
         $('#data').css("display", "block");
+        showBodyParamsEditor();
     }
     else {
         $('#data').css("display", "none");
+        closeParamsEditor("body");
     }
 
     clearResponse();
@@ -405,6 +409,22 @@ function getUrlVars(url) {
     return vars;
 }
 
+function getHeaderVars(data) {
+    if (data == null) {
+        return "";
+    }
+
+    var vars = [], hash;
+    var hashes = data.split('\n');
+
+    for (var i = 0; i < hashes.length; i++) {
+        hash = hashes[i].split(": ");
+        vars[hash[0]] = hash[1];
+    }
+
+    return vars;
+}
+
 function setParamsFromEditor(section) {
     var keys = $('input[id|="' + section + '-key"]');
     var paramString = "";
@@ -438,8 +458,15 @@ function setParamsFromEditor(section) {
 }
 
 function showParamsEditor(section) {
-    var url = $('#' + section).val();
-    var params = getUrlVars(url);
+    var data = $('#' + section).val();
+    var params;
+    if(section === 'headers') {
+        params = getHeaderVars(data);
+    }
+    else {
+        params = getUrlVars(data);
+    }
+
     var editorHtml = "";
     var i = 0;
 
@@ -661,7 +688,7 @@ function addHeaderAutoComplete() {
         //Non standard headers
         "X-Requested-With",
         "X-Do-Not-Track",
-        "DNT",
+        "DNT"
     ];
 
     $( "#headers-ParamsFields .key" ).autocomplete({

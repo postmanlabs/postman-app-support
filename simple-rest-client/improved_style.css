@@ -286,3 +286,8 @@ fieldset {
     display: block;
     width: 120px;
 }
+
+.ui-menu-item {
+    font-size: 12px;
+    font-family: Helvetica, Arial, sans-serif;
+}
