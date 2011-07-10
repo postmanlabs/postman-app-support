@@ -291,3 +291,24 @@ fieldset {
     font-size: 12px;
     font-family: Helvetica, Arial, sans-serif;
 }
+
+#notification {
+    background: #fff;
+    display: none;
+    padding:  5px;
+    padding-top: 10px;
+    border-radius: 5px;
+    width: 120px;
+    position: absolute;
+    text-align: center;
+    left: 40%;
+    top: -5px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #afafaf;
+}
+
+#notification img {
+    vertical-align: middle;
+    margin-left: 10px;
+}

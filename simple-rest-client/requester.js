@@ -156,6 +156,7 @@ function sendRequest() {
 
             requestStartTime = new Date().getTime();
             saveRequest(url, method, headers, data);
+            $('#notification').fadeIn();
         }
         catch(e) {
             console.log(e);
@@ -178,6 +179,7 @@ function sendRequest() {
 }
 
 function readResponse() {
+    $('#notification').fadeOut();
     if (this.readyState == 4) {
         try {
             if (this.status == 0) {
@@ -203,7 +205,7 @@ function readResponse() {
             requestEndTime = new Date().getTime();
             var diff = requestEndTime - requestStartTime;
             $('#ptime span').html(diff + " ms");
-            $.chili.options.automatic.active = false;
+            $.chili.options.automatic.active = true;
             $.chili.options.decoration.lineNumbers = false;
             var $chili = $('#codeData').chili();
             $('#history').css("height", $('#main').height());
@@ -272,17 +274,51 @@ function init() {
 //    $("bodyFile").addEventListener("change", handleFileSelect, false);
 }
 
+function requestExists(requestItem) {
+    var index = -1;
+    for(var i = 0; i < requests.length; i++) {
+        var r = requests[i];
+        if(r.url.length != requestItem.url.length ||
+            r.headers.length != requestItem.headers.length ||
+            r.method != requestItem.method) {
+            index = -1;
+        }
+        else {
+            if(r.url === requestItem.url) {
+                 if(r.headers === requestItem.headers) {
+                     if(r.method !== "post" && r.method !== "put") {
+                        index = i;
+                     }
+                 }
+            }
+        }
+
+        if(index >= 0) {
+            break;
+        }
+    }
+
+    return index;
+}
 //History management functions
 function saveRequest(url, method, headers, data) {
     var id = guid();
     var requestItem = {
         "id": id,
-        "url": url,
-        "method": method,
-        "headers": headers,
-        "data": data
+        "url": url.toString(),
+        "method": method.toString(),
+        "headers": headers.toString(),
+        "data": data.toString()
     };
 
+    var index = requestExists(requestItem);
+
+    if(index >= 0) {
+        removeRequestFromHistory(requests[index].id);
+        requests.splice(index, 1);
+    }
+
+    //TODO Not sure how heavy this is
     requests[requests.length] = requestItem;
     localStorage[keyRequests] = JSON.stringify(requests);
     addRequestToHistory(url, method, id, "top");
@@ -436,8 +472,8 @@ function getHeaderVars(data) {
     var hashes = data.split('\n');
 
     for (var i = 0; i < hashes.length; i++) {
-        hash = hashes[i].split(": ");
-        vars[hash[0]] = hash[1];
+        hash = hashes[i].split(":");
+        vars[hash[0]] = jQuery.trim(hash[1]);
     }
 
     return vars;

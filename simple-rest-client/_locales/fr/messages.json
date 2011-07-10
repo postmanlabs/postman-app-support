@@ -1,5 +1,5 @@
 {
-  "name": {"message": "Client REST improved"},
+  "name": {"message": "POSTMan"},
   "description": {"message": "Constuisez vos requêtes HTTP pour tester directement vos services web."},
   "request": {"message": "Requête"},
   "debuglink": {"message": "Lien de débogage"},
