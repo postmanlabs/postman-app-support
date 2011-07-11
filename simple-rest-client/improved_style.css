@@ -64,7 +64,7 @@ fieldset {
     border-width: 3px;
     min-height: 30px;
     width: 100% !important;
-    padding:  5px;
+    padding: 5px;
 }
 
 #main {
@@ -183,12 +183,12 @@ fieldset {
 }
 
 #historyContainer {
-    padding-top:20px;
+    padding-top: 20px;
     padding-left: 10px;
 }
 
 #responseData {
-    width: 100% !important;
+
 }
 
 #responseData pre {
@@ -198,7 +198,8 @@ fieldset {
     border-width: 3px;
     min-height: 30px;
     width: 100% !important;
-    padding:  5px;
+    padding: 5px;
+    overflow: scroll;
 }
 
 #respHeaders {
@@ -218,6 +219,7 @@ fieldset {
 #historyItems li a {
     color: #333;
     font-size: 12px;
+    margin-top: 2px;
     text-decoration: none;
 }
 
@@ -227,8 +229,13 @@ fieldset {
     display: none;
 }
 
+.itemLink {
+    display: block;
+}
+
 .itemRequestType {
     float: right;
+    font-size: 12px;
     font-weight: bold;
     margin-top: 2px;
     margin-right: 30px;
@@ -248,8 +255,16 @@ fieldset {
     margin-top: 2px;
     margin-bottom: 4px;
 }
+
 .paramsEditor input {
     padding: 5px;
+}
+
+.paramsEditor .key,
+.paramsEditor .value {
+    padding: 5px;
+    border: solid thin #ccc;
+    border-radius: 5px;
 }
 
 .paramsEditor .deleteButton {
@@ -269,7 +284,9 @@ fieldset {
 }
 
 #bodyDataContainer input {
-    padding:  5px;
+    padding: 5px;
+    border: solid thin #ccc;
+    border-radius: 5px;
 }
 
 #ptime, #pstatus {
@@ -295,7 +312,7 @@ fieldset {
 #notification {
     background: #fff;
     display: none;
-    padding:  5px;
+    padding: 5px;
     padding-top: 10px;
     border-radius: 5px;
     width: 120px;
@@ -312,3 +329,32 @@ fieldset {
     vertical-align: middle;
     margin-left: 10px;
 }
+
+li .left {
+    float: left;
+}
+
+li .right {
+    float: right;
+}
+
+/* new clearfix */
+.clearfix:after {
+    visibility: hidden;
+    display: block;
+    font-size: 0;
+    content: " ";
+    clear: both;
+    height: 0;
+}
+
+* html .clearfix {
+    zoom: 1;
+}
+
+/* IE6 */
+*:first-child+html .clearfix {
+    zoom: 1;
+}
+
+/* IE7 */

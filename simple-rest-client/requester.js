@@ -155,7 +155,7 @@ function sendRequest() {
             }
 
             requestStartTime = new Date().getTime();
-            saveRequest(url, method, headers, data);
+            saveRequest(url, method, $("#headers").val(), data);
             $('#notification').fadeIn();
         }
         catch(e) {
@@ -180,6 +180,11 @@ function sendRequest() {
 
 function readResponse() {
     $('#notification').fadeOut();
+
+    $('#responseStatus').css("display", "block");
+    $('#responseHeaders').css("display", "block");
+    $('#codeData').css("display", "block");
+    
     if (this.readyState == 4) {
         try {
             if (this.status == 0) {
@@ -208,7 +213,6 @@ function readResponse() {
             $.chili.options.automatic.active = true;
             $.chili.options.decoration.lineNumbers = false;
             var $chili = $('#codeData').chili();
-            $('#history').css("height", $('#main').height());
         }
         catch(e) {
             $("#responseStatus").html("No response.");
@@ -219,6 +223,8 @@ function readResponse() {
             $("#responsePrint").css("display", "");
         }
     }
+
+    $('#history').css("height", $('#main').height());
 }
 
 function toggleData() {
@@ -232,12 +238,12 @@ function toggleData() {
 }
 
 function init() {
-    $("#url").width($("#purl").width() - 80 - 30);
-    $("#headers").width($("#pheaders").width() - 80 - 30);
-    $("#body").width($("#data").width() - 80 - 30);
+    //$("#url").width($("#purl").width() - 80 - 30);
+    //$("#headers").width($("#pheaders").width() - 80 - 30);
+    //$("#body").width($("#data").width() - 80 - 30);
 
-    $("#responseHeaders").width($("#respHeaders").width() - 80 - 30);
-    $("#responseData").width($("#respHeaders").width() - 80 - 30);
+    $("#responseHeaders").width($("#main").width() - 80);
+    $("#responseData").width($("#main").width() - 80);
 
     $("#response").css("display", "none");
     $("#loader").css("display", "");
@@ -326,17 +332,20 @@ function saveRequest(url, method, headers, data) {
 }
 
 function addRequestToHistory(url, method, id, position) {
-    var itemString = "<li id=\"itemContainer-" + id + "\"><a href=\"javascript:void(0);\"";
+    var itemString = "<li id=\"itemContainer-" + id + "\" class=\"clearfix\">";
+    itemString += "<div class=\"left\"><a href=\"javascript:void(0);\"";
     itemString += " onclick=\"loadRequest('" + id + "')\" ";
-    itemString += "class=\"itemLink\" id=\"item-" + id + "\">" + url + "</a>";
+    itemString += "class=\"itemLink\" id=\"item-" + id + "\">";
+    itemString += url + "</a>";
+    itemString += "</div><div class=\"right\">";
     itemString += " <a href=\"javascript:void(0);\"";
     itemString += " onclick=\"deleteRequest('" + id + "')\" ";
     itemString += "class=\"itemDeleteLink\" id=\"itemDeleteLink-" + id + "\">";
     itemString += "<img src=\"images/delete.png\"/>";
-    itemString += "</a>";
-    itemString += "</a>";
+    itemString += "</a></div>";
     method = method.toUpperCase();
-    itemString += " <a class=\"itemRequestType\">" + method + "</span>";
+    itemString += " <span class=\"itemRequestType\">" + method + "</span>";
+    
     itemString += "</li>";
 
     if (position === 'top') {
@@ -402,9 +411,9 @@ function loadRequest(id) {
 }
 
 function clearResponse() {
-    $('#responseStatus').html('');
-    $('#responseHeaders').html('');
-    $('#codeData').html('');
+    $('#responseStatus').css("display", "none");
+    $('#responseHeaders').css("display", "none");
+    $('#codeData').css("display", "none");
 }
 function deleteRequest(id) {
     var itemCount = requests.length;
@@ -528,7 +537,7 @@ function showParamsEditor(section) {
         if (params[index] == undefined) continue;
         editorHtml += "<div>";
         editorHtml += "<input type=\"text\" name=\"" + section + "[key][]\" class=\"key\" placeholder=\"key\" value=\"" + index + "\"/>";
-        editorHtml += "<input type=\"text\" name=\"" + section + "[value][]\" class=\"value\" placeholder=\"val\" value=\"" + params[index] + "\"/>";
+        editorHtml += "<input type=\"text\" name=\"" + section + "[value][]\" class=\"value\" placeholder=\"value\" value=\"" + params[index] + "\"/>";
         editorHtml += "<a href=\"javascript:void(0);\" class=\"deleteParam\" tabIndex=\"-1\">";
         editorHtml += "<img class=\"deleteButton\" src=\"images/delete.png\"/>";
         editorHtml += "</a>";
@@ -600,7 +609,15 @@ $(document).ready(function() {
     init();
     getAllSavedRequests();
     addHeaderListeners();
+
+    $(window).resize(function() {
+        $("#responseHeaders").width($("#main").width() - 80);
+        $("#responseData").width($("#main").width() - 80);
+        $('#history').css("height", $('#main').height());
+    });
+
 });
+
 
 function addHistoryListeners() {
     $('#historyItems li').mouseenter(function() {
