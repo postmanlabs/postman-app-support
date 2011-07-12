@@ -604,16 +604,21 @@ function removeBodyListeners() {
     $('#body').unbind("blur");
 }
 
+function setContainerHeights() {    
+    $("#responseHeaders").width($("#main").width() - 80);
+    $("#responseData").width($("#main").width() - 80);
+    $('#history').css("height", $('#main').height());
+}
+
 $(document).ready(function() {
     lang();
     init();
     getAllSavedRequests();
     addHeaderListeners();
+    setContainerHeights();
 
     $(window).resize(function() {
-        $("#responseHeaders").width($("#main").width() - 80);
-        $("#responseData").width($("#main").width() - 80);
-        $('#history').css("height", $('#main').height());
+        setContainerHeights();
     });
 
 });

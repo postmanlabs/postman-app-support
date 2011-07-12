@@ -5,7 +5,7 @@ html, body {
     margin-left: 0;
     width: 100%;
     height: 100%;
-    font-family: arial, helvetica;
+    font-family: Helvetica, Arial, sans-serif;
 }
 
 header {
@@ -17,6 +17,19 @@ header {
     border-bottom-style: solid;
     border-bottom-color: #116284;
     border-bottom-width: 5px;
+    height: 70px;
+    width: 100%;
+}
+
+footer {
+    display: block;
+    font-size: 12px;
+    padding:  10px;
+    border-top-style: solid;
+    border-top-color: #116284;
+    border-top-width: 5px;
+    width: 100%;
+    height: 40px;
 }
 
 header h1 {
@@ -86,11 +99,10 @@ fieldset {
     min-height: 100%;
     width: 35%;
     box-shadow: inset 4px 4px 10px #c5c5c5;
-    margin-right: 0px;
+    padding-top: 10px;
 }
 
 .headerText {
-    font-family: neue, SANS-SERIF;
     font-weight: bolder;
     font-size: 100%;
 }
@@ -180,10 +192,11 @@ fieldset {
 
 #logo {
     padding: 20px;
+    float: left
 }
 
 #historyContainer {
-    padding-top: 20px;
+    padding-top: 10px;
     padding-left: 10px;
 }
 
@@ -206,9 +219,17 @@ fieldset {
     margin-top: 20px;
 }
 
+#responseHeaders,
+#responsedata,
+#headers,
+#body, #codeData {
+    font-family: "Consolas", Courier, monospace, sans-serif;
+    font-size: 12px;
+} 
+
 #historyItems li {
     margin-right: 7px;
-    padding: 5px;
+    padding: 8px;
     border-radius: 5px;
 }
 
@@ -219,13 +240,14 @@ fieldset {
 #historyItems li a {
     color: #333;
     font-size: 12px;
-    margin-top: 2px;
     text-decoration: none;
 }
 
 .itemDeleteLink {
     float: right;
     margin-right: 20px;
+    height: 12px;
+    margin-top: -2px;
     display: none;
 }
 
@@ -237,7 +259,6 @@ fieldset {
     float: right;
     font-size: 12px;
     font-weight: bold;
-    margin-top: 2px;
     margin-right: 30px;
     display: none;
 }
@@ -330,6 +351,32 @@ fieldset {
     margin-left: 10px;
 }
 
+
+#credits {
+    float: right;
+    margin-right: 20px;
+    margin-top: 35px;
+    color: #fff;
+    font-weight: bold;
+    font-size: 10px;
+}
+
+#credits a {
+    background-color: #222;
+    color: #fff;
+    padding: 4px;
+    border-radius: 4px;
+    border: solid thin #222;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+#credits a:hover {
+    background-color: #555;
+    border: solid thin #555;
+    text-decoration: none;
+}
+
 li .left {
     float: left;
 }
@@ -351,10 +398,3 @@ li .right {
 * html .clearfix {
     zoom: 1;
 }
-
-/* IE6 */
-*:first-child+html .clearfix {
-    zoom: 1;
-}
-
-/* IE7 */
