@@ -73,6 +73,7 @@ var bodyFileData;
 var dataMode = "params";
 var requestStartTime = 0;
 var requestEndTime = 0;
+var dataInputType = "text";
 
 function grow(id) {
     var textarea = document.getElementById(id);
@@ -520,7 +521,8 @@ function setParamsFromEditor(section) {
 
 }
 
-function showParamsEditor(section) {
+function showParamsEditor(section, a1) {
+    a1 = a1 || a1;
     var data = $('#' + section).val();
     var params;
     if(section === 'headers') {
@@ -538,6 +540,11 @@ function showParamsEditor(section) {
         editorHtml += "<div>";
         editorHtml += "<input type=\"text\" name=\"" + section + "[key][]\" class=\"key\" placeholder=\"key\" value=\"" + index + "\"/>";
         editorHtml += "<input type=\"text\" name=\"" + section + "[value][]\" class=\"value\" placeholder=\"value\" value=\"" + params[index] + "\"/>";
+        if (section == 'body') {
+            editorHtml += "<select><option value= \"text\">Text</option>";
+            editorHtml += "<option value= \"file\">File</option></select>";
+        }
+        //editorHtml += "</div>";
         editorHtml += "<a href=\"javascript:void(0);\" class=\"deleteParam\" tabIndex=\"-1\">";
         editorHtml += "<img class=\"deleteButton\" src=\"images/delete.png\"/>";
         editorHtml += "</a>";
@@ -550,6 +557,10 @@ function showParamsEditor(section) {
     editorHtml += "class=\"key\" placeholder=\"key\"/>";
     editorHtml += "<input type=\"text\" name=\"" + section + "[value][]\"";
     editorHtml += "class=\"value\" placeholder=\"value\"/>";
+    if (section == 'body') {
+        editorHtml += "<select><option value= \"text\">Text</option>";
+        editorHtml += "<option value= \"file\">File</option></select>";
+    }
     editorHtml += "</div>";
 
     $('#' + section + '-ParamsFields').html(editorHtml);
@@ -574,9 +585,32 @@ function addParamInEditor(section) {
     newElementHtml += "<div>";
     newElementHtml += "<input type=\"text\" name=\"" + section + "[key][]\" class=\"key\" placeholder=\"" + "key" + "\"/>";
     newElementHtml += "<input type=\"text\" name=\"" + section + "[value][]\" class=\"value\" placeholder=\"" + "value" + "\"/>";
+    if (section == 'body') {
+        newElementHtml += "<select><option value= \"text\">Text</option>";
+        newElementHtml += "<option value= \"file\">File</option></select>";
+    }
     newElementHtml += "</div>";
     $('#' + section + '-ParamsFields').append(newElementHtml);
     addEditorListeners(section);
+}
+
+function addFileParamInEditor(section) {
+    if (section == 'body') {
+        var containerHtml = "<div>";
+        containerHtml += '<input type="text" name="bodyFileKey" placeholder="key"/>';
+        containerHtml += '<input type="file" name="bodyFile" onchange="fileSelected()"/>';
+        containerHtml += "<select><option value= \"text\">Text</option>";
+        containerHtml += "<option value= \"file\">File</option></select>";
+        containerHtml += "</div>";
+        $('#' + section + '-ParamsFields').append(containerHtml);
+        addEditorListeners(section);
+    }
+}
+
+function changeParamInEditor(target) {
+    if (target == "file") {
+
+    }
 }
 
 function addHeaderListeners() {
@@ -667,6 +701,42 @@ function addEditorListeners(section) {
         setParamsFromEditor(section);
     });
 
+    $('#' + section + '-ParamsFields div select').change(function() {
+        //var paramType = $('#' + section + '-ParamsFields div select').val();
+        var paramType = $(this).val();
+
+        //var x = $(this).val();
+        if (paramType) {
+            var newElementHtml = "";
+            newElementHtml += "<div>";
+            newElementHtml += "<input type=\"text\" name=\"" + section + "[key][]\" class=\"key\" placeholder=\"" + "key" + "\"/>";
+
+            if (paramType == "text") {
+                //addParamInEditor(sect);
+                newElementHtml += "<input type=\"text\" name=\"" + section + "[value][]\" class=\"value\" placeholder=\"" + "value" + "\"/>";
+                newElementHtml += "<select><option value= \"text\">Text</option>";
+                newElementHtml += "<option value= \"file\">File</option></select>";
+            }
+            else {
+                //addFileParamInEditor(sect);
+                newElementHtml += '<input type="file" name="bodyFile" onchange="fileSelected()"/>';
+                newElementHtml += "<select><option value= \"file\">File</option>";
+                newElementHtml += "<option value= \"text\">Text</option></select>";
+            }
+
+            if($(this).siblings().length > 2) {
+                newElementHtml += "<a href=\"javascript:void(0);\" class=\"deleteParam\" tabIndex=\"-1\">";
+                newElementHtml += "<img class=\"deleteButton\" src=\"images/delete.png\"/>";
+                newElementHtml += "</a>";
+            }
+            newElementHtml += "</div>";
+            $(this).parent().html(newElementHtml);
+            addEditorListeners(section);
+        }
+        else {
+            alert (" WTF " + paramType);
+        }
+    });
 
     $('.deleteParam').click(function() {
         var fieldsParent = $(this).parents(".editorFields");
@@ -694,6 +764,7 @@ function showBodyParamsEditor() {
     removeBodyListeners();
     addBodyListeners();
 }
+
 
 function showFileSelector() {
     dataMode = "file";
