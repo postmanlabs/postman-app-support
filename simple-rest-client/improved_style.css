@@ -1,5 +1,5 @@
 html, body {
-    background-color: #FFF;
+    background: #eaeaea;
     height: 100%;
     margin-top: 0;
     margin-left: 0;
@@ -81,11 +81,17 @@ fieldset {
 }
 
 #main {
+    background: #fff;
     float: left;
     width: 65%;
-    margin-top: 10px;
+    min-height: 100%;
+    padding-top: 10px;
 }
 
+#container {
+    background: #eaeaea;
+    height: 100%;
+}
 #request,
 #response {
     padding-left: 10px;
@@ -93,13 +99,11 @@ fieldset {
 }
 
 #history {
-    background-color: #eaeaea;
     float: left;
     padding-left: 0px;
-    min-height: 100%;
     width: 35%;
-    box-shadow: inset 4px 4px 10px #c5c5c5;
     padding-top: 10px;
+    background-color: #eaeaea;
 }
 
 .headerText {
@@ -210,6 +214,7 @@ fieldset {
     border-style: solid;
     border-width: 3px;
     min-height: 30px;
+    max-height: 500px;
     width: 100% !important;
     padding: 5px;
     overflow: scroll;
@@ -244,10 +249,10 @@ fieldset {
 }
 
 .itemDeleteLink {
-    float: right;
-    margin-right: 20px;
+    position: absolute;
     height: 12px;
     margin-top: -2px;
+    margin-left: -30px;
     display: none;
 }
 
@@ -256,10 +261,15 @@ fieldset {
 }
 
 .itemRequestType {
-    float: right;
+    background: #2f2f2f;
+    padding: 5px;
+    border-radius: 5px;
+    color: #fff;
+    position: absolute;
     font-size: 12px;
     font-weight: bold;
-    margin-right: 30px;
+    margin-left: -50px;
+    margin-top: -5px;
     display: none;
 }
 

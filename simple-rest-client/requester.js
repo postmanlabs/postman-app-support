@@ -100,6 +100,8 @@ function clearFields() {
 
     $("#respHeaders").css("display", "none");
     $("#respData").css("display", "none");
+
+    $('#codeData').attr('data-formatted', 'false');
 }
 
 function handleFileSelect(evt) {
@@ -193,6 +195,7 @@ function readResponse() {
             }
             $("#responseStatus").html(this.status + ' ' + statusCodes[this.status]);
             $("#responseHeaders").val(jQuery.trim(this.getAllResponseHeaders()));
+            
             var debugurl = /X-Debug-URL: (.*)/i.exec($("#responseHeaders").val());
             if (debugurl) {
                 $("#debugLink").attr('href', debugurl[1]).html(debugurl[1]);
@@ -212,9 +215,23 @@ function readResponse() {
             var diff = requestEndTime - requestStartTime;
             $('#ptime span').html(diff + " ms");
 
-            $.chili.options.automatic.active = true;
-            $.chili.options.decoration.lineNumbers = false;
-            var $chili = $('#codeData').chili();
+            //Set chili options according to the Content-Type header
+            var contentType = this.getResponseHeader("Content-Type");
+
+            var contentTypeParts = contentType.split("/");
+            var type = 'html';
+            var format = 'html';
+
+            if(contentTypeParts.length > 1) {
+                type = contentTypeParts[1];
+            }
+
+            if(type == 'json') {
+                format = 'javascript';
+            }
+
+            $('#language').val(format);
+            setResponseFormat(format);
         }
         catch(e) {
             $("#responseStatus").html("No response.");
@@ -225,8 +242,6 @@ function readResponse() {
             $("#responsePrint").css("display", "");
         }
     }
-
-    $('#history').css("height", $('#main').height());
 }
 
 function toggleData() {
@@ -413,6 +428,8 @@ function loadRequest(id) {
         $('#data').css("display", "none");
         closeParamsEditor("body");
     }
+
+    closeParamsEditor("url");
 
     clearResponse();
 }
@@ -647,7 +664,6 @@ function removeBodyListeners() {
 function setContainerHeights() {    
     $("#responseHeaders").width($("#main").width() - 80);
     $("#responseData").width($("#main").width() - 80);
-    $('#history').css("height", $('#main').height());
 }
 
 $(document).ready(function() {
