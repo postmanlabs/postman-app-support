@@ -266,9 +266,9 @@ fieldset {
     border-radius: 5px;
     color: #fff;
     position: absolute;
-    font-size: 12px;
+    font-size: 10px;
     font-weight: bold;
-    margin-left: -50px;
+    margin-left: -55px;
     margin-top: -5px;
     display: none;
 }
@@ -298,8 +298,19 @@ fieldset {
     border-radius: 5px;
 }
 
+.paramsEditor .value {
+    width: 240px;
+}
+
+.paramsEditor select {
+    padding: 3px;
+    border-radius: 5px;
+    border-color: #CCC;
+}
+
 .paramsEditor .deleteButton {
     margin-left: 10px;
+    margin-top: 2px;
 }
 
 #bodyFileButton {
@@ -349,8 +360,8 @@ fieldset {
     width: 120px;
     position: absolute;
     text-align: center;
-    left: 40%;
-    top: -5px;
+    margin-left: 20px;
+    margin-top: -12px;
     font-size: 16px;
     font-weight: bold;
     color: #afafaf;

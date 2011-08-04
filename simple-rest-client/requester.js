@@ -1,21 +1,21 @@
 /*
-    Licensed to the Apache Software Foundation (ASF) under one
-    or more contributor license agreements.  See the NOTICE file
-    distributed with this work for additional information
-    regarding copyright ownership.  The ASF licenses this file
-    to you under the Apache License, Version 2.0 (the
-    "License"); you may not use this file except in compliance
-    with the License.  You may obtain a copy of the License at
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
 
-     http://www.apache.org/licenses/LICENSE-2.0
+ http://www.apache.org/licenses/LICENSE-2.0
 
-    Unless required by applicable law or agreed to in writing,
-    software distributed under the License is distributed on an
-    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-    KIND, either express or implied.  See the License for the
-    specific language governing permissions and limitations
-    under the License.
-*/
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.
+ */
 // Status codes as per rfc2616
 // @see http://tools.ietf.org/html/rfc2616#section-10
 var statusCodes = new Array();
@@ -124,7 +124,7 @@ function sendRequest() {
         xhr.onreadystatechange = readResponse;
         try {
             xhr.open($("input[type=radio]:checked").val(), $("#url").val(), true);
-            
+
             var headers = $("#headers").val();
 
             var url = $("#url").val();
@@ -141,20 +141,39 @@ function sendRequest() {
 
             }
 
-            if (jQuery.inArray($("input[type=radio]:checked").val(), ["post", "put"]) > -1) {
-                if (dataMode === 'params') {
+            if (jQuery.inArray(method, ["post", "put"]) > -1) {
+                if (dataMode === 'raw') {
                     data = $("#body").val();
                     bodyData = data;
                 }
-                else if(dataMode === 'file') {
+                else if (dataMode === 'params') {
                     bodyData = new FormData();
-                    bodyData.append($('#bodyFileKey').val(), document.getElementById('bodyFile').files[0]);
+
+                    //Iterate through all key/values
+
+                    $('input[name*=body[key]]').each(function() {
+                        var valueEl = $(this).next();
+                        var type = valueEl.attr('type');
+
+                        if ($(this).val() !== '') {
+                            if (type === 'file') {
+                                var domEl = $(this).next().get(0);
+                                var len = domEl.files.length;
+                                for (var i = 0; i < len; i++) {
+                                    bodyData.append($(this).val(), domEl.files[i]);
+                                }
+                            }
+                            else {
+                                bodyData.append($(this).val(), valueEl.val());
+                            }
+                        }
+                    });
                 }
 
                 //Check if a file is being sent
                 xhr.send(bodyData);
             } else {
-                xhr.send("");
+                xhr.send();
             }
 
             requestStartTime = new Date().getTime();
@@ -187,7 +206,7 @@ function readResponse() {
     $('#responseStatus').css("display", "block");
     $('#responseHeaders').css("display", "block");
     $('#codeData').css("display", "block");
-    
+
     if (this.readyState == 4) {
         try {
             if (this.status == 0) {
@@ -195,7 +214,7 @@ function readResponse() {
             }
             $("#responseStatus").html(this.status + ' ' + statusCodes[this.status]);
             $("#responseHeaders").val(jQuery.trim(this.getAllResponseHeaders()));
-            
+
             var debugurl = /X-Debug-URL: (.*)/i.exec($("#responseHeaders").val());
             if (debugurl) {
                 $("#debugLink").attr('href', debugurl[1]).html(debugurl[1]);
@@ -222,11 +241,11 @@ function readResponse() {
             var type = 'html';
             var format = 'html';
 
-            if(contentTypeParts.length > 1) {
+            if (contentTypeParts.length > 1) {
                 type = contentTypeParts[1];
             }
 
-            if(type == 'json') {
+            if (type == 'json') {
                 format = 'javascript';
             }
 
@@ -293,9 +312,6 @@ function init() {
         localStorage[keyRequests] = JSON.stringify(r);
     }
 
-    //Initialize file input handler
-//    $("bodyFile").addEventListener("change", handleFileSelect, false);
-
     $('#langFormat').change(function() {
         var format = $('#language').val();
         setResponseFormat(format);
@@ -304,24 +320,22 @@ function init() {
 
 function requestExists(requestItem) {
     var index = -1;
-    for(var i = 0; i < requests.length; i++) {
+    for (var i = 0; i < requests.length; i++) {
         var r = requests[i];
-        if(r.url.length != requestItem.url.length ||
-            r.headers.length != requestItem.headers.length ||
-            r.method != requestItem.method) {
+        if (r.url.length != requestItem.url.length ||
+                r.headers.length != requestItem.headers.length ||
+                r.method != requestItem.method) {
             index = -1;
         }
         else {
-            if(r.url === requestItem.url) {
-                 if(r.headers === requestItem.headers) {
-                     if(r.method !== "post" && r.method !== "put") {
-                        index = i;
-                     }
-                 }
+            if (r.url === requestItem.url) {
+                if (r.headers === requestItem.headers) {
+                    index = i;
+                }
             }
         }
 
-        if(index >= 0) {
+        if (index >= 0) {
             break;
         }
     }
@@ -341,7 +355,7 @@ function saveRequest(url, method, headers, data) {
 
     var index = requestExists(requestItem);
 
-    if(index >= 0) {
+    if (index >= 0) {
         removeRequestFromHistory(requests[index].id);
         requests.splice(index, 1);
     }
@@ -367,7 +381,7 @@ function addRequestToHistory(url, method, id, position) {
     itemString += "</a></div>";
     method = method.toUpperCase();
     itemString += " <span class=\"itemRequestType\">" + method + "</span>";
-    
+
     itemString += "</li>";
 
     if (position === 'top') {
@@ -515,6 +529,7 @@ function getHeaderVars(data) {
 function setParamsFromEditor(section) {
     var keys = $('input[id|="' + section + '-key"]');
     var paramString = "";
+
     $('input[name*=' + section + '[key]]').each(function() {
         var val = $(this).next().val();
         if (val !== "" && $(this).val() !== "") {
@@ -548,7 +563,7 @@ function showParamsEditor(section, a1) {
     a1 = a1 || a1;
     var data = $('#' + section).val();
     var params;
-    if(section === 'headers') {
+    if (section === 'headers') {
         params = getHeaderVars(data);
     }
     else {
@@ -620,8 +635,8 @@ function addParamInEditor(section) {
 function addFileParamInEditor(section) {
     if (section == 'body') {
         var containerHtml = "<div>";
-        containerHtml += '<input type="text" name="bodyFileKey" placeholder="key"/>';
-        containerHtml += '<input type="file" name="bodyFile" onchange="fileSelected()"/>';
+        containerHtml += '<input type="text" name="body[key][]" placeholder="key"/>';
+        containerHtml += '<input type="file" name="body[value][]" multiple/>';
         containerHtml += "<select><option value= \"text\">Text</option>";
         containerHtml += "<option value= \"file\">File</option></select>";
         containerHtml += "</div>";
@@ -661,7 +676,7 @@ function removeBodyListeners() {
     $('#body').unbind("blur");
 }
 
-function setContainerHeights() {    
+function setContainerHeights() {
     $("#responseHeaders").width($("#main").width() - 80);
     $("#responseData").width($("#main").width() - 80);
 }
@@ -740,13 +755,12 @@ function addEditorListeners(section) {
                 newElementHtml += "<option value= \"file\">File</option></select>";
             }
             else {
-                //addFileParamInEditor(sect);
-                newElementHtml += '<input type="file" name="bodyFile" onchange="fileSelected()"/>';
+                newElementHtml += '<input type="file" name="body[value][]" multiple/>';
                 newElementHtml += "<select><option value= \"file\">File</option>";
                 newElementHtml += "<option value= \"text\">Text</option></select>";
             }
 
-            if($(this).siblings().length > 2) {
+            if ($(this).siblings().length > 2) {
                 newElementHtml += "<a href=\"javascript:void(0);\" class=\"deleteParam\" tabIndex=\"-1\">";
                 newElementHtml += "<img class=\"deleteButton\" src=\"images/delete.png\"/>";
                 newElementHtml += "</a>";
@@ -756,7 +770,7 @@ function addEditorListeners(section) {
             addEditorListeners(section);
         }
         else {
-            alert (" WTF " + paramType);
+            alert(" WTF " + paramType);
         }
     });
 
@@ -768,7 +782,7 @@ function addEditorListeners(section) {
         setParamsFromEditor(section);
     });
 
-    if(section === 'headers') {
+    if (section === 'headers') {
         addHeaderAutoComplete();
     }
 }
@@ -787,20 +801,6 @@ function showBodyParamsEditor() {
     addBodyListeners();
 }
 
-
-function showFileSelector() {
-    dataMode = "file";
-    closeParamsEditor('body');
-    $('#bodyParamsButton').css('opacity', 0.5);
-    $('#bodyFileButton').css('opacity', 1);
-    $('#bodyRawButton').css('opacity', 0.5);
-    var containerHtml = '<input type="text" name="bodyFileKey" id="bodyFileKey" placeholder="key"/>';
-    containerHtml += '<input type="file" name="bodyFile" id="bodyFile" onchange="fileSelected()"/>';
-    $('#bodyDataContainer').html(containerHtml);
-
-    removeBodyListeners();
-}
-
 function showRawEditor() {
     dataMode = "raw";
     closeParamsEditor('body');
@@ -815,12 +815,7 @@ function showRawEditor() {
     addBodyListeners();
 }
 
-function fileSelected() {
-    var file = document.getElementById('bodyFile').files[0];
-    //Do something when the file is selected
-}
-
-//Headesrs list from Wikipedia http://en.wikipedia.org/wiki/List_of_HTTP_header_fields
+//Headers list from Wikipedia http://en.wikipedia.org/wiki/List_of_HTTP_header_fields
 function addHeaderAutoComplete() {
     var availableHeaders = [
         //Standard headers
@@ -860,7 +855,7 @@ function addHeaderAutoComplete() {
         "DNT"
     ];
 
-    $( "#headers-ParamsFields .key" ).autocomplete({
+    $("#headers-ParamsFields .key").autocomplete({
         source: availableHeaders,
         delay: 50
     });
@@ -873,13 +868,13 @@ function setResponseFormat(format) {
     var val = $('#codeData').html();
     var isFormatted = $('#codeData').attr('data-formatted');
 
-    if(format === 'javascript' && isFormatted === 'false') {
+    if (format === 'javascript' && isFormatted === 'false') {
         var jsonObject = JSON.parse(val);
         var text = JSON.stringify(jsonObject, null, '\t');
         $('#codeData').html(text);
         $('#codeData').attr('data-formatted', 'true');
     }
-    
+
     $.chili.options.automatic.active = true;
     var $chili = $('#codeData').chili();
 }
