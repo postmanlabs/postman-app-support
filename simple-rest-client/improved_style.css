@@ -398,3 +398,10 @@ li .right {
 * html .clearfix {
     zoom: 1;
 }
+
+
+#langFormat {
+    position: absolute;
+    margin-top: -20px;
+    margin-left: 100px;
+}

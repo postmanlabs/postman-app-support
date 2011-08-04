@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html>
-<head>
+<html><head>
     <meta charset="utf-8"/>
     <title>POSTMan for Google Chrome</title>
     <link rel="stylesheet" type="text/css" href="improved_style.css"/>
+    <link rel="stylesheet" type="text/css" href="css/ui-lightness/jquery-ui-1.8.14.custom.css"/>
     <link rel="stylesheet" type="text/css" href="css/ui-lightness/jquery-ui-1.8.14.custom.css"/>
     <script type="text/javascript" src="jquery.min.js"></script>
     <script type="text/javascript">
@@ -108,8 +108,6 @@
                 <div class="buttonLayout">
                     <a href="javascript:void(0);" class="editTextButton" onclick="showBodyParamsEditor()"
                        id="bodyParamsButton" style="margin-left:5px">Params</a>
-                    <a href="javascript:void(0);" class="editTextButton" onclick="showFileSelector()"
-                       id="bodyFileButton" style="margin-left:5px">File</a>
                     <a href="javascript:void(0);" class="editTextButton" onclick="showRawEditor()"
                        id="bodyRawButton" style="margin-left:5px">Raw body</a>
                 </div>
@@ -162,9 +160,16 @@
 
                 <div id="respData" style="display:none">
                     <label for="responseData" class="labelText">Data</label>
+                    <div id="langFormat">
+                        <label for="language" class="labelText">Select format</label>
+                        <select id="language">
+                            <option value="html">HTML/XML</option>
+                            <option value="javascript">JSON</option>
+                        </select>
+                    </div>
 
                     <div name="responseData" id="responseData" contenteditable="true">
-                        <pre><code name="codeData" id="codeData" class="chili-lang-html">&nbsp;</code></pre>
+                        <pre><code name="codeData" id="codeData" class="chili-lang-html" data-formatted="false">&nbsp;</code></pre>
                     </div>
                 </div>
             </div>

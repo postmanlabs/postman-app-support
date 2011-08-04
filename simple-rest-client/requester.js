@@ -211,6 +211,7 @@ function readResponse() {
             requestEndTime = new Date().getTime();
             var diff = requestEndTime - requestStartTime;
             $('#ptime span').html(diff + " ms");
+
             $.chili.options.automatic.active = true;
             $.chili.options.decoration.lineNumbers = false;
             var $chili = $('#codeData').chili();
@@ -279,6 +280,11 @@ function init() {
 
     //Initialize file input handler
 //    $("bodyFile").addEventListener("change", handleFileSelect, false);
+
+    $('#langFormat').change(function() {
+        var format = $('#language').val();
+        setResponseFormat(format);
+    })
 }
 
 function requestExists(requestItem) {
@@ -842,4 +848,22 @@ function addHeaderAutoComplete() {
         source: availableHeaders,
         delay: 50
     });
+}
+
+function setResponseFormat(format) {
+    $('#codeData').removeClass();
+    $('#codeData').addClass('chili-lang-' + format);
+
+    var val = $('#codeData').html();
+    var isFormatted = $('#codeData').attr('data-formatted');
+
+    if(format === 'javascript' && isFormatted === 'false') {
+        var jsonObject = JSON.parse(val);
+        var text = JSON.stringify(jsonObject, null, '\t');
+        $('#codeData').html(text);
+        $('#codeData').attr('data-formatted', 'true');
+    }
+    
+    $.chili.options.automatic.active = true;
+    var $chili = $('#codeData').chili();
 }
