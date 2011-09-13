@@ -95,7 +95,6 @@ function clearFields() {
     $("#codeData").text("");
 
     $("#responseHeaders").height(20);
-    $("#headers").height(20);
     $("#postputdata").height(20);
 
     $("#respHeaders").css("display", "none");
@@ -118,7 +117,8 @@ function handleFileSelect(evt) {
 }
 
 function sendRequest() {
-    clearFields();
+    console.log("Send request called");
+
     if ($("#url").val() != "") {
         var xhr = new XMLHttpRequest();
         xhr.onreadystatechange = readResponse;
@@ -198,6 +198,8 @@ function sendRequest() {
         $("#loader").css("display", "none");
         $("#responsePrint").css("display", "");
     }
+
+    clearFields();
 }
 
 function readResponse() {
@@ -237,15 +239,11 @@ function readResponse() {
             //Set chili options according to the Content-Type header
             var contentType = this.getResponseHeader("Content-Type");
 
-            var contentTypeParts = contentType.split("/");
             var type = 'html';
             var format = 'html';
 
-            if (contentTypeParts.length > 1) {
-                type = contentTypeParts[1];
-            }
-
-            if (type == 'json') {
+            if (contentType.search(/json/i) != -1) {
+                type = 'json';
                 format = 'javascript';
             }
 
@@ -433,6 +431,9 @@ function loadRequest(id) {
     $('#urlParamsEditor').css("display", "none");
     $('#response').css("display", "none");
 
+    closeParamsEditor("body");
+    $('#body').val("")
+
     if (method === 'post' || method === 'put') {
         $('#data').val(requests[i].data);
         $('#data').css("display", "block");
@@ -444,7 +445,6 @@ function loadRequest(id) {
     }
 
     closeParamsEditor("url");
-
     clearResponse();
 }
 
@@ -562,6 +562,7 @@ function setParamsFromEditor(section) {
 function showParamsEditor(section, a1) {
     a1 = a1 || a1;
     var data = $('#' + section).val();
+    console.log(data);
     var params;
     if (section === 'headers') {
         params = getHeaderVars(data);
@@ -599,6 +600,7 @@ function showParamsEditor(section, a1) {
         editorHtml += "<select><option value= \"text\">Text</option>";
         editorHtml += "<option value= \"file\">File</option></select>";
     }
+
     editorHtml += "</div>";
 
     $('#' + section + '-ParamsFields').html(editorHtml);
@@ -652,23 +654,23 @@ function changeParamInEditor(target) {
 }
 
 function addHeaderListeners() {
-    $('#headers').focus(function() {
-        $('#headers').css("height", "135px");
-    });
-
-    $('#headers').blur(function() {
-        $('#headers').css("height", "35px");
-    });
+//    $('#headers').focus(function() {
+//        $('#headers').css("height", "135px");
+//    });
+//
+//    $('#headers').blur(function() {
+//        $('#headers').css("height", "35px");
+//    });
 }
 
 function addBodyListeners() {
-    $('#body').focus(function() {
-        $('#body').css("height", "135px");
-    });
-
-    $('#body').blur(function() {
-        $('#body').css("height", "35px");
-    });
+//    $('#body').focus(function() {
+//        $('#body').css("height", "135px");
+//    });
+//
+//    $('#body').blur(function() {
+//        $('#body').css("height", "35px");
+//    });
 }
 
 function removeBodyListeners() {
