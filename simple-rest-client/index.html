@@ -1,10 +1,25 @@
 <!DOCTYPE html>
-<html><head>
+<html>
+<head>
     <meta charset="utf-8"/>
     <title>POSTMan for Google Chrome</title>
     <link rel="stylesheet" type="text/css" href="improved_style.css"/>
     <link rel="stylesheet" type="text/css" href="css/ui-lightness/jquery-ui-1.8.14.custom.css"/>
-    <link rel="stylesheet" type="text/css" href="css/ui-lightness/jquery-ui-1.8.14.custom.css"/>
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"/>
+    <script>
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-26564585-1']);
+        _gaq.push(['_trackPageview']);
+
+        (function() {
+            var ga = document.createElement('script');
+            ga.type = 'text/javascript';
+            ga.async = true;
+            ga.src = 'https://ssl.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(ga, s);
+        })();
+    </script>
     <script type="text/javascript" src="jquery.min.js"></script>
     <script type="text/javascript">
         //<![CDATA[
@@ -31,101 +46,107 @@
         <span class="smallheadertext"> An HTTP client to test web services</span>
     </div>
     <div id="credits">
-        By <a href="http://twitter.com/a85" target="_blank">@a85</a> and <a href="http://twitter.com/slarti" target="_blank">@slarti</a>
+        By <a href="http://twitter.com/a85" target="_blank">@a85</a> and <a href="http://twitter.com/slarti"
+                                                                            target="_blank">@slarti</a>
     </div>
 </header>
-<div id="container">
-    <div id="main">
+<div id="container" class="container-fluid">
+    <div id="history" class="sidebar">
+        <div id="historyContainer">
+            <ul class="pills">
+                <li class="active"><a href="#">History</a></li>
+                <li><a href="#">Collections</a></li>
+            </ul>
+            <ul id="historyItems">
+            </ul>
+        </div>
+    </div>
+    <div id="main" class="content">
         <section id="request">
-            <fieldset>
-                <legend class="headerText"><img src="images/request.jpg" alt="REQUEST"/></legend>
-                <div id="purl">
-                    <label for="url" class="labelText">URL</label>
-                    <span class="buttonLayout"><a href="javascript:void(0);" class="editTextButton"
-                                                  onclick="showParamsEditor('url')">Edit params</a></span>
+            <h2><img src="images/request.jpg" alt="REQUEST" height="15px"/></h2>
 
-                    <p>
+            <div id="requestUrl">
+                <div class="row" style="height: 50px;">
+                    <div class="span10">
                         <input type="text" name="url" id="url" tabindex="1" class="inputText">
-                    </p>
-                </div>
-
-                <div id="url-ParamsEditor" class="paramsEditor">
-                    <h4>Edit Params</h4>
-                    <div id="url-ParamsFields" class="editorFields"></div>
-                    <div id="url-ParamsEditorActions">
-                        <input type="button" id="cancelUrlParamsButton"
-                               name="closeUrlParams"
-                               value="Close"
-                               placeholder="URL..."
-                               onclick="closeParamsEditor('url')"/>
+                    </div>
+                    <div class="span2">
+                        <span class="buttonLayout">
+                            <a href="javascript:void(0);" class="btn small"
+                               onclick="showParamsEditor('url')">Edit params</a></span>
                     </div>
                 </div>
+            </div>
 
-                <div id="methods">
-                    <label class="labelText">Method</label>
-
-                    <p>
-                        <label class="labelvert" for="get"><input class="radio" type="radio" checked="" value="get"
-                                                                  name="method" id="get" tabindex="2"> GET</label>
-                        <label class="labelvert" for="post"><input class="radio" type="radio" value="post" name="method"
-                                                                   id="post" tabindex="2"> POST</label>
-                        <label class="labelvert" for="put"><input class="radio" type="radio" value="put" name="method" id="put"
-                                                                  tabindex="2"> PUT</label>
-                        <label class="labelvert" for="delete"><input class="radio" type="radio" value="delete" name="method"
-                                                                     id="delete" tabindex="2"> DELETE</label>
-                        <label class="labelvert" for="head"><input class="radio" type="radio" value="head" name="method"
-                                                                   id="head" tabindex="2"> HEAD</label>
-                        <label class="labelvert" for="options"><input class="radio" type="radio" value="options" name="method"
-                                                                      id="options" tabindex="2"> OPTIONS</label>
-                    </p>
+            <div id="url-ParamsEditor" class="paramsEditor">                
+                <div id="url-ParamsFields" class="editorFields"></div>
+                <div id="url-ParamsEditorActions" class="actions">
+                    <input type="button" id="cancelUrlParamsButton"
+                           class="btn primary medium"
+                           name="closeUrlParams"
+                           value="Save and close"
+                           placeholder="URL..."
+                           onclick="closeParamsEditor('url')"/>
                 </div>
+            </div>
 
-                <div id="pheaders">
-                    <label for="headers" class="labelText">Headers</label>
+            <div id="methods" class="clearfix">
+                <ul class="pills small" style="margin-bottom: 10px;">
+                    <li class="active"><a href="#" data-method="GET">GET</a></li>
+                    <li><a href="#" data-method="POST">POST</a></li>
+                    <li><a href="#" data-method="PUT">PUT</a></li>
+                    <li><a href="#" data-method="DELETE">DELETE</a></li>
+                    <li><a href="#" data-method="HEAD">HEAD</a></li>
+                    <li><a href="#" data-method="OPTIONS">OPTIONS</a></li>
+                </ul>
+            </div>
 
-                    <div class="buttonLayout">
-                        <a href="javascript:void(0);" class="editTextButton" onclick="showParamsEditor('headers')"
-                           style="margin-left:5px">Edit headers</a>
-                    </div>
-                    <p>
-                        <textarea name="headers" id="headers" tabindex="3" class="inputText"></textarea>
-                    </p>
-                </div>
-
-                <div id="headers-ParamsEditor" class="paramsEditor">
-                    <div id="headers-ParamsFields" class="editorFields"></div>
-                    <div id="headers-ParamsEditorActions">
-                        <input type="button" id="cancelHeaderParamsButton" name="closeBodyParams" value="Close"
-                               onclick="closeParamsEditor('headers')"/>
+            <div id="pheaders" class="clearfix">
+                <div class="row" style="height: 20px;">
+                    <div class="span4" style="margin-left: 15px;">
+                        <div class="buttonLayout">
+                            <a href="javascript:void(0);" class="btn small" onclick="showParamsEditor('headers')"
+                               style="margin-left:5px">Edit headers</a>
+                        </div>
                     </div>
                 </div>
+                <p>
+                    <textarea name="headers" id="headers" tabindex="3" class="inputText"></textarea>
+                </p>
+            </div>
 
-                <div id="data">
-                    <label for="body" class="labelText">Data</label>
-
-                    <div class="buttonLayout">
-                        <a href="javascript:void(0);" class="editTextButton" onclick="showBodyParamsEditor()"
-                           id="bodyParamsButton" style="margin-left:5px">Params</a>
-                        <a href="javascript:void(0);" class="editTextButton" onclick="showRawEditor()"
-                           id="bodyRawButton" style="margin-left:5px">Raw body</a>
-                    </div>
-                    <div id="bodyDataContainer">
-                        <textarea name="data" id="body" tabindex="4" class="inputText"></textarea>
-                    </div>
+            <div id="headers-ParamsEditor" class="paramsEditor">
+                <div id="headers-ParamsFields" class="editorFields"></div>
+                <div id="headers-ParamsEditorActions" class="actions">
+                    <input type="button" id="cancelHeaderParamsButton" name="closeBodyParams" value="Close"
+                           class="btn primary medium"
+                           onclick="closeParamsEditor('headers')"/>
                 </div>
+            </div>
 
+            <div id="data">
+                <label for="body" class="labelText">Data</label>
 
-                <div id="body-ParamsEditor" class="paramsEditor">
-                    <div id="body-ParamsFields" class="editorFields"></div>
+                <div class="buttonLayout">
+                    <a href="javascript:void(0);" class="editTextButton" onclick="showBodyParamsEditor()"
+                       id="bodyParamsButton" style="margin-left:5px">Params</a>
+                    <a href="javascript:void(0);" class="editTextButton" onclick="showRawEditor()"
+                       id="bodyRawButton" style="margin-left:5px">Raw body</a>
                 </div>
-
-                <div id="bluebuttonlayout">
-                    <p>
-                        <input class="blueButton" type="button" style="float:right" value="Send Request" id="submit"
-                               tabindex="5">
-                    </p>
+                <div id="bodyDataContainer">
+                    <textarea name="data" id="body" tabindex="4" class="inputText"></textarea>
                 </div>
-            </fieldset>
+            </div>
+
+
+            <div id="body-ParamsEditor" class="paramsEditor">
+                <div id="body-ParamsFields" class="editorFields"></div>
+            </div>
+
+            <div id="bluebuttonlayout" class="clearfix">
+                <input class="blueButton" type="button" value="Send Request" id="submit"
+                       tabindex="5">
+            </div>
         </section>
 
         <div id="notification">
@@ -133,7 +154,7 @@
         </div>
         <section id="response">
             <fieldset>
-                <legend class="headerText"><img src="images/response.jpg" alt="RESPONSE"/></legend>
+                <h2><img src="images/response.jpg" alt="RESPONSE"/></h2>
 
                 <div id="responsePrint">
                     <div id="ptime">
@@ -150,7 +171,8 @@
                         <label for="responseHeaders" class="labelText">Headers</label>
 
                         <p>
-                            <textarea name="responseHeaders" id="responseHeaders" tabindex="6" class="inputText"></textarea>
+                            <textarea name="responseHeaders" id="responseHeaders" tabindex="6"
+                                      class="inputText"></textarea>
                         </p>
                     </div>
 
@@ -161,6 +183,7 @@
 
                     <div id="respData" style="display:none">
                         <label for="responseData" class="labelText">Data</label>
+
                         <div id="langFormat">
                             <label for="language" class="labelText">Select format</label>
                             <select id="language">
@@ -169,24 +192,14 @@
                             </select>
                         </div>
                         <div name="responseData" id="responseData" contenteditable="true">
-                            <pre><code name="codeData" id="codeData" class="chili-lang-html" data-formatted="false">&nbsp;</code></pre>
+                            <pre><code name="codeData" id="codeData" class="chili-lang-html" data-formatted="false">
+                                &nbsp;</code></pre>
                         </div>
                     </div>
                 </div>
             </fieldset>
         </section>
     </div>
-    <section id="history">
-        <div id="historyContainer">
-            <label class="headerText" style="padding-left:10px"> <img src="images/history.jpg" alt="History"/></label>
-            <a href="javascript:void(0);" onclick="deleteAllRequests()" class="editTextButton" style="float:right;margin-right:10px">
-                Delete all
-            </a>
-            <ul id="historyItems">
-            </ul>
-        </div>
-    </section>
-    <div class="clearfix"></div>
 </div>
 </body>
 <script text="text/javascript">

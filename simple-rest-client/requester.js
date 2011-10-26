@@ -73,6 +73,7 @@ var bodyFileData;
 var dataMode = "params";
 var requestStartTime = 0;
 var requestEndTime = 0;
+var requestMethod = 'GET';
 var dataInputType = "text";
 
 function grow(id) {
@@ -116,6 +117,10 @@ function handleFileSelect(evt) {
     reader.readAsText(f);
 }
 
+function getRequestMethod() {
+    return requestMethod;
+}
+
 function sendRequest() {
     console.log("Send request called");
 
@@ -123,14 +128,14 @@ function sendRequest() {
         var xhr = new XMLHttpRequest();
         xhr.onreadystatechange = readResponse;
         try {
-            xhr.open($("input[type=radio]:checked").val(), $("#url").val(), true);
-
             var headers = $("#headers").val();
 
             var url = $("#url").val();
-            var method = $("input[type=radio]:checked").val();
+            var method = getRequestMethod();
             var data = "";
             var bodyData = "";
+
+            xhr.open(method, $("#url").val(), true);
 
             headers = headers.split("\n");
             for (var i = 0; i < headers.length; i++) {
@@ -272,12 +277,6 @@ function toggleData() {
 }
 
 function init() {
-    //$("#url").width($("#purl").width() - 80 - 30);
-    //$("#headers").width($("#pheaders").width() - 80 - 30);
-    //$("#body").width($("#data").width() - 80 - 30);
-
-    $("#responseHeaders").width($("#main").width() - 80);
-    $("#responseData").width($("#main").width() - 80);
 
     $("#response").css("display", "none");
     $("#loader").css("display", "");
@@ -321,8 +320,8 @@ function requestExists(requestItem) {
     for (var i = 0; i < requests.length; i++) {
         var r = requests[i];
         if (r.url.length != requestItem.url.length ||
-                r.headers.length != requestItem.headers.length ||
-                r.method != requestItem.method) {
+            r.headers.length != requestItem.headers.length ||
+            r.method != requestItem.method) {
             index = -1;
         }
         else {
@@ -574,6 +573,8 @@ function showParamsEditor(section, a1) {
     var editorHtml = "";
     var i = 0;
 
+    //@todo Replace this with jquery templates
+
     for (var index in params) {
         if (params[index] == undefined) continue;
         editorHtml += "<div>";
@@ -654,23 +655,9 @@ function changeParamInEditor(target) {
 }
 
 function addHeaderListeners() {
-//    $('#headers').focus(function() {
-//        $('#headers').css("height", "135px");
-//    });
-//
-//    $('#headers').blur(function() {
-//        $('#headers').css("height", "35px");
-//    });
 }
 
 function addBodyListeners() {
-//    $('#body').focus(function() {
-//        $('#body').css("height", "135px");
-//    });
-//
-//    $('#body').blur(function() {
-//        $('#body').css("height", "35px");
-//    });
 }
 
 function removeBodyListeners() {
@@ -679,8 +666,6 @@ function removeBodyListeners() {
 }
 
 function setContainerHeights() {
-    $("#responseHeaders").width($("#main").width() - 80);
-    $("#responseData").width($("#main").width() - 80);
 }
 
 $(document).ready(function() {
@@ -689,6 +674,12 @@ $(document).ready(function() {
     getAllSavedRequests();
     addHeaderListeners();
     setContainerHeights();
+
+    $('#methods ul li a').click(function() {
+        $('#methods ul li').removeClass('active');
+        $(this).parent().addClass('active');
+        requestMethod = $(this).attr('data-method');
+    });
 
     $(window).resize(function() {
         setContainerHeights();

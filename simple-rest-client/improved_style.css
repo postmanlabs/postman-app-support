@@ -74,36 +74,20 @@ fieldset {
     border-color: #cce0e9;
     border-radius: 10px;
     border-style: solid;
-    border-width: 3px;
-    min-height: 30px;
+    border-width: 2px;
+    min-height: 18px;
     width: 100% !important;
     padding: 5px;
-}
-
-#main {
-    background: #fff;
-    float: left;
-    width: 65%;
-    min-height: 100%;
-    padding-top: 10px;
 }
 
 #container {
     background: #eaeaea;
     height: 100%;
 }
-#request,
-#response {
-    padding-left: 10px;
-    width: 95%;
-}
 
-#history {
-    float: left;
-    padding-left: 0px;
-    width: 35%;
-    padding-top: 10px;
-    background-color: #eaeaea;
+#request h4 {
+    padding-bottom: 5px;
+    text-transform: uppercase;
 }
 
 .headerText {
@@ -113,11 +97,11 @@ fieldset {
 
 #historyItems {
     list-style: none;
-    padding-left: 10px;
 }
 
 #purl {
     margin-left: 0px;
+    margin-top: 5px;
 }
 
 #url-ParamsEditor,
@@ -136,7 +120,6 @@ fieldset {
 }
 
 .buttonLayout {
-    float: right;
 }
 
 .blueButton {
@@ -159,6 +142,7 @@ fieldset {
 #bluebuttonlayout {
     border-top: thin solid #CCC;
     margin-top: 14px;
+    padding-top: 20px;
 }
 
 .infoText {
@@ -201,7 +185,6 @@ fieldset {
 
 #historyContainer {
     padding-top: 10px;
-    padding-left: 10px;
 }
 
 #responseData {
@@ -232,10 +215,9 @@ fieldset {
     font-size: 12px;
 }
 
-#headers, #body {
-    height: 90px;
+#historyItems {
+    margin-left: -10px;
 }
-
 #historyItems li {
     margin-right: 7px;
     padding: 8px;
@@ -272,13 +254,17 @@ fieldset {
     position: absolute;
     font-size: 10px;
     font-weight: bold;
-    margin-left: -55px;
+    margin-left: 300px;
     margin-top: -5px;
     display: none;
 }
 
 #pstatus {
     margin-top: 5px;
+}
+
+#pheaders {
+    margin-top: 20px;
 }
 
 .paramsEditor {
@@ -429,4 +415,64 @@ li .right {
     position: absolute;
     margin-top: -20px;
     margin-left: 100px;
+}
+
+#main {
+    background:  #fff;
+    margin-left: 300px;
+    height: 100%;
+}
+
+#history {
+    max-width: 300px;
+    width: 300px;
+}
+
+#container {
+    padding-right: 0px;
+    padding-left: 15px;
+}
+
+#request {
+    padding:  20px;
+    padding-top: 10px;
+}
+
+#requestUrl {
+    margin-top: 10px;
+}
+
+#methods {
+    height: 40px;
+}
+
+#methods ul {
+    list-style: none;
+    padding:  0;
+    margin:  0;
+}
+#methods ul li {
+    float: left;
+    margin-right: 20px;
+}
+
+#headers {
+    display: none;
+}
+
+#pheaders {
+    height: 40px;
+}
+
+.editorFields input {
+    margin:  2px;
+}
+
+#historyContainer ul {
+    margin-left: -5px;
+    margin-bottom: 5px;
+}
+
+#historyContainer .pills .active .a {
+    background-color:  #333;
 }

@@ -67,10 +67,7 @@ label {
 }
 
 .labelvert {
-    margin: 0em 0em 1em 0em;
-    padding: 0.1em 1em 0em 0em;
-    width: auto;
-    font-weight: normal;
+    text-align: left;
 }
 
 input[type=text], textarea {
@@ -135,3 +132,4 @@ textarea {
 #bodyParamsEditor {
     display: none;
 }
+
