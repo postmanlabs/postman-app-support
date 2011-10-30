@@ -118,10 +118,6 @@ fieldset {
     font-size: 95%;
     font-weight: bold;
 }
-
-.buttonLayout {
-}
-
 .blueButton {
     background-color: #e2f0f5;
     background-image: -webkit-linear-gradient(#e5f1f6, #cfe6ee);
@@ -188,7 +184,7 @@ fieldset {
 }
 
 #responseData {
-
+    margin-top: 20px;
 }
 
 #responseData pre {
@@ -307,12 +303,8 @@ fieldset {
     opacity: 0.5;
 }
 
-#bodyRawButton {
-    opacity: 0.5;
-}
-
 #bodyDataContainer {
-    margin-top: 20px;
+    margin-top: 5px;
 }
 
 #bodyDataContainer input {
@@ -347,11 +339,10 @@ fieldset {
     padding: 5px;
     padding-top: 10px;
     border-radius: 5px;
-    width: 120px;
+    width: 200px;
+    height: 50px;
     position: absolute;
-    text-align: center;
-    margin-left: 20px;
-    margin-top: -12px;
+    text-align: center;        
     font-size: 16px;
     font-weight: bold;
     color: #afafaf;
@@ -433,9 +424,11 @@ li .right {
     padding-left: 15px;
 }
 
-#request {
+#request,
+#response {
     padding:  20px;
     padding-top: 10px;
+    padding-bottom: 0px;
 }
 
 #requestUrl {
@@ -475,4 +468,13 @@ li .right {
 
 #historyContainer .pills .active .a {
     background-color:  #333;
+}
+
+#respHeadersContent {
+    margin-top: 10px;
+    margin-bottom: 25px;
+}
+
+#codeData {
+    background-color: white;
 }

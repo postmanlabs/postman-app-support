@@ -78,7 +78,7 @@
                 </div>
             </div>
 
-            <div id="url-ParamsEditor" class="paramsEditor">                
+            <div id="url-ParamsEditor" class="paramsEditor">
                 <div id="url-ParamsFields" class="editorFields"></div>
                 <div id="url-ParamsEditorActions" class="actions">
                     <input type="button" id="cancelUrlParamsButton"
@@ -92,12 +92,18 @@
 
             <div id="methods" class="clearfix">
                 <ul class="pills small" style="margin-bottom: 10px;">
-                    <li class="active"><a href="#" data-method="GET">GET</a></li>
-                    <li><a href="#" data-method="POST">POST</a></li>
-                    <li><a href="#" data-method="PUT">PUT</a></li>
-                    <li><a href="#" data-method="DELETE">DELETE</a></li>
-                    <li><a href="#" data-method="HEAD">HEAD</a></li>
-                    <li><a href="#" data-method="OPTIONS">OPTIONS</a></li>
+                    <li class="active"><a id="method-get" href="javascript:void(0);" data-method="get"
+                                          onclick="showRequestMethodUi('GET');">GET</a></li>
+                    <li><a id="method-post" href="javascript:void(0);" data-method="post"
+                           onclick="showRequestMethodUi('POST');">POST</a></li>
+                    <li><a id="method-put" href="javascript:void(0);" data-method="put"
+                           onclick="showRequestMethodUi('PUT');">PUT</a></li>
+                    <li><a id="method-delete" href="javascript:void(0);" data-method="delete"
+                           onclick="showRequestMethodUi('DELETE');">DELETE</a></li>
+                    <li><a id="method-head" href="javascript:void(0);" data-method="head"
+                           onclick="showRequestMethodUi('HEAD');">HEAD</a></li>
+                    <li><a id="method-options" href="javascript:void(0);" data-method="options"
+                           onclick="showRequestMethodUi('OPTIONS');">OPTIONS</a></li>
                 </ul>
             </div>
 
@@ -118,21 +124,21 @@
             <div id="headers-ParamsEditor" class="paramsEditor">
                 <div id="headers-ParamsFields" class="editorFields"></div>
                 <div id="headers-ParamsEditorActions" class="actions">
-                    <input type="button" id="cancelHeaderParamsButton" name="closeBodyParams" value="Close"
+                    <input type="button" id="cancelHeaderParamsButton" name="closeBodyParams" value="Save and close"
                            class="btn primary medium"
                            onclick="closeParamsEditor('headers')"/>
                 </div>
             </div>
 
             <div id="data">
-                <label for="body" class="labelText">Data</label>
-
-                <div class="buttonLayout">
-                    <a href="javascript:void(0);" class="editTextButton" onclick="showBodyParamsEditor()"
-                       id="bodyParamsButton" style="margin-left:5px">Params</a>
-                    <a href="javascript:void(0);" class="editTextButton" onclick="showRawEditor()"
-                       id="bodyRawButton" style="margin-left:5px">Raw body</a>
-                </div>
+                <ul class="pills small" style="margin-bottom: 0px; height: 38px;">
+                    <li class="active">
+                        <a href="javascript:void(0);" onclick="showBodyParamsEditor()" id="data-params">Params</a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0);" onclick="showRawEditor()" id="data-raw">Raw body</a>
+                    </li>
+                </ul>
                 <div id="bodyDataContainer">
                     <textarea name="data" id="body" tabindex="4" class="inputText"></textarea>
                 </div>
@@ -143,49 +149,45 @@
                 <div id="body-ParamsFields" class="editorFields"></div>
             </div>
 
-            <div id="bluebuttonlayout" class="clearfix">
-                <input class="blueButton" type="button" value="Send Request" id="submit"
-                       tabindex="5">
+            <div style="margin-top: 15px;">
+                <input class="btn info large" type="button" value="Send request" id="submit" tabindex="5">
             </div>
         </section>
 
-        <div id="notification">
-            <span>Loading</span><img src="images/loader.gif"/>
-        </div>
         <section id="response">
             <fieldset>
-                <h2><img src="images/response.jpg" alt="RESPONSE"/></h2>
+                <h2><img src="images/response.jpg" alt="RESPONSE" height="15px"/></h2>
 
                 <div id="responsePrint">
                     <div id="ptime">
-                        <label class="labelText">Time</label>
-                        <span>0 millisecs</span>
+                        <span class="labelText">Time</span>
+                        <span class="time">0 millisecs</span>
                     </div>
 
                     <div id="pstatus">
-                        <label class="labelText">Status</label>
+                        <span class="labelText">Status</span>
                         <span>200 OK</span>
                     </div>
 
                     <div id="respHeaders">
-                        <label for="responseHeaders" class="labelText">Headers</label>
+                        <span for="responseHeaders" class="labelText">Headers</span>
 
-                        <p>
+                        <div id="respHeadersContent">
                             <textarea name="responseHeaders" id="responseHeaders" tabindex="6"
                                       class="inputText"></textarea>
-                        </p>
+                        </div>
                     </div>
 
                     <p id="debugLinks" style="display: none;">
-                        <label for="debugLink" class="_msg_">debuglink</label>
+                        <span for="debugLink" class="_msg_">debuglink</span>
                         <a href="" id="debugLink"></a>
                     </p>
 
                     <div id="respData" style="display:none">
-                        <label for="responseData" class="labelText">Data</label>
+                        <span for="responseData" class="labelText">Data</span>
 
                         <div id="langFormat">
-                            <label for="language" class="labelText">Select format</label>
+                            <span for="language" class="labelText">Select format</span>
                             <select id="language">
                                 <option value="html">HTML/XML</option>
                                 <option value="javascript">JSON</option>

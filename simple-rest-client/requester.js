@@ -121,6 +121,10 @@ function getRequestMethod() {
     return requestMethod;
 }
 
+function setRequestMethod(m) {
+    requestMethod = m;
+}
+
 function sendRequest() {
     console.log("Send request called");
 
@@ -239,7 +243,7 @@ function readResponse() {
 
             requestEndTime = new Date().getTime();
             var diff = requestEndTime - requestStartTime;
-            $('#ptime span').html(diff + " ms");
+            $('#ptime span.time').html(diff + " ms");
 
             //Set chili options according to the Content-Type header
             var contentType = this.getResponseHeader("Content-Type");
@@ -266,12 +270,13 @@ function readResponse() {
     }
 }
 
-function toggleData() {
-    if (jQuery.inArray($("input[type=radio]:checked").val(), ["post", "put"]) > -1) {
+//Manages showing/hiding the PUT/POST additional UI
+function showRequestMethodUi(type) {
+    if (jQuery.inArray(type, ["POST", "PUT"]) > -1) {
         $("#data").css("display", "");
         showBodyParamsEditor();
     } else {
-        closeParamsEditor('body')
+        closeParamsEditor('body');
         $("#data").css("display", "none");
     }
 }
@@ -292,15 +297,6 @@ function init() {
     $("#submit").click(function() {
         sendRequest();
         return false;
-    });
-    $("#reset").click(function() {
-        location.reload();
-    });
-    $(".radio").change(function() {
-        toggleData();
-    });
-    $(".radio").focus(function() {
-        toggleData();
     });
 
     //Initialize the localStarage requsts array if not present
@@ -421,11 +417,12 @@ function loadRequest(id) {
         }
     }
 
-    var method = requests[i].method;
+    var method = requests[i].method.toLowerCase();
 
     $('#url').val(requests[i].url);
-    $('input[name="method"]').attr("checked", false);
-    $('input[id="' + method + '"]').attr("checked", true);
+
+    //Set proper class for method and the variable
+
     $('#headers').val(requests[i].headers);
     $('#urlParamsEditor').css("display", "none");
     $('#response').css("display", "none");
@@ -443,6 +440,12 @@ function loadRequest(id) {
         closeParamsEditor("body");
     }
 
+    $('#methods ul li').removeClass('active');
+    $('#method-' + method).parent().addClass('active');
+    requestMethod = method;
+
+    console.log(method);
+    
     closeParamsEditor("url");
     clearResponse();
 }
@@ -780,16 +783,18 @@ function addEditorListeners(section) {
     }
 }
 
+function setCurrentDataFormat(method) {
+    $('#data ul li').removeClass('active');
+    $('#data-' + method).parent().addClass('active');
+}
 function showBodyParamsEditor() {
     dataMode = "params";
     showParamsEditor('body');
-    $('#bodyParamsButton').css('opacity', 1);
-    $('#bodyFileButton').css('opacity', 0.5);
-    $('#bodyRawButton').css('opacity', 0.5);
 
     var containerHtml = '<textarea name="data" id="body" tabindex="4" class="inputText"></textarea>';
     $('#bodyDataContainer').html(containerHtml);
 
+    setCurrentDataFormat('params');
     removeBodyListeners();
     addBodyListeners();
 }
@@ -797,10 +802,8 @@ function showBodyParamsEditor() {
 function showRawEditor() {
     dataMode = "raw";
     closeParamsEditor('body');
-    $('#bodyParamsButton').css('opacity', 0.5);
-    $('#bodyFileButton').css('opacity', 0.5);
-    $('#bodyRawButton').css('opacity', 1);
 
+    setCurrentDataFormat('raw');
     var containerHtml = '<textarea name="data" id="body" tabindex="4" class="inputText"></textarea>';
     $('#bodyDataContainer').html(containerHtml);
 
