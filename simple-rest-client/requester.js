@@ -76,14 +76,22 @@ var requestEndTime = 0;
 var requestMethod = 'GET';
 var dataInputType = "text";
 
-function grow(id) {
-    var textarea = document.getElementById(id);
-    var newHeight = textarea.scrollHeight;
-    var currentHeight = textarea.clientHeight;
-    if (newHeight == 0 || $("#" + id).val() == "") {
-        newHeight = 20;
-    }
-    textarea.style.height = newHeight + 'px';
+var postman = {};
+postman.indexedDB = {};
+postman.indexedDB.db = null;
+
+// IndexedDB implementations still use API prefixes
+var indexedDB = window.indexedDB || // Use the standard DB API
+    window.mozIndexedDB || // Or Firefox's early version of it
+    window.webkitIndexedDB;            // Or Chrome's early version
+// Firefox does not prefix these two:
+var IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction;
+var IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange;
+
+function addTodo() {
+    var todo = document.getElementById('todo');
+    postman.indexedDB.addTodo(todo.value);
+    todo.value = '';
 }
 
 function clearFields() {
@@ -187,7 +195,7 @@ function sendRequest() {
 
             requestStartTime = new Date().getTime();
             saveRequest(url, method, $("#headers").val(), data);
-            $('#notification').fadeIn();
+            $('#submitRequest').button("loading");
         }
         catch(e) {
             console.log(e);
@@ -212,7 +220,7 @@ function sendRequest() {
 }
 
 function readResponse() {
-    $('#notification').fadeOut();
+    $('#submitRequest').button("reset");
 
     $('#responseStatus').css("display", "block");
     $('#responseHeaders').css("display", "block");
@@ -238,8 +246,6 @@ function readResponse() {
 
             $("#loader").css("display", "none");
             $("#responsePrint").css("display", "");
-
-            grow('responseHeaders');
 
             requestEndTime = new Date().getTime();
             var diff = requestEndTime - requestStartTime;
@@ -294,9 +300,8 @@ function init() {
     $("#respHeaders").css("display", "none");
     $("#respData").css("display", "none");
 
-    $("#submit").click(function() {
+    $("#submitRequest").click(function() {
         sendRequest();
-        return false;
     });
 
     //Initialize the localStarage requsts array if not present
@@ -445,7 +450,7 @@ function loadRequest(id) {
     requestMethod = method;
 
     console.log(method);
-    
+
     closeParamsEditor("url");
     clearResponse();
 }
@@ -687,7 +692,6 @@ $(document).ready(function() {
     $(window).resize(function() {
         setContainerHeights();
     });
-
 });
 
 

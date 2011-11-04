@@ -80,10 +80,6 @@ fieldset {
     padding: 5px;
 }
 
-#container {
-    background: #eaeaea;
-    height: 100%;
-}
 
 #request h4 {
     padding-bottom: 5px;
@@ -201,6 +197,10 @@ fieldset {
 
 #respHeaders {
     margin-top: 20px;
+}
+
+#respHeaders textarea {
+    min-height: 125px;
 }
 
 #responseHeaders,
@@ -381,6 +381,8 @@ fieldset {
 
 li .left {
     float: left;
+    max-width: 240px;
+    overflow: hidden;
 }
 
 li .right {
@@ -422,6 +424,8 @@ li .right {
 #container {
     padding-right: 0px;
     padding-left: 15px;
+    background: #eaeaea;
+    height: 100%;
 }
 
 #request,
