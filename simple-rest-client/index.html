@@ -7,18 +7,18 @@
     <link rel="stylesheet" type="text/css" href="css/ui-lightness/jquery-ui-1.8.14.custom.css"/>
     <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"/>
     <script>
-        var _gaq = _gaq || [];
-        _gaq.push(['_setAccount', 'UA-26564585-1']);
-        _gaq.push(['_trackPageview']);
-
-        (function() {
-            var ga = document.createElement('script');
-            ga.type = 'text/javascript';
-            ga.async = true;
-            ga.src = 'https://ssl.google-analytics.com/ga.js';
-            var s = document.getElementsByTagName('script')[0];
-            s.parentNode.insertBefore(ga, s);
-        })();
+        //        var _gaq = _gaq || [];
+        //        _gaq.push(['_setAccount', 'UA-26564585-1']);
+        //        _gaq.push(['_trackPageview']);
+        //
+        //        (function() {
+        //            var ga = document.createElement('script');
+        //            ga.type = 'text/javascript';
+        //            ga.async = true;
+        //            ga.src = 'https://ssl.google-analytics.com/ga.js';
+        //            var s = document.getElementsByTagName('script')[0];
+        //            s.parentNode.insertBefore(ga, s);
+        //        })();
     </script>
     <script type="text/javascript" src="jquery.min.js"></script>
     <script type="text/javascript">
@@ -47,166 +47,163 @@
     </div>
     <div id="credits">
         By <a href="http://twitter.com/a85" target="_blank">@a85</a> <a href="http://twitter.com/slarti"
-                                                                            target="_blank">@slarti</a> and
+                                                                        target="_blank">@slarti</a> and
         <a href="http://twitter.com/sobtiankit" target="_blank">@sobtiankit</a>
     </div>
 </header>
-<div id="container" class="container-fluid clearfix">
-    <div id="history" class="sidebar">
+<div id="container" class="container-fluid">
+    <div id="history" class="sidebar clearfix">
         <div id="historyContainer">
             <ul class="pills" data-tabs="tabs">
                 <li class="active"><a href="javascript:void(0);">History</a></li>
                 <li><a href="javascript:void(0);">Collections</a></li>
             </ul>
-            <ul id="historyItems">
+            <ul id="historyItems" class="clearfix">
             </ul>
         </div>
     </div>
-    <div id="main" class="content">
-        <section id="request">
-            <h2><img src="images/request.jpg" alt="REQUEST" height="15px"/></h2>
+    <div id="main" class="clearfix content">
+        <div id="main-scroller">
+            <section id="request">
+                <h2><img src="images/request.jpg" alt="REQUEST" height="15px"/></h2>
 
-            <div id="requestUrl">
-                <div class="row" style="height: 50px;">
-                    <div class="span10">
-                        <input type="text" name="url" id="url" tabindex="1" class="inputText">
-                    </div>
-                    <div class="span2">
+                <div id="requestUrl">
+                    <div class="row" style="height: 50px;">
+                        <div class="span10">
+                            <input type="text" name="url" id="url" tabindex="1" class="inputText" placeholder="URL">
+                        </div>
+                        <div class="span2">
                         <span class="buttonLayout">
                             <a href="javascript:void(0);" class="btn small"
                                onclick="showParamsEditor('url')">Edit params</a></span>
-                    </div>
-                </div>
-            </div>
-
-            <div id="url-ParamsEditor" class="paramsEditor">
-                <div id="url-ParamsFields" class="editorFields"></div>
-                <div id="url-ParamsEditorActions" class="actions">
-                    <input type="button" id="cancelUrlParamsButton"
-                           class="btn primary medium"
-                           name="closeUrlParams"
-                           value="Save and close"
-                           placeholder="URL..."
-                           onclick="closeParamsEditor('url')"/>
-                </div>
-            </div>
-
-            <div id="methods" class="clearfix">
-                <ul class="pills small" style="margin-bottom: 10px;">
-                    <li class="active"><a id="method-get" href="javascript:void(0);" data-method="get"
-                                          onclick="showRequestMethodUi('GET');">GET</a></li>
-                    <li><a id="method-post" href="javascript:void(0);" data-method="post"
-                           onclick="showRequestMethodUi('POST');">POST</a></li>
-                    <li><a id="method-put" href="javascript:void(0);" data-method="put"
-                           onclick="showRequestMethodUi('PUT');">PUT</a></li>
-                    <li><a id="method-delete" href="javascript:void(0);" data-method="delete"
-                           onclick="showRequestMethodUi('DELETE');">DELETE</a></li>
-                    <li><a id="method-head" href="javascript:void(0);" data-method="head"
-                           onclick="showRequestMethodUi('HEAD');">HEAD</a></li>
-                    <li><a id="method-options" href="javascript:void(0);" data-method="options"
-                           onclick="showRequestMethodUi('OPTIONS');">OPTIONS</a></li>
-                </ul>
-            </div>
-
-            <div id="pheaders" class="clearfix">
-                <div class="row" style="height: 20px;">
-                    <div class="span4" style="margin-left: 15px;">
-                        <div class="buttonLayout">
-                            <a href="javascript:void(0);" class="btn small" onclick="showParamsEditor('headers')"
-                               style="margin-left:5px">Edit headers</a>
                         </div>
                     </div>
                 </div>
-                <p>
-                    <textarea name="headers" id="headers" tabindex="3" class="inputText"></textarea>
-                </p>
-            </div>
 
-            <div id="headers-ParamsEditor" class="paramsEditor">
-                <div id="headers-ParamsFields" class="editorFields"></div>
-                <div id="headers-ParamsEditorActions" class="actions">
-                    <input type="button" id="cancelHeaderParamsButton" name="closeBodyParams" value="Save and close"
-                           class="btn primary medium"
-                           onclick="closeParamsEditor('headers')"/>
+                <div id="url-ParamsEditor" class="paramsEditor">
+                    <div id="url-ParamsFields" class="editorFields"></div>
+                    <div id="url-ParamsEditorActions" class="actions">
+                        <input type="button" id="cancelUrlParamsButton"
+                               class="btn primary medium"
+                               name="closeUrlParams"
+                               value="Save and close"
+                               placeholder="URL..."
+                               onclick="closeParamsEditor('url')"/>
+                    </div>
                 </div>
-            </div>
 
-            <div id="data">
-                <ul class="pills small" style="margin-bottom: 0px; height: 38px;">
-                    <li class="active">
-                        <a href="javascript:void(0);" onclick="showBodyParamsEditor()" id="data-params">Params</a>
-                    </li>
-                    <li>
-                        <a href="javascript:void(0);" onclick="showRawEditor()" id="data-raw">Raw body</a>
-                    </li>
-                </ul>
-                <div id="bodyDataContainer">
-                    <textarea name="data" id="body" tabindex="4" class="inputText"></textarea>
+                <div id="methods" class="clearfix">
+                    <ul class="pills small" style="margin-bottom: 10px;">
+                        <li class="active"><a id="method-get" href="javascript:void(0);" data-method="get"
+                                              onclick="showRequestMethodUi('GET');">GET</a></li>
+                        <li><a id="method-post" href="javascript:void(0);" data-method="post"
+                               onclick="showRequestMethodUi('POST');">POST</a></li>
+                        <li><a id="method-put" href="javascript:void(0);" data-method="put"
+                               onclick="showRequestMethodUi('PUT');">PUT</a></li>
+                        <li><a id="method-delete" href="javascript:void(0);" data-method="delete"
+                               onclick="showRequestMethodUi('DELETE');">DELETE</a></li>
+                        <li><a id="method-head" href="javascript:void(0);" data-method="head"
+                               onclick="showRequestMethodUi('HEAD');">HEAD</a></li>
+                        <li><a id="method-options" href="javascript:void(0);" data-method="options"
+                               onclick="showRequestMethodUi('OPTIONS');">OPTIONS</a></li>
+                    </ul>
                 </div>
-            </div>
 
-
-            <div id="body-ParamsEditor" class="paramsEditor">
-                <div id="body-ParamsFields" class="editorFields"></div>
-            </div>
-
-            <div style="margin-top: 15px;">
-                <button class="btn large" data-loading-text="Fetching data..." type="button" data-complete-text="Send request" id="submitRequest" tabindex="5">
-                    Send request
-                </button>
-            </div>
-        </section>
-
-        <section id="response">
-            <fieldset>
-                <h2><img src="images/response.jpg" alt="RESPONSE" height="15px"/></h2>
-
-                <div id="responsePrint">
-                    <div id="ptime">
-                        <span class="labelText">Time</span>
-                        <span class="time">0 millisecs</span>
+                <div id="pheaders">
+                    <div class="headersContainer">
+                        <textarea name="headers" id="headers" tabindex="3" class="inputText"
+                                  placeholder="Headers"></textarea>
+                    </div>
+                    <div class="editHeaderButton">
+                        <a href="javascript:void(0);" class="btn small" onclick="showParamsEditor('headers')"
+                           style="margin-left:5px">Edit headers</a>
                     </div>
 
-                    <div id="pstatus">
-                        <span class="labelText">Status</span>
-                        <span>200 OK</span>
+                </div>
+
+                <div id="headers-ParamsEditor" class="paramsEditor">
+                    <div id="headers-ParamsFields" class="editorFields"></div>
+                    <div id="headers-ParamsEditorActions" class="actions">
+                        <input type="button" id="cancelHeaderParamsButton" name="closeBodyParams" value="Save and close"
+                               class="btn primary medium"
+                               onclick="closeParamsEditor('headers')"/>
                     </div>
+                </div>
 
-                    <div id="respHeaders">
-                        <span for="responseHeaders" class="labelText">Headers</span>
+                <div id="data">
+                    <ul class="pills small" style="margin-bottom: 0px; height: 38px;">
+                        <li class="active">
+                            <a href="javascript:void(0);" onclick="showBodyParamsEditor()" id="data-params">Params</a>
+                        </li>
+                        <li>
+                            <a href="javascript:void(0);" onclick="showRawEditor()" id="data-raw">Raw body</a>
+                        </li>
+                    </ul>
+                    <div id="bodyDataContainer">
+                        <textarea name="data" id="body" tabindex="4" class="inputText"></textarea>
+                    </div>
+                </div>
 
-                        <div id="respHeadersContent">
-                            <textarea name="responseHeaders" id="responseHeaders" tabindex="6"
-                                      class="inputText"></textarea>
+
+                <div id="body-ParamsEditor" class="paramsEditor">
+                    <div id="body-ParamsFields" class="editorFields"></div>
+                </div>
+
+                <div class="sendRequestButtonContainer">
+                    <button class="btn large" data-loading-text="Fetching data..." type="button"
+                            data-complete-text="Send request" id="submitRequest" tabindex="5">
+                        Send request
+                    </button>
+                </div>
+            </section>
+
+            <section id="response">
+                <fieldset>
+                    <h2><img src="images/response.jpg" alt="RESPONSE" height="15px"/></h2>
+
+                    <div id="responsePrint">
+                        <div class="row">
+
+                            <div id="pstatus" class="span2">
+                                <span class="label">Status</span>
+                                <span class="data">200 OK</span>
+                            </div>
+
+                            <div id="ptime" class="span2">
+                                <span class="label">Time</span>
+                                <span class="data">0 millisecs</span>
+                            </div>
                         </div>
-                    </div>
 
-                    <p id="debugLinks" style="display: none;">
-                        <span for="debugLink" class="_msg_">debuglink</span>
-                        <a href="" id="debugLink"></a>
-                    </p>
+                        <div id="respHeaders">
+                            <span for="responseHeaders" class="labelText">Headers</span>
 
-                    <div id="respData" style="display:none">
-                        <span for="responseData" class="labelText">Data</span>
-
-                        <div id="langFormat">
-                            <span for="language" class="labelText">Select format</span>
-                            <select id="language">
-                                <option value="html">HTML/XML</option>
-                                <option value="javascript">JSON</option>
-                            </select>
+                            <div id="respHeadersContent">
+                                <textarea name="responseHeaders" id="responseHeaders" tabindex="6"
+                                          class="inputText"></textarea>
+                            </div>
                         </div>
-                        <div name="responseData" id="responseData" contenteditable="true">
+
+                        <div id="respData" style="display:none">
+                            <div id="langFormat">
+                                <select id="language">
+                                    <option value="html">HTML/XML</option>
+                                    <option value="javascript">JSON</option>
+                                </select>
+                            </div>
+                            <div name="responseData" id="responseData" contenteditable="true">
                             <pre><code name="codeData" id="codeData" class="chili-lang-html" data-formatted="false">
                                 &nbsp;</code></pre>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </fieldset>
-        </section>
+                </fieldset>
+            </section>
+        </div>
     </div>
 </div>
 </body>
+<script type="text/javascript" src="js/jquery.tmpl.min.js"></script>
 <script type="text/javascript" src="js/bootstrap-twipsy.js"></script>
 <script type="text/javascript" src="js/bootstrap-modal.js"></script>
 <script type="text/javascript" src="js/bootstrap-alerts.js"></script>

@@ -88,12 +88,6 @@ var indexedDB = window.indexedDB || // Use the standard DB API
 var IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction;
 var IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange;
 
-function addTodo() {
-    var todo = document.getElementById('todo');
-    postman.indexedDB.addTodo(todo.value);
-    todo.value = '';
-}
-
 function clearFields() {
     $("#response").css("display", "");
     $("#loader").css("display", "");
@@ -123,6 +117,27 @@ function handleFileSelect(evt) {
         };
     })(f);
     reader.readAsText(f);
+}
+
+function limitStringLineWidth(string, numChars) {
+    var remainingChars = string;
+    var finalString = "";
+    numLeft = string.length;
+
+    do {
+        finalString += remainingChars.substr(0, numChars);
+        remainingChars = remainingChars.substr(numChars);
+        numLeft -= numChars;
+
+        if (numLeft < 5) {
+            finalString += remainingChars.substr(0, numChars)
+        }
+        else {
+            finalString += "<br/>";
+        }
+    } while (numLeft > 0);
+
+    return finalString;
 }
 
 function getRequestMethod() {
@@ -168,7 +183,7 @@ function sendRequest() {
 
                     //Iterate through all key/values
 
-                    $('input[name*=body[key]]').each(function() {
+                    $('input[data-section=body]').each(function() {
                         var valueEl = $(this).next();
                         var type = valueEl.attr('type');
 
@@ -194,7 +209,9 @@ function sendRequest() {
             }
 
             requestStartTime = new Date().getTime();
+
             saveRequest(url, method, $("#headers").val(), data);
+
             $('#submitRequest').button("loading");
         }
         catch(e) {
@@ -249,7 +266,9 @@ function readResponse() {
 
             requestEndTime = new Date().getTime();
             var diff = requestEndTime - requestStartTime;
-            $('#ptime span.time').html(diff + " ms");
+
+            $('#ptime .data').html(diff + " ms");
+            $('#pbodysize .data').html(diff + " bytes");
 
             //Set chili options according to the Content-Type header
             var contentType = this.getResponseHeader("Content-Type");
@@ -274,6 +293,8 @@ function readResponse() {
             $("#responsePrint").css("display", "");
         }
     }
+
+    setContainerHeights();
 }
 
 //Manages showing/hiding the PUT/POST additional UI
@@ -288,7 +309,6 @@ function showRequestMethodUi(type) {
 }
 
 function init() {
-
     $("#response").css("display", "none");
     $("#loader").css("display", "");
     $("#responsePrint").css("display", "none");
@@ -316,62 +336,152 @@ function init() {
     })
 }
 
-function requestExists(requestItem) {
-    var index = -1;
-    for (var i = 0; i < requests.length; i++) {
-        var r = requests[i];
-        if (r.url.length != requestItem.url.length ||
-            r.headers.length != requestItem.headers.length ||
-            r.method != requestItem.method) {
-            index = -1;
-        }
-        else {
-            if (r.url === requestItem.url) {
-                if (r.headers === requestItem.headers) {
-                    index = i;
-                }
+function setupDB() {
+    postman.indexedDB.open = function() {
+        console.log("Trying to open db");
+        var request = indexedDB.open("requests", "POSTman request history");
+        request.onsuccess = function(e) {
+            var v = "0.3";
+            postman.indexedDB.db = e.target.result;
+            var db = postman.indexedDB.db;
+            console.log(db);
+            //We can only create Object stores in a setVersion transaction
+            if (v != db.version) {
+                console.log("Version is not the same");
+                var setVrequest = db.setVersion(v);
+                setVrequest.onfailure = postman.indexedDB.onerror;
+                setVrequest.onsuccess = function(e) {
+                    if (db.objectStoreNames.contains("request")) {
+                        db.deleteObjectStore("request");
+                    }
+
+                    var store = db.createObjectStore("request", {keyPath: "id"});
+                    postman.indexedDB.getAllRequestItems();
+                };
             }
-        }
+            else {
+                postman.indexedDB.getAllRequestItems();
+            }
 
-        if (index >= 0) {
-            break;
-        }
-    }
+        };
 
-    return index;
+        request.onfailure = postman.indexedDB.onerror;
+    };
+
+    postman.indexedDB.addRequest = function(id, url, method, headers, data) {
+        console.log("Saving request to indexed DB");
+        
+        var db = postman.indexedDB.db;
+        var trans = db.transaction(["request"], IDBTransaction.READ_WRITE);
+        var store = trans.objectStore("request");
+
+        var request = store.put({
+            "id": id,
+            "url": url.toString(),
+            "method": method.toString(),
+            "headers": headers.toString(),
+            "data": data.toString(),
+            "timestamp": new Date().getTime()
+        });
+
+        request.onsuccess = function(e) {
+            //Re-render all the todos
+            console.log("Added element to requests list", request);
+            renderRequestToSidebar(url,  method, id, "top");
+        };
+
+        request.onerror = function(e) {
+            console.log(e.value);
+        }
+    };
+
+    postman.indexedDB.getRequest = function(id) {
+        var db = postman.indexedDB.db;
+        var trans = db.transaction(["request"], IDBTransaction.READ_WRITE);
+        var store = trans.objectStore("request");
+
+        //Get everything in the store
+        var cursorRequest = store.get(id);
+
+        console.log("Getting request for " + id);
+        
+        cursorRequest.onsuccess = function(e) {
+            var result = e.target.result;
+            if (!!result == false)
+                return;
+
+            console.log("Request ", result);
+            loadRequestInEditor(result);
+            return result;
+        };
+        cursorRequest.onerror = postman.indexedDB.onerror;
+    };
+
+    postman.indexedDB.getAllRequestItems = function() {
+        var db = postman.indexedDB.db;
+        if(db == null) {
+            return;
+        }
+        
+        var trans = db.transaction(["request"], IDBTransaction.READ_WRITE);
+        var store = trans.objectStore("request");
+
+        //Get everything in the store
+        var keyRange = IDBKeyRange.lowerBound(0);
+        var cursorRequest = store.openCursor(keyRange);
+
+        cursorRequest.onsuccess = function(e) {
+            var result = e.target.result;
+            if (!!result == false)
+                return;
+
+            console.log("Request ", result.value);
+            var request = result.value;
+            renderRequestToSidebar(request.url, request.method, request.id, "top");
+            result.continue();
+        };
+
+        console.log("Getting all to do times", cursorRequest, keyRange);
+
+        cursorRequest.onerror = postman.indexedDB.onerror;
+    };
+
+    postman.indexedDB.deleteRequest = function(id) {
+        var db = postman.indexedDB.db;
+        var trans = db.transaction(["request"], IDBTransaction.READ_WRITE, 0);
+        var store = trans.objectStore(["request"]);
+
+        var request = store.delete(id);
+
+        request.onsuccess = function(e) {
+            removeRequestFromSidebar(id);
+        };
+
+        request.onerror = function(e) {
+            console.log(e);
+        };
+    };
 }
+
+
+function initDB() {
+    postman.indexedDB.open(); //Also displays the data previously saved
+}
+
 //History management functions
 function saveRequest(url, method, headers, data) {
     var id = guid();
-    var requestItem = {
-        "id": id,
-        "url": url.toString(),
-        "method": method.toString(),
-        "headers": headers.toString(),
-        "data": data.toString()
-    };
-
-    var index = requestExists(requestItem);
-
-    if (index >= 0) {
-        removeRequestFromHistory(requests[index].id);
-        requests.splice(index, 1);
-    }
-
-    //TODO Not sure how heavy this is
-    requests[requests.length] = requestItem;
-    localStorage[keyRequests] = JSON.stringify(requests);
-    addRequestToHistory(url, method, id, "top");
-    addHistoryListeners();
+    postman.indexedDB.addRequest(id, url, method, headers, data);
 }
 
-function addRequestToHistory(url, method, id, position) {
+function renderRequestToSidebar(url, method, id, position) {
+    url = limitStringLineWidth(url, 55);
     var itemString = "<li id=\"itemContainer-" + id + "\" class=\"clearfix\">";
-    itemString += "<div class=\"left\"><a href=\"javascript:void(0);\"";
+    itemString += "<div class=\"left clearfix\"><a href=\"javascript:void(0);\"";
     itemString += " onclick=\"loadRequest('" + id + "')\" ";
     itemString += "class=\"itemLink\" id=\"item-" + id + "\">";
     itemString += url + "</a>";
-    itemString += "</div><div class=\"right\">";
+    itemString += "</div><div>";
     itemString += " <a href=\"javascript:void(0);\"";
     itemString += " onclick=\"deleteRequest('" + id + "')\" ";
     itemString += "class=\"itemDeleteLink\" id=\"itemDeleteLink-" + id + "\">";
@@ -388,47 +498,25 @@ function addRequestToHistory(url, method, id, position) {
     else {
         $("#historyItems").append(itemString);
     }
-
-}
-
-function removeRequestFromHistory(id) {
-    $('#itemContainer-' + id).remove();
-}
-
-function getAllSavedRequests() {
-    var url;
-    var itemString;
-    var id;
-    var method;
-
-    requests = JSON.parse(localStorage[keyRequests]);
-    var itemCount = requests.length;
-
-    for (var i = itemCount - 1; i >= 0; i--) {
-        url = requests[i].url;
-        id = requests[i].id;
-        method = requests[i].method;
-        addRequestToHistory(url, method, id, "bottom");
-    }
-
     addHistoryListeners();
 }
 
+function removeRequestFromSidebar(id) {
+    $('#itemContainer-' + id).slideUp(100);
+}
+
 function loadRequest(id) {
-    var itemCount = requests.length;
-    for (var i = itemCount - 1; i >= 0; i--) {
-        if (requests[i].id === id) {
-            break;
-        }
-    }
+    postman.indexedDB.getRequest(id);
+}
 
-    var method = requests[i].method.toLowerCase();
+function loadRequestInEditor(request) {
+    var method = request.method.toLowerCase();
 
-    $('#url').val(requests[i].url);
+    $('#url').val(request.url);
 
     //Set proper class for method and the variable
 
-    $('#headers').val(requests[i].headers);
+    $('#headers').val(request.headers);
     $('#urlParamsEditor').css("display", "none");
     $('#response').css("display", "none");
 
@@ -436,7 +524,7 @@ function loadRequest(id) {
     $('#body').val("")
 
     if (method === 'post' || method === 'put') {
-        $('#data').val(requests[i].data);
+        $('#data').val(request.data);
         $('#data').css("display", "block");
         showBodyParamsEditor();
     }
@@ -449,8 +537,6 @@ function loadRequest(id) {
     $('#method-' + method).parent().addClass('active');
     requestMethod = method;
 
-    console.log(method);
-
     closeParamsEditor("url");
     clearResponse();
 }
@@ -460,27 +546,9 @@ function clearResponse() {
     $('#responseHeaders').css("display", "none");
     $('#codeData').css("display", "none");
 }
+
 function deleteRequest(id) {
-    var itemCount = requests.length;
-    for (var i = itemCount - 1; i >= 0; i--) {
-        if (requests[i].id === id) {
-            break;
-        }
-    }
-
-    removeRequestFromHistory(requests[i].id);
-    requests.splice(i, 1);
-    saveRequestsToLocalStorage();
-}
-
-function deleteAllRequests() {
-    requests = [];
-    saveRequestsToLocalStorage();
-    $("#historyItems li").fadeOut();
-}
-
-function saveRequestsToLocalStorage() {
-    localStorage[keyRequests] = JSON.stringify(requests);
+    postman.indexedDB.deleteRequest(id);
 }
 
 function lang() {
@@ -533,11 +601,11 @@ function getHeaderVars(data) {
     return vars;
 }
 
+//Sets the param strings for header and url params
 function setParamsFromEditor(section) {
-    var keys = $('input[id|="' + section + '-key"]');
     var paramString = "";
 
-    $('input[name*=' + section + '[key]]').each(function() {
+    $('input[data-section="' + section + '"]').each(function() {
         var val = $(this).next().val();
         if (val !== "" && $(this).val() !== "") {
             if (section !== 'headers') {
@@ -586,7 +654,7 @@ function showParamsEditor(section, a1) {
     for (var index in params) {
         if (params[index] == undefined) continue;
         editorHtml += "<div>";
-        editorHtml += "<input type=\"text\" name=\"" + section + "[key][]\" class=\"key\" placeholder=\"key\" value=\"" + index + "\"/>";
+        editorHtml += "<input type=\"text\" data-section=\"" + section + "\" name=\"" + section + "[key][]\" class=\"key\" placeholder=\"key\" value=\"" + index + "\"/>";
         editorHtml += "<input type=\"text\" name=\"" + section + "[value][]\" class=\"value\" placeholder=\"value\" value=\"" + params[index] + "\"/>";
         if (section == 'body') {
             editorHtml += "<select><option value= \"text\">Text</option>";
@@ -601,7 +669,7 @@ function showParamsEditor(section, a1) {
     }
 
     editorHtml += "<div>";
-    editorHtml += "<input type=\"text\" name=\"" + section + "[key][]\"";
+    editorHtml += "<input type=\"text\" data-section=\"" + section + "\" name=\"" + section + "[key][]\"";
     editorHtml += "class=\"key\" placeholder=\"key\"/>";
     editorHtml += "<input type=\"text\" name=\"" + section + "[value][]\"";
     editorHtml += "class=\"value\" placeholder=\"value\"/>";
@@ -632,7 +700,7 @@ function closeParamsEditor(section) {
 function addParamInEditor(section) {
     var newElementHtml = "";
     newElementHtml += "<div>";
-    newElementHtml += "<input type=\"text\" name=\"" + section + "[key][]\" class=\"key\" placeholder=\"" + "key" + "\"/>";
+    newElementHtml += "<input type=\"text\" data-section=\"" + section + "\" name=\"" + section + "[key][]\" class=\"key\" placeholder=\"" + "key" + "\"/>";
     newElementHtml += "<input type=\"text\" name=\"" + section + "[value][]\" class=\"value\" placeholder=\"" + "value" + "\"/>";
     if (section == 'body') {
         newElementHtml += "<select><option value= \"text\">Text</option>";
@@ -646,8 +714,8 @@ function addParamInEditor(section) {
 function addFileParamInEditor(section) {
     if (section == 'body') {
         var containerHtml = "<div>";
-        containerHtml += '<input type="text" name="body[key][]" placeholder="key"/>';
-        containerHtml += '<input type="file" name="body[value][]" multiple/>';
+        containerHtml += '<input type="text" data-section=\"" + section + "\" name="body[key][]" placeholder="key"/>';
+        containerHtml += '<input type="file" data-section=\"" + section + "\" name="body[value][]" multiple/>';
         containerHtml += "<select><option value= \"text\">Text</option>";
         containerHtml += "<option value= \"file\">File</option></select>";
         containerHtml += "</div>";
@@ -674,12 +742,23 @@ function removeBodyListeners() {
 }
 
 function setContainerHeights() {
+    var mainHeight = $('#main-scroller').height();
+    var historyHeight = $('#history').height();
+
+    var maxHeight = mainHeight > historyHeight ? mainHeight : historyHeight;
+    var docHeight = $(document).height();
+
+    $('#history').height(maxHeight + "px");
+
 }
 
 $(document).ready(function() {
+    setupDB();
+    initDB();
     lang();
     init();
-    getAllSavedRequests();
+
+    postman.indexedDB.getAllRequestItems();
     addHeaderListeners();
     setContainerHeights();
 
@@ -746,7 +825,7 @@ function addEditorListeners(section) {
         if (paramType) {
             var newElementHtml = "";
             newElementHtml += "<div>";
-            newElementHtml += "<input type=\"text\" name=\"" + section + "[key][]\" class=\"key\" placeholder=\"" + "key" + "\"/>";
+            newElementHtml += "<input type=\"text\" data-section=\"" + section + "\" name=\"" + section + "[key][]\" class=\"key\" placeholder=\"" + "key" + "\"/>";
 
             if (paramType == "text") {
                 //addParamInEditor(sect);
