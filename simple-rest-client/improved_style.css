@@ -24,7 +24,7 @@ header {
 footer {
     display: block;
     font-size: 12px;
-    padding:  10px;
+    padding: 10px;
     border-top-style: solid;
     border-top-color: #116284;
     border-top-width: 5px;
@@ -80,7 +80,6 @@ fieldset {
     padding: 5px;
 }
 
-
 #request h4 {
     padding-bottom: 5px;
     text-transform: uppercase;
@@ -114,6 +113,7 @@ fieldset {
     font-size: 95%;
     font-weight: bold;
 }
+
 .blueButton {
     background-color: #e2f0f5;
     background-image: -webkit-linear-gradient(#e5f1f6, #cfe6ee);
@@ -214,6 +214,7 @@ fieldset {
 #historyItems {
     margin-left: -10px;
 }
+
 #historyItems li {
     margin-right: 7px;
     padding: 8px;
@@ -234,7 +235,7 @@ fieldset {
     position: absolute;
     height: 12px;
     margin-top: -2px;
-    margin-left: -30px;
+    margin-left: 320px;
     display: none;
 }
 
@@ -250,7 +251,7 @@ fieldset {
     position: absolute;
     font-size: 10px;
     font-weight: bold;
-    margin-left: 300px;
+    margin-left: 360px;
     margin-top: -5px;
     display: none;
 }
@@ -342,7 +343,7 @@ fieldset {
     width: 200px;
     height: 50px;
     position: absolute;
-    text-align: center;        
+    text-align: center;
     font-size: 16px;
     font-weight: bold;
     color: #afafaf;
@@ -352,7 +353,6 @@ fieldset {
     vertical-align: middle;
     margin-left: 10px;
 }
-
 
 #credits {
     float: right;
@@ -381,8 +381,6 @@ fieldset {
 
 li .left {
     float: left;
-    max-width: 240px;
-    overflow: hidden;
 }
 
 li .right {
@@ -403,34 +401,32 @@ li .right {
     zoom: 1;
 }
 
-
 #langFormat {
-    position: absolute;
-    margin-top: -20px;
-    margin-left: 100px;
 }
 
 #main {
-    background:  #fff;
-    margin-left: 300px;
+    background: #fff;
+    margin-left: 350px;
     height: 100%;
 }
 
 #history {
-    max-width: 300px;
-    width: 300px;
+    float: left;
+    width: 340px;
+    padding-left: 10px;
+    background: #eaeaea;
 }
 
 #container {
     padding-right: 0px;
-    padding-left: 15px;
+    padding-left: 0px;
     background: #eaeaea;
     height: 100%;
 }
 
 #request,
 #response {
-    padding:  20px;
+    padding: 20px;
     padding-top: 10px;
     padding-bottom: 0px;
 }
@@ -445,24 +441,23 @@ li .right {
 
 #methods ul {
     list-style: none;
-    padding:  0;
-    margin:  0;
+    padding: 0;
+    margin: 0;
 }
+
 #methods ul li {
     float: left;
     margin-right: 20px;
 }
 
 #headers {
-    display: none;
 }
 
 #pheaders {
-    height: 40px;
 }
 
 .editorFields input {
-    margin:  2px;
+    margin: 2px;
 }
 
 #historyContainer ul {
@@ -471,7 +466,7 @@ li .right {
 }
 
 #historyContainer .pills .active .a {
-    background-color:  #333;
+    background-color: #333;
 }
 
 #respHeadersContent {
@@ -481,4 +476,37 @@ li .right {
 
 #codeData {
     background-color: white;
+}
+
+.hsbarV {
+	position:absolute;
+	z-index:100;
+    left: 300px;
+	width:8px;bottom:7px;top:2px;right:1px
+}
+
+.hsbarV > div {
+	position:absolute;
+	z-index:100;
+	width:100%;
+
+	/* The following is probably what you want to customize */
+	background:-webkit-gradient(linear, 0 0, 100% 0, from(#aaa), to(#aaa));
+	border:1px solid #aaa;
+	-webkit-background-clip:padding-box;
+	-webkit-box-sizing:border-box;
+	-webkit-border-radius:4px;
+	-webkit-box-shadow:inset 1px 1px 0 rgba(255,255,255,0.5);
+}
+
+.headersContainer {
+    width: 580px;
+}
+.editHeaderButton {
+    margin-left: -5px;
+    margin-bottom: 5px;
+}
+
+.sendRequestButtonContainer {
+    margin-top: 25px;
 }

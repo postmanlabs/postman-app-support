@@ -125,6 +125,27 @@ function handleFileSelect(evt) {
     reader.readAsText(f);
 }
 
+function limitStringLineWidth(string, numChars) {
+    var remainingChars = string;
+    var finalString = "";
+    numLeft = string.length;
+    
+    do {
+        finalString += remainingChars.substr(0, numChars);
+        remainingChars = remainingChars.substr(numChars);
+        numLeft -= numChars;
+
+        if(numLeft < 5) {
+            finalString += remainingChars.substr(0, numChars)
+        }
+        else {
+            finalString += "<br/>";
+        }
+    } while (numLeft > 0);
+
+    return finalString;
+}
+
 function getRequestMethod() {
     return requestMethod;
 }
@@ -168,7 +189,7 @@ function sendRequest() {
 
                     //Iterate through all key/values
 
-                    $('input[name*=body[key]]').each(function() {
+                    $('input[data-section=body]').each(function() {
                         var valueEl = $(this).next();
                         var type = valueEl.attr('type');
 
@@ -274,6 +295,8 @@ function readResponse() {
             $("#responsePrint").css("display", "");
         }
     }
+
+    setContainerHeights();
 }
 
 //Manages showing/hiding the PUT/POST additional UI
@@ -366,12 +389,13 @@ function saveRequest(url, method, headers, data) {
 }
 
 function addRequestToHistory(url, method, id, position) {
+    url = limitStringLineWidth(url, 55);
     var itemString = "<li id=\"itemContainer-" + id + "\" class=\"clearfix\">";
-    itemString += "<div class=\"left\"><a href=\"javascript:void(0);\"";
+    itemString += "<div class=\"left clearfix\"><a href=\"javascript:void(0);\"";
     itemString += " onclick=\"loadRequest('" + id + "')\" ";
     itemString += "class=\"itemLink\" id=\"item-" + id + "\">";
     itemString += url + "</a>";
-    itemString += "</div><div class=\"right\">";
+    itemString += "</div><div>";
     itemString += " <a href=\"javascript:void(0);\"";
     itemString += " onclick=\"deleteRequest('" + id + "')\" ";
     itemString += "class=\"itemDeleteLink\" id=\"itemDeleteLink-" + id + "\">";
@@ -388,7 +412,6 @@ function addRequestToHistory(url, method, id, position) {
     else {
         $("#historyItems").append(itemString);
     }
-
 }
 
 function removeRequestFromHistory(id) {
@@ -533,11 +556,11 @@ function getHeaderVars(data) {
     return vars;
 }
 
+//Sets the param strings for header and url params
 function setParamsFromEditor(section) {
-    var keys = $('input[id|="' + section + '-key"]');
     var paramString = "";
 
-    $('input[name*=' + section + '[key]]').each(function() {
+    $('input[data-section="' + section + '"]').each(function() {
         var val = $(this).next().val();
         if (val !== "" && $(this).val() !== "") {
             if (section !== 'headers') {
@@ -586,7 +609,7 @@ function showParamsEditor(section, a1) {
     for (var index in params) {
         if (params[index] == undefined) continue;
         editorHtml += "<div>";
-        editorHtml += "<input type=\"text\" name=\"" + section + "[key][]\" class=\"key\" placeholder=\"key\" value=\"" + index + "\"/>";
+        editorHtml += "<input type=\"text\" data-section=\"" + section + "\" name=\"" + section + "[key][]\" class=\"key\" placeholder=\"key\" value=\"" + index + "\"/>";
         editorHtml += "<input type=\"text\" name=\"" + section + "[value][]\" class=\"value\" placeholder=\"value\" value=\"" + params[index] + "\"/>";
         if (section == 'body') {
             editorHtml += "<select><option value= \"text\">Text</option>";
@@ -601,7 +624,7 @@ function showParamsEditor(section, a1) {
     }
 
     editorHtml += "<div>";
-    editorHtml += "<input type=\"text\" name=\"" + section + "[key][]\"";
+    editorHtml += "<input type=\"text\" data-section=\"" + section + "\" name=\"" + section + "[key][]\"";
     editorHtml += "class=\"key\" placeholder=\"key\"/>";
     editorHtml += "<input type=\"text\" name=\"" + section + "[value][]\"";
     editorHtml += "class=\"value\" placeholder=\"value\"/>";
@@ -632,7 +655,7 @@ function closeParamsEditor(section) {
 function addParamInEditor(section) {
     var newElementHtml = "";
     newElementHtml += "<div>";
-    newElementHtml += "<input type=\"text\" name=\"" + section + "[key][]\" class=\"key\" placeholder=\"" + "key" + "\"/>";
+    newElementHtml += "<input type=\"text\" data-section=\"" + section + "\" name=\"" + section + "[key][]\" class=\"key\" placeholder=\"" + "key" + "\"/>";
     newElementHtml += "<input type=\"text\" name=\"" + section + "[value][]\" class=\"value\" placeholder=\"" + "value" + "\"/>";
     if (section == 'body') {
         newElementHtml += "<select><option value= \"text\">Text</option>";
@@ -646,8 +669,8 @@ function addParamInEditor(section) {
 function addFileParamInEditor(section) {
     if (section == 'body') {
         var containerHtml = "<div>";
-        containerHtml += '<input type="text" name="body[key][]" placeholder="key"/>';
-        containerHtml += '<input type="file" name="body[value][]" multiple/>';
+        containerHtml += '<input type="text" data-section=\"" + section + "\" name="body[key][]" placeholder="key"/>';
+        containerHtml += '<input type="file" data-section=\"" + section + "\" name="body[value][]" multiple/>';
         containerHtml += "<select><option value= \"text\">Text</option>";
         containerHtml += "<option value= \"file\">File</option></select>";
         containerHtml += "</div>";
@@ -674,6 +697,14 @@ function removeBodyListeners() {
 }
 
 function setContainerHeights() {
+    var mainHeight = $('#main-scroller').height();
+    var historyHeight = $('#history').height();
+
+    var maxHeight = mainHeight > historyHeight ? mainHeight : historyHeight;
+    var docHeight = $(document).height();
+    maxHeight = maxHeight > docHeight ? maxHeight : docHeight;
+    $('#main').height(maxHeight + "px");
+    $('#history').height(maxHeight + "px");
 }
 
 $(document).ready(function() {
@@ -692,6 +723,8 @@ $(document).ready(function() {
     $(window).resize(function() {
         setContainerHeights();
     });
+
+    
 });
 
 
@@ -746,7 +779,7 @@ function addEditorListeners(section) {
         if (paramType) {
             var newElementHtml = "";
             newElementHtml += "<div>";
-            newElementHtml += "<input type=\"text\" name=\"" + section + "[key][]\" class=\"key\" placeholder=\"" + "key" + "\"/>";
+            newElementHtml += "<input type=\"text\" data-section=\"" + section + "\" name=\"" + section + "[key][]\" class=\"key\" placeholder=\"" + "key" + "\"/>";
 
             if (paramType == "text") {
                 //addParamInEditor(sect);
