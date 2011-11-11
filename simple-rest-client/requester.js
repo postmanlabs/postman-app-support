@@ -123,12 +123,10 @@ function limitStringLineWidth(string, numChars) {
     var remainingChars = string;
     var finalString = "";
     numLeft = string.length;
-
     do {
         finalString += remainingChars.substr(0, numChars);
         remainingChars = remainingChars.substr(numChars);
         numLeft -= numChars;
-
         if (numLeft < 5) {
             finalString += remainingChars.substr(0, numChars)
         }
@@ -747,9 +745,7 @@ function setContainerHeights() {
 
     var maxHeight = mainHeight > historyHeight ? mainHeight : historyHeight;
     var docHeight = $(document).height();
-
     $('#history').height(maxHeight + "px");
-
 }
 
 $(document).ready(function() {
@@ -771,6 +767,8 @@ $(document).ready(function() {
     $(window).resize(function() {
         setContainerHeights();
     });
+
+    
 });
 
 
