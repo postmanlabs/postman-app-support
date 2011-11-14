@@ -52,14 +52,22 @@
     </div>
 </header>
 <div id="container" class="clearfix">
-    <div id="history" class="clearfix">
-        <div id="historyContainer" class="clearfix">
+    <div id="sidebar" class="clearfix">
+        <div id="sidebarContainer" class="clearfix">
             <ul class="pills" data-tabs="tabs">
-                <li class="active"><a href="javascript:void(0);">History</a></li>
-                <li><a href="javascript:void(0);">Collections</a></li>
+                <li class="active"><a href="javascript:void(0);" data-id="history">History</a></li>
+                <li><a href="javascript:void(0);" data-id="collections">Collections</a></li>
             </ul>
-            <ul id="historyItems" class="clearfix">
-            </ul>
+            <div id="sidebarSectionContainer">
+                <div id="sidebarSection-history">
+                    <ul id="historyItems" class="clearfix">
+                        <li id="emptyHistoryMessage">No requests sent yet. Requests will be automically saved here.</li>
+                    </ul>
+                </div>
+                <div id="sidebarSection-collections">
+                    <p>This is a collection and it's going to be awesome.</p>
+                </div>
+            </div>
         </div>
     </div>
     <div id="main" class="content">

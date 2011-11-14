@@ -76,6 +76,8 @@ var requestEndTime = 0;
 var requestMethod = 'GET';
 var dataInputType = "text";
 
+var currentSidebarSection = "history";
+
 var postman = {};
 postman.indexedDB = {};
 postman.indexedDB.db = null;
@@ -87,6 +89,13 @@ var indexedDB = window.indexedDB || // Use the standard DB API
 // Firefox does not prefix these two:
 var IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction;
 var IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange;
+
+function Collection() {
+    this.id = "";
+    this.name = "";
+    this.customVars = {};
+    this.requests = {};
+}
 
 function Request() {
     this.id = "";
@@ -157,8 +166,6 @@ function setRequestMethod(m) {
 }
 
 function sendRequest() {
-    console.log("Send request called");
-
     if ($("#url").val() != "") {
         var xhr = new XMLHttpRequest();
         xhr.onreadystatechange = readResponse;
@@ -349,9 +356,9 @@ function init() {
 function setupDB() {
     postman.indexedDB.open = function() {
         console.log("Trying to open db");
-        var request = indexedDB.open("requests", "POSTman request history");
+        var request = indexedDB.open("postman", "POSTman request history");
         request.onsuccess = function(e) {
-            var v = "0.3";
+            var v = "0.4";
             postman.indexedDB.db = e.target.result;
             var db = postman.indexedDB.db;
             console.log(db);
@@ -361,11 +368,13 @@ function setupDB() {
                 var setVrequest = db.setVersion(v);
                 setVrequest.onfailure = postman.indexedDB.onerror;
                 setVrequest.onsuccess = function(e) {
-                    if (db.objectStoreNames.contains("request")) {
-                        db.deleteObjectStore("request");
+                    if (db.objectStoreNames.contains("requests")) {
+                        db.deleteObjectStore("requests");
                     }
 
-                    var store = db.createObjectStore("request", {keyPath: "id"});
+                    db.createObjectStore("requests", {keyPath: "id"});
+                    db.createObjectStore("collections", {keyPath: "id"});
+                    db.createObjectStore("collection_requests", {keyPath: "id"});
                     postman.indexedDB.getAllRequestItems();
                 };
             }
@@ -378,12 +387,45 @@ function setupDB() {
         request.onfailure = postman.indexedDB.onerror;
     };
 
+    postman.indexedDB.addCollection = function(id, name) {
+        console.log("Adding item to a collection");
+    };
+
+    postman.indexedDB.updateCollectionRequest = function(request) {
+
+    };
+
+    postman.indexedDB.getCollection = function(id) {
+
+    };
+
+    postman.indexedDB.getCollectionRequest = function(id) {
+
+    };
+
+    postman.indexedDB.deleteCollection = function(id) {
+
+    };
+
+    postman.indexedDB.deleteCollectionRequest = function(id) {
+
+    };
+
+
+    postman.indexedDB.getAllCollectionItems = function(id) {
+
+    };
+
+    postman.indexedDB.getAllCollectionRequests = function(id) {
+        
+    };
+
     postman.indexedDB.addRequest = function(id, url, method, headers, data, dataMode) {
         console.log("Saving request to indexed DB");
         
         var db = postman.indexedDB.db;
-        var trans = db.transaction(["request"], IDBTransaction.READ_WRITE);
-        var store = trans.objectStore("request");
+        var trans = db.transaction(["requests"], IDBTransaction.READ_WRITE);
+        var store = trans.objectStore("requests");
 
         var request = store.put({
             "id": id,
@@ -408,8 +450,8 @@ function setupDB() {
 
     postman.indexedDB.getRequest = function(id) {
         var db = postman.indexedDB.db;
-        var trans = db.transaction(["request"], IDBTransaction.READ_WRITE);
-        var store = trans.objectStore("request");
+        var trans = db.transaction(["requests"], IDBTransaction.READ_WRITE);
+        var store = trans.objectStore("requests");
 
         //Get everything in the store
         var cursorRequest = store.get(id);
@@ -434,8 +476,8 @@ function setupDB() {
             return;
         }
         
-        var trans = db.transaction(["request"], IDBTransaction.READ_WRITE);
-        var store = trans.objectStore("request");
+        var trans = db.transaction(["requests"], IDBTransaction.READ_WRITE);
+        var store = trans.objectStore("requests");
 
         //Get everything in the store
         var keyRange = IDBKeyRange.lowerBound(0);
@@ -443,8 +485,10 @@ function setupDB() {
 
         cursorRequest.onsuccess = function(e) {
             var result = e.target.result;
-            if (!!result == false)
+
+            if (!!result == false) {
                 return;
+            }
 
             console.log("Request ", result.value);
             var request = result.value;
@@ -459,8 +503,8 @@ function setupDB() {
 
     postman.indexedDB.deleteRequest = function(id) {
         var db = postman.indexedDB.db;
-        var trans = db.transaction(["request"], IDBTransaction.READ_WRITE, 0);
-        var store = trans.objectStore(["request"]);
+        var trans = db.transaction(["requests"], IDBTransaction.READ_WRITE, 0);
+        var store = trans.objectStore(["requests"]);
 
         var request = store.delete(id);
 
@@ -483,6 +527,15 @@ function initDB() {
 function saveRequest(url, method, headers, data, dataMode) {
     var id = guid();
     postman.indexedDB.addRequest(id, url, method, headers, data, dataMode);
+}
+
+function showEmptyHistoryMessage() {
+    $('#emptyHistoryMessage').css("display", "block");
+}
+
+function hideEmptyHistoryMessage() {
+    console.log("Hiding empty history message");
+    $('#emptyHistoryMessage').css("display", "none");
 }
 
 function renderRequestToSidebar(url, method, id, position) {
@@ -764,7 +817,7 @@ function removeBodyListeners() {
 
 function setContainerHeights() {
     var docHeight = $(document).height();
-    $('#history').height(docHeight + "px");
+    $('#sidebar').height(docHeight + "px");
 }
 
 $(document).ready(function() {
@@ -775,6 +828,7 @@ $(document).ready(function() {
 
     postman.indexedDB.getAllRequestItems();
     addHeaderListeners();
+    attachSidebarListeners();
     setContainerHeights();
 
     $('#methods ul li a').click(function() {
@@ -968,4 +1022,20 @@ function setResponseFormat(format) {
 
     $.chili.options.automatic.active = true;
     var $chili = $('#codeData').chili();
+}
+
+function attachSidebarListeners() {
+    $('#sidebarContainer .pills li').click(function() {
+        $('#sidebarContainer .pills li').removeClass("active");
+        $(this).addClass("active");
+        var section = jQuery('a', this).attr('data-id');
+        showSidebarSection(section, currentSidebarSection);
+    });
+}
+
+function showSidebarSection(section, previousSection) {
+    console.log(section);
+    $('#sidebarSection-' + previousSection).css("display", "none");
+    currentSidebarSection = section;
+    $('#sidebarSection-' + section).css("display", "block");
 }

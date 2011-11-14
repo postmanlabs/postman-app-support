@@ -173,7 +173,7 @@ fieldset {
     float: left
 }
 
-#historyContainer {
+#sidebarContainer {
     padding-top: 10px;
 }
 
@@ -416,7 +416,7 @@ li .right {
 #main-scroller {
 }
 
-#history {
+#sidebar {
     float: left;
     width: 340px;
     padding-left: 10px;
@@ -465,12 +465,12 @@ li .right {
     margin: 2px;
 }
 
-#historyContainer ul {
+#sidebarContainer ul {
     margin-left: -5px;
     margin-bottom: 5px;
 }
 
-#historyContainer .pills .active .a {
+#sidebarContainer .pills .active .a {
     background-color: #333;
 }
 
@@ -518,4 +518,12 @@ li .right {
 
 #pheaders {
     margin-bottom: 10px;
+}
+
+#emptyHistoryMessage {
+    display: none;
+}
+
+#sidebarSection-collections {
+    display: none;
 }
