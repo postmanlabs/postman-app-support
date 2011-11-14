@@ -42,7 +42,7 @@
 <body>
 <header>
     <div id="logo" class="clearfix">
-        <img src="images/postman.jpg" alt="POSTMAN"/>
+        <img src="images/postman.jpg" alt="POSTMAN" height="18px"/>
         <span class="smallheadertext"> A better HTTP client to test web services</span>
     </div>
     <div id="credits">
@@ -51,9 +51,9 @@
         <a href="http://twitter.com/sobtiankit" target="_blank">@sobtiankit</a>
     </div>
 </header>
-<div id="container" class="container-fluid">
-    <div id="history" class="sidebar clearfix">
-        <div id="historyContainer">
+<div id="container" class="clearfix">
+    <div id="history" class="clearfix">
+        <div id="historyContainer" class="clearfix">
             <ul class="pills" data-tabs="tabs">
                 <li class="active"><a href="javascript:void(0);">History</a></li>
                 <li><a href="javascript:void(0);">Collections</a></li>
@@ -62,21 +62,18 @@
             </ul>
         </div>
     </div>
-    <div id="main" class="clearfix content">
-        <div id="main-scroller">
+    <div id="main" class="content">
             <section id="request">
                 <h2><img src="images/request.jpg" alt="REQUEST" height="15px"/></h2>
 
-                <div id="requestUrl">
-                    <div class="row" style="height: 50px;">
-                        <div class="span10">
-                            <input type="text" name="url" id="url" tabindex="1" class="inputText" placeholder="URL">
-                        </div>
-                        <div class="span2">
-                        <span class="buttonLayout">
-                            <a href="javascript:void(0);" class="btn small"
-                               onclick="showParamsEditor('url')">Edit params</a></span>
-                        </div>
+                <div id="requestUrl" class="row clearfix">
+                    <div class="span10">
+                        <input type="text" name="url" id="url" tabindex="1" class="inputText" placeholder="URL">
+                    </div>
+                    <div class="span2">
+                    <span class="buttonLayout">
+                        <a href="javascript:void(0);" class="btn small"
+                           onclick="showParamsEditor('url')">Edit params</a></span>
                     </div>
                 </div>
 
@@ -93,60 +90,60 @@
                 </div>
 
                 <div id="methods" class="clearfix">
-                    <ul class="pills small" style="margin-bottom: 10px;">
-                        <li class="active"><a id="method-get" href="javascript:void(0);" data-method="get"
+                    <ul class="method-selectors pills small" style="margin-bottom: 10px;">
+                        <li class="method-selector-get active"><a id="method-get" href="javascript:void(0);" data-method="get"
                                               onclick="showRequestMethodUi('GET');">GET</a></li>
-                        <li><a id="method-post" href="javascript:void(0);" data-method="post"
+                        <li class="method-selector-post"><a id="method-post" href="javascript:void(0);" data-method="post"
                                onclick="showRequestMethodUi('POST');">POST</a></li>
-                        <li><a id="method-put" href="javascript:void(0);" data-method="put"
+                        <li class="method-selector-put"><a id="method-put" href="javascript:void(0);" data-method="put"
                                onclick="showRequestMethodUi('PUT');">PUT</a></li>
-                        <li><a id="method-delete" href="javascript:void(0);" data-method="delete"
+                        <li class="method-selector-delete"><a id="method-delete" href="javascript:void(0);" data-method="delete"
                                onclick="showRequestMethodUi('DELETE');">DELETE</a></li>
-                        <li><a id="method-head" href="javascript:void(0);" data-method="head"
+                        <li class="method-selector-head"><a id="method-head" href="javascript:void(0);" data-method="head"
                                onclick="showRequestMethodUi('HEAD');">HEAD</a></li>
-                        <li><a id="method-options" href="javascript:void(0);" data-method="options"
+                        <li class="method-selector-options"><a id="method-options" href="javascript:void(0);" data-method="options"
                                onclick="showRequestMethodUi('OPTIONS');">OPTIONS</a></li>
                     </ul>
                 </div>
 
-                <div id="pheaders">
-                    <div class="headersContainer">
+                <div id="pheaders" class="row clearfix">
+                    <div class="span10 headersContainer">
                         <textarea name="headers" id="headers" tabindex="3" class="inputText"
                                   placeholder="Headers"></textarea>
                     </div>
-                    <div class="editHeaderButton">
-                        <a href="javascript:void(0);" class="btn small" onclick="showParamsEditor('headers')"
-                           style="margin-left:5px">Edit headers</a>
+                    <div class="span2 editHeaderButton">
+                        <a href="javascript:void(0);" class="btn small" onclick="showParamsEditor('headers')">Edit headers</a>
                     </div>
-
                 </div>
 
-                <div id="headers-ParamsEditor" class="paramsEditor">
-                    <div id="headers-ParamsFields" class="editorFields"></div>
-                    <div id="headers-ParamsEditorActions" class="actions">
-                        <input type="button" id="cancelHeaderParamsButton" name="closeBodyParams" value="Save and close"
-                               class="btn primary medium"
-                               onclick="closeParamsEditor('headers')"/>
+                <div class="row">
+                    <div id="headers-ParamsEditor" class="span10 paramsEditor">
+                        <div id="headers-ParamsFields" class="editorFields"></div>
+                        <div id="headers-ParamsEditorActions" class="actions">
+                            <input type="button" id="cancelHeaderParamsButton" name="closeBodyParams"
+                                   value="Save and close"
+                                   class="btn primary medium"
+                                   onclick="closeParamsEditor('headers')"/>
+                        </div>
                     </div>
                 </div>
 
                 <div id="data">
                     <ul class="pills small" style="margin-bottom: 0px; height: 38px;">
-                        <li class="active">
+                        <li id="selector-container-params" class="active">
                             <a href="javascript:void(0);" onclick="showBodyParamsEditor()" id="data-params">Params</a>
                         </li>
-                        <li>
+                        <li id="selector-container-raw">
                             <a href="javascript:void(0);" onclick="showRawEditor()" id="data-raw">Raw body</a>
                         </li>
                     </ul>
                     <div id="bodyDataContainer">
                         <textarea name="data" id="body" tabindex="4" class="inputText"></textarea>
                     </div>
-                </div>
 
-
-                <div id="body-ParamsEditor" class="paramsEditor">
-                    <div id="body-ParamsFields" class="editorFields"></div>
+                    <div id="body-ParamsEditor" class="paramsEditor">
+                        <div id="body-ParamsFields" class="editorFields"></div>
+                    </div>
                 </div>
 
                 <div class="sendRequestButtonContainer">
@@ -199,7 +196,6 @@
                     </div>
                 </fieldset>
             </section>
-        </div>
     </div>
 </div>
 </body>

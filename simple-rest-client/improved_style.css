@@ -1,11 +1,8 @@
 html, body {
-    background: #eaeaea;
-    height: 100%;
     margin-top: 0;
     margin-left: 0;
-    width: 100%;
-    height: 100%;
     font-family: Helvetica, Arial, sans-serif;
+    min-height: 800px;
 }
 
 header {
@@ -17,7 +14,7 @@ header {
     border-bottom-style: solid;
     border-bottom-color: #116284;
     border-bottom-width: 5px;
-    height: 70px;
+    height: 50px;
     width: 100%;
 }
 
@@ -171,7 +168,8 @@ fieldset {
 }
 
 #logo {
-    padding: 20px;
+    padding: 12px;
+	padding-left: 15px;
     float: left
 }
 
@@ -361,8 +359,8 @@ fieldset {
 
 #credits {
     float: right;
-    margin-right: 20px;
-    margin-top: 35px;
+    margin-right: 10px;
+    margin-top: 18px;
     color: #fff;
     font-weight: bold;
     font-size: 10px;
@@ -411,8 +409,8 @@ li .right {
 
 #main {
     background: #fff;
-    margin-left: 350px;
-    height: 100%;
+    float: left;
+    padding-bottom: 20px;
 }
 
 #main-scroller {
@@ -423,13 +421,12 @@ li .right {
     width: 340px;
     padding-left: 10px;
     background: #eaeaea;
+    overflow-y: scroll;
+    height: 100%;
 }
 
 #container {
-    padding-right: 0px;
-    padding-left: 0px;
-    background: #eaeaea;
-    height: 100%;
+    height: 100%
 }
 
 #request,
@@ -507,14 +504,18 @@ li .right {
 	-webkit-box-shadow:inset 1px 1px 0 rgba(255,255,255,0.5);
 }
 
-.headersContainer {
-    width: 580px;
-}
-.editHeaderButton {
-    margin-left: -5px;
-    margin-bottom: 5px;
-}
-
 .sendRequestButtonContainer {
     margin-top: 25px;
+}
+
+#headers-ParamsEditor {
+    margin-top: 15px;
+}
+
+#requestUrl {
+    margin-bottom: 10px;
+}
+
+#pheaders {
+    margin-bottom: 10px;
 }

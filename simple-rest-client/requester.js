@@ -88,6 +88,16 @@ var indexedDB = window.indexedDB || // Use the standard DB API
 var IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction;
 var IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange;
 
+function Request() {
+    this.id = "";
+    this.url = "";
+    this.method = "";
+    this.headers = "";
+    this.data = "";
+    this.dataMode = "params";
+    this.timestamp = 0;
+}
+
 function clearFields() {
     $("#response").css("display", "");
     $("#loader").css("display", "");
@@ -198,6 +208,8 @@ function sendRequest() {
                             }
                         }
                     });
+
+                    data = $('#body').val();
                 }
 
                 //Check if a file is being sent
@@ -208,7 +220,7 @@ function sendRequest() {
 
             requestStartTime = new Date().getTime();
 
-            saveRequest(url, method, $("#headers").val(), data);
+            saveRequest(url, method, $("#headers").val(), data, dataMode);
 
             $('#submitRequest').button("loading");
         }
@@ -366,7 +378,7 @@ function setupDB() {
         request.onfailure = postman.indexedDB.onerror;
     };
 
-    postman.indexedDB.addRequest = function(id, url, method, headers, data) {
+    postman.indexedDB.addRequest = function(id, url, method, headers, data, dataMode) {
         console.log("Saving request to indexed DB");
         
         var db = postman.indexedDB.db;
@@ -379,6 +391,7 @@ function setupDB() {
             "method": method.toString(),
             "headers": headers.toString(),
             "data": data.toString(),
+            "dataMode": dataMode.toString(),
             "timestamp": new Date().getTime()
         });
 
@@ -467,9 +480,9 @@ function initDB() {
 }
 
 //History management functions
-function saveRequest(url, method, headers, data) {
+function saveRequest(url, method, headers, data, dataMode) {
     var id = guid();
-    postman.indexedDB.addRequest(id, url, method, headers, data);
+    postman.indexedDB.addRequest(id, url, method, headers, data, dataMode);
 }
 
 function renderRequestToSidebar(url, method, id, position) {
@@ -518,15 +531,25 @@ function loadRequestInEditor(request) {
     $('#urlParamsEditor').css("display", "none");
     $('#response').css("display", "none");
 
-    closeParamsEditor("body");
-    $('#body').val("")
-
     if (method === 'post' || method === 'put') {
-        $('#data').val(request.data);
+        var dataMode = request.dataMode.toLowerCase();
+
         $('#data').css("display", "block");
-        showBodyParamsEditor();
+        $('#body').val(request.data);
+        $('#body').css("display", "block");
+
+        $('#data .pills li').removeClass("active");
+        if(dataMode == 'params') {
+            $('#selector-container-params').addClass("active");
+            showParamsEditor("body");
+        }
+        else if (dataMode == 'raw') {
+            $('#selector-container-raw').addClass("active");
+            closeParamsEditor("body");
+        }
     }
     else {
+        $('#body').val("")
         $('#data').css("display", "none");
         closeParamsEditor("body");
     }
@@ -740,12 +763,8 @@ function removeBodyListeners() {
 }
 
 function setContainerHeights() {
-    var mainHeight = $('#main-scroller').height();
-    var historyHeight = $('#history').height();
-
-    var maxHeight = mainHeight > historyHeight ? mainHeight : historyHeight;
     var docHeight = $(document).height();
-    $('#history').height(maxHeight + "px");
+    $('#history').height(docHeight + "px");
 }
 
 $(document).ready(function() {
@@ -872,9 +891,6 @@ function showBodyParamsEditor() {
     dataMode = "params";
     showParamsEditor('body');
 
-    var containerHtml = '<textarea name="data" id="body" tabindex="4" class="inputText"></textarea>';
-    $('#bodyDataContainer').html(containerHtml);
-
     setCurrentDataFormat('params');
     removeBodyListeners();
     addBodyListeners();
@@ -885,8 +901,6 @@ function showRawEditor() {
     closeParamsEditor('body');
 
     setCurrentDataFormat('raw');
-    var containerHtml = '<textarea name="data" id="body" tabindex="4" class="inputText"></textarea>';
-    $('#bodyDataContainer').html(containerHtml);
 
     removeBodyListeners();
     addBodyListeners();
