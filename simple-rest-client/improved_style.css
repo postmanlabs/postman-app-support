@@ -87,10 +87,6 @@ fieldset {
     font-size: 100%;
 }
 
-#historyItems {
-    list-style: none;
-}
-
 #purl {
     margin-left: 0px;
     margin-top: 5px;
@@ -207,10 +203,6 @@ fieldset {
 #body, #codeData {
     font-family: "Consolas", Courier, monospace, sans-serif;
     font-size: 12px;
-}
-
-#historyItems {
-    margin-left: -10px;
 }
 
 #pstatus {
@@ -537,8 +529,9 @@ li .right {
     cursor: pointer;
 }
 
-.sidebarCollectionHead {
+.sidebar-collection-head {
     font-weight: bold;
+    padding:  5px;
 }
 
 .sidebarCollectionRequest a,
@@ -547,6 +540,21 @@ li .right {
 .sidebarHistoryRequest a:hover {
     color: #333;
     text-decoration: none;
+}
+
+.sidebar-collection-head:hover {
+    background-color: #DEDEDE;
+}
+.collection-head-actions {
+    position: absolute;
+    margin-left: 315px;
+    z-index: 10;
+    opacity: 0.5;
+    display: none;
+}
+
+.collection-head-actions:hover {
+    opacity: 1;
 }
 
 .request-actions {
@@ -559,8 +567,4 @@ li .right {
 
 .request-actions:hover {
     opacity: 1;
-}
-
-#historyItems {
-    margin-left: -7px;
 }

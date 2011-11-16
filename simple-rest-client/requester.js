@@ -158,6 +158,7 @@ function limitStringLineWidth(string, numChars) {
         remainingChars = remainingChars.substr(numChars);
         numLeft -= numChars;
         if (numLeft < 5) {
+            numLeft -= numChars;
             finalString += remainingChars.substr(0, numChars)
         }
         else {
@@ -432,8 +433,13 @@ function setupDB() {
         request.onsuccess = function(e) {
             console.log("Added collection to collection database", collection);
             collectionRequest.collectionId = collection.id;
-            postman.indexedDB.getCollections();
-            postman.indexedDB.addCollectionRequest(collectionRequest);
+            
+            $('#itemCollectionSelectorList').tmpl([collection]).appendTo('#selectCollection');
+            $('#itemCollectionSidebarHead').tmpl([collection]).appendTo('#collectionItems');
+
+            addSidebarCollectionHeadListener(collection);
+
+            postman.indexedDB.addCollectionRequest(collectionRequest, true);
         };
 
         request.onerror = function(e) {
@@ -441,7 +447,7 @@ function setupDB() {
         }
     }
 
-    postman.indexedDB.addCollectionRequest = function(req) {
+    postman.indexedDB.addCollectionRequest = function(req, toRefreshSidebar) {
         var db = postman.indexedDB.db;
         var trans = db.transaction(["collection_requests"], IDBTransaction.READ_WRITE);
         var store = trans.objectStore("collection_requests");
@@ -459,22 +465,17 @@ function setupDB() {
 
         collectionRequest.onsuccess = function(e) {
             console.log("Added collection to collection database", e);
-            postman.indexedDB.getAllRequestsInCollection(req.collectionId);
+
+            if(toRefreshSidebar) {
+                postman.indexedDB.getAllRequestsInCollection(req.collectionId);
+            }
+
         };
 
         collectionRequest.onerror = function(e) {
             console.log(e.value);
         }
     };
-
-    postman.indexedDB.deleteCollection = function(id) {
-
-    };
-
-    postman.indexedDB.deleteCollectionRequest = function(id) {
-
-    };
-
 
     postman.indexedDB.getCollections = function() {
         var db = postman.indexedDB.db;
@@ -507,6 +508,9 @@ function setupDB() {
 
             postman.indexedDB.getAllRequestsInCollection(collection.id);
             //This wil call onsuccess again and again until no more request is left
+
+            addSidebarCollectionHeadListener(collection);
+            
             result.continue();
         };
 
@@ -675,6 +679,22 @@ function setupDB() {
             console.log(e);
         };
     };
+
+    postman.indexedDB.deleteCollection = function(id) {
+        var db = postman.indexedDB.db;
+        var trans = db.transaction(["collections"], IDBTransaction.READ_WRITE, 0);
+        var store = trans.objectStore(["collections"]);
+
+        var request = store.delete(id);
+
+        request.onsuccess = function(e) {
+            removeCollectionFromSidebar(id);
+        };
+
+        request.onerror = function(e) {
+            console.log(e);
+        };
+    };
 }
 
 
@@ -716,6 +736,10 @@ function renderRequestToSidebar(url, method, id, position) {
 
 function removeRequestFromSidebar(id) {
     $('#sidebarRequest-' + id).slideUp(100);
+}
+
+function removeCollectionFromSidebar(id) {
+    $('#collection-' + id).slideUp(100);
 }
 
 function loadRequest(id) {
@@ -780,6 +804,10 @@ function deleteRequest(id) {
 
 function deleteCollectionRequest(id) {
     postman.indexedDB.deleteCollectionRequest(id);
+}
+
+function deleteCollection(id) {
+    postman.indexedDB.deleteCollection(id);
 }
 
 function lang() {
@@ -1023,10 +1051,20 @@ $(document).ready(function() {
     $(window).resize(function() {
         setContainerHeights();
     });
-
-
 });
 
+function addSidebarCollectionHeadListener(collection) {
+    var targetElement = '#collection-' + collection.id + " .sidebar-collection-head";
+    $(targetElement).mouseenter(function() {
+        var actionsEl = jQuery('.collection-head-actions', this);
+        actionsEl.css('display', 'block');
+    });
+
+    $(targetElement).mouseleave(function() {
+        var actionsEl = jQuery('.collection-head-actions', this);
+        actionsEl.css('display', 'none');
+    });
+}
 
 function addSidebarRequestListener(request) {
     var targetElement = '#sidebarRequest-' + request.id;
@@ -1245,7 +1283,6 @@ function submitAddToCollectionForm() {
         //Add the new collection and get guid
         collection.id = guid();
         collection.name = newCollection;
-
         postman.indexedDB.addCollectionWithRequest(collection, collectionRequest);
 
         $('#newCollection').val("");
@@ -1254,7 +1291,7 @@ function submitAddToCollectionForm() {
         //Get guid of existing collection
         collection.id = existingCollectionId;
         collectionRequest.collectionId = collection.id;
-        postman.indexedDB.addCollectionRequest(collectionRequest);
+        postman.indexedDB.addCollectionRequest(collectionRequest, true);
     }
 
     //Have guid here

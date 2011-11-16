@@ -264,8 +264,18 @@
     <option value="${id}">${name}</option>
 </script>
 <script id="itemCollectionSidebarHead" type="text/x-jquery-tmpl">
-    <li id="collection-${id}" data-id="${id}" class="sidebarCollectionHead">
-        <span>${name}</span>
+    <li id="collection-${id}" data-id="${id}" class="sidebarCollection">
+        <div class="sidebar-collection-head">
+            <div class="collection-head-actions">
+                <a href="javascript:void(0);"
+                    onclick="deleteCollection('${id}');">
+                    <img src="images/delete.png"/>
+                </a>
+            </div>
+            <div class="sidebar-collection-head-name">
+                ${name}
+            </div>
+        </div>
         <ul id="collectionRequests-${id}"></ul>
     </li>
 </script>
