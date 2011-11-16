@@ -169,7 +169,7 @@ fieldset {
 
 #logo {
     padding: 12px;
-	padding-left: 15px;
+    padding-left: 15px;
     float: left
 }
 
@@ -264,12 +264,9 @@ fieldset {
     margin-top: 10px;
 }
 
-#pheaders {
-    margin-top: 20px;
-}
-
 .paramsEditor {
     margin-bottom: 10px;
+    width: 625px;
 }
 
 .paramsEditor h4 {
@@ -289,6 +286,14 @@ fieldset {
     border-radius: 5px;
 }
 
+.paramsEditor .file {
+    padding: 0px 5px 0px 5px;
+}
+
+.paramsEditor .key {
+    width: 257px;
+}
+
 .paramsEditor .value {
     width: 240px;
 }
@@ -297,19 +302,27 @@ fieldset {
     padding: 3px;
     border-radius: 5px;
     border-color: #CCC;
+    width: 65px;
 }
 
 .paramsEditor .deleteButton {
     margin-left: 10px;
-    margin-top: 2px;
+    margin-top: 6px;
+    float: right;
 }
 
 #bodyFileButton {
     opacity: 0.5;
 }
 
+#data {
+    margin-top: 10px;
+}
+
 #bodyDataContainer {
     margin-top: 5px;
+    margin-bottom: 10px;
+    width: 580px;
 }
 
 #bodyDataContainer input {
@@ -458,9 +471,6 @@ li .right {
 #headers {
 }
 
-#pheaders {
-}
-
 .editorFields input {
     margin: 2px;
 }
@@ -484,28 +494,27 @@ li .right {
 }
 
 .hsbarV {
-	position:absolute;
-	z-index:100;
+    position: absolute;
+    z-index: 100;
     left: 300px;
-	width:8px;bottom:7px;top:2px;right:1px
+    width: 8px;
+    bottom: 7px;
+    top: 2px;
+    right: 1px
 }
 
 .hsbarV > div {
-	position:absolute;
-	z-index:100;
-	width:100%;
+    position: absolute;
+    z-index: 100;
+    width: 100%;
 
-	/* The following is probably what you want to customize */
-	background:-webkit-gradient(linear, 0 0, 100% 0, from(#aaa), to(#aaa));
-	border:1px solid #aaa;
-	-webkit-background-clip:padding-box;
-	-webkit-box-sizing:border-box;
-	-webkit-border-radius:4px;
-	-webkit-box-shadow:inset 1px 1px 0 rgba(255,255,255,0.5);
-}
-
-.sendRequestButtonContainer {
-    margin-top: 25px;
+    /* The following is probably what you want to customize */
+    background: -webkit-gradient(linear, 0 0, 100% 0, from(#aaa), to(#aaa));
+    border: 1px solid #aaa;
+    -webkit-background-clip: padding-box;
+    -webkit-box-sizing: border-box;
+    -webkit-border-radius: 4px;
+    -webkit-box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.5);
 }
 
 #headers-ParamsEditor {
@@ -517,7 +526,7 @@ li .right {
 }
 
 #pheaders {
-    margin-bottom: 10px;
+    margin-top: 10px;
 }
 
 #emptyHistoryMessage {
@@ -526,4 +535,30 @@ li .right {
 
 #sidebarSection-collections {
     display: none;
+}
+
+#requestActionsMain {
+    float: left;
+}
+
+#requestActionsOptions {
+    float: right;
+}
+
+.actions {
+    border: 1px solid #DDD;
+}
+
+#formModalAddToCollection {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-top: -100px;
+    margin-left: -200px;
+    display: none;
+}
+
+#formModalAddToCollection label {
+    width: 180px;
+    margin-right: 20px;
 }

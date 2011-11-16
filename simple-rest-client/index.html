@@ -71,22 +71,23 @@
         </div>
     </div>
     <div id="main" class="content">
-            <section id="request">
-                <h2><img src="images/request.jpg" alt="REQUEST" height="15px"/></h2>
+        <section id="request">
+            <h2><img src="images/request.jpg" alt="REQUEST" height="15px"/></h2>
 
-                <div id="requestUrl" class="row clearfix">
-                    <div class="span10">
-                        <input type="text" name="url" id="url" tabindex="1" class="inputText" placeholder="URL">
-                    </div>
-                    <div class="span2">
+            <div id="requestUrl" class="row clearfix">
+                <div class="span10">
+                    <input type="text" name="url" id="url" tabindex="1" class="inputText" placeholder="URL">
+                </div>
+                <div class="span2">
                     <span class="buttonLayout">
                         <a href="javascript:void(0);" class="btn small"
                            onclick="showParamsEditor('url')">Edit params</a></span>
-                    </div>
                 </div>
+            </div>
 
-                <div id="url-ParamsEditor" class="paramsEditor">
-                    <div id="url-ParamsFields" class="editorFields"></div>
+            <div id="url-ParamsEditor" class="paramsEditor">
+                <div id="url-ParamsFields" class="editorFields"></div>
+                <form class="form-stacked">
                     <div id="url-ParamsEditorActions" class="actions">
                         <input type="button" id="cancelUrlParamsButton"
                                class="btn primary medium"
@@ -95,117 +96,164 @@
                                placeholder="URL..."
                                onclick="closeParamsEditor('url')"/>
                     </div>
-                </div>
+                </form>
+            </div>
 
-                <div id="methods" class="clearfix">
-                    <ul class="method-selectors pills small" style="margin-bottom: 10px;">
-                        <li class="method-selector-get active"><a id="method-get" href="javascript:void(0);" data-method="get"
-                                              onclick="showRequestMethodUi('GET');">GET</a></li>
-                        <li class="method-selector-post"><a id="method-post" href="javascript:void(0);" data-method="post"
-                               onclick="showRequestMethodUi('POST');">POST</a></li>
-                        <li class="method-selector-put"><a id="method-put" href="javascript:void(0);" data-method="put"
-                               onclick="showRequestMethodUi('PUT');">PUT</a></li>
-                        <li class="method-selector-delete"><a id="method-delete" href="javascript:void(0);" data-method="delete"
-                               onclick="showRequestMethodUi('DELETE');">DELETE</a></li>
-                        <li class="method-selector-head"><a id="method-head" href="javascript:void(0);" data-method="head"
-                               onclick="showRequestMethodUi('HEAD');">HEAD</a></li>
-                        <li class="method-selector-options"><a id="method-options" href="javascript:void(0);" data-method="options"
-                               onclick="showRequestMethodUi('OPTIONS');">OPTIONS</a></li>
-                    </ul>
-                </div>
+            <div id="methods" class="clearfix">
+                <ul class="method-selectors pills small" style="margin-bottom: 10px;">
+                    <li class="method-selector-get active"><a id="method-get" href="javascript:void(0);"
+                                                              data-method="get"
+                                                              onclick="showRequestMethodUi('GET');">GET</a></li>
+                    <li class="method-selector-post"><a id="method-post" href="javascript:void(0);" data-method="post"
+                                                        onclick="showRequestMethodUi('POST');">POST</a></li>
+                    <li class="method-selector-put"><a id="method-put" href="javascript:void(0);" data-method="put"
+                                                       onclick="showRequestMethodUi('PUT');">PUT</a></li>
+                    <li class="method-selector-delete"><a id="method-delete" href="javascript:void(0);"
+                                                          data-method="delete"
+                                                          onclick="showRequestMethodUi('DELETE');">DELETE</a></li>
+                    <li class="method-selector-head"><a id="method-head" href="javascript:void(0);" data-method="head"
+                                                        onclick="showRequestMethodUi('HEAD');">HEAD</a></li>
+                    <li class="method-selector-options"><a id="method-options" href="javascript:void(0);"
+                                                           data-method="options"
+                                                           onclick="showRequestMethodUi('OPTIONS');">OPTIONS</a></li>
+                </ul>
+            </div>
 
-                <div id="pheaders" class="row clearfix">
-                    <div class="span10 headersContainer">
-                        <textarea name="headers" id="headers" tabindex="3" class="inputText"
-                                  placeholder="Headers"></textarea>
-                    </div>
-                    <div class="span2 editHeaderButton">
-                        <a href="javascript:void(0);" class="btn small" onclick="showParamsEditor('headers')">Edit headers</a>
-                    </div>
+            <div id="pheaders" class="row clearfix">
+                <div class="span10 headersContainer">
+                    <textarea name="headers" id="headers" tabindex="3" class="inputText"
+                              placeholder="Headers"></textarea>
                 </div>
+                <div class="span2 editHeaderButton">
+                    <a href="javascript:void(0);" class="btn small" onclick="showParamsEditor('headers')">Edit
+                        headers</a>
+                </div>
+            </div>
 
-                <div class="row">
-                    <div id="headers-ParamsEditor" class="span10 paramsEditor">
-                        <div id="headers-ParamsFields" class="editorFields"></div>
+            <div class="row">
+                <div id="headers-ParamsEditor" class="span10 paramsEditor">
+                    <div id="headers-ParamsFields" class="editorFields"></div>
+                    <form class="form-stacked">
                         <div id="headers-ParamsEditorActions" class="actions">
                             <input type="button" id="cancelHeaderParamsButton" name="closeBodyParams"
                                    value="Save and close"
                                    class="btn primary medium"
                                    onclick="closeParamsEditor('headers')"/>
+
                         </div>
-                    </div>
+                    </form>
+                </div>
+            </div>
+
+            <div id="data">
+                <ul class="pills small" style="margin-bottom: 0px; height: 38px;">
+                    <li id="selector-container-params" class="active">
+                        <a href="javascript:void(0);" onclick="showBodyParamsEditor()" id="data-params">Params</a>
+                    </li>
+                    <li id="selector-container-raw">
+                        <a href="javascript:void(0);" onclick="showRawEditor()" id="data-raw">Raw body</a>
+                    </li>
+                </ul>
+                <div id="bodyDataContainer">
+                    <textarea name="data" id="body" tabindex="4" class="inputText"></textarea>
                 </div>
 
-                <div id="data">
-                    <ul class="pills small" style="margin-bottom: 0px; height: 38px;">
-                        <li id="selector-container-params" class="active">
-                            <a href="javascript:void(0);" onclick="showBodyParamsEditor()" id="data-params">Params</a>
-                        </li>
-                        <li id="selector-container-raw">
-                            <a href="javascript:void(0);" onclick="showRawEditor()" id="data-raw">Raw body</a>
-                        </li>
-                    </ul>
-                    <div id="bodyDataContainer">
-                        <textarea name="data" id="body" tabindex="4" class="inputText"></textarea>
-                    </div>
+                <div id="body-ParamsEditor" class="paramsEditor">
+                    <div id="body-ParamsFields" class="editorFields"></div>
+                </div>
+            </div>
 
-                    <div id="body-ParamsEditor" class="paramsEditor">
-                        <div id="body-ParamsFields" class="editorFields"></div>
+            <form class="form-stacked">
+                <div id="requestActions" class="actions clearfix">
+                    <div id="requestActionsMain">
+                        <button class="btn large primary" data-loading-text="Fetching data..." type="button"
+                                data-complete-text="Send request" id="submitRequest" tabindex="5">
+                            Send request
+                        </button>
+                    </div>
+                    <div id="requestActionsOptions">
+                        <button class="btn large"
+                                data-controls-modal="formModalAddToCollection" data-backdrop="static">Add to collection
+                        </button>
                     </div>
                 </div>
+            </form>
+        </section>
 
-                <div class="sendRequestButtonContainer">
-                    <button class="btn large" data-loading-text="Fetching data..." type="button"
-                            data-complete-text="Send request" id="submitRequest" tabindex="5">
-                        Send request
-                    </button>
-                </div>
-            </section>
+        <section id="response">
+            <fieldset>
+                <h2><img src="images/response.jpg" alt="RESPONSE" height="15px"/></h2>
 
-            <section id="response">
-                <fieldset>
-                    <h2><img src="images/response.jpg" alt="RESPONSE" height="15px"/></h2>
+                <div id="responsePrint">
+                    <div class="row">
 
-                    <div id="responsePrint">
-                        <div class="row">
-
-                            <div id="pstatus" class="span2">
-                                <span class="label">Status</span>
-                                <span class="data">200 OK</span>
-                            </div>
-
-                            <div id="ptime" class="span2">
-                                <span class="label">Time</span>
-                                <span class="data">0 millisecs</span>
-                            </div>
+                        <div id="pstatus" class="span2">
+                            <span class="label">Status</span>
+                            <span class="data">200 OK</span>
                         </div>
 
-                        <div id="respHeaders">
-                            <span for="responseHeaders" class="labelText">Headers</span>
-
-                            <div id="respHeadersContent">
-                                <textarea name="responseHeaders" id="responseHeaders" tabindex="6"
-                                          class="inputText"></textarea>
-                            </div>
+                        <div id="ptime" class="span2">
+                            <span class="label">Time</span>
+                            <span class="data">0 millisecs</span>
                         </div>
+                    </div>
 
-                        <div id="respData" style="display:none">
-                            <div id="langFormat">
-                                <select id="language">
-                                    <option value="html">HTML/XML</option>
-                                    <option value="javascript">JSON</option>
-                                </select>
-                            </div>
-                            <div name="responseData" id="responseData" contenteditable="true">
+                    <div id="respHeaders">
+                        <span for="responseHeaders" class="labelText">Headers</span>
+
+                        <div id="respHeadersContent">
+                            <textarea name="responseHeaders" id="responseHeaders" tabindex="6"
+                                      class="inputText"></textarea>
+                        </div>
+                    </div>
+
+                    <div id="respData" style="display:none">
+                        <div id="langFormat">
+                            <select id="language">
+                                <option value="html">HTML/XML</option>
+                                <option value="javascript">JSON</option>
+                            </select>
+                        </div>
+                        <div name="responseData" id="responseData" contenteditable="true">
                             <pre><code name="codeData" id="codeData" class="chili-lang-html" data-formatted="false">
                                 &nbsp;</code></pre>
-                            </div>
                         </div>
                     </div>
-                </fieldset>
-            </section>
+                </div>
+            </fieldset>
+        </section>
     </div>
 </div>
+<div id="formModalAddToCollection"
+     class="modal fade">
+    <div class="modal-header">
+        <a href="#" class="close">×</a>
+        <h3>Add request to a collection</h3>
+    </div>
+    <div class="modal-body">
+        <form>
+            <div class="clearfix">
+            <label for="normalSelect">Select an existing collection</label>
+            <div class="input">
+              <select name="normalSelect" class="medium" id="normalSelect">
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
+              </select>
+            </div>
+          </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <a href="#" class="btn primary">Done</a>
+        <a href="#" class="btn secondary">Cancel</a>
+    </div>
+</div>
+<!--- jQuery Templates -->
+<script id="itemCollectionListCategory" type="text/x-jquery-tmpl">
+</script>
 </body>
 <script type="text/javascript" src="js/jquery.tmpl.min.js"></script>
 <script type="text/javascript" src="js/bootstrap-twipsy.js"></script>

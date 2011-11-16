@@ -387,8 +387,29 @@ function setupDB() {
         request.onfailure = postman.indexedDB.onerror;
     };
 
-    postman.indexedDB.addCollection = function(id, name) {
+    postman.indexedDB.addCollection = function(collection) {
         console.log("Adding item to a collection");
+
+        var db = postman.indexedDB.db;
+        var trans = db.transaction(["collections"], IDBTransaction.READ_WRITE);
+        var store = trans.objectStore("collections");
+
+        var request = store.put({
+            "id": collection.id,
+            "name": collection.name
+        });
+
+        request.onsuccess = function(e) {
+            console.log("Added collection to collection database", collection);
+        };
+
+        request.onerror = function(e) {
+            console.log(e.value);
+        }
+    };
+
+    postman.indexedDB.addCollectionRequest = function(request) {
+        console.log("Adding collection request to the database");
     };
 
     postman.indexedDB.updateCollectionRequest = function(request) {
@@ -493,6 +514,8 @@ function setupDB() {
             console.log("Request ", result.value);
             var request = result.value;
             renderRequestToSidebar(request.url, request.method, request.id, "top");
+
+            //This wil call onsuccess again and again until no more request is left
             result.continue();
         };
 
@@ -644,32 +667,50 @@ function guid() {
 }
 
 function getUrlVars(url) {
-    if (url == null) {
-        return "";
+    if (url === null) {
+        return [];
     }
 
+    var quesLocation = url.indexOf('?');
+
+    if(quesLocation < 0) {
+        return [];
+    }
+    
     var vars = [], hash;
-    var hashes = url.slice(url.indexOf('?') + 1).split('&');
+    var hashes = url.slice(quesLocation + 1).split('&');
+    var element;
 
     for (var i = 0; i < hashes.length; i++) {
         hash = hashes[i].split('=');
-        vars[hash[0]] = hash[1];
+        element = {
+            "key": jQuery.trim(hash[0]),
+            "value": jQuery.trim(hash[1])
+        };
+
+        vars.push(element);
     }
 
     return vars;
 }
 
 function getHeaderVars(data) {
-    if (data == null) {
-        return "";
+    if (data === null || data === "") {
+        return [];
     }
 
     var vars = [], hash;
     var hashes = data.split('\n');
+    var header;
 
     for (var i = 0; i < hashes.length; i++) {
         hash = hashes[i].split(":");
-        vars[hash[0]] = jQuery.trim(hash[1]);
+        header = {
+            "key": jQuery.trim(hash[0]),
+            "value": jQuery.trim(hash[1])
+        };
+
+        vars.push(header);
     }
 
     return vars;
@@ -711,7 +752,7 @@ function setParamsFromEditor(section) {
 function showParamsEditor(section, a1) {
     a1 = a1 || a1;
     var data = $('#' + section).val();
-    console.log(data);
+
     var params;
     if (section === 'headers') {
         params = getHeaderVars(data);
@@ -722,14 +763,21 @@ function showParamsEditor(section, a1) {
 
     var editorHtml = "";
     var i = 0;
-
+    
     //@todo Replace this with jquery templates
+    //@todo Remove for in
+    console.log(data);
+    console.log(params);
 
-    for (var index in params) {
-        if (params[index] == undefined) continue;
+    var paramsLength = params.length;
+    for (var index = 0; i < paramsLength; index++) {
+        var element = params[index];
+        var key = element.key;
+        var value = element.value;
+        
         editorHtml += "<div>";
-        editorHtml += "<input type=\"text\" data-section=\"" + section + "\" name=\"" + section + "[key][]\" class=\"key\" placeholder=\"key\" value=\"" + index + "\"/>";
-        editorHtml += "<input type=\"text\" name=\"" + section + "[value][]\" class=\"value\" placeholder=\"value\" value=\"" + params[index] + "\"/>";
+        editorHtml += "<input type=\"text\" data-section=\"" + section + "\" name=\"" + section + "[key][]\" class=\"key\" placeholder=\"key\" value=\"" + key + "\"/>";
+        editorHtml += "<input type=\"text\" name=\"" + section + "[value][]\" class=\"value\" placeholder=\"value\" value=\"" + value + "\"/>";
         if (section == 'body') {
             editorHtml += "<select><option value= \"text\">Text</option>";
             editorHtml += "<option value= \"file\">File</option></select>";
@@ -747,6 +795,7 @@ function showParamsEditor(section, a1) {
     editorHtml += "class=\"key\" placeholder=\"key\"/>";
     editorHtml += "<input type=\"text\" name=\"" + section + "[value][]\"";
     editorHtml += "class=\"value\" placeholder=\"value\"/>";
+    
     if (section == 'body') {
         editorHtml += "<select><option value= \"text\">Text</option>";
         editorHtml += "<option value= \"file\">File</option></select>";
@@ -757,6 +806,8 @@ function showParamsEditor(section, a1) {
     $('#' + section + '-ParamsFields').html(editorHtml);
     $('#' + section + '-ParamsEditor').fadeIn();
 
+    console.log(editorHtml);
+    
     addEditorListeners(section);
 }
 
@@ -829,6 +880,7 @@ $(document).ready(function() {
     postman.indexedDB.getAllRequestItems();
     addHeaderListeners();
     attachSidebarListeners();
+    initCollectionSelector();
     setContainerHeights();
 
     $('#methods ul li a').click(function() {
@@ -905,7 +957,7 @@ function addEditorListeners(section) {
                 newElementHtml += "<option value= \"file\">File</option></select>";
             }
             else {
-                newElementHtml += '<input type="file" name="body[value][]" multiple/>';
+                newElementHtml += '<input type="file" name="body[value][]" multiple class=\"value file\"/>';
                 newElementHtml += "<select><option value= \"file\">File</option>";
                 newElementHtml += "<option value= \"text\">Text</option></select>";
             }
@@ -1039,3 +1091,10 @@ function showSidebarSection(section, previousSection) {
     currentSidebarSection = section;
     $('#sidebarSection-' + section).css("display", "block");
 }
+
+function initCollectionSelector() {
+    $('#collectionSelector').change(function(event) {
+        var val = $('#collectionSelector').val();
+    });
+}
+
