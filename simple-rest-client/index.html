@@ -65,7 +65,9 @@
                     </ul>
                 </div>
                 <div id="sidebarSection-collections">
-                    <p>This is a collection and it's going to be awesome.</p>
+                    <ul id="collectionItems" class="clearfix">
+
+                    </ul>
                 </div>
             </div>
         </div>
@@ -245,6 +247,7 @@
 
             <div class="clearfix" id="newCollectionContainer">
                 <label for="newCollection">or add to a new one</label>
+
                 <div class="input">
                     <input type="text" class="medium" name="newCollection" id="newCollection"/>
                 </div>
@@ -260,8 +263,28 @@
 <script id="itemCollectionSelectorList" type="text/x-jquery-tmpl">
     <option value="${id}">${name}</option>
 </script>
+<script id="itemCollectionSidebarHead" type="text/x-jquery-tmpl">
+    <li id="collection-${id}" data-id="${id}" class="sidebarCollectionHead">
+        <span>${name}</span>
+        <ul id="collectionRequests-${id}"></ul>
+    </li>
+</script>
+<script id="itemCollectionSidebarRequest" type="text/x-jquery-tmpl">
+    <li id="collectionRequest-${id}" class="sidebarCollectionRequest clearfix">
+        <div onclick="loadCollectionRequest('${id}')">
+            <a href="javascript:void(0);"><span class="label success">${method}</span> {{html url}}</a>
+        </div>
+    </li>
+</script>
+<script id="itemHistorySidebarRequest" type="text/x-jquery-tmpl">
+    <li id="historyRequest-${id}" class="sidebarHistoryRequest clearfix">
+        <div onclick="loadRequest('${id}')">
+            <a href="javascript:void(0);"><span class="label success">${method}</span> {{html url}}</a>
+        </div>
+    </li>
+</script>
 </body>
-<script type="text/javascript" src="js/jquery.tmpl.min.js"></script>
+<script type = "text/javascript" src = "js/jquery.tmpl.min.js" ></script>
 <script type="text/javascript" src="js/bootstrap-twipsy.js"></script>
 <script type="text/javascript" src="js/bootstrap-modal.js"></script>
 <script type="text/javascript" src="js/bootstrap-alerts.js"></script>

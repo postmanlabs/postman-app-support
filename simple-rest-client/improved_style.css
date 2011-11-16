@@ -213,49 +213,6 @@ fieldset {
     margin-left: -10px;
 }
 
-#historyItems li {
-    margin-right: 7px;
-    padding: 8px;
-    border-radius: 5px;
-}
-
-#historyItems li:hover {
-    background-color: #ccc;
-}
-
-#historyItems li a {
-    color: #333;
-    font-size: 12px;
-    text-decoration: none;
-}
-
-.itemDeleteLink {
-    position: absolute;
-    height: 12px;
-    margin-top: -2px;
-    margin-left: 305px;
-    display: none;
-    z-index: 10;
-}
-
-.itemLink {
-    display: block;
-}
-
-.itemRequestType {
-    background: #2f2f2f;
-    padding: 5px;
-    border-radius: 5px;
-    color: #fff;
-    position: absolute;
-    font-size: 10px;
-    font-weight: bold;
-    margin-left: 335px;
-    margin-top: -5px;
-    display: none;
-    z-index: 10;
-}
-
 #pstatus {
     margin-top: 5px;
 }
@@ -563,4 +520,31 @@ li .right {
 }
 
 #newCollectionContainer {
+}
+
+.sidebarCollectionRequest,
+.sidebarHistoryRequest {
+}
+
+.sidebarCollectionRequest, .sidebarHistoryRequest div {
+    padding:  8px;
+}
+
+
+.sidebarCollectionRequest:hover, 
+.sidebarHistoryRequest:hover {
+    background-color: #DEDEDE;
+    cursor: pointer;
+}
+
+.sidebarCollectionHead {
+    font-weight: bold;
+}
+
+.sidebarCollectionRequest a,
+.sidebarCollectionRequest a:hover,
+.sidebarHistoryRequest a,
+.sidebarHistoryRequest a:hover {
+    color: #333;
+    text-decoration: none;
 }

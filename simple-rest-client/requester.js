@@ -385,12 +385,12 @@ function setupDB() {
                     db.createObjectStore("collections", {keyPath: "id"});
                     db.createObjectStore("collection_requests", {keyPath: "id"});
                     postman.indexedDB.getAllRequestItems();
-                    postman.indexedDB.renderCollectionSelectorList();
+                    postman.indexedDB.getCollections();
                 };
             }
             else {
                 postman.indexedDB.getAllRequestItems();
-                postman.indexedDB.renderCollectionSelectorList();   
+                postman.indexedDB.getCollections();
             }
 
         };
@@ -399,8 +399,6 @@ function setupDB() {
     };
 
     postman.indexedDB.addCollection = function(collection) {
-        console.log("Adding item to a collection");
-
         var db = postman.indexedDB.db;
         var trans = db.transaction(["collections"], IDBTransaction.READ_WRITE);
         var store = trans.objectStore("collections");
@@ -412,13 +410,36 @@ function setupDB() {
 
         request.onsuccess = function(e) {
             console.log("Added collection to collection database", collection);
-            postman.indexedDB.renderCollectionSelectorList();
+            postman.indexedDB.getCollections();
+            postman.indexedDB.getAllRequestsInCollection(id);
         };
 
         request.onerror = function(e) {
             console.log(e.value);
         }
     };
+
+    postman.indexedDB.addCollectionWithRequest = function(collection, collectionRequest) {
+        var db = postman.indexedDB.db;
+        var trans = db.transaction(["collections"], IDBTransaction.READ_WRITE);
+        var store = trans.objectStore("collections");
+
+        var request = store.put({
+            "id": collection.id,
+            "name": collection.name
+        });
+
+        request.onsuccess = function(e) {
+            console.log("Added collection to collection database", collection);
+            collectionRequest.collectionId = collection.id;
+            postman.indexedDB.getCollections();
+            postman.indexedDB.addCollectionRequest(collectionRequest);
+        };
+
+        request.onerror = function(e) {
+            console.log(e.value);
+        }
+    }
 
     postman.indexedDB.addCollectionRequest = function(req) {
         console.log("Adding collection request to the database");
@@ -441,23 +462,12 @@ function setupDB() {
 
         collectionRequest.onsuccess = function(e) {
             console.log("Added collection to collection database", e);
+            postman.indexedDB.getAllRequestsInCollection(req.collectionId);
         };
 
         collectionRequest.onerror = function(e) {
             console.log(e.value);
         }
-    };
-
-    postman.indexedDB.updateCollectionRequest = function(request) {
-
-    };
-
-    postman.indexedDB.getCollection = function(id) {
-
-    };
-
-    postman.indexedDB.getCollectionRequest = function(id) {
-
     };
 
     postman.indexedDB.deleteCollection = function(id) {
@@ -469,8 +479,7 @@ function setupDB() {
     };
 
 
-    postman.indexedDB.renderCollectionSelectorList = function() {
-        console.log("render collection list");
+    postman.indexedDB.getCollections = function() {
         var db = postman.indexedDB.db;
 
         if(db == null) {
@@ -478,6 +487,7 @@ function setupDB() {
             return;
         }
 
+        $('#collectionItems').html("");
         $('#selectCollection').html("<option>Select</option>");
 
         var trans = db.transaction(["collections"], IDBTransaction.READ_WRITE);
@@ -495,9 +505,10 @@ function setupDB() {
             }
 
             var collection = result.value;
-            console.log(collection);
             $('#itemCollectionSelectorList').tmpl([collection]).appendTo('#selectCollection');
+            $('#itemCollectionSidebarHead').tmpl([collection]).appendTo('#collectionItems');
 
+            postman.indexedDB.getAllRequestsInCollection(collection.id);
             //This wil call onsuccess again and again until no more request is left
             result.continue();
         };
@@ -507,8 +518,37 @@ function setupDB() {
         };
     };
 
-    postman.indexedDB.getAllCollectionRequests = function(id) {
-        
+    postman.indexedDB.getAllRequestsInCollection = function(id) {
+        $('#collectionRequests-' + id).html("");
+        var db = postman.indexedDB.db;
+        var trans = db.transaction(["collection_requests"], IDBTransaction.READ_WRITE);
+
+        //Get everything in the store
+        var keyRange = IDBKeyRange.lowerBound(0);
+        var store = trans.objectStore("collection_requests");
+
+        //Get everything in the store
+        var cursorRequest = store.openCursor(keyRange);
+
+        cursorRequest.onsuccess = function(e) {
+            var result = e.target.result;
+
+            if (!!result == false) {
+                return;
+            }
+
+            var request = result.value;
+            if(request.collectionId === id) {
+                var targetElement = "#collectionRequests-" + request.collectionId;
+                request.url = limitStringLineWidth(request.url, 55);
+                console.log(targetElement);
+                $('#itemCollectionSidebarRequest').tmpl([request]).appendTo(targetElement);
+            }
+
+            //This wil call onsuccess again and again until no more request is left
+            result.continue();
+        };
+        cursorRequest.onerror = postman.indexedDB.onerror;
     };
 
     postman.indexedDB.addRequest = function(id, url, method, headers, data, dataMode) {
@@ -543,7 +583,26 @@ function setupDB() {
 
         //Get everything in the store
         var cursorRequest = store.get(id);
-        
+
+        cursorRequest.onsuccess = function(e) {
+            var result = e.target.result;
+            if (!!result == false)
+                return;
+
+            loadRequestInEditor(result);
+            return result;
+        };
+        cursorRequest.onerror = postman.indexedDB.onerror;
+    };
+
+    postman.indexedDB.getCollectionRequest = function(id) {
+        var db = postman.indexedDB.db;
+        var trans = db.transaction(["collection_requests"], IDBTransaction.READ_WRITE);
+        var store = trans.objectStore("collection_requests");
+
+        //Get everything in the store
+        var cursorRequest = store.get(id);
+
         cursorRequest.onsuccess = function(e) {
             var result = e.target.result;
             if (!!result == false)
@@ -560,7 +619,7 @@ function setupDB() {
         if(db == null) {
             return;
         }
-        
+
         var trans = db.transaction(["requests"], IDBTransaction.READ_WRITE);
         var store = trans.objectStore("requests");
 
@@ -574,7 +633,7 @@ function setupDB() {
             if (!!result == false) {
                 return;
             }
-            
+
             var request = result.value;
             renderRequestToSidebar(request.url, request.method, request.id, "top");
 
@@ -622,29 +681,22 @@ function hideEmptyHistoryMessage() {
 }
 
 function renderRequestToSidebar(url, method, id, position) {
-    url = limitStringLineWidth(url, 55);
-    var itemString = "<li id=\"itemContainer-" + id + "\" class=\"clearfix\">";
-    itemString += "<div class=\"left clearfix\"><a href=\"javascript:void(0);\"";
-    itemString += " onclick=\"loadRequest('" + id + "')\" ";
-    itemString += "class=\"itemLink\" id=\"item-" + id + "\">";
-    itemString += url + "</a>";
-    itemString += "</div><div>";
-    itemString += " <a href=\"javascript:void(0);\"";
-    itemString += " onclick=\"deleteRequest('" + id + "')\" ";
-    itemString += "class=\"itemDeleteLink\" id=\"itemDeleteLink-" + id + "\">";
-    itemString += "<img src=\"images/delete.png\"/>";
-    itemString += "</a></div>";
-    method = method.toUpperCase();
-    itemString += " <span class=\"itemRequestType\">" + method + "</span>";
+    url = limitStringLineWidth(url, 50);
 
-    itemString += "</li>";
-
+    var request = {
+        "url": url,
+        "method": method,
+        "id": id,
+        "position": position
+    };
+    
     if (position === 'top') {
-        $("#historyItems").prepend(itemString);
+        $('#itemHistorySidebarRequest').tmpl([request]).prependTo('#historyItems');
     }
     else {
-        $("#historyItems").append(itemString);
+        $('#itemHistorySidebarRequest').tmpl([request]).appendTo('#historyItems');
     }
+
     addHistoryListeners();
 }
 
@@ -654,6 +706,10 @@ function removeRequestFromSidebar(id) {
 
 function loadRequest(id) {
     postman.indexedDB.getRequest(id);
+}
+
+function loadCollectionRequest(id) {
+    postman.indexedDB.getCollectionRequest(id);
 }
 
 function loadRequestInEditor(request) {
@@ -736,7 +792,7 @@ function getUrlVars(url) {
     if(quesLocation < 0) {
         return [];
     }
-    
+
     var vars = [], hash;
     var hashes = url.slice(quesLocation + 1).split('&');
     var element;
@@ -823,7 +879,7 @@ function showParamsEditor(section, a1) {
 
     var editorHtml = "";
     var i = 0;
-    
+
     //@todo Replace this with jquery templates
     //@todo Remove for in
     console.log(data);
@@ -834,7 +890,7 @@ function showParamsEditor(section, a1) {
         var element = params[index];
         var key = element.key;
         var value = element.value;
-        
+
         editorHtml += "<div>";
         editorHtml += "<input type=\"text\" data-section=\"" + section + "\" name=\"" + section + "[key][]\" class=\"key\" placeholder=\"key\" value=\"" + key + "\"/>";
         editorHtml += "<input type=\"text\" name=\"" + section + "[value][]\" class=\"value\" placeholder=\"value\" value=\"" + value + "\"/>";
@@ -855,7 +911,7 @@ function showParamsEditor(section, a1) {
     editorHtml += "class=\"key\" placeholder=\"key\"/>";
     editorHtml += "<input type=\"text\" name=\"" + section + "[value][]\"";
     editorHtml += "class=\"value\" placeholder=\"value\"/>";
-    
+
     if (section == 'body') {
         editorHtml += "<select><option value= \"text\">Text</option>";
         editorHtml += "<option value= \"file\">File</option></select>";
@@ -867,7 +923,7 @@ function showParamsEditor(section, a1) {
     $('#' + section + '-ParamsEditor').fadeIn();
 
     console.log(editorHtml);
-    
+
     addEditorListeners(section);
 }
 
@@ -936,7 +992,7 @@ $(document).ready(function() {
     initDB();
     lang();
     init();
-    
+
     addHeaderListeners();
     attachSidebarListeners();
     initCollectionSelector();
@@ -952,7 +1008,7 @@ $(document).ready(function() {
         setContainerHeights();
     });
 
-    
+
 });
 
 
@@ -1164,27 +1220,7 @@ function submitAddToCollectionForm() {
 
     var collection = new Collection();
 
-    if(newCollection) {
-        //Add the new collection and get guid
-        console.log("Add to a new collection");
-        collection.id = guid();
-        collection.name = newCollection;
-
-        postman.indexedDB.addCollection(collection);
-
-        $('#newCollection').val("");
-    }
-    else {
-        //Get guid of existing collection
-        console.log("Add from existing guid");
-        collection.id = existingCollectionId;
-    }
-
-    //Have guid here
-    //Add the request to a collection
-
     var collectionRequest = new CollectionRequest();
-    collectionRequest.collectionId = collection.id;
     collectionRequest.id = guid();
 
     collectionRequest.headers = $("#headers").val();
@@ -1194,10 +1230,26 @@ function submitAddToCollectionForm() {
     collectionRequest.dataMode = dataMode;
     collectionRequest.time = new Date().getTime();
 
-    console.log(collectionRequest);
+    if(newCollection) {
+        //Add the new collection and get guid
+        console.log("Add to a new collection");
+        collection.id = guid();
+        collection.name = newCollection;
 
-    postman.indexedDB.addCollectionRequest(collectionRequest);
+        postman.indexedDB.addCollectionWithRequest(collection, collectionRequest);
 
+        $('#newCollection').val("");
+    }
+    else {
+        //Get guid of existing collection
+        console.log("Add from existing guid");
+        collection.id = existingCollectionId;
+        collectionRequest.collectionId = collection.id;
+        postman.indexedDB.addCollectionRequest(collectionRequest);
+    }
+
+    //Have guid here
+    //Add the request to a collection
     $('#formModalAddToCollection').modal('hide');
 }
 
