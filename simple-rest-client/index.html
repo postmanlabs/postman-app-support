@@ -270,15 +270,27 @@
     </li>
 </script>
 <script id="itemCollectionSidebarRequest" type="text/x-jquery-tmpl">
-    <li id="collectionRequest-${id}" class="sidebarCollectionRequest clearfix">
-        <div onclick="loadCollectionRequest('${id}')">
+    <li id="sidebarRequest-${id}" class="sidebarCollectionRequest clearfix">
+        <div class="request-actions">
+            <a href="javascript:void(0);"
+                onclick="deleteCollectionRequest('${id}');">
+                <img src="images/delete.png"/>
+            </a>
+        </div>
+        <div class="request" onclick="loadCollectionRequest('${id}')">
             <a href="javascript:void(0);"><span class="label success">${method}</span> {{html url}}</a>
         </div>
     </li>
 </script>
 <script id="itemHistorySidebarRequest" type="text/x-jquery-tmpl">
-    <li id="historyRequest-${id}" class="sidebarHistoryRequest clearfix">
-        <div onclick="loadRequest('${id}')">
+    <li id="sidebarRequest-${id}" class="sidebarHistoryRequest clearfix">
+        <div class="request-actions">
+            <a href="javascript:void(0);"
+                onclick="deleteRequest('${id}');">
+                <img src="images/delete.png"/>
+            </a>
+        </div>
+        <div class="request" onclick="loadRequest('${id}')">
             <a href="javascript:void(0);"><span class="label success">${method}</span> {{html url}}</a>
         </div>
     </li>

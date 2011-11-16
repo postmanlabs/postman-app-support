@@ -548,3 +548,19 @@ li .right {
     color: #333;
     text-decoration: none;
 }
+
+.request-actions {
+    position: absolute;
+    margin-left: 310px;
+    z-index: 10;
+    opacity: 0.5;
+    display: none;
+}
+
+.request-actions:hover {
+    opacity: 1;
+}
+
+#historyItems {
+    margin-left: -7px;
+}

@@ -442,9 +442,6 @@ function setupDB() {
     }
 
     postman.indexedDB.addCollectionRequest = function(req) {
-        console.log("Adding collection request to the database");
-        console.log(req);
-
         var db = postman.indexedDB.db;
         var trans = db.transaction(["collection_requests"], IDBTransaction.READ_WRITE);
         var store = trans.objectStore("collection_requests");
@@ -540,9 +537,9 @@ function setupDB() {
             var request = result.value;
             if(request.collectionId === id) {
                 var targetElement = "#collectionRequests-" + request.collectionId;
-                request.url = limitStringLineWidth(request.url, 55);
-                console.log(targetElement);
+                request.url = limitStringLineWidth(request.url, 45);
                 $('#itemCollectionSidebarRequest').tmpl([request]).appendTo(targetElement);
+                addSidebarRequestListener(request);
             }
 
             //This wil call onsuccess again and again until no more request is left
@@ -555,8 +552,7 @@ function setupDB() {
         var db = postman.indexedDB.db;
         var trans = db.transaction(["requests"], IDBTransaction.READ_WRITE);
         var store = trans.objectStore("requests");
-
-        var request = store.put({
+        var historyRequest = {
             "id": id,
             "url": url.toString(),
             "method": method.toString(),
@@ -564,11 +560,14 @@ function setupDB() {
             "data": data.toString(),
             "dataMode": dataMode.toString(),
             "timestamp": new Date().getTime()
-        });
+        };
+
+        var request = store.put(historyRequest);
 
         request.onsuccess = function(e) {
             //Re-render all the todos
             renderRequestToSidebar(url,  method, id, "top");
+            addSidebarRequestListener(historyRequest);
         };
 
         request.onerror = function(e) {
@@ -636,6 +635,7 @@ function setupDB() {
 
             var request = result.value;
             renderRequestToSidebar(request.url, request.method, request.id, "top");
+            addSidebarRequestListener(request);
 
             //This wil call onsuccess again and again until no more request is left
             result.continue();
@@ -648,6 +648,22 @@ function setupDB() {
         var db = postman.indexedDB.db;
         var trans = db.transaction(["requests"], IDBTransaction.READ_WRITE, 0);
         var store = trans.objectStore(["requests"]);
+
+        var request = store.delete(id);
+
+        request.onsuccess = function(e) {
+            removeRequestFromSidebar(id);
+        };
+
+        request.onerror = function(e) {
+            console.log(e);
+        };
+    };
+
+    postman.indexedDB.deleteCollectionRequest = function(id) {
+        var db = postman.indexedDB.db;
+        var trans = db.transaction(["collection_requests"], IDBTransaction.READ_WRITE, 0);
+        var store = trans.objectStore(["collection_requests"]);
 
         var request = store.delete(id);
 
@@ -681,7 +697,7 @@ function hideEmptyHistoryMessage() {
 }
 
 function renderRequestToSidebar(url, method, id, position) {
-    url = limitStringLineWidth(url, 50);
+    url = limitStringLineWidth(url, 45);
 
     var request = {
         "url": url,
@@ -696,12 +712,10 @@ function renderRequestToSidebar(url, method, id, position) {
     else {
         $('#itemHistorySidebarRequest').tmpl([request]).appendTo('#historyItems');
     }
-
-    addHistoryListeners();
 }
 
 function removeRequestFromSidebar(id) {
-    $('#itemContainer-' + id).slideUp(100);
+    $('#sidebarRequest-' + id).slideUp(100);
 }
 
 function loadRequest(id) {
@@ -762,6 +776,10 @@ function clearResponse() {
 
 function deleteRequest(id) {
     postman.indexedDB.deleteRequest(id);
+}
+
+function deleteCollectionRequest(id) {
+    postman.indexedDB.deleteCollectionRequest(id);
 }
 
 function lang() {
@@ -882,8 +900,6 @@ function showParamsEditor(section, a1) {
 
     //@todo Replace this with jquery templates
     //@todo Remove for in
-    console.log(data);
-    console.log(params);
 
     var paramsLength = params.length;
     for (var index = 0; i < paramsLength; index++) {
@@ -1012,19 +1028,16 @@ $(document).ready(function() {
 });
 
 
-function addHistoryListeners() {
-    $('#historyItems li').mouseenter(function() {
-        var deleteEl = jQuery('.itemDeleteLink', this);
-        var methodEl = jQuery('.itemRequestType', this);
-        deleteEl.css('display', 'block');
-        methodEl.css('display', 'block');
+function addSidebarRequestListener(request) {
+    var targetElement = '#sidebarRequest-' + request.id;
+    $(targetElement).mouseenter(function() {
+        var actionsEl = jQuery('.request-actions', this);
+        actionsEl.css('display', 'block');
     });
 
-    $('#historyItems li').mouseleave(function() {
-        var deleteEl = jQuery('.itemDeleteLink', this);
-        var methodEl = jQuery('.itemRequestType', this);
-        deleteEl.css('display', 'none');
-        methodEl.css('display', 'none');
+    $(targetElement).mouseleave(function() {
+        var actionsEl = jQuery('.request-actions', this);
+        actionsEl.css('display', 'none');
     });
 }
 
@@ -1216,8 +1229,6 @@ function submitAddToCollectionForm() {
     var existingCollectionId = $('#selectCollection').val();
     var newCollection = $('#newCollection').val();
 
-    console.log(existingCollectionId, newCollection);
-
     var collection = new Collection();
 
     var collectionRequest = new CollectionRequest();
@@ -1232,7 +1243,6 @@ function submitAddToCollectionForm() {
 
     if(newCollection) {
         //Add the new collection and get guid
-        console.log("Add to a new collection");
         collection.id = guid();
         collection.name = newCollection;
 
@@ -1242,7 +1252,6 @@ function submitAddToCollectionForm() {
     }
     else {
         //Get guid of existing collection
-        console.log("Add from existing guid");
         collection.id = existingCollectionId;
         collectionRequest.collectionId = collection.id;
         postman.indexedDB.addCollectionRequest(collectionRequest);
