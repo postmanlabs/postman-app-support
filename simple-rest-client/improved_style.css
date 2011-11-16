@@ -559,6 +559,8 @@ li .right {
 }
 
 #formModalAddToCollection label {
-    width: 180px;
     margin-right: 20px;
+}
+
+#newCollectionContainer {
 }

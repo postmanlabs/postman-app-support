@@ -228,31 +228,37 @@
      class="modal fade">
     <div class="modal-header">
         <a href="#" class="close">×</a>
+
         <h3>Add request to a collection</h3>
     </div>
     <div class="modal-body">
         <form>
-            <div class="clearfix">
-            <label for="normalSelect">Select an existing collection</label>
-            <div class="input">
-              <select name="normalSelect" class="medium" id="normalSelect">
-                <option>1</option>
-                <option>2</option>
-                <option>3</option>
-                <option>4</option>
-                <option>5</option>
-              </select>
+            <div class="clearfix" id="selectCollectionContainer">
+                <label for="selectCollection">Select a collection</label>
+
+                <div class="input">
+                    <select name="selectCollection" class="medium" id="selectCollection">
+                        <option value="_select">Select</option>
+                    </select>
+                </div>
             </div>
-          </div>
+
+            <div class="clearfix" id="newCollectionContainer">
+                <label for="newCollection">or add to a new one</label>
+                <div class="input">
+                    <input type="text" class="medium" name="newCollection" id="newCollection"/>
+                </div>
+            </div>
         </form>
     </div>
     <div class="modal-footer">
-        <a href="#" class="btn primary">Done</a>
-        <a href="#" class="btn secondary">Cancel</a>
+        <a href="javascript:void(0);" onclick="submitAddToCollectionForm();" class="btn primary">Done</a>
+        <a href="javascript:void(0);" onclick="closeAddToCollectionForm();" class="btn secondary">Cancel</a>
     </div>
 </div>
 <!--- jQuery Templates -->
-<script id="itemCollectionListCategory" type="text/x-jquery-tmpl">
+<script id="itemCollectionSelectorList" type="text/x-jquery-tmpl">
+    <option value="${id}">${name}</option>
 </script>
 </body>
 <script type="text/javascript" src="js/jquery.tmpl.min.js"></script>
