@@ -65,9 +65,6 @@ statusCodes[503] = 'Service Unavailable';
 statusCodes[504] = 'Gateway Time-out';
 statusCodes[505] = 'HTTP Version not supported';
 
-var keyItemCount = "imRestClient.itemCount";
-var keyItemBase = "imRestClient.item";
-var keyRequests = "imRestClient.requests";
 var requests;
 var bodyFileData;
 var dataMode = "params";
@@ -131,19 +128,6 @@ function clearFields() {
     $("#respData").css("display", "none");
 
     $('#codeData').attr('data-formatted', 'false');
-}
-
-function handleFileSelect(evt) {
-    var files = evt.target.files;
-    var reader = new FileReader();
-    var f = files[0];
-
-    reader.onload = (function(theFile) {
-        return function(e) {
-            bodyFileData = e.target.result;
-        };
-    })(f);
-    reader.readAsText(f);
 }
 
 function limitStringLineWidth(string, numChars) {
@@ -349,12 +333,6 @@ function init() {
     $("#submitRequest").click(function() {
         sendRequest();
     });
-
-    //Initialize the localStarage requsts array if not present
-    if (!localStorage[keyRequests]) {
-        var r = [];
-        localStorage[keyRequests] = JSON.stringify(r);
-    }
 
     $('#langFormat').change(function() {
         var format = $('#language').val();

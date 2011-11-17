@@ -9,7 +9,7 @@ html, body {
     border-bottom: solid thin #ccc;
     float: left;
     padding-left: 10px;
-    background: #eaeaea;
+    background: -webkit-linear-gradient(rgba(234, 238, 243, 0.2), #EAEAEA), -webkit-linear-gradient(left, #EAEAEA, #EAEAEA 97%, #DDDDDD);
     z-index: 1;
     width: 340px;
     height: 100%;
