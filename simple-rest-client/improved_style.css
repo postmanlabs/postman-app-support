@@ -246,6 +246,11 @@ fieldset {
     width: 625px;
 }
 
+.paramsEditor .actions {
+    width: 550px;
+    margin-bottom: 10px;
+}
+
 .paramsEditor h4 {
     font-size: 11px;
     margin-top: 2px;
@@ -483,6 +488,7 @@ li .right {
 
 #headers-ParamsEditor {
     margin-top: 15px;
+    width: 625px;
 }
 
 #requestUrl {
@@ -499,6 +505,10 @@ li .right {
 
 #sidebarSection-collections {
     display: none;
+}
+
+#requestActions {
+    width: 550px;
 }
 
 #requestActionsMain {
@@ -610,4 +620,18 @@ li .right {
     text-align: center;
     margin-right: 5px;
     cursor: pointer;
+}
+
+#url-ParamsEditor .key,
+#headers-ParamsEditor .key {
+    width: 282px;
+}
+
+#url-ParamsEditor .value,
+#headers-ParamsEditor .value {
+    width: 281px;
+}
+
+.form-stacked {
+    margin-bottom: 0px;
 }
