@@ -42,17 +42,17 @@
 <body>
 <header>
     <div id="logo" class="clearfix">
-        <img src="images/postman.jpg" alt="POSTMAN" height="18px"/>
+        <img src="images/logo.png" alt="POSTMAN" height="18px"/>
         <span class="smallheadertext"> A better HTTP client to test web services</span>
     </div>
     <div id="credits">
-        By <a href="http://twitter.com/a85" target="_blank">@a85</a> <a href="http://twitter.com/slarti"
-                                                                        target="_blank">@slarti</a> and
-        <a href="http://twitter.com/sobtiankit" target="_blank">@sobtiankit</a>
+        By <a href="http://twitter.com/a85" target="_blank">@a85</a> and <a href="http://twitter.com/slarti"
+                                                                        target="_blank">@slarti</a>
     </div>
 </header>
-<div id="container" class="clearfix">
-    <div id="sidebar" class="clearfix">
+<div id="container">
+    <div id="sidebar">
+        <div id="sidebarFiller"></div>
         <div id="sidebarContainer" class="clearfix">
             <ul class="pills" data-tabs="tabs">
                 <li class="active"><a href="javascript:void(0);" data-id="history">History</a></li>
@@ -267,16 +267,17 @@
     <li id="collection-${id}" data-id="${id}" class="sidebarCollection">
         <div class="sidebar-collection-head">
             <div class="collection-head-actions">
+                <span class="label">Show</span>
                 <a href="javascript:void(0);"
                     onclick="deleteCollection('${id}');">
-                    <img src="images/delete.png"/>
+                    <img src="images/delete.png" style="vertical-align: middle;"/>
                 </a>
             </div>
-            <div class="sidebar-collection-head-name">
+            <div class="sidebar-collection-head-name" data-id="${id}">
                 ${name}
             </div>
         </div>
-        <ul id="collectionRequests-${id}"></ul>
+        <ul id="collectionRequests-${id}" class="sidebar-collection-requests"></ul>
     </li>
 </script>
 <script id="itemCollectionSidebarRequest" type="text/x-jquery-tmpl">
@@ -288,7 +289,7 @@
             </a>
         </div>
         <div class="request" onclick="loadCollectionRequest('${id}')">
-            <a href="javascript:void(0);"><span class="label success">${method}</span> {{html url}}</a>
+            <a href="javascript:void(0);"><span class="label">${method}</span> {{html url}}</a>
         </div>
     </li>
 </script>
@@ -301,7 +302,7 @@
             </a>
         </div>
         <div class="request" onclick="loadRequest('${id}')">
-            <a href="javascript:void(0);"><span class="label success">${method}</span> {{html url}}</a>
+            <a href="javascript:void(0);"><span class="label">${method}</span> {{html url}}</a>
         </div>
     </li>
 </script>

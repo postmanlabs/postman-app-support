@@ -127,9 +127,6 @@ function clearFields() {
     $("#responseHeaders").val("");
     $("#codeData").text("");
 
-    $("#responseHeaders").height(20);
-    $("#postputdata").height(20);
-
     $("#respHeaders").css("display", "none");
     $("#respData").css("display", "none");
 
@@ -689,6 +686,7 @@ function setupDB() {
 
         request.onsuccess = function(e) {
             removeCollectionFromSidebar(id);
+            removeCollectionFromSelector(id);
         };
 
         request.onerror = function(e) {
@@ -742,6 +740,10 @@ function removeCollectionFromSidebar(id) {
     $('#collection-' + id).slideUp(100);
 }
 
+function removeCollectionFromSelector(id) {
+    var target = '#selectCollection option[value="' + id + '"]';
+    $(target).remove();
+}
 function loadRequest(id) {
     postman.indexedDB.getRequest(id);
 }
@@ -966,8 +968,6 @@ function showParamsEditor(section, a1) {
     $('#' + section + '-ParamsFields').html(editorHtml);
     $('#' + section + '-ParamsEditor').fadeIn();
 
-    console.log(editorHtml);
-
     addEditorListeners(section);
 }
 
@@ -1027,8 +1027,6 @@ function removeBodyListeners() {
 }
 
 function setContainerHeights() {
-    var docHeight = $(document).height();
-    $('#sidebar').height(docHeight + "px");
 }
 
 $(document).ready(function() {
@@ -1064,6 +1062,33 @@ function addSidebarCollectionHeadListener(collection) {
         var actionsEl = jQuery('.collection-head-actions', this);
         actionsEl.css('display', 'none');
     });
+
+    var targetElementName = '#collection-' + collection.id + " .sidebar-collection-head-name";
+    var targetElementLabel = '#collection-' + collection.id + " .collection-head-actions .label";
+
+    $(targetElementName).click(function() {
+        console.log("Toggle collection request list");
+        var id = $(this).attr('data-id');
+        toggleCollectionRequestList(id);
+    });
+
+    $(targetElementLabel).click(function() {
+        var id = $(this).parent().parent().parent().attr('data-id');
+        toggleCollectionRequestList(id);
+    });
+}
+
+function toggleCollectionRequestList(id) {
+    var target = "#collectionRequests-" + id;
+    var label = "#collection-" + id + " .collection-head-actions .label";
+    if($(target).css("display") == "none") {
+        $(label).html("Hide");
+        $(target).slideDown(100);
+    }
+    else {
+        $(label).html("Show");
+        $(target).slideUp(100);
+    }
 }
 
 function addSidebarRequestListener(request) {

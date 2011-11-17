@@ -5,18 +5,46 @@ html, body {
     min-height: 800px;
 }
 
+#sidebar {
+    border-right: solid thin #ccc;
+    border-bottom: solid thin #ccc;
+    float: left;
+    padding-left: 10px;
+    background: #eaeaea;
+    z-index: 1;
+    width: 340px;
+    height: 100%;
+    position: absolute;
+    margin-top: 50px;
+    overflow: scroll;
+}
+
+#sidebarFiller {
+}
+
 header {
     display: block;
     font-size: 13px;
     min-height: 2em;
-    background-color: #0074a5;
+    background-color: #333;
     margin-top: 0;
     border-bottom-style: solid;
-    border-bottom-color: #116284;
+    border-bottom-color: #222;
     border-bottom-width: 5px;
     height: 50px;
+    position: absolute;
     width: 100%;
+    z-index: 2;
 }
+
+#main {
+    background: #fff;
+    float: left;
+    padding-bottom: 20px;
+    margin-top: 50px;
+    margin-left: 350px;
+}
+
 
 footer {
     display: block;
@@ -329,18 +357,19 @@ fieldset {
 }
 
 #credits a {
-    background-color: #222;
+    background-color: #555;
     color: #fff;
     padding: 4px;
     border-radius: 4px;
-    border: solid thin #222;
+    border: solid thin #555;
     text-decoration: none;
     font-weight: bold;
+    cursor: pointer;
 }
 
 #credits a:hover {
-    background-color: #555;
-    border: solid thin #555;
+    background-color: #0069D6;
+    border: solid thin #0069D6;
     text-decoration: none;
 }
 
@@ -367,28 +396,6 @@ li .right {
 }
 
 #langFormat {
-}
-
-#main {
-    background: #fff;
-    float: left;
-    padding-bottom: 20px;
-}
-
-#main-scroller {
-}
-
-#sidebar {
-    float: left;
-    width: 340px;
-    padding-left: 10px;
-    background: #eaeaea;
-    overflow-y: scroll;
-    height: 100%;
-}
-
-#container {
-    height: 100%
 }
 
 #request,
@@ -425,10 +432,18 @@ li .right {
 }
 
 #sidebarContainer ul {
-    margin-left: -5px;
-    margin-bottom: 5px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
 }
 
+#sidebarSectionContainer ul {
+    margin-left: -10px;
+}
+
+#sidebarContainer .pills {
+    margin-left: -4px;
+}
 #sidebarContainer .pills .active .a {
     background-color: #333;
 }
@@ -518,7 +533,13 @@ li .right {
 .sidebarHistoryRequest {
 }
 
-.sidebarCollectionRequest, .sidebarHistoryRequest div {
+.sidebarCollectionRequest div
+{
+    padding:  8px;
+    padding-left: 20px;
+}
+
+.sidebarHistoryRequest div {
     padding:  8px;
 }
 
@@ -531,7 +552,7 @@ li .right {
 
 .sidebar-collection-head {
     font-weight: bold;
-    padding:  5px;
+    padding-left: 5px;
 }
 
 .sidebarCollectionRequest a,
@@ -547,13 +568,17 @@ li .right {
 }
 .collection-head-actions {
     position: absolute;
-    margin-left: 315px;
+    margin-left: 270px;
     z-index: 10;
-    opacity: 0.5;
     display: none;
+    padding-top: 4px;
 }
 
-.collection-head-actions:hover {
+.collection-head-actions img {
+    opacity: 0.5;
+}
+
+.collection-head-actions img:hover {
     opacity: 1;
 }
 
@@ -567,4 +592,22 @@ li .right {
 
 .request-actions:hover {
     opacity: 1;
+}
+
+.sidebar-collection-head-name {
+    cursor: pointer;
+    padding: 5px;
+}
+
+.sidebar-collection-requests {
+    display: none;
+}
+
+.collection-head-actions span {
+    display: block;
+    float: left;
+    width: 35px;
+    text-align: center;
+    margin-right: 5px;
+    cursor: pointer;
 }
