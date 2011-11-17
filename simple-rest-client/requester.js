@@ -75,7 +75,7 @@ var requestStartTime = 0;
 var requestEndTime = 0;
 var requestMethod = 'GET';
 var dataInputType = "text";
-
+var availableUrls = [];
 var currentSidebarSection = "history";
 
 var postman = {};
@@ -538,6 +538,10 @@ function setupDB() {
             var request = result.value;
             if(request.collectionId === id) {
                 var targetElement = "#collectionRequests-" + request.collectionId;
+
+                availableUrls.push(request.url);
+                addUrlAutoComplete();
+
                 request.url = limitStringLineWidth(request.url, 45);
                 $('#itemCollectionSidebarRequest').tmpl([request]).appendTo(targetElement);
                 addSidebarRequestListener(request);
@@ -567,6 +571,8 @@ function setupDB() {
 
         request.onsuccess = function(e) {
             //Re-render all the todos
+            availableUrls.push(url);
+            addUrlAutoComplete();
             renderRequestToSidebar(url,  method, id, "top");
             addSidebarRequestListener(historyRequest);
         };
@@ -635,6 +641,9 @@ function setupDB() {
             }
 
             var request = result.value;
+            
+            availableUrls.push(request.url);
+            addUrlAutoComplete();
             renderRequestToSidebar(request.url, request.method, request.id, "top");
             addSidebarRequestListener(request);
 
@@ -1036,6 +1045,7 @@ $(document).ready(function() {
     init();
 
     addHeaderListeners();
+    addUrlAutoComplete();
     attachSidebarListeners();
     initCollectionSelector();
     setContainerHeights();
@@ -1249,6 +1259,13 @@ function addHeaderAutoComplete() {
     });
 }
 
+function addUrlAutoComplete() {
+    console.log("Added autocomplete functionality", availableUrls);
+    $("#url").autocomplete({
+        source: availableUrls,
+        delay: 50
+    });
+}
 function setResponseFormat(format) {
     $('#codeData').removeClass();
     $('#codeData').addClass('chili-lang-' + format);
