@@ -6,7 +6,6 @@ html, body {
 }
 
 #sidebar {
-    border-right: solid thin #ccc;
     border-bottom: solid thin #ccc;
     float: left;
     padding-left: 10px;
@@ -14,8 +13,7 @@ html, body {
     z-index: 1;
     width: 340px;
     height: 100%;
-    position: absolute;
-    margin-top: 50px;
+    position: fixed;
     overflow: scroll;
 }
 
@@ -41,7 +39,6 @@ header {
     background: #fff;
     float: left;
     padding-bottom: 20px;
-    margin-top: 50px;
     margin-left: 350px;
 }
 
@@ -191,10 +188,32 @@ fieldset {
     box-shadow: 0px 0px 5px #535353;
 }
 
-#logo {
+#header {
     padding: 12px;
-    padding-left: 15px;
-    float: left
+    padding-left: 10px;
+    margin-left: -10px;
+    background: #333;
+}
+
+#logo {
+    float: left;
+}
+
+#mainNavigation {
+    float: right;
+    margin-right: 10px;
+}
+
+#mainNavigation a {
+    color: white;
+    padding: 5px;
+    background: #444;
+    border-radius: 4px;
+}
+
+#mainNavigation a:hover {
+    background: #0074a5;
+    text-decoration: none;
 }
 
 #sidebarContainer {

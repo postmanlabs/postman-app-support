@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8"/>
-    <title>POSTMan for Google Chrome</title>
+    <title>Postman for Google Chrome</title>
     <link rel="stylesheet" type="text/css" href="improved_style.css"/>
     <link rel="stylesheet" type="text/css" href="css/ui-lightness/jquery-ui-1.8.14.custom.css"/>
     <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"/>
@@ -40,19 +40,16 @@
     <script type="text/javascript" src="requester.js"></script>
 </head>
 <body>
-<header>
-    <div id="logo" class="clearfix">
-        <img src="images/logo.png" alt="POSTMAN" height="18px"/>
-        <span class="smallheadertext"> A better HTTP client to test web services</span>
-    </div>
-    <div id="credits">
-        By <a href="http://twitter.com/a85" target="_blank">@a85</a> and <a href="http://twitter.com/slarti"
-                                                                        target="_blank">@slarti</a>
-    </div>
-</header>
-<div id="container">
+<div id="container" class="clearfix">
     <div id="sidebar">
-        <div id="sidebarFiller"></div>
+        <div id="header" class="clearfix">
+            <div id="logo">
+                <img src="images/logo.png" alt="POSTMAN" height="18px"/>
+            </div>
+            <div id="mainNavigation">
+                <a href="javascript:void(0);" data-controls-modal="modalAboutPostman" data-backdrop="static">About</a>
+            </div>
+        </div>
         <div id="sidebarContainer" class="clearfix">
             <ul class="pills" data-tabs="tabs">
                 <li class="active"><a href="javascript:void(0);" data-id="history">History</a></li>
@@ -257,6 +254,17 @@
     <div class="modal-footer">
         <a href="javascript:void(0);" onclick="submitAddToCollectionForm();" class="btn primary">Done</a>
         <a href="javascript:void(0);" onclick="closeAddToCollectionForm();" class="btn secondary">Cancel</a>
+    </div>
+</div>
+<div id="modalAboutPostman" class="modal fade">
+    <div class="modal-header">
+        <h3>About Postman</h3>
+    </div>
+    <div class="modal-body">
+        
+    </div>
+    <div class="modal-footer">
+        <a href="javascript:void(0);" onclick="closeAboutPostman();" class="btn primary">Close</a>
     </div>
 </div>
 <!--- jQuery Templates -->

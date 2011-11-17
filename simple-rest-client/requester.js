@@ -1325,6 +1325,9 @@ function submitAddToCollectionForm() {
 }
 
 function closeAddToCollectionForm() {
-    console.log("Close add to collection");
     $('#formModalAddToCollection').modal('hide');
+}
+
+function closeAboutPostman() {
+    $('#modalAboutPostman').modal('hide');
 }
