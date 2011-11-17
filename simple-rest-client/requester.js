@@ -428,9 +428,8 @@ function setupDB() {
         });
 
         request.onsuccess = function(e) {
-            console.log("Added collection to collection database", collection);
             collectionRequest.collectionId = collection.id;
-            
+
             $('#itemCollectionSelectorList').tmpl([collection]).appendTo('#selectCollection');
             $('#itemCollectionSidebarHead').tmpl([collection]).appendTo('#collectionItems');
 
@@ -461,12 +460,13 @@ function setupDB() {
         });
 
         collectionRequest.onsuccess = function(e) {
-            console.log("Added collection to collection database", e);
+            var targetElement = "#collectionRequests-" + req.collectionId;
+            addAvailableUrl(req.url);
+            addUrlAutoComplete();
 
-            if(toRefreshSidebar) {
-                postman.indexedDB.getAllRequestsInCollection(req.collectionId);
-            }
-
+            req.url = limitStringLineWidth(req.url, 45);
+            $('#itemCollectionSidebarRequest').tmpl([req]).appendTo(targetElement);
+            addSidebarRequestListener(req);
         };
 
         collectionRequest.onerror = function(e) {
@@ -507,7 +507,7 @@ function setupDB() {
             //This wil call onsuccess again and again until no more request is left
 
             addSidebarCollectionHeadListener(collection);
-            
+
             result.continue();
         };
 
@@ -539,7 +539,7 @@ function setupDB() {
             if(request.collectionId === id) {
                 var targetElement = "#collectionRequests-" + request.collectionId;
 
-                availableUrls.push(request.url);
+                addAvailableUrl(request.url);
                 addUrlAutoComplete();
 
                 request.url = limitStringLineWidth(request.url, 45);
@@ -571,7 +571,7 @@ function setupDB() {
 
         request.onsuccess = function(e) {
             //Re-render all the todos
-            availableUrls.push(url);
+            addAvailableUrl(url);
             addUrlAutoComplete();
             renderRequestToSidebar(url,  method, id, "top");
             addSidebarRequestListener(historyRequest);
@@ -641,8 +641,8 @@ function setupDB() {
             }
 
             var request = result.value;
-            
-            availableUrls.push(request.url);
+
+            addAvailableUrl(request.url);
             addUrlAutoComplete();
             renderRequestToSidebar(request.url, request.method, request.id, "top");
             addSidebarRequestListener(request);
@@ -732,7 +732,7 @@ function renderRequestToSidebar(url, method, id, position) {
         "id": id,
         "position": position
     };
-    
+
     if (position === 'top') {
         $('#itemHistorySidebarRequest').tmpl([request]).prependTo('#historyItems');
     }
@@ -763,7 +763,7 @@ function loadCollectionRequest(id) {
 
 function loadRequestInEditor(request) {
     var method = request.method.toLowerCase();
-
+    
     $('#url').val(request.url);
 
     //Set proper class for method and the variable
@@ -801,6 +801,8 @@ function loadRequestInEditor(request) {
 
     closeParamsEditor("url");
     clearResponse();
+
+    $('body').scrollTop(0);
 }
 
 function clearResponse() {
@@ -1077,7 +1079,6 @@ function addSidebarCollectionHeadListener(collection) {
     var targetElementLabel = '#collection-' + collection.id + " .collection-head-actions .label";
 
     $(targetElementName).click(function() {
-        console.log("Toggle collection request list");
         var id = $(this).attr('data-id');
         toggleCollectionRequestList(id);
     });
@@ -1260,28 +1261,38 @@ function addHeaderAutoComplete() {
 }
 
 function addUrlAutoComplete() {
-    console.log("Added autocomplete functionality", availableUrls);
     $("#url").autocomplete({
         source: availableUrls,
         delay: 50
     });
 }
 function setResponseFormat(format) {
-    $('#codeData').removeClass();
-    $('#codeData').addClass('chili-lang-' + format);
-
     var val = $('#codeData').html();
-    var isFormatted = $('#codeData').attr('data-formatted');
 
-    if (format === 'javascript' && isFormatted === 'false') {
-        var jsonObject = JSON.parse(val);
-        var text = JSON.stringify(jsonObject, null, '\t');
-        $('#codeData').html(text);
-        $('#codeData').attr('data-formatted', 'true');
+    if(format === 'iframe') {
+        $('#responseAsText').css("display", "none");
+        $('#responseAsIFrame').css("display", "block");
+        $('#codeIFrame').html(val);
+    }
+    else {
+        $('#responseAsText').css("display", "block");
+        $('#responseAsIFrame').css("display", "none");
+        $('#codeData').removeClass();
+        $('#codeData').addClass('chili-lang-' + format);
+
+        var isFormatted = $('#codeData').attr('data-formatted');
+
+        if (format === 'javascript' && isFormatted === 'false') {
+            var jsonObject = JSON.parse(val);
+            var text = JSON.stringify(jsonObject, null, '\t');
+            $('#codeData').html(text);
+            $('#codeData').attr('data-formatted', 'true');
+        }
+
+        $.chili.options.automatic.active = true;
+        $('#codeData').chili();
     }
 
-    $.chili.options.automatic.active = true;
-    var $chili = $('#codeData').chili();
 }
 
 function attachSidebarListeners() {
@@ -1347,4 +1358,10 @@ function closeAddToCollectionForm() {
 
 function closeAboutPostman() {
     $('#modalAboutPostman').modal('hide');
+}
+
+function addAvailableUrl(url) {
+    if($.inArray(url, availableUrls) == -1) {
+        availableUrls.push(url);
+    }
 }

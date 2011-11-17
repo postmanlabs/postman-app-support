@@ -214,8 +214,16 @@
                             </select>
                         </div>
                         <div name="responseData" id="responseData" contenteditable="true">
-                            <pre><code name="codeData" id="codeData" class="chili-lang-html" data-formatted="false">
-                                &nbsp;</code></pre>
+                            <div id="responseAsText">
+                                <pre><code name="codeData" id="codeData" class="chili-lang-html" data-formatted="false">
+                                    &nbsp;</code></pre>
+                            </div>
+                            <div id="responseAsIFrame">
+                                <div id="codeIFrame"></div>
+                            </div>
+                            <div id="responseAsImage">
+
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -261,12 +269,16 @@
         <h3>About Postman</h3>
     </div>
     <div class="modal-body">
-        <p>Postman was created to make testing web services easier and avoid repetitive tasks.
-            <br/>
-            Have a suggestion or found a bug? Let us know on <a href="http://www.github.com/a85">Github</a>.
+        <p>
+            Postman makes testing web services easier. By getting rid of repetitive tasks and an intuitive interface, Postman helps you in
+            allowing complex requests to be formed quickly.
+        </p>
+        <p>
+            We are trying to make Postman better and faster all the time.
+            If you have a suggestion or found a bug? Let us know on
+            <a href="http://www.github.com/a85/POSTMan-Chrome-Extension">Github</a>.
         </p>
 
-        <strong>Contributors</strong>
         <ul id="contributors">
             <li>Abhinav Asthana <a href="http://www.twitter.com/a85">@a85</a></li>
             <li>Sivaraman Siddharth <a href="http://www.twitter.com/slarti">@slarti</a></li>

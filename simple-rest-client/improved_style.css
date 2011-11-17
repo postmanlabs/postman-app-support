@@ -486,6 +486,14 @@ li .right {
     background-color: white;
 }
 
+#responseAsIFrame {
+    width: 100%;
+}
+#codeIFrame {
+    width: 100%;
+    border: none;
+}
+
 .hsbarV {
     position: absolute;
     z-index: 100;
@@ -551,8 +559,8 @@ li .right {
     position: absolute;
     top: 50%;
     left: 50%;
-    margin-top: -100px;
-    margin-left: -200px;
+    margin-top: -150px;
+    margin-left: -250px;
     display: none;
 }
 
@@ -565,7 +573,7 @@ li .right {
     top: 50%;
     left: 50%;
     margin-top: -150px;
-    margin-left: -200px;
+    margin-left: -250px;
     display: none;
 }
 
@@ -673,4 +681,12 @@ li .right {
     list-style: none;
     margin: 0;
     padding:  0;
+}
+
+#responseAsIFrame {
+    display: none;
+}
+
+#responseAsImage {
+    display: none;
 }
