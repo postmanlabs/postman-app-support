@@ -74,6 +74,7 @@ var requestMethod = 'GET';
 var dataInputType = "text";
 var availableUrls = [];
 var currentSidebarSection = "history";
+var currentResponse;
 
 var postman = {};
 postman.indexedDB = {};
@@ -86,6 +87,9 @@ var indexedDB = window.indexedDB || // Use the standard DB API
 // Firefox does not prefix these two:
 var IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction;
 var IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange;
+var IDBCursor = window.IDBCursor || window.webkitIDBCursor;
+
+var twitterButton = '<a href="https://twitter.com/share" class="twitter-share-button" data-url="https://chrome.google.com/webstore/detail/fofkknmmmfkaddpcncigehnadkalmhhj" data-text="I am using Postman to kick some API ass!" data-count="horizontal" data-via="a85">Tweet</a><script type="text/javascript" src="http://platform.twitter.com/widgets.js"></script>';
 
 function Collection() {
     this.id = "";
@@ -113,6 +117,12 @@ function Request() {
     this.data = "";
     this.dataMode = "params";
     this.timestamp = 0;
+}
+
+function Response() {
+    this.id = "";
+    this.headers = "";
+    this.text = "";
 }
 
 function clearFields() {
@@ -247,6 +257,8 @@ function sendRequest() {
 }
 
 function readResponse() {
+    currentResponse = new Response();
+
     $('#submitRequest').button("reset");
 
     $('#responseStatus').css("display", "block");
@@ -266,7 +278,11 @@ function readResponse() {
                 $("#debugLink").attr('href', debugurl[1]).html(debugurl[1]);
                 $("#debugLinks").css("display", "");
             }
-            $("#codeData").html(jQuery.trim(this.responseText).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'));
+
+            var responseTextFormatted = jQuery.trim(this.responseText).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            $("#codeData").html(responseTextFormatted);
+
+            currentResponse.text = responseTextFormatted;
 
             $("#respHeaders").css("display", "");
             $("#respData").css("display", "");
@@ -344,7 +360,7 @@ function setupDB() {
     postman.indexedDB.open = function() {
         var request = indexedDB.open("postman", "POSTman request history");
         request.onsuccess = function(e) {
-            var v = "0.4";
+            var v = "0.41";
             postman.indexedDB.db = e.target.result;
             var db = postman.indexedDB.db;
             //We can only create Object stores in a setVersion transaction
@@ -356,10 +372,21 @@ function setupDB() {
                     if (db.objectStoreNames.contains("requests")) {
                         db.deleteObjectStore("requests");
                     }
+                    if (db.objectStoreNames.contains("collections")) {
+                        db.deleteObjectStore("collections");
+                    }
+                    if (db.objectStoreNames.contains("collection_requests")) {
+                        db.deleteObjectStore("collection_requests");
+                    }
 
-                    db.createObjectStore("requests", {keyPath: "id"});
-                    db.createObjectStore("collections", {keyPath: "id"});
-                    db.createObjectStore("collection_requests", {keyPath: "id"});
+                    var requestStore = db.createObjectStore("requests", {keyPath: "id"});
+                    var collectionsStore = db.createObjectStore("collections", {keyPath: "id"});
+                    var collectionRequestsStore = db.createObjectStore("collection_requests", {keyPath: "id"});
+
+                    requestStore.createIndex("timestamp", "timestamp", { unique: false});
+                    collectionsStore.createIndex("timestamp", "timestamp", { unique: false});
+                    collectionRequestsStore.createIndex("timestamp", "timestamp", { unique: false});
+                    
                     postman.indexedDB.getAllRequestItems();
                     postman.indexedDB.getCollections();
                 };
@@ -381,7 +408,8 @@ function setupDB() {
 
         var request = store.put({
             "id": collection.id,
-            "name": collection.name
+            "name": collection.name,
+            "timestamp": new Date().getTime()
         });
 
         request.onsuccess = function(e) {
@@ -442,7 +470,7 @@ function setupDB() {
             addAvailableUrl(req.url);
             addUrlAutoComplete();
 
-            req.url = limitStringLineWidth(req.url, 45);
+            req.url = limitStringLineWidth(req.url, 43);
             $('#itemCollectionSidebarRequest').tmpl([req]).appendTo(targetElement);
             addSidebarRequestListener(req);
         };
@@ -503,8 +531,8 @@ function setupDB() {
         var keyRange = IDBKeyRange.lowerBound(0);
         var store = trans.objectStore("collection_requests");
 
-        //Get everything in the store
-        var cursorRequest = store.openCursor(keyRange);
+        var index = store.index("timestamp");
+        var cursorRequest = index.openCursor(keyRange);
 
         cursorRequest.onsuccess = function(e) {
             var result = e.target.result;
@@ -520,7 +548,7 @@ function setupDB() {
                 addAvailableUrl(request.url);
                 addUrlAutoComplete();
 
-                request.url = limitStringLineWidth(request.url, 45);
+                request.url = limitStringLineWidth(request.url, 40);
                 $('#itemCollectionSidebarRequest').tmpl([request]).appendTo(targetElement);
                 addSidebarRequestListener(request);
             }
@@ -609,7 +637,8 @@ function setupDB() {
 
         //Get everything in the store
         var keyRange = IDBKeyRange.lowerBound(0);
-        var cursorRequest = store.openCursor(keyRange);
+        var index = store.index("timestamp");
+        var cursorRequest = index.openCursor(keyRange);
 
         cursorRequest.onsuccess = function(e) {
             var result = e.target.result;
@@ -702,7 +731,7 @@ function hideEmptyHistoryMessage() {
 }
 
 function renderRequestToSidebar(url, method, id, position) {
-    url = limitStringLineWidth(url, 45);
+    url = limitStringLineWidth(url, 40);
 
     var request = {
         "url": url,
@@ -825,9 +854,14 @@ function getUrlVars(url) {
     }
 
     var quesLocation = url.indexOf('?');
+    var equalLocation = url.indexOf('=');
+
+    if(equalLocation < 0) {
+        return [];
+    }
 
     if(quesLocation < 0) {
-        return [];
+        quesLocation = -1;
     }
 
     var vars = [], hash;
@@ -909,6 +943,9 @@ function showParamsEditor(section, a1) {
     var params;
     if (section === 'headers') {
         params = getHeaderVars(data);
+    }
+    else if(section === 'body') {
+        params = getUrlVars(data);
     }
     else {
         params = getUrlVars(data);
@@ -1030,6 +1067,11 @@ $(document).ready(function() {
     initCollectionSelector();
     setContainerHeights();
 
+    $('#formAddToCollection').submit(function() {
+        submitAddToCollectionForm();
+        return false;
+    });
+    
     $('#methods ul li a').click(function() {
         $('#methods ul li').removeClass('active');
         $(this).parent().addClass('active');
@@ -1245,32 +1287,40 @@ function addUrlAutoComplete() {
     });
 }
 function setResponseFormat(format) {
+    $('#langFormat li').removeClass('active');
+    $('#langFormat-' + format).addClass('active');
+
     var val = $('#codeData').html();
 
-    if(format === 'iframe') {
-        $('#responseAsText').css("display", "none");
-        $('#responseAsIFrame').css("display", "block");
-        $('#codeIFrame').html(val);
-    }
-    else {
-        $('#responseAsText').css("display", "block");
-        $('#responseAsIFrame').css("display", "none");
-        $('#codeData').removeClass();
-        $('#codeData').addClass('chili-lang-' + format);
+    console.log("Setting response format as", format);
 
-        var isFormatted = $('#codeData').attr('data-formatted');
+    $('#responseAsText').css("display", "block");
+    $('#responseAsIFrame').css("display", "none");
+    $('#codeData').removeClass();
+    $('#codeData').addClass('chili-lang-' + format);
 
-        if (format === 'javascript' && isFormatted === 'false') {
+    var isFormatted = $('#codeData').attr('data-formatted');
+
+    if (format === 'javascript' && isFormatted === 'false') {
+        try {
             var jsonObject = JSON.parse(val);
             var text = JSON.stringify(jsonObject, null, '\t');
             $('#codeData').html(text);
             $('#codeData').attr('data-formatted', 'true');
         }
+        catch(e) {
 
+        }
+    }
+
+    if(format !== 'raw') {
         $.chili.options.automatic.active = true;
         $('#codeData').chili();
     }
-
+    else {
+        $('#codeData').attr('data-formatted', 'false');
+        $('#codeData').html(currentResponse.text);
+    }
 }
 
 function attachSidebarListeners() {
@@ -1341,5 +1391,13 @@ function closeAboutPostman() {
 function addAvailableUrl(url) {
     if($.inArray(url, availableUrls) == -1) {
         availableUrls.push(url);
+    }
+}
+
+function attachTwitterButton() {
+    var currentContent = $('#aboutPostmanTwitterButton').html();
+    if(currentContent === "" || !currentContent) {
+        $('#aboutPostmanTwitterButton').html(twitterButton);
+        gapi.plusone.go();
     }
 }

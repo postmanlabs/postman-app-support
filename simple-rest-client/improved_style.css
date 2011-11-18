@@ -6,6 +6,11 @@ html, body {
 }
 
 #sidebar {
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -o-user-select: none;
+    user-select: none;
     border-bottom: solid thin #ccc;
     float: left;
     padding-left: 10px;
@@ -14,7 +19,7 @@ html, body {
     width: 340px;
     height: 100%;
     position: fixed;
-    overflow: scroll;
+    overflow-y: scroll;
 }
 
 #sidebarFiller {
@@ -41,7 +46,6 @@ header {
     padding-bottom: 20px;
     margin-left: 350px;
 }
-
 
 footer {
     display: block;
@@ -226,7 +230,8 @@ fieldset {
 }
 
 #responseData {
-    margin-top: 20px;
+    margin-top: 10px;
+    max-width: 1000px;
 }
 
 #responseData pre {
@@ -473,13 +478,14 @@ li .right {
 #sidebarContainer .pills {
     margin-left: -4px;
 }
+
 #sidebarContainer .pills .active .a {
     background-color: #333;
 }
 
 #respHeadersContent {
     margin-top: 10px;
-    margin-bottom: 25px;
+    margin-bottom: 15px;
 }
 
 #codeData {
@@ -489,6 +495,7 @@ li .right {
 #responseAsIFrame {
     width: 100%;
 }
+
 #codeIFrame {
     width: 100%;
     border: none;
@@ -580,22 +587,24 @@ li .right {
 #newCollectionContainer {
 }
 
+.sidebarCollection {
+    border-bottom: solid thin #CCC;
+}
+
 .sidebarCollectionRequest,
 .sidebarHistoryRequest {
 }
 
-.sidebarCollectionRequest div
-{
-    padding:  8px;
+.sidebarCollectionRequest div {
+    padding: 8px;
     padding-left: 20px;
 }
 
 .sidebarHistoryRequest div {
-    padding:  8px;
+    padding: 8px;
 }
 
-
-.sidebarCollectionRequest:hover, 
+.sidebarCollectionRequest:hover,
 .sidebarHistoryRequest:hover {
     background-color: #DEDEDE;
     cursor: pointer;
@@ -617,9 +626,10 @@ li .right {
 .sidebar-collection-head:hover {
     background-color: #DEDEDE;
 }
+
 .collection-head-actions {
     position: absolute;
-    margin-left: 270px;
+    margin-left: 260px;
     z-index: 10;
     display: none;
     padding-top: 4px;
@@ -635,7 +645,7 @@ li .right {
 
 .request-actions {
     position: absolute;
-    margin-left: 310px;
+    margin-left: 305px;
     z-index: 10;
     opacity: 0.5;
     display: none;
@@ -680,7 +690,8 @@ li .right {
 #contributors {
     list-style: none;
     margin: 0;
-    padding:  0;
+    padding: 0;
+    margin-bottom: 10px;
 }
 
 #responseAsIFrame {
@@ -689,4 +700,15 @@ li .right {
 
 #responseAsImage {
     display: none;
+}
+
+#aboutPostmanSocialButtons {
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+#aboutPostmanTwitterButton,
+#aboutPostmanPlusOneButton {
+    float: left;
+    margin-right: 10px;
 }

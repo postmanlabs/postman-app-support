@@ -17,5 +17,5 @@
     },
 
     "default_locale": "en",
-    "permissions": ["tabs", "http://*/*", "https://*/*"]
+    "permissions": ["http://*/*", "https://*/*"]
 }

@@ -6,19 +6,20 @@
     <link rel="stylesheet" type="text/css" href="improved_style.css"/>
     <link rel="stylesheet" type="text/css" href="css/ui-lightness/jquery-ui-1.8.14.custom.css"/>
     <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"/>
+    <link rel="stylesheet" type="text/css" href="css/jquery.jscrollpane.css"/>
     <script>
-        //        var _gaq = _gaq || [];
-        //        _gaq.push(['_setAccount', 'UA-26564585-1']);
-        //        _gaq.push(['_trackPageview']);
-        //
-        //        (function() {
-        //            var ga = document.createElement('script');
-        //            ga.type = 'text/javascript';
-        //            ga.async = true;
-        //            ga.src = 'https://ssl.google-analytics.com/ga.js';
-        //            var s = document.getElementsByTagName('script')[0];
-        //            s.parentNode.insertBefore(ga, s);
-        //        })();
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-26564585-1']);
+        _gaq.push(['_trackPageview']);
+
+        (function() {
+            var ga = document.createElement('script');
+            ga.type = 'text/javascript';
+            ga.async = true;
+            ga.src = 'https://ssl.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(ga, s);
+        })();
     </script>
     <script type="text/javascript" src="jquery.min.js"></script>
     <script type="text/javascript">
@@ -47,7 +48,7 @@
                 <img src="images/logo-grey.png" alt="POSTMAN" height="15px"/>
             </div>
             <div id="mainNavigation">
-                <a href="javascript:void(0);" data-controls-modal="modalAboutPostman" data-backdrop="static">About</a>
+                <a href="javascript:void(0);" data-controls-modal="modalAboutPostman" data-backdrop="static" data-keyboard="true" onclick="attachTwitterButton();">About</a>
             </div>
         </div>
         <div id="sidebarContainer" class="clearfix">
@@ -172,7 +173,7 @@
                     </div>
                     <div id="requestActionsOptions">
                         <button class="btn large"
-                                data-controls-modal="formModalAddToCollection" data-backdrop="static">Add to collection
+                                data-controls-modal="formModalAddToCollection" data-backdrop="static" data-keyboard="true">Add to collection
                         </button>
                     </div>
                 </div>
@@ -208,10 +209,23 @@
 
                     <div id="respData" style="display:none">
                         <div id="langFormat">
-                            <select id="language">
-                                <option value="html">HTML/XML</option>
-                                <option value="javascript">JSON</option>
-                            </select>
+                            <ul class="pills">
+                                <li id="langFormat-html" class="active">
+                                    <a href="javascript:void(0);" onclick="setResponseFormat('html')">
+                                        HTML/XML
+                                    </a>
+                                </li>
+                                <li id="langFormat-javascript">
+                                    <a href="javascript:void(0);" onclick="setResponseFormat('javascript')">
+                                        JSON
+                                    </a>
+                                </li>
+                                <li id="langFormat-raw">
+                                    <a href="javascript:void(0);" onclick="setResponseFormat('raw')">
+                                        Raw
+                                    </a>
+                                </li>
+                            </ul>
                         </div>
                         <div name="responseData" id="responseData" contenteditable="true">
                             <div id="responseAsText">
@@ -239,7 +253,7 @@
         <h3>Add request to a collection</h3>
     </div>
     <div class="modal-body">
-        <form>
+        <form id="formAddToCollection">
             <div class="clearfix" id="selectCollectionContainer">
                 <label for="selectCollection">Select a collection</label>
 
@@ -266,6 +280,7 @@
 </div>
 <div id="modalAboutPostman" class="modal fade">
     <div class="modal-header">
+        <a href="#" class="close">×</a>
         <h3>About Postman</h3>
     </div>
     <div class="modal-body">
@@ -283,6 +298,11 @@
             <li>Abhinav Asthana <a href="http://www.twitter.com/a85">@a85</a></li>
             <li>Sivaraman Siddharth <a href="http://www.twitter.com/slarti">@slarti</a></li>
         </ul>
+
+        <div id="aboutPostmanSocialButtons" class="clearfix">
+            <div id="aboutPostmanTwitterButton"></div>
+            <div id="aboutPostmanPlusOneButton"><g:plusone size="medium" href="https://chrome.google.com/webstore/detail/fofkknmmmfkaddpcncigehnadkalmhhj"></g:plusone></div>
+        </div>
     </div>
     <div class="modal-footer">
         <a href="javascript:void(0);" onclick="closeAboutPostman();" class="btn primary">Close</a>
@@ -335,8 +355,10 @@
         </div>
     </li>
 </script>
-</body>
 <script type = "text/javascript" src = "js/jquery.tmpl.min.js" ></script>
+<script type="text/javascript" src="js/jquery.jscrollpane.min.js"></script>
+<script type="text/javascript" src="js/jquery.mousewheel.js"></script>
+<script type="text/javascript" src="js/mwheelIntent.js"></script>
 <script type="text/javascript" src="js/bootstrap-twipsy.js"></script>
 <script type="text/javascript" src="js/bootstrap-modal.js"></script>
 <script type="text/javascript" src="js/bootstrap-alerts.js"></script>
@@ -346,4 +368,8 @@
 <script text="text/javascript">
     $(":input:first").focus();
 </script>
+<script type="text/javascript" src="https://apis.google.com/js/plusone.js">
+    {parsetags: 'explicit'}
+</script>
+</body>
 </html>
