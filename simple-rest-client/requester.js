@@ -357,18 +357,30 @@ function init() {
 }
 
 function setupDB() {
+    postman.indexedDB.onerror = function(event) {
+        console.log(event);
+    };
+    
     postman.indexedDB.open = function() {
         var request = indexedDB.open("postman", "POSTman request history");
         request.onsuccess = function(e) {
-            var v = "0.41";
+            var v = "0.42";
             postman.indexedDB.db = e.target.result;
             var db = postman.indexedDB.db;
+
+            console.log(db.version);
+            
             //We can only create Object stores in a setVersion transaction
             if (v != db.version) {
-                console.log("Version is not the same");
+                console.log(v, "Version is not the same");
                 var setVrequest = db.setVersion(v);
-                setVrequest.onfailure = postman.indexedDB.onerror;
+                
+                setVrequest.onfailure = function(e) {
+                    console.log(e);
+                };
+                
                 setVrequest.onsuccess = function(e) {
+                    console.log(e);
                     if (db.objectStoreNames.contains("requests")) {
                         db.deleteObjectStore("requests");
                     }
@@ -385,7 +397,11 @@ function setupDB() {
 
                     requestStore.createIndex("timestamp", "timestamp", { unique: false});
                     collectionsStore.createIndex("timestamp", "timestamp", { unique: false});
+
+                    console.log("Final");
+                    
                     collectionRequestsStore.createIndex("timestamp", "timestamp", { unique: false});
+                    collectionRequestsStore.createIndex("collectionId", "collectionId", { unique: false});
                     
                     postman.indexedDB.getAllRequestItems();
                     postman.indexedDB.getCollections();
@@ -528,10 +544,10 @@ function setupDB() {
         var trans = db.transaction(["collection_requests"], IDBTransaction.READ_WRITE);
 
         //Get everything in the store
-        var keyRange = IDBKeyRange.lowerBound(0);
+        var keyRange = IDBKeyRange.only(id);
         var store = trans.objectStore("collection_requests");
 
-        var index = store.index("timestamp");
+        var index = store.index("collectionId");
         var cursorRequest = index.openCursor(keyRange);
 
         cursorRequest.onsuccess = function(e) {
@@ -542,16 +558,14 @@ function setupDB() {
             }
 
             var request = result.value;
-            if(request.collectionId === id) {
-                var targetElement = "#collectionRequests-" + request.collectionId;
+            var targetElement = "#collectionRequests-" + request.collectionId;
 
-                addAvailableUrl(request.url);
-                addUrlAutoComplete();
+            addAvailableUrl(request.url);
+            addUrlAutoComplete();
 
-                request.url = limitStringLineWidth(request.url, 40);
-                $('#itemCollectionSidebarRequest').tmpl([request]).appendTo(targetElement);
-                addSidebarRequestListener(request);
-            }
+            request.url = limitStringLineWidth(request.url, 40);
+            $('#itemCollectionSidebarRequest').tmpl([request]).appendTo(targetElement);
+            addSidebarRequestListener(request);
 
             //This wil call onsuccess again and again until no more request is left
             result.continue();
@@ -691,6 +705,31 @@ function setupDB() {
         request.onerror = function(e) {
             console.log(e);
         };
+    };
+
+    postman.indexedDB.deleteAllCollectionRequests = function(id) {
+        var db = postman.indexedDB.db;
+        var trans = db.transaction(["collection_requests"], IDBTransaction.READ_WRITE);
+
+        //Get everything in the store
+        var keyRange = IDBKeyRange.only(id);
+        var store = trans.objectStore("collection_requests");
+
+        var index = store.index("collectionId");
+        var cursorRequest = index.openCursor(keyRange);
+
+        cursorRequest.onsuccess = function(e) {
+            var result = e.target.result;
+
+            if (!!result == false) {
+                return;
+            }
+
+            var request = result.value;
+            postman.indexedDB.deleteCollectionRequest(request.id);
+            result.continue();
+        };
+        cursorRequest.onerror = postman.indexedDB.onerror;
     };
 
     postman.indexedDB.deleteCollection = function(id) {

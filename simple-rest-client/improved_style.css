@@ -435,7 +435,7 @@ li .right {
 #request,
 #response {
     padding: 20px;
-    padding-top: 5px;
+    padding-top: 7px;
     padding-bottom: 0px;
 }
 
@@ -588,7 +588,7 @@ li .right {
 }
 
 .sidebarCollection {
-    border-bottom: solid thin #CCC;
+    border-bottom: solid thin #DEDEDE;
 }
 
 .sidebarCollectionRequest,
