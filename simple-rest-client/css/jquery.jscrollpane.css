@@ -28,6 +28,7 @@
 	width: 12px;
 	height: 100%;
 	background: red;
+    display: block !important;
 }
 
 .jspHorizontalBar
