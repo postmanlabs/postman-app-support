@@ -16,12 +16,16 @@
 	position: absolute;
 }
 
+#sidebar .jspPane {
+    width: 329px !important;
+}
+
 .jspVerticalBar
 {
 	position: absolute;
 	top: 0;
 	right: 0;
-	width: 16px;
+	width: 12px;
 	height: 100%;
 	background: red;
 }
@@ -55,13 +59,13 @@
 
 .jspTrack
 {
-	background: #dde;
+	background: #DDD;
 	position: relative;
 }
 
 .jspDrag
 {
-	background: #bbd;
+	background: #CCC;
 	position: relative;
 	top: 0;
 	left: 0;

@@ -321,6 +321,7 @@ function readResponse() {
     }
 
     setContainerHeights();
+    refreshScrollPanes();
 }
 
 //Manages showing/hiding the PUT/POST additional UI
@@ -456,6 +457,7 @@ function setupDB() {
             $('#itemCollectionSidebarHead').tmpl([collection]).appendTo('#collectionItems');
 
             addSidebarCollectionHeadListener(collection);
+            refreshScrollPanes();
 
             postman.indexedDB.addCollectionRequest(collectionRequest, true);
         };
@@ -489,6 +491,7 @@ function setupDB() {
             req.url = limitStringLineWidth(req.url, 43);
             $('#itemCollectionSidebarRequest').tmpl([req]).appendTo(targetElement);
             addSidebarRequestListener(req);
+            refreshScrollPanes();
         };
 
         collectionRequest.onerror = function(e) {
@@ -524,6 +527,7 @@ function setupDB() {
             var collection = result.value;
             $('#itemCollectionSelectorList').tmpl([collection]).appendTo('#selectCollection');
             $('#itemCollectionSidebarHead').tmpl([collection]).appendTo('#collectionItems');
+            refreshScrollPanes();
 
             postman.indexedDB.getAllRequestsInCollection(collection.id);
             //This wil call onsuccess again and again until no more request is left
@@ -566,6 +570,7 @@ function setupDB() {
             request.url = limitStringLineWidth(request.url, 40);
             $('#itemCollectionSidebarRequest').tmpl([request]).appendTo(targetElement);
             addSidebarRequestListener(request);
+            refreshScrollPanes();
 
             //This wil call onsuccess again and again until no more request is left
             result.continue();
@@ -785,14 +790,17 @@ function renderRequestToSidebar(url, method, id, position) {
     else {
         $('#itemHistorySidebarRequest').tmpl([request]).appendTo('#historyItems');
     }
+    refreshScrollPanes();
 }
 
 function removeRequestFromSidebar(id) {
     $('#sidebarRequest-' + id).slideUp(100);
+    refreshScrollPanes();
 }
 
 function removeCollectionFromSidebar(id) {
     $('#collection-' + id).slideUp(100);
+    refreshScrollPanes();
 }
 
 function removeCollectionFromSelector(id) {
@@ -1092,6 +1100,16 @@ function removeBodyListeners() {
 }
 
 function setContainerHeights() {
+    refreshScrollPanes();
+}
+
+function refreshScrollPanes() {
+    var newMainWidth = $('#container').width() - $('#sidebar').width();
+    $('#main').width(newMainWidth + "px");
+    
+    $('#sidebar').jScrollPane({
+        mouseWheelSpeed: 24
+    });
 }
 
 $(document).ready(function() {
@@ -1106,6 +1124,8 @@ $(document).ready(function() {
     initCollectionSelector();
     setContainerHeights();
 
+    refreshScrollPanes();
+    
     $('#formAddToCollection').submit(function() {
         submitAddToCollectionForm();
         return false;
@@ -1374,7 +1394,7 @@ function attachSidebarListeners() {
 function showSidebarSection(section, previousSection) {
     $('#sidebarSection-' + previousSection).css("display", "none");
     currentSidebarSection = section;
-    $('#sidebarSection-' + section).css("display", "block");
+    $('#sidebarSection-' + section).fadeIn();
 }
 
 function initCollectionSelector() {
