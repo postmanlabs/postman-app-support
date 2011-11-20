@@ -1,16 +1,15 @@
-POSTMan for Google Chrome
+Postman
 =======
-POSTMan is a tool to help developers play around with HTTP requests. POSTMan's UI is very intuitive to build complex HTTP requests.
+Postman is a tool to help developers work with APIs more efficiently and avoid repetitive steps.
 
-Features include:
+Features:
 
-1. History of sent requests
-2. Basic file upload
-3. Key/value editor for quickly looking at url GET parameters or POST parameters.
-4. Response time
-5. Auto complete for standard HTTP headers.
+1. Collections to organize and save complete requests for later use.
+2. Smart history of sent requests - avoids duplicate requests.
+3. Key/value editor for quickly looking and changing URL or body parameters.
+4. Auto complete functionality for URLs and HTTP headers.
+5. Automatic formatting for XML and JSON responses.
+6. Single and multiple file uploads.
+7. Now works like a Chrome app. Can be opened in multiple tabs in the same browser window.
 
-POSTMan is a fork of the Simple Rest Client for Google Chrome. I will update this README as I get to know more about the Apache License.
-
-POSTMan for Google Chrome is licensed under the Apache Licence,
-Version 2.0 (http://www.apache.org/licenses/LICENSE-2.0.html).
+Postman for Google Chrome is licensed under the Apache Licence, Version 2.0 (http://www.apache.org/licenses/LICENSE-2.0.html).

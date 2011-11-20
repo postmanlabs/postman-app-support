@@ -1,6 +1,6 @@
 {
-  "name": {"message": "POSTMan"},
-  "description": {"message": "Construct custom HTTP requests to directly test your web services."},
+  "name": {"message": "Postman - REST Client for Google Chrome"},
+  "description": {"message": "Postman is a tool to help developers work with APIs more efficiently and avoid repetitive steps."},
   "request": {"message": "Request"},
   "debuglink": {"message": "Debug link"},
   "url": {"message": "URL"},
