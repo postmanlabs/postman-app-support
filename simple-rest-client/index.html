@@ -48,7 +48,7 @@
                 <img src="images/logo-grey.png" alt="POSTMAN" height="15px"/>
             </div>
             <div id="mainNavigation">
-                <a href="javascript:void(0);" data-controls-modal="modalAboutPostman" data-backdrop="static" data-keyboard="true" onclick="attachTwitterButton();">About</a>
+                <a href="javascript:void(0);" data-controls-modal="modalAboutPostman" data-backdrop="static" data-keyboard="true" onclick="attachSocialButtons();">About</a>
             </div>
         </div>
         <div id="sidebarContainer" class="clearfix">
@@ -200,8 +200,6 @@
                     </div>
 
                     <div id="respHeaders">
-                        <span for="responseHeaders" class="labelText">Headers</span>
-
                         <div id="respHeadersContent">
                             <textarea name="responseHeaders" id="responseHeaders" tabindex="6"
                                       class="inputText"></textarea>
@@ -298,7 +296,8 @@
 
         <div id="aboutPostmanSocialButtons" class="clearfix">
             <div id="aboutPostmanTwitterButton"></div>
-            <div id="aboutPostmanPlusOneButton"><g:plusone size="medium" href="https://chrome.google.com/webstore/detail/fofkknmmmfkaddpcncigehnadkalmhhj"></g:plusone></div>
+            <div id="aboutPostmanPlusOneButton"></div>
+            <div id="aboutPostmanFacebookButton"></div>
         </div>
     </div>
     <div class="modal-footer">
@@ -363,9 +362,6 @@
 <script type="text/javascript" src="js/bootstrap-tabs.js"></script>
 <script text="text/javascript">
     $(":input:first").focus();
-</script>
-<script type="text/javascript" src="https://apis.google.com/js/plusone.js">
-    {parsetags: 'explicit'}
 </script>
 </body>
 </html>

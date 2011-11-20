@@ -4,7 +4,6 @@ html, body {
     font-family: Helvetica, Arial, sans-serif;
     height: 100%;
     width: 100%;
-    overflow: hidden !important;
     padding: 0;
     margin:  0;
 }
@@ -57,8 +56,7 @@ header {
     float: left;
     padding-bottom: 20px;
     margin-left: 350px;
-    height: 100%;
-    overflow-y: scroll;
+    min-height: 100%;
 }
 
 footer {
@@ -188,6 +186,10 @@ fieldset {
     padding-top: 5px;
 }
 
+#historyItems {
+    display: none;
+}
+
 .historyItem {
     padding-left: 10px;
     padding-bottom: 5px;
@@ -252,15 +254,15 @@ fieldset {
     border-radius: 10px;
     border-style: solid;
     border-width: 3px;
-    min-height: 30px;
-    max-height: 500px;
-    width: 100% !important;
+    max-width: 1000px;
+    max-height: 800px;
     padding: 5px;
     overflow: scroll;
 }
 
 #respHeaders {
     margin-top: 20px;
+    max-width: 1000px;
 }
 
 #respHeaders textarea {
@@ -721,7 +723,8 @@ li .right {
 }
 
 #aboutPostmanTwitterButton,
-#aboutPostmanPlusOneButton {
+#aboutPostmanPlusOneButton,
+#aboutPostmanFacebookButton {
     float: left;
     margin-right: 10px;
 }
