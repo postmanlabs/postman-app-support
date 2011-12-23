@@ -1,5 +1,5 @@
 {
-  "name": {"message": "Postman - REST Client for Google Chrome"},
+  "name": {"message": "Postman - REST Client"},
   "description": {"message": "Postman is a tool to help developers work with APIs more efficiently and avoid repetitive steps."},
   "request": {"message": "Request"},
   "debuglink": {"message": "Debug link"},
