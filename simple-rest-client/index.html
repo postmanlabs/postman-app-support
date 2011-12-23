@@ -12,7 +12,7 @@
         _gaq.push(['_setAccount', 'UA-26564585-1']);
         _gaq.push(['_trackPageview']);
 
-        (function() {
+        (function () {
             var ga = document.createElement('script');
             ga.type = 'text/javascript';
             ga.async = true;
@@ -26,9 +26,9 @@
         //<![CDATA[
         // Help IE style HTML5. This makes me sad.
         // See http://remysharp.com/2009/01/07/html5-enabling-script/
-        (function() {
+        (function () {
             if (!/*@cc_on!@*/0)return;
-            var e = "abbr,article,aside,audio,bb,canvas,datagrid,datalist,details,dialog,eventsource,figure,footer,header,mark,menu,meter,nav,output,progress,section,time,video".split(','),i = e.length;
+            var e = "abbr,article,aside,audio,bb,canvas,datagrid,datalist,details,dialog,eventsource,figure,footer,header,mark,menu,meter,nav,output,progress,section,time,video".split(','), i = e.length;
             while (i--) {
                 document.createElement(e[i])
             }
@@ -42,209 +42,214 @@
 </head>
 <body>
 <div id="container" class="clearfix">
-    <div id="sidebar">
-        <div id="header" class="clearfix">
-            <div id="logo">
-                <img src="images/logo-grey.png" alt="POSTMAN" height="15px"/>
-            </div>
-            <div id="mainNavigation">
-                <a href="javascript:void(0);" data-controls-modal="modalAboutPostman" data-backdrop="static" data-keyboard="true" onclick="attachTwitterButton();">About</a>
-            </div>
+<div id="sidebar">
+    <div id="header" class="clearfix">
+        <div id="logo">
+            <img src="images/logo-grey.png" alt="POSTMAN" height="15px"/>
         </div>
-        <div id="sidebarContainer" class="clearfix">
-            <ul class="pills" data-tabs="tabs">
-                <li class="active"><a href="javascript:void(0);" data-id="history">History</a></li>
-                <li><a href="javascript:void(0);" data-id="collections">Collections</a></li>
+        <div id="mainNavigation">
+            <ul>
+                <li><a href="javascript:void(0);" data-controls-modal="modalSettings" data-backdrop="static"
+                       data-keyboard="true">Settings</a></li>
+                <li><a href="javascript:void(0);" data-controls-modal="modalAboutPostman" data-backdrop="static"
+                       data-keyboard="true" onclick="attachSocialButtons();">About</a></li>
             </ul>
-            <div id="sidebarSectionContainer">
-                <div id="sidebarSection-history">
-                    <ul id="historyItems" class="clearfix">
-                        <li id="emptyHistoryMessage">No requests sent yet. Requests will be automically saved here.</li>
-                    </ul>
-                </div>
-                <div id="sidebarSection-collections">
-                    <ul id="collectionItems" class="clearfix">
+        </div>
+    </div>
+    <div id="sidebarContainer" class="clearfix">
+        <ul class="pills" data-tabs="tabs">
+            <li class="active"><a href="javascript:void(0);" data-id="history">History</a></li>
+            <li><a href="javascript:void(0);" data-id="collections">Collections</a></li>
+        </ul>
+        <div id="sidebarSectionContainer">
+            <div id="sidebarSection-history">
+                <ul id="historyItems" class="clearfix">
+                    <li id="emptyHistoryMessage">No requests sent yet. Requests will be automically saved here.</li>
+                </ul>
+            </div>
+            <div id="sidebarSection-collections">
+                <ul id="collectionItems" class="clearfix">
 
-                    </ul>
-                </div>
+                </ul>
             </div>
         </div>
-        <div id="sidebarFiller"></div>
     </div>
-    <div id="main" class="content">
-        <section id="request">
-            <h2><img src="images/request.jpg" alt="REQUEST" height="15px"/></h2>
+    <div id="sidebarFiller"></div>
+</div>
+<div id="main" class="content">
+    <section id="request">
+        <h2><img src="images/request.jpg" alt="REQUEST" height="15px"/></h2>
 
-            <div id="requestUrl" class="row clearfix">
-                <div class="span10">
-                    <input type="text" name="url" id="url" tabindex="1" class="inputText" placeholder="URL">
-                </div>
-                <div class="span2">
+        <div id="requestUrl" class="row clearfix">
+            <div class="span10">
+                <input type="text" name="url" id="url" tabindex="1" class="inputText" placeholder="URL">
+            </div>
+            <div class="span2">
                     <span class="buttonLayout">
                         <button href="javascript:void(0);" class="btn small"
-                           onclick="showParamsEditor('url')" data-toggle="toggle">Edit params</button></span>
-                </div>
+                                onclick="showParamsEditor('url')" data-toggle="toggle">Edit params
+                        </button></span>
             </div>
+        </div>
 
-            <div id="url-ParamsEditor" class="paramsEditor">
-                <div id="url-ParamsFields" class="editorFields"></div>
+        <div id="url-ParamsEditor" class="paramsEditor">
+            <div id="url-ParamsFields" class="editorFields"></div>
+            <form class="form-stacked">
+                <div id="url-ParamsEditorActions" class="actions">
+                    <input type="button" id="cancelUrlParamsButton"
+                           class="btn primary medium"
+                           name="closeUrlParams"
+                           value="Save and close"
+                           placeholder="URL..."
+                           onclick="closeParamsEditor('url')"/>
+                </div>
+            </form>
+        </div>
+
+        <div id="methods" class="clearfix">
+            <ul class="method-selectors pills small" style="margin-bottom: 10px;">
+                <li class="method-selector-get active"><a id="method-get" href="javascript:void(0);"
+                                                          data-method="get"
+                                                          onclick="showRequestMethodUi('GET');">GET</a></li>
+                <li class="method-selector-post"><a id="method-post" href="javascript:void(0);" data-method="post"
+                                                    onclick="showRequestMethodUi('POST');">POST</a></li>
+                <li class="method-selector-put"><a id="method-put" href="javascript:void(0);" data-method="put"
+                                                   onclick="showRequestMethodUi('PUT');">PUT</a></li>
+                <li class="method-selector-delete"><a id="method-delete" href="javascript:void(0);"
+                                                      data-method="delete"
+                                                      onclick="showRequestMethodUi('DELETE');">DELETE</a></li>
+                <li class="method-selector-head"><a id="method-head" href="javascript:void(0);" data-method="head"
+                                                    onclick="showRequestMethodUi('HEAD');">HEAD</a></li>
+                <li class="method-selector-options"><a id="method-options" href="javascript:void(0);"
+                                                       data-method="options"
+                                                       onclick="showRequestMethodUi('OPTIONS');">OPTIONS</a></li>
+            </ul>
+        </div>
+
+        <div id="pheaders" class="row clearfix">
+            <div class="span10 headersContainer">
+                <textarea name="headers" id="headers" tabindex="3" class="inputText"
+                          placeholder="Headers"></textarea>
+            </div>
+            <div class="span2 editHeaderButton">
+                <a href="javascript:void(0);" class="btn small" onclick="showParamsEditor('headers')">Edit
+                    headers</a>
+            </div>
+        </div>
+
+        <div class="row">
+            <div id="headers-ParamsEditor" class="span10 paramsEditor">
+                <div id="headers-ParamsFields" class="editorFields"></div>
                 <form class="form-stacked">
-                    <div id="url-ParamsEditorActions" class="actions">
-                        <input type="button" id="cancelUrlParamsButton"
-                               class="btn primary medium"
-                               name="closeUrlParams"
+                    <div id="headers-ParamsEditorActions" class="actions">
+                        <input type="button" id="cancelHeaderParamsButton" name="closeBodyParams"
                                value="Save and close"
-                               placeholder="URL..."
-                               onclick="closeParamsEditor('url')"/>
+                               class="btn primary medium"
+                               onclick="closeParamsEditor('headers')"/>
+
                     </div>
                 </form>
             </div>
+        </div>
 
-            <div id="methods" class="clearfix">
-                <ul class="method-selectors pills small" style="margin-bottom: 10px;">
-                    <li class="method-selector-get active"><a id="method-get" href="javascript:void(0);"
-                                                              data-method="get"
-                                                              onclick="showRequestMethodUi('GET');">GET</a></li>
-                    <li class="method-selector-post"><a id="method-post" href="javascript:void(0);" data-method="post"
-                                                        onclick="showRequestMethodUi('POST');">POST</a></li>
-                    <li class="method-selector-put"><a id="method-put" href="javascript:void(0);" data-method="put"
-                                                       onclick="showRequestMethodUi('PUT');">PUT</a></li>
-                    <li class="method-selector-delete"><a id="method-delete" href="javascript:void(0);"
-                                                          data-method="delete"
-                                                          onclick="showRequestMethodUi('DELETE');">DELETE</a></li>
-                    <li class="method-selector-head"><a id="method-head" href="javascript:void(0);" data-method="head"
-                                                        onclick="showRequestMethodUi('HEAD');">HEAD</a></li>
-                    <li class="method-selector-options"><a id="method-options" href="javascript:void(0);"
-                                                           data-method="options"
-                                                           onclick="showRequestMethodUi('OPTIONS');">OPTIONS</a></li>
-                </ul>
+        <div id="data">
+            <ul class="pills small" style="margin-bottom: 0px; height: 38px;">
+                <li id="selector-container-params" class="active">
+                    <a href="javascript:void(0);" onclick="showBodyParamsEditor()" id="data-params">Params</a>
+                </li>
+                <li id="selector-container-raw">
+                    <a href="javascript:void(0);" onclick="showRawEditor()" id="data-raw">Raw body</a>
+                </li>
+            </ul>
+            <div id="bodyDataContainer">
+                <textarea name="data" id="body" tabindex="4" class="inputText"></textarea>
             </div>
 
-            <div id="pheaders" class="row clearfix">
-                <div class="span10 headersContainer">
-                    <textarea name="headers" id="headers" tabindex="3" class="inputText"
-                              placeholder="Headers"></textarea>
+            <div id="body-ParamsEditor" class="paramsEditor">
+                <div id="body-ParamsFields" class="editorFields"></div>
+            </div>
+        </div>
+
+        <form class="form-stacked">
+            <div id="requestActions" class="actions clearfix">
+                <div id="requestActionsMain">
+                    <button class="btn large primary" data-loading-text="Fetching data..." type="button"
+                            data-complete-text="Send request" id="submitRequest" tabindex="5">
+                        Send
+                    </button>
                 </div>
-                <div class="span2 editHeaderButton">
-                    <a href="javascript:void(0);" class="btn small" onclick="showParamsEditor('headers')">Edit
-                        headers</a>
+                <div id="requestActionsOptions">
+                    <button class="btn large"
+                            data-controls-modal="formModalAddToCollection" data-backdrop="static" data-keyboard="true">
+                        Add to collection
+                    </button>
                 </div>
             </div>
+        </form>
+    </section>
 
-            <div class="row">
-                <div id="headers-ParamsEditor" class="span10 paramsEditor">
-                    <div id="headers-ParamsFields" class="editorFields"></div>
-                    <form class="form-stacked">
-                        <div id="headers-ParamsEditorActions" class="actions">
-                            <input type="button" id="cancelHeaderParamsButton" name="closeBodyParams"
-                                   value="Save and close"
-                                   class="btn primary medium"
-                                   onclick="closeParamsEditor('headers')"/>
+    <section id="response">
+        <fieldset>
+            <h2><img src="images/response.jpg" alt="RESPONSE" height="15px"/></h2>
 
-                        </div>
-                    </form>
-                </div>
-            </div>
+            <div id="responsePrint">
+                <div class="row">
 
-            <div id="data">
-                <ul class="pills small" style="margin-bottom: 0px; height: 38px;">
-                    <li id="selector-container-params" class="active">
-                        <a href="javascript:void(0);" onclick="showBodyParamsEditor()" id="data-params">Params</a>
-                    </li>
-                    <li id="selector-container-raw">
-                        <a href="javascript:void(0);" onclick="showRawEditor()" id="data-raw">Raw body</a>
-                    </li>
-                </ul>
-                <div id="bodyDataContainer">
-                    <textarea name="data" id="body" tabindex="4" class="inputText"></textarea>
-                </div>
-
-                <div id="body-ParamsEditor" class="paramsEditor">
-                    <div id="body-ParamsFields" class="editorFields"></div>
-                </div>
-            </div>
-
-            <form class="form-stacked">
-                <div id="requestActions" class="actions clearfix">
-                    <div id="requestActionsMain">
-                        <button class="btn large primary" data-loading-text="Fetching data..." type="button"
-                                data-complete-text="Send request" id="submitRequest" tabindex="5">
-                            Send
-                        </button>
-                    </div>
-                    <div id="requestActionsOptions">
-                        <button class="btn large"
-                                data-controls-modal="formModalAddToCollection" data-backdrop="static" data-keyboard="true">Add to collection
-                        </button>
-                    </div>
-                </div>
-            </form>
-        </section>
-
-        <section id="response">
-            <fieldset>
-                <h2><img src="images/response.jpg" alt="RESPONSE" height="15px"/></h2>
-
-                <div id="responsePrint">
-                    <div class="row">
-
-                        <div id="pstatus" class="span2">
-                            <span class="label">Status</span>
-                            <span class="data">200 OK</span>
-                        </div>
-
-                        <div id="ptime" class="span2">
-                            <span class="label">Time</span>
-                            <span class="data">0 millisecs</span>
-                        </div>
+                    <div id="pstatus" class="span2">
+                        <span class="label">Status</span>
+                        <span class="data">200 OK</span>
                     </div>
 
-                    <div id="respHeaders">
-                        <span for="responseHeaders" class="labelText">Headers</span>
-
-                        <div id="respHeadersContent">
-                            <textarea name="responseHeaders" id="responseHeaders" tabindex="6"
-                                      class="inputText"></textarea>
-                        </div>
+                    <div id="ptime" class="span2">
+                        <span class="label">Time</span>
+                        <span class="data">0 millisecs</span>
                     </div>
+                </div>
 
-                    <div id="respData" style="display:none">
-                        <div id="langFormat">
-                            <ul class="pills">
-                                <li id="langFormat-html" class="active">
-                                    <a href="javascript:void(0);" onclick="setResponseFormat('html')">
-                                        HTML/XML
-                                    </a>
-                                </li>
-                                <li id="langFormat-javascript">
-                                    <a href="javascript:void(0);" onclick="setResponseFormat('javascript')">
-                                        JSON
-                                    </a>
-                                </li>
-                                <li id="langFormat-raw">
-                                    <a href="javascript:void(0);" onclick="setResponseFormat('raw')">
-                                        Raw
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                        <div name="responseData" id="responseData" contenteditable="true">
-                            <div id="responseAsText">
+                <div id="respHeaders">
+                    <div id="respHeadersContent">
+                        <textarea name="responseHeaders" id="responseHeaders" tabindex="6"
+                                  class="inputText"></textarea>
+                    </div>
+                </div>
+
+                <div id="respData" style="display:none">
+                    <div id="langFormat">
+                        <ul class="pills">
+                            <li id="langFormat-html" class="active">
+                                <a href="javascript:void(0);" onclick="setResponseFormat('html')">
+                                    HTML/XML
+                                </a>
+                            </li>
+                            <li id="langFormat-javascript">
+                                <a href="javascript:void(0);" onclick="setResponseFormat('javascript')">
+                                    JSON
+                                </a>
+                            </li>
+                            <li id="langFormat-raw">
+                                <a href="javascript:void(0);" onclick="setResponseFormat('raw')">
+                                    Raw
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div name="responseData" id="responseData" contenteditable="true">
+                        <div id="responseAsText">
                                 <pre><code name="codeData" id="codeData" class="chili-lang-html" data-formatted="false">
                                     &nbsp;</code></pre>
-                            </div>
-                            <div id="responseAsIFrame">
-                                <div id="codeIFrame"></div>
-                            </div>
-                            <div id="responseAsImage">
+                        </div>
+                        <div id="responseAsIFrame">
+                            <div id="codeIFrame"></div>
+                        </div>
+                        <div id="responseAsImage">
 
-                            </div>
                         </div>
                     </div>
                 </div>
-            </fieldset>
-        </section>
-    </div>
+            </div>
+        </fieldset>
+    </section>
+</div>
 </div>
 <div id="formModalAddToCollection"
      class="modal fade">
@@ -282,13 +287,16 @@
 <div id="modalAboutPostman" class="modal fade">
     <div class="modal-header">
         <a href="#" class="close">×</a>
+
         <h3>About Postman</h3>
     </div>
     <div class="modal-body">
         <p>
-            Postman makes testing web services easier. By getting rid of repetitive tasks and an intuitive interface, Postman helps you in
+            Postman makes testing web services easier. By getting rid of repetitive tasks and an intuitive interface,
+            Postman helps you in
             allowing complex requests to be formed quickly.
         </p>
+
         <p>
             We are trying to make Postman better and faster all the time.
             If you have a suggestion or found a bug? Let me know at
@@ -298,7 +306,8 @@
 
         <div id="aboutPostmanSocialButtons" class="clearfix">
             <div id="aboutPostmanTwitterButton"></div>
-            <div id="aboutPostmanPlusOneButton"><g:plusone size="medium" href="https://chrome.google.com/webstore/detail/fofkknmmmfkaddpcncigehnadkalmhhj"></g:plusone></div>
+            <div id="aboutPostmanPlusOneButton"></div>
+            <div id="aboutPostmanFacebookButton"></div>
         </div>
     </div>
     <div class="modal-footer">
@@ -315,7 +324,7 @@
             <div class="collection-head-actions">
                 <span class="label">Show</span>
                 <a href="javascript:void(0);"
-                    onclick="deleteCollection('${id}');">
+                   onclick="deleteCollection('${id}');">
                     <img src="images/delete.png" style="vertical-align: middle;"/>
                 </a>
             </div>
@@ -330,7 +339,7 @@
     <li id="sidebarRequest-${id}" class="sidebarCollectionRequest clearfix">
         <div class="request-actions">
             <a href="javascript:void(0);"
-                onclick="deleteCollectionRequest('${id}');">
+               onclick="deleteCollectionRequest('${id}');">
                 <img src="images/delete.png"/>
             </a>
         </div>
@@ -343,7 +352,7 @@
     <li id="sidebarRequest-${id}" class="sidebarHistoryRequest clearfix">
         <div class="request-actions">
             <a href="javascript:void(0);"
-                onclick="deleteRequest('${id}');">
+               onclick="deleteRequest('${id}');">
                 <img src="images/delete.png"/>
             </a>
         </div>
@@ -352,7 +361,7 @@
         </div>
     </li>
 </script>
-<script type = "text/javascript" src = "js/jquery.tmpl.min.js" ></script>
+<script type="text/javascript" src="js/jquery.tmpl.min.js"></script>
 <script type="text/javascript" src="js/jquery.mousewheel.js"></script>
 <script type="text/javascript" src="js/jquery.jscrollpane.js"></script>
 <script type="text/javascript" src="js/bootstrap-twipsy.js"></script>
@@ -363,9 +372,6 @@
 <script type="text/javascript" src="js/bootstrap-tabs.js"></script>
 <script text="text/javascript">
     $(":input:first").focus();
-</script>
-<script type="text/javascript" src="https://apis.google.com/js/plusone.js">
-    {parsetags: 'explicit'}
 </script>
 </body>
 </html>

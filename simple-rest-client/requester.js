@@ -77,6 +77,8 @@ var currentSidebarSection = "history";
 var currentResponse;
 
 var postman = {};
+postman.history = {};
+postman.history.requests = [];
 postman.indexedDB = {};
 postman.indexedDB.db = null;
 
@@ -89,7 +91,11 @@ var IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction;
 var IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange;
 var IDBCursor = window.IDBCursor || window.webkitIDBCursor;
 
-var twitterButton = '<a href="https://twitter.com/share" class="twitter-share-button" data-url="https://chrome.google.com/webstore/detail/fofkknmmmfkaddpcncigehnadkalmhhj" data-text="I am using Postman to kick some API ass!" data-count="horizontal" data-via="a85">Tweet</a><script type="text/javascript" src="http://platform.twitter.com/widgets.js"></script>';
+var socialButtons = {
+    "facebook": '<iframe src="http://www.facebook.com/plugins/like.php?href=https%3A%2F%2Fchrome.google.com%2Fwebstore%2Fdetail%2Ffdmmgilgnpjigdojojpjoooidkmcomcm&amp;send=false&amp;layout=button_count&amp;width=250&amp;show_faces=true&amp;action=like&amp;colorscheme=light&amp;font&amp;height=21&amp;appId=26438002524" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:250px; height:21px;" allowTransparency="true"></iframe>',
+    "twitter": '<a href="https://twitter.com/share" class="twitter-share-button" data-url="https://chrome.google.com/webstore/detail/fdmmgilgnpjigdojojpjoooidkmcomcm" data-text="I am using Postman to kick some API ass!" data-count="horizontal" data-via="a85">Tweet</a><script type="text/javascript" src="http://platform.twitter.com/widgets.js"></script>',
+    "plusOne": '<script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script><g:plusone size="medium" href="https://chrome.google.com/webstore/detail/fdmmgilgnpjigdojojpjoooidkmcomcm"></g:plusone>'
+};
 
 function Collection() {
     this.id = "";
@@ -592,14 +598,23 @@ function setupDB() {
             "timestamp": new Date().getTime()
         };
 
+        var index = postman.history.requestExists(historyRequest);
+        if(index >= 0) {
+            var deletedId = postman.history.requests[index].id;
+            postman.indexedDB.deleteRequest(deletedId);
+            postman.history.requests.splice(index, 1);
+        }
+
         var request = store.put(historyRequest);
 
         request.onsuccess = function(e) {
             //Re-render all the todos
             addAvailableUrl(url);
             addUrlAutoComplete();
+            removeRequestFromSidebar(deletedId, false);
             renderRequestToSidebar(url,  method, id, "top");
             addSidebarRequestListener(historyRequest);
+            postman.history.requests.push(historyRequest);
         };
 
         request.onerror = function(e) {
@@ -658,20 +673,30 @@ function setupDB() {
         var keyRange = IDBKeyRange.lowerBound(0);
         var index = store.index("timestamp");
         var cursorRequest = index.openCursor(keyRange);
-
+        var historyRequests = [];
+        
         cursorRequest.onsuccess = function(e) {
             var result = e.target.result;
 
             if (!!result == false) {
+                for(var i = 0; i < historyRequests.length; i++) {
+                    var r = historyRequests[i];
+                    addAvailableUrl(r.url);
+                    renderRequestToSidebar(r.url, r.method, r.id, "top");
+                    addSidebarRequestListener(r);
+                }
+
+                addUrlAutoComplete();
+
+                $('#historyItems').fadeIn();
+
+                postman.history.requests = historyRequests;
+                
                 return;
             }
 
             var request = result.value;
-
-            addAvailableUrl(request.url);
-            addUrlAutoComplete();
-            renderRequestToSidebar(request.url, request.method, request.id, "top");
-            addSidebarRequestListener(request);
+            historyRequests.push(request);
 
             //This wil call onsuccess again and again until no more request is left
             result.continue();
@@ -793,8 +818,27 @@ function renderRequestToSidebar(url, method, id, position) {
     refreshScrollPanes();
 }
 
-function removeRequestFromSidebar(id) {
-    $('#sidebarRequest-' + id).slideUp(100);
+function removeRequestFromSidebar(id, toAnimate) {
+    var historyRequests = postman.history.requests;
+    var k = -1;
+    for(var i = 0; i < historyRequests.length; i++) {
+        if(historyRequests[i].id === id) {
+            k = i;
+            break;
+        }
+    }
+
+    if(k >= 0) {
+        postman.history.requests.splice(k, 1);
+    }
+
+    if(toAnimate) {
+        $('#sidebarRequest-' + id).slideUp(100);
+    }
+    else {
+        $('#sidebarRequest-' + id).remove();
+    }
+
     refreshScrollPanes();
 }
 
@@ -1092,6 +1136,9 @@ function addHeaderListeners() {
 }
 
 function addBodyListeners() {
+    $('#body').blur(function() {
+        showParamsEditor('body');
+    });
 }
 
 function removeBodyListeners() {
@@ -1439,6 +1486,43 @@ function submitAddToCollectionForm() {
     $('#formModalAddToCollection').modal('hide');
 }
 
+postman.history.requestExists = function(request) {
+    var index = -1;
+    var method = request.method.toLowerCase();
+
+    console.log(method);
+
+    if(method === 'post' || method === 'put') {
+        return -1;
+    }
+
+    var requests = postman.history.requests;
+    
+    for (var i = 0; i < requests.length; i++) {
+        var r = requests[i];
+        if (r.url.length != request.url.length ||
+                r.headers.length != request.headers.length ||
+                r.method != request.method) {
+            index = -1;
+        }
+        else {
+            if (r.url === request.url) {
+                if (r.headers === request.headers) {
+                    index = i;
+                }
+            }
+        }
+
+        if (index >= 0) {
+            break;
+        }
+    }
+
+    console.log(index);
+
+    return index;
+};
+
 function closeAddToCollectionForm() {
     $('#formModalAddToCollection').modal('hide');
 }
@@ -1453,10 +1537,19 @@ function addAvailableUrl(url) {
     }
 }
 
-function attachTwitterButton() {
+function attachSocialButtons() {
     var currentContent = $('#aboutPostmanTwitterButton').html();
     if(currentContent === "" || !currentContent) {
-        $('#aboutPostmanTwitterButton').html(twitterButton);
-        gapi.plusone.go();
+        $('#aboutPostmanTwitterButton').html(socialButtons.twitter);
+    }
+
+    currentContent = $('#aboutPostmanPlusOneButton').html();
+    if(currentContent === "" || !currentContent) {
+        $('#aboutPostmanPlusOneButton').html(socialButtons.plusOne);
+    }
+
+    currentContent = $('#aboutPostmanFacebookButton').html();
+    if(currentContent === "" || !currentContent) {
+        $('#aboutPostmanFacebookButton').html(socialButtons.facebook);
     }
 }
