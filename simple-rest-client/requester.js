@@ -1120,6 +1120,8 @@ $(document).ready(function() {
 
     refreshScrollPanes();
 
+    checkDropboxLogin();
+
     $('#formAddToCollection').submit(function() {
         submitAddToCollectionForm();
         return false;
@@ -1501,25 +1503,26 @@ function attachSocialButtons() {
     }
 }
 
-function dropboxConnect() {
-    dropbox.login_v1();
-
-    /*var api_key = '7rodi7kz1ncgqc9cif0bmzvl3cvpp1zm';
-    $.getJSON("http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20xml%20where%20url%20%3D%20'" +
-        encodeURIComponent("https://www.box.net/api/1.0/rest?action=get_ticket&api_key=") +
-        api_key +
-        "'&format=json&callback=", function (response) {
-        window.ticket = response.query.results.response.ticket;
-        getAuthToken();
-        //window.location.href = 'https://m.box.net/api/1.0/auth/' + ticket;
-    });
-
-    function getAuthToken() {
-        $.getJSON("http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20xml%20where%20url%20%3D%20'" +
-            encodeURIComponent("https://www.box.net/api/1.0/rest?action=get_auth_token&api_key=" + api_key + "&ticket=" + ticket) +
-            "'&format=json&callback=", function (response) {
-            console.log(response);
-            //window.location.href = 'https://m.box.net/api/1.0/auth/' + ticket;
+function dropboxSync() {
+    if (!dropbox.isLoggedin()) {
+        $('#modalDropboxSync').modal('show');
+        dropbox.login_v1();
+    } else {
+        dropbox.oauthRequest({
+            url:"https://api.dropbox.com/1/oauth/access_token",
+            method:"POST"
+        }, [], function hello(data){
+            console.log(data);
         });
-    }*/
+        /*dropbox.getAccount(function accountData(data) {
+            console.log(data);
+        });*/
+    }
+}
+
+function checkDropboxLogin() {
+    if (dropbox.afterAuthentication === true) {
+        $('#modalDropboxSync .modal-body p').html('Succesfully connected to Dropbox!');
+        $('#modalDropboxSync').modal('show');
+    }
 }

@@ -57,8 +57,7 @@
                        data-keyboard="true">Settings</a></li>
                 <li><a href="javascript:void(0);" data-controls-modal="modalAboutPostman" data-backdrop="static"
                        data-keyboard="true" onclick="attachSocialButtons();">About</a></li>
-                <li><a href="javascript:void(0);" data-controls-modal="modalDropboxConnect" data-backdrop="static"
-                       data-keyboard="true" onclick="dropboxConnect();">Connect</a></li>
+                <li><a href="javascript:void(0);" onclick="dropboxSync();">Sync</a></li>
             </ul>
         </div>
     </div>
@@ -320,10 +319,9 @@
         <a href="javascript:void(0);" onclick="closeAboutPostman();" class="btn primary">Close</a>
     </div>
 </div>
-<div id="modalDropboxConnect" class="modal fade">
+<div id="modalDropboxSync" class="modal fade">
     <div class="modal-header">
         <a href="#" class="close">×</a>
-
         <h3>Dropbox Connect</h3>
     </div>
     <div class="modal-body">

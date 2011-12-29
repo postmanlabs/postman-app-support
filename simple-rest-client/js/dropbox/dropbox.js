@@ -54,20 +54,15 @@ dropbox.fileLimit = 10000;
 //Cookie expire time (in days). Default 10 years
 dropbox.cookieTime = 3650;
 
-/*-------------------No editing required beneath this line-------------------*/
+dropbox.afterAuthentication = false;
 
-//Incude required JS libraries
-document.write("<script type='text/javascript' src='oauth.js'></script>");
-document.write("<script type='text/javascript' src='sha1.js'></script>");
-if (!jQuery) {
-    document.write("<script type='text/javascript' src='jquery.js'></script>");
-}
+/*-------------------No editing required beneath this line-------------------*/
 
 //if redirected from dropbox, store the access token.
 var urlVars = getUrlVars(document.URL, true);
 if(urlVars["oauth_token"]) {
-    console.log('Redirected from Postman');
-    dropbox.storeData("accessToken", urlVars["oauth_token"]);
+    localStorage.setItem(dropbox.prefix + "accessToken", urlVars["oauth_token"]);
+    dropbox.afterAuthentication = true;
 }
 
 //If using HTML5 local storage
@@ -131,13 +126,12 @@ if (dropbox.authHTML5 == true) {
 dropbox.init = function (cKey, cSecret) {
     dropbox.consumerKey = cKey;
     dropbox.consumerSecret = cSecret;
-
 }
 
 
 dropbox.authorizeUser = function () {
     //also open a new tab which links to the authorize page.
-    window.location = 'https://www.dropbox.com/1/oauth/authorize?oauth_token=' + dropbox.getData("oauth_token") + '&oauth_callback=http://www.yahoo.com'
+    window.location = 'https://www.dropbox.com/1/oauth/authorize?oauth_token=' + dropbox.getData("requestToken") + '&oauth_callback=' + document.URL
 };
 
 
@@ -146,21 +140,18 @@ dropbox.login_v1 = function (callback) {
         return true;
     }
     //get the Request Token
-    if (true || !(dropbox.getData("oauth_token"))) {
-        dropbox.oauthRequest({
-            url:"https://api.dropbox.com/1/oauth/request_token",
-            method:"POST"
-        }, [], function storeToken(data) {
-            var pairs = getUrlVars(data, true);
-            dropbox.storeData("requestToken", pairs["oauth_token"]);
-            dropbox.storeData("requestTokenSecret", pairs["oauth_token_secret"]);
-            dropbox.requestToken = pairs["oauth_token"];
-            dropbox.requestTokenSecret = pairs["oauth_token_secret"];
-            dropbox.authorizeUser();
-        });
-    } else {
+
+    dropbox.oauthRequest({
+        url:"https://api.dropbox.com/1/oauth/request_token",
+        method:"POST"
+    }, [], function storeToken(data) {
+        var pairs = getUrlVars(data, true);
+        dropbox.storeData("requestToken", pairs["oauth_token"]);
+        dropbox.storeData("requestTokenSecret", pairs["oauth_token_secret"]);
+        dropbox.requestToken = pairs["oauth_token"];
+        dropbox.requestTokenSecret = pairs["oauth_token_secret"];
         dropbox.authorizeUser();
-    }
+    });
 }
 
 // User's email and password should NEVER be stored.
@@ -233,37 +224,39 @@ dropbox.isLoggedin = function () {
 
 //Function to send oauth requests
 dropbox.oauthRequest = function (param1, param2, callback) {
+
     //If the token wasn't defined in the function call, then use the access token
     if (!param1.token) {
-        if (dropbox.accessToken != undefined) {
+        param1.token = dropbox.accessToken;
+        /*if (!ignoreToken && dropbox.accessToken != undefined) {
             param1.token = dropbox.accessToken;
-        }
+        }*/
     }
-    if (!param1.tokenSecret) {
+    /*if (!param1.tokenSecret) {
         if (dropbox.accessTokenSecret != undefined) {
             param1.tokenSecret = dropbox.accessTokenSecret;
         }
-    }
+    }*/
 
-    //If type isn't defined, it's JSON
+    /*
     if (!param1.type) {
         param1.type = "json";
-    }
+    }*/
 
     //If method isn't defined, assume it's GET
     if (!param1.method) {
         param1.method = "GET";
     }
 
-    //Jsonp mandatory. Answer must be interpreted as a js script
+    /*
     if (!param1.dataType) {
         param1.dataType = "script";
-    }
+    }*/
 
-    //Jsonp mandatory
+    /*
     if (!param1.contentType) {
         param1.contentType = "jsonp";
-    }
+    }*/
 
     //Define the accessor
     accessor = {
@@ -276,18 +269,19 @@ dropbox.oauthRequest = function (param1, param2, callback) {
         method:param1.method,
         parameters:[
             ["oauth_consumer_key", dropbox.consumerKey],
-            ["oauth_signature_method", "HMAC-SHA1"]
+            ["oauth_signature_method", "PLAINTEXT"]
         ]
     };
 
     //Only add tokens to the request if they're wanted (vars not passed as true)
     if (param1.token != undefined && param1.token != true) {
         message.parameters.push(["oauth_token", param1.token]);
-        message.parameters.push(["oauth_token_secret", param1.tokenSecret]);
+        //message.parameters.push(["oauth_token_secret", param1.tokenSecret]);
     }
+    /*
     if (param1.tokenSecret != undefined && param1.tokenSecret != true) {
         accessor.tokenSecret = param1.tokenSecret;
-    }
+    }*/
 
     //If given, append request-specific parameters to the OAuth request
     for (i in param2) {
@@ -304,29 +298,26 @@ dropbox.oauthRequest = function (param1, param2, callback) {
     OAuth.setTimestampAndNonce(message);
     OAuth.SignatureMethod.sign(message, accessor);
 
+
     $.post(message.action, OAuth.getParameterMap(message.parameters), function (data) {
         callback(data);
     });
 
     /*$.ajax({
-     url: message.action,
-     type: "POST",
-     data: OAuth.getParameterMap(message.parameters),
-     dataType: param1.dataType,
-     contentType: param1.contentType,
-     callback: callback, // If not provided jsonp callback fails
+        url:message.action,
+        type:message.method,
+        data:OAuth.getParameterMap(message.parameters),
 
-     success: function(data) {
-     //OAuth request successful - run callback
-     console.log(data);
-     callback(data);
-     },
+        success:function (data) {
+            //OAuth request successful - run callback
+            callback(data);
+        },
 
-     error: function(a,b,c) {
-     //Something went wrong. Feel free to add a better error message if you want
-     console.log(b);
-     }
-     });*/
+        error:function (a, b, c) {
+            //Something went wrong. Feel free to add a better error message if you want
+            console.log(b);
+        }
+   });*/
 }
 
 //Function to store data (tokens/cache) using either cookies or HTML5, depending on choice
@@ -370,7 +361,7 @@ dropbox.getData = function (name) {
 //Function to get account info of user
 dropbox.getAccount = function (callback) {
     dropbox.oauthRequest({
-        url:"https://api.dropbox.com/0/account/info"
+        url:"https://api.dropbox.com/1/account/info"
     }, [], callback);
 }
 
