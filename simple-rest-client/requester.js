@@ -66,48 +66,48 @@ statusCodes[504] = 'Gateway Time-out';
 statusCodes[505] = 'HTTP Version not supported';
 
 var headerDetails = {
-    "Accept-Ranges": "Content-Types that are acceptable",
-    "Age": "The age the object has been in a proxy cache in seconds",
-    "Allow": "Valid actions for a specified resource. To be used for a 405 Method not allowed",
-    "Cache-Control": "Tells all caching mechanisms from server to client whether they may cache this object. It is measured in seconds",
-    "Connection": "Options that are desired for the connection",
-    "Content-Encoding": "The type of encoding used on the data.",
-    "Content-Language": "The language the content is in",
-    "Content-Length": "The length of the response body in octets (8-bit bytes)",
-    "Content-Location": "An alternate location for the returned data",
-    "Content-MD5": "A Base64-encoded binary MD5 sum of the content of the response",
-    "Content-Disposition": "An opportunity to raise a \"File Download\" dialogue box for a known MIME type",
-    "Content-Range": "Where in a full body message this partial message belongs",
-    "Content-Type": "The mime type of this content",
-    "Date": "The date and time that the message was sent",
-    "ETag": "An identifier for a specific version of a resource, often a message digest",
-    "Expires": "Gives the date/time after which the response is considered stale",
-    "Last-Modified": "The last modified date for the requested object, in RFC 2822 format",
-    "Link": "Used to express a typed relationship with another resource, where the relation type is defined by RFC 5988",
-    "Location": "Used in redirection, or when a new resource has been created.",
-    "P3P": "This header is supposed to set P3P policy, in the form of P3P:CP=\"your_compact_policy\". However, P3P did not take off, most browsers have never fully implemented it, a lot of websites set this header with fake policy text, that was enough to fool browsers the existence of P3P policy and grant permissions for third party cookies.",
-    "Pragma": "Implementation-specific headers that may have various effects anywhere along the request-response chain.",
-    "Proxy-Authenticate": "Request authentication to access the proxy.",
-    "Refresh": "Used in redirection, or when a new resource has been created. This refresh redirects after 5 seconds. This is a proprietary, non-standard header extension introduced by Netscape and supported by most web browsers.",
-    "Retry-After": "If an entity is temporarily unavailable, this instructs the client to try again after a specified period of time (seconds).",
-    "Server": "A name for the server",
-    "Set-Cookie": "an HTTP cookie",
-    "Strict-Transport-Security": "A HSTS Policy informing the HTTP client how long to cache the HTTPS only policy and whether this applies to subdomains.",
-    "Trailer": "The Trailer general field value indicates that the given set of header fields is present in the trailer of a message encoded with chunked transfer-coding.",
-    "Transfer-Encoding": "The form of encoding used to safely transfer the entity to the user. Currently defined methods are: chunked, compress, deflate, gzip, identity.",
-    "Vary": "Tells downstream proxies how to match future request headers to decide whether the cached response can be used rather than requesting a fresh one from the origin server.",
-    "Via": "Informs the client of proxies through which the response was sent.",
-    "Warning": "A general warning about possible problems with the entity body.",
-    "WWW-Authenticate": "Indicates the authentication scheme that should be used to access the requested entity.",
-    "X-Requested-With": "Mainly used to identify Ajax requests. Most JavaScript frameworks send this header with value of XMLHttpRequest",
-    "X-Do-Not-Track": "Requests a web application to disable their tracking of a user. Note that, as of yet, this is largely ignored by web applications. It does however open the door to future legislation requiring web applications to comply with a user's request to not be tracked. Mozilla implements the DNT header with a similar purpose.",
-    "DNT": "Requests a web application to disable their tracking of a user. This is Mozilla's version of the X-Do-Not-Track header (since Firefox 4.0 Beta 11). Safari and IE9 also have support for this header. On March 7, 2011, a draft proposal was submitted to IETF.",
-    "X-Forwarded-For": "A de facto standard for identifying the originating IP address of a client connecting to a web server through an HTTP proxy or load balancer",
-    "X-Frame-Options": "Clickjacking protection: \"deny\" - no rendering within a frame, \"sameorigin\" - no rendering if origin mismatch",
-    "X-XSS-Protection": "Cross-site scripting (XSS) filter",
-    "X-Content-Type-Options": "The only defined value, \"nosniff\", prevents Internet Explorer from MIME-sniffing a response away from the declared content-type",
-    "X-Forwarded-Proto": "A de facto standard for identifying the originating protocol of an HTTP request, since a reverse proxy (load balancer) may communicate with a web server using HTTP even if the request to the reverse proxy is HTTPS",
-    "X-Powered-By": "Specifies the technology (ASP.NET, PHP, JBoss, e.g.) supporting the web application (version details are often in X-Runtime, X-Version, or X-AspNet-Version)"
+    "accept-ranges": "Content-Types that are acceptable",
+    "age": "The age the object has been in a proxy cache in seconds",
+    "allow": "Valid actions for a specified resource. To be used for a 405 Method not allowed",
+    "cache-control": "Tells all caching mechanisms from server to client whether they may cache this object. It is measured in seconds",
+    "connection": "Options that are desired for the connection",
+    "content-encoding": "The type of encoding used on the data.",
+    "content-language": "The language the content is in",
+    "content-length": "The length of the response body in octets (8-bit bytes)",
+    "content-location": "An alternate location for the returned data",
+    "content-md5": "A Base64-encoded binary MD5 sum of the content of the response",
+    "content-disposition": "An opportunity to raise a \"File Download\" dialogue box for a known MIME type",
+    "content-range": "Where in a full body message this partial message belongs",
+    "content-type": "The mime type of this content",
+    "date": "The date and time that the message was sent",
+    "etag": "An identifier for a specific version of a resource, often a message digest",
+    "expires": "Gives the date/time after which the response is considered stale",
+    "last-modified": "The last modified date for the requested object, in RFC 2822 format",
+    "link": "Used to express a typed relationship with another resource, where the relation type is defined by RFC 5988",
+    "location": "Used in redirection, or when a new resource has been created.",
+    "p3p": "This header is supposed to set P3P policy, in the form of P3P:CP=\"your_compact_policy\". However, P3P did not take off, most browsers have never fully implemented it, a lot of websites set this header with fake policy text, that was enough to fool browsers the existence of P3P policy and grant permissions for third party cookies.",
+    "pragma": "Implementation-specific headers that may have various effects anywhere along the request-response chain.",
+    "proxy-authenticate": "Request authentication to access the proxy.",
+    "refresh": "Used in redirection, or when a new resource has been created. This refresh redirects after 5 seconds. This is a proprietary, non-standard header extension introduced by Netscape and supported by most web browsers.",
+    "retry-after": "If an entity is temporarily unavailable, this instructs the client to try again after a specified period of time (seconds).",
+    "server": "A name for the server",
+    "set-cookie": "an HTTP cookie",
+    "strict-transport-security": "A HSTS Policy informing the HTTP client how long to cache the HTTPS only policy and whether this applies to subdomains.",
+    "trailer": "The Trailer general field value indicates that the given set of header fields is present in the trailer of a message encoded with chunked transfer-coding.",
+    "transfer-encoding": "The form of encoding used to safely transfer the entity to the user. Currently defined methods are: chunked, compress, deflate, gzip, identity.",
+    "vary": "Tells downstream proxies how to match future request headers to decide whether the cached response can be used rather than requesting a fresh one from the origin server.",
+    "via": "Informs the client of proxies through which the response was sent.",
+    "warning": "A general warning about possible problems with the entity body.",
+    "www-authenticate": "Indicates the authentication scheme that should be used to access the requested entity.",
+    "x-requested-with": "Mainly used to identify Ajax requests. Most JavaScript frameworks send this header with value of XMLHttpRequest",
+    "x-do-not-track": "Requests a web application to disable their tracking of a user. Note that, as of yet, this is largely ignored by web applications. It does however open the door to future legislation requiring web applications to comply with a user's request to not be tracked. Mozilla implements the DNT header with a similar purpose.",
+    "dnt": "Requests a web application to disable their tracking of a user. This is Mozilla's version of the X-Do-Not-Track header (since Firefox 4.0 Beta 11). Safari and IE9 also have support for this header. On March 7, 2011, a draft proposal was submitted to IETF.",
+    "x-forwarded-for": "A de facto standard for identifying the originating IP address of a client connecting to a web server through an HTTP proxy or load balancer",
+    "x-frame-options": "Clickjacking protection: \"deny\" - no rendering within a frame, \"sameorigin\" - no rendering if origin mismatch",
+    "x-xss-protection": "Cross-site scripting (XSS) filter",
+    "x-content-type-options": "The only defined value, \"nosniff\", prevents Internet Explorer from MIME-sniffing a response away from the declared content-type",
+    "x-forwarded-proto": "A de facto standard for identifying the originating protocol of an HTTP request, since a reverse proxy (load balancer) may communicate with a web server using HTTP even if the request to the reverse proxy is HTTPS",
+    "x-powered-by": "Specifies the technology (ASP.NET, PHP, JBoss, e.g.) supporting the web application (version details are often in X-Runtime, X-Version, or X-AspNet-Version)"
 };
 
 var requests;
@@ -124,6 +124,7 @@ var currentResponse;
 var postman = {};
 postman.history = {};
 postman.history.requests = [];
+postman.settings = {};
 postman.indexedDB = {};
 postman.indexedDB.db = null;
 
@@ -329,7 +330,7 @@ function setResponseHeaders(headersString) {
             var header = {
                 "name": hParts[0],
                 "value": hParts[1],
-                "description": headerDetails[hParts[0]]
+                "description": headerDetails[hParts[0].toLowerCase()]
             };
 
             if(hParts[0] != "") {
@@ -355,7 +356,12 @@ function readResponse() {
     if (this.readyState == 4) {
         try {
             if (this.status == 0) {
-                throw('Status = 0');
+                $('#modalResponseError').modal({
+                    keyboard: true,
+                    backdrop: "static"
+                });
+
+                $('#modalResponseError').modal('show');
             }
             $("#responseStatus").html(this.status + ' ' + statusCodes[this.status]);
             setResponseHeaders(this.getAllResponseHeaders());
@@ -398,13 +404,12 @@ function readResponse() {
             setResponseFormat(format);
         }
         catch(e) {
-            $("#responseStatus").html("No response.");
-            $("#respHeaders").css("display", "none");
-            $("#respData").css("display", "none");
-
-            $("#loader").css("display", "none");
-            $("#responsePrint").css("display", "");
+            console.log("Something went wrong while receiving the response");
+            console.log(e);
         }
+    }
+    else {
+        console.log("Could not get the response properly", this.readyState);
     }
 
     setContainerHeights();
@@ -875,6 +880,14 @@ function initDB() {
 //History management functions
 function saveRequest(url, method, headers, data, dataMode) {
     var id = guid();
+    var maxHistoryCount = postman.settings.historyCount;
+    var requestsCount = postman.history.requests.length;
+    console.log(maxHistoryCount, requestsCount);
+    if(requestsCount >= maxHistoryCount) {
+        //Delete the last request
+        var lastRequest = postman.history.requests[requestsCount - 1];
+        postman.indexedDB.deleteRequest(lastRequest.id);
+    }
     postman.indexedDB.addRequest(id, url, method, headers, data, dataMode);
 }
 
@@ -1193,9 +1206,27 @@ function refreshScrollPanes() {
     });
 }
 
+function initializeSettings() {
+    if(localStorage['historyCount']) {
+        postman.settings.historyCount = localStorage['historyCount'];
+    }
+    else {
+        postman.settings.historyCount = 100;
+        localStorage['historyCount'] = postman.settings.historyCount;
+    }
+
+    $('#historyCount').val(postman.settings.historyCount);
+
+    $('#historyCount').change(function() {
+        postman.settings.historyCount = $('#historyCount').val();
+        localStorage['historyCount'] = postman.settings.historyCount;
+    });
+}
+
 $(document).ready(function() {
     setupDB();
     initDB();
+    initializeSettings();
     lang();
     init();
 
@@ -1559,6 +1590,10 @@ function closeAddToCollectionForm() {
 
 function closeAboutPostman() {
     $('#modalAboutPostman').modal('hide');
+}
+
+function closeSettings() {
+    $('#modalSettings').modal('hide');
 }
 
 function addAvailableUrl(url) {

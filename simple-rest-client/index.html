@@ -69,8 +69,10 @@
             </a>
         </div>
         <ul class="pills" data-tabs="tabs">
-            <li class="active"><a href="javascript:void(0);" data-id="history" onclick="toggleSidebarSection('history');">History</a></li>
-            <li><a href="javascript:void(0);" data-id="collections" onclick="toggleSidebarSection('collections');">Collections</a></li>
+            <li class="active"><a href="javascript:void(0);" data-id="history"
+                                  onclick="toggleSidebarSection('history');">History</a></li>
+            <li><a href="javascript:void(0);" data-id="collections" onclick="toggleSidebarSection('collections');">Collections</a>
+            </li>
         </ul>
         <div id="sidebarSectionContainer">
             <div id="sidebarSection-history">
@@ -293,6 +295,31 @@
         <a href="javascript:void(0);" onclick="closeAddToCollectionForm();" class="btn secondary">Cancel</a>
     </div>
 </div>
+<div id="modalSettings" class="modal fade">
+    <div class="modal-header">
+        <a href="#" class="close">×</a>
+
+        <h3>Settings</h3>
+    </div>
+    <div class="modal-body">
+        <form>
+            <div class="clearfix">
+                <label for="historyCount">Max history items</label>
+
+                <div class="input">
+                    <select class="medium" name="historyCount" id="historyCount">
+                        <option>50</option>
+                        <option>100</option>
+                        <option>200</option>
+                    </select>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <a href="javascript:void(0);" onclick="closeSettings();" class="btn primary">Close</a>
+    </div>
+</div>
 <div id="modalAboutPostman" class="modal fade">
     <div class="modal-header">
         <a href="#" class="close">×</a>
@@ -323,6 +350,17 @@
         <a href="javascript:void(0);" onclick="closeAboutPostman();" class="btn primary">Close</a>
     </div>
 </div>
+<div id="modalResponseError" class="modal fade">
+    <div class="modal-header">
+        <a href="#" class="close">×</a>
+        <h3>Could not get any response</h3>
+    </div>
+    <div class="modal-body">
+        <p>
+            Something went wrong while fetching the response. Check your request again.
+        </p>
+    </div>
+</div>
 <div id="modalDropboxConnect" class="modal fade">
     <div class="modal-header">
         <a href="#" class="close">×</a>
@@ -341,7 +379,8 @@
 </script>
 <script id="itemResponseHeader" type="text/x-jquery-tmpl">
     <li class="responseHeader clearfix">
-        <div class="responseHeaderName" data-placement="above" title="${name}" data-content="${description}" rel="popover">${name} &rarr;</div>
+        <div class="responseHeaderName" data-placement="above" title="${name}" data-content="${description}"
+             rel="popover">${name} &rarr;</div>
         <div class="responseHeaderValue">${value}</div>
     </li>
 </script>
