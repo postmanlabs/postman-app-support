@@ -367,7 +367,7 @@ function setupDB() {
     postman.indexedDB.onerror = function(event) {
         console.log(event);
     };
-    
+
     postman.indexedDB.open = function() {
         var request = indexedDB.open("postman", "POSTman request history");
         request.onsuccess = function(e) {
@@ -376,16 +376,16 @@ function setupDB() {
             var db = postman.indexedDB.db;
 
             console.log(db.version);
-            
+
             //We can only create Object stores in a setVersion transaction
             if (v != db.version) {
                 console.log(v, "Version is not the same");
                 var setVrequest = db.setVersion(v);
-                
+
                 setVrequest.onfailure = function(e) {
                     console.log(e);
                 };
-                
+
                 setVrequest.onsuccess = function(e) {
                     console.log(e);
                     if (db.objectStoreNames.contains("requests")) {
@@ -406,10 +406,10 @@ function setupDB() {
                     collectionsStore.createIndex("timestamp", "timestamp", { unique: false});
 
                     console.log("Final");
-                    
+
                     collectionRequestsStore.createIndex("timestamp", "timestamp", { unique: false});
                     collectionRequestsStore.createIndex("collectionId", "collectionId", { unique: false});
-                    
+
                     postman.indexedDB.getAllRequestItems();
                     postman.indexedDB.getCollections();
                 };
@@ -674,7 +674,7 @@ function setupDB() {
         var index = store.index("timestamp");
         var cursorRequest = index.openCursor(keyRange);
         var historyRequests = [];
-        
+
         cursorRequest.onsuccess = function(e) {
             var result = e.target.result;
 
@@ -691,7 +691,7 @@ function setupDB() {
                 $('#historyItems').fadeIn();
 
                 postman.history.requests = historyRequests;
-                
+
                 return;
             }
 
@@ -861,7 +861,7 @@ function loadCollectionRequest(id) {
 
 function loadRequestInEditor(request) {
     var method = request.method.toLowerCase();
-    
+
     $('#url').val(request.url);
 
     //Set proper class for method and the variable
@@ -939,60 +939,7 @@ function guid() {
     return (S4() + S4() + "-" + S4() + "-" + S4() + "-" + S4() + "-" + S4() + S4() + S4());
 }
 
-function getUrlVars(url) {
-    if (url === null) {
-        return [];
-    }
 
-    var quesLocation = url.indexOf('?');
-    var equalLocation = url.indexOf('=');
-
-    if(equalLocation < 0) {
-        return [];
-    }
-
-    if(quesLocation < 0) {
-        quesLocation = -1;
-    }
-
-    var vars = [], hash;
-    var hashes = url.slice(quesLocation + 1).split('&');
-    var element;
-
-    for (var i = 0; i < hashes.length; i++) {
-        hash = hashes[i].split('=');
-        element = {
-            "key": jQuery.trim(hash[0]),
-            "value": jQuery.trim(hash[1])
-        };
-
-        vars.push(element);
-    }
-
-    return vars;
-}
-
-function getHeaderVars(data) {
-    if (data === null || data === "") {
-        return [];
-    }
-
-    var vars = [], hash;
-    var hashes = data.split('\n');
-    var header;
-
-    for (var i = 0; i < hashes.length; i++) {
-        hash = hashes[i].split(":");
-        header = {
-            "key": jQuery.trim(hash[0]),
-            "value": jQuery.trim(hash[1])
-        };
-
-        vars.push(header);
-    }
-
-    return vars;
-}
 
 //Sets the param strings for header and url params
 function setParamsFromEditor(section) {
@@ -1153,7 +1100,7 @@ function setContainerHeights() {
 function refreshScrollPanes() {
     var newMainWidth = $('#container').width() - $('#sidebar').width();
     $('#main').width(newMainWidth + "px");
-    
+
     $('#sidebar').jScrollPane({
         mouseWheelSpeed: 24
     });
@@ -1172,12 +1119,12 @@ $(document).ready(function() {
     setContainerHeights();
 
     refreshScrollPanes();
-    
+
     $('#formAddToCollection').submit(function() {
         submitAddToCollectionForm();
         return false;
     });
-    
+
     $('#methods ul li a').click(function() {
         $('#methods ul li').removeClass('active');
         $(this).parent().addClass('active');
@@ -1497,7 +1444,7 @@ postman.history.requestExists = function(request) {
     }
 
     var requests = postman.history.requests;
-    
+
     for (var i = 0; i < requests.length; i++) {
         var r = requests[i];
         if (r.url.length != request.url.length ||
@@ -1552,4 +1499,27 @@ function attachSocialButtons() {
     if(currentContent === "" || !currentContent) {
         $('#aboutPostmanFacebookButton').html(socialButtons.facebook);
     }
+}
+
+function dropboxConnect() {
+    dropbox.login_v1();
+
+    /*var api_key = '7rodi7kz1ncgqc9cif0bmzvl3cvpp1zm';
+    $.getJSON("http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20xml%20where%20url%20%3D%20'" +
+        encodeURIComponent("https://www.box.net/api/1.0/rest?action=get_ticket&api_key=") +
+        api_key +
+        "'&format=json&callback=", function (response) {
+        window.ticket = response.query.results.response.ticket;
+        getAuthToken();
+        //window.location.href = 'https://m.box.net/api/1.0/auth/' + ticket;
+    });
+
+    function getAuthToken() {
+        $.getJSON("http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20xml%20where%20url%20%3D%20'" +
+            encodeURIComponent("https://www.box.net/api/1.0/rest?action=get_auth_token&api_key=" + api_key + "&ticket=" + ticket) +
+            "'&format=json&callback=", function (response) {
+            console.log(response);
+            //window.location.href = 'https://m.box.net/api/1.0/auth/' + ticket;
+        });
+    }*/
 }
