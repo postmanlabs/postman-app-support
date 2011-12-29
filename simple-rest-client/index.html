@@ -57,9 +57,14 @@
         </div>
     </div>
     <div id="sidebarContainer" class="clearfix">
+        <div id="historyOptions">
+            <a href="javascript:void(0);" onclick="clearHistory()">
+                Clear
+            </a>
+        </div>
         <ul class="pills" data-tabs="tabs">
-            <li class="active"><a href="javascript:void(0);" data-id="history">History</a></li>
-            <li><a href="javascript:void(0);" data-id="collections">Collections</a></li>
+            <li class="active"><a href="javascript:void(0);" data-id="history" onclick="toggleSidebarSection('history');">History</a></li>
+            <li><a href="javascript:void(0);" data-id="collections" onclick="toggleSidebarSection('collections');">Collections</a></li>
         </ul>
         <div id="sidebarSectionContainer">
             <div id="sidebarSection-history">
@@ -69,7 +74,6 @@
             </div>
             <div id="sidebarSection-collections">
                 <ul id="collectionItems" class="clearfix">
-
                 </ul>
             </div>
         </div>
@@ -208,8 +212,7 @@
 
                 <div id="respHeaders">
                     <div id="respHeadersContent">
-                        <textarea name="responseHeaders" id="responseHeaders" tabindex="6"
-                                  class="inputText"></textarea>
+                        <div id="responseHeaders" tabindex="6"></div>
                     </div>
                 </div>
 
@@ -218,7 +221,7 @@
                         <ul class="pills">
                             <li id="langFormat-html" class="active">
                                 <a href="javascript:void(0);" onclick="setResponseFormat('html')">
-                                    HTML/XML
+                                    XML
                                 </a>
                             </li>
                             <li id="langFormat-javascript">
@@ -317,6 +320,12 @@
 <!--- jQuery Templates -->
 <script id="itemCollectionSelectorList" type="text/x-jquery-tmpl">
     <option value="${id}">${name}</option>
+</script>
+<script id="itemResponseHeader" type="text/x-jquery-tmpl">
+    <li class="responseHeader clearfix">
+        <div class="responseHeaderName" data-placement="above" title="${name}" data-content="${description}" rel="popover">${name} &rarr;</div>
+        <div class="responseHeaderValue">${value}</div>
+    </li>
 </script>
 <script id="itemCollectionSidebarHead" type="text/x-jquery-tmpl">
     <li id="collection-${id}" data-id="${id}" class="sidebarCollection">

@@ -65,6 +65,51 @@ statusCodes[503] = 'Service Unavailable';
 statusCodes[504] = 'Gateway Time-out';
 statusCodes[505] = 'HTTP Version not supported';
 
+var headerDetails = {
+    "Accept-Ranges": "Content-Types that are acceptable",
+    "Age": "The age the object has been in a proxy cache in seconds",
+    "Allow": "Valid actions for a specified resource. To be used for a 405 Method not allowed",
+    "Cache-Control": "Tells all caching mechanisms from server to client whether they may cache this object. It is measured in seconds",
+    "Connection": "Options that are desired for the connection",
+    "Content-Encoding": "The type of encoding used on the data.",
+    "Content-Language": "The language the content is in",
+    "Content-Length": "The length of the response body in octets (8-bit bytes)",
+    "Content-Location": "An alternate location for the returned data",
+    "Content-MD5": "A Base64-encoded binary MD5 sum of the content of the response",
+    "Content-Disposition": "An opportunity to raise a \"File Download\" dialogue box for a known MIME type",
+    "Content-Range": "Where in a full body message this partial message belongs",
+    "Content-Type": "The mime type of this content",
+    "Date": "The date and time that the message was sent",
+    "ETag": "An identifier for a specific version of a resource, often a message digest",
+    "Expires": "Gives the date/time after which the response is considered stale",
+    "Last-Modified": "The last modified date for the requested object, in RFC 2822 format",
+    "Link": "Used to express a typed relationship with another resource, where the relation type is defined by RFC 5988",
+    "Location": "Used in redirection, or when a new resource has been created.",
+    "P3P": "This header is supposed to set P3P policy, in the form of P3P:CP=\"your_compact_policy\". However, P3P did not take off, most browsers have never fully implemented it, a lot of websites set this header with fake policy text, that was enough to fool browsers the existence of P3P policy and grant permissions for third party cookies.",
+    "Pragma": "Implementation-specific headers that may have various effects anywhere along the request-response chain.",
+    "Proxy-Authenticate": "Request authentication to access the proxy.",
+    "Refresh": "Used in redirection, or when a new resource has been created. This refresh redirects after 5 seconds. This is a proprietary, non-standard header extension introduced by Netscape and supported by most web browsers.",
+    "Retry-After": "If an entity is temporarily unavailable, this instructs the client to try again after a specified period of time (seconds).",
+    "Server": "A name for the server",
+    "Set-Cookie": "an HTTP cookie",
+    "Strict-Transport-Security": "A HSTS Policy informing the HTTP client how long to cache the HTTPS only policy and whether this applies to subdomains.",
+    "Trailer": "The Trailer general field value indicates that the given set of header fields is present in the trailer of a message encoded with chunked transfer-coding.",
+    "Transfer-Encoding": "The form of encoding used to safely transfer the entity to the user. Currently defined methods are: chunked, compress, deflate, gzip, identity.",
+    "Vary": "Tells downstream proxies how to match future request headers to decide whether the cached response can be used rather than requesting a fresh one from the origin server.",
+    "Via": "Informs the client of proxies through which the response was sent.",
+    "Warning": "A general warning about possible problems with the entity body.",
+    "WWW-Authenticate": "Indicates the authentication scheme that should be used to access the requested entity.",
+    "X-Requested-With": "Mainly used to identify Ajax requests. Most JavaScript frameworks send this header with value of XMLHttpRequest",
+    "X-Do-Not-Track": "Requests a web application to disable their tracking of a user. Note that, as of yet, this is largely ignored by web applications. It does however open the door to future legislation requiring web applications to comply with a user's request to not be tracked. Mozilla implements the DNT header with a similar purpose.",
+    "DNT": "Requests a web application to disable their tracking of a user. This is Mozilla's version of the X-Do-Not-Track header (since Firefox 4.0 Beta 11). Safari and IE9 also have support for this header. On March 7, 2011, a draft proposal was submitted to IETF.",
+    "X-Forwarded-For": "A de facto standard for identifying the originating IP address of a client connecting to a web server through an HTTP proxy or load balancer",
+    "X-Frame-Options": "Clickjacking protection: \"deny\" - no rendering within a frame, \"sameorigin\" - no rendering if origin mismatch",
+    "X-XSS-Protection": "Cross-site scripting (XSS) filter",
+    "X-Content-Type-Options": "The only defined value, \"nosniff\", prevents Internet Explorer from MIME-sniffing a response away from the declared content-type",
+    "X-Forwarded-Proto": "A de facto standard for identifying the originating protocol of an HTTP request, since a reverse proxy (load balancer) may communicate with a web server using HTTP even if the request to the reverse proxy is HTTPS",
+    "X-Powered-By": "Specifies the technology (ASP.NET, PHP, JBoss, e.g.) supporting the web application (version details are often in X-Runtime, X-Version, or X-AspNet-Version)"
+};
+
 var requests;
 var bodyFileData;
 var dataMode = "params";
@@ -174,6 +219,14 @@ function setRequestMethod(m) {
     requestMethod = m;
 }
 
+function ensureProperUrl(url) {
+    var a = "http";
+    if(url.indexOf(a) != 0) {
+        url = "http://" + url;
+    }
+    return url;
+}
+
 function sendRequest() {
     if ($("#url").val() != "") {
         var xhr = new XMLHttpRequest();
@@ -181,12 +234,15 @@ function sendRequest() {
         try {
             var headers = $("#headers").val();
             var url = $("#url").val();
+
+            url = ensureProperUrl(url);
+
             var method = getRequestMethod();
 
             var data = "";
             var bodyData = "";
 
-            xhr.open(method, $("#url").val(), true);
+            xhr.open(method, url, true);
 
             headers = headers.split("\n");
             for (var i = 0; i < headers.length; i++) {
@@ -235,9 +291,7 @@ function sendRequest() {
             }
 
             requestStartTime = new Date().getTime();
-
             saveRequest(url, method, $("#headers").val(), data, dataMode);
-
             $('#submitRequest').button("loading");
         }
         catch(e) {
@@ -262,6 +316,33 @@ function sendRequest() {
     clearFields();
 }
 
+function setResponseHeaders(headersString) {
+    var headers = headersString.split("\n");
+    var count = headers.length;
+    var finalHeaders = [];
+    console.log(headers);
+    for(var i = 0; i < count; i++) {
+        var h = headers[i];
+        var hParts = h.split(":");
+
+        if(hParts && hParts.length > 0) {
+            var header = {
+                "name": hParts[0],
+                "value": hParts[1],
+                "description": headerDetails[hParts[0]]
+            };
+
+            if(hParts[0] != "") {
+                finalHeaders.push(header);
+            }
+        }
+    }
+
+    $('#responseHeaders').html("");
+    $("#itemResponseHeader").tmpl(finalHeaders).appendTo("#responseHeaders");
+    $('.responseHeaderName').popover();
+}
+
 function readResponse() {
     currentResponse = new Response();
 
@@ -277,7 +358,7 @@ function readResponse() {
                 throw('Status = 0');
             }
             $("#responseStatus").html(this.status + ' ' + statusCodes[this.status]);
-            $("#responseHeaders").val(jQuery.trim(this.getAllResponseHeaders()));
+            setResponseHeaders(this.getAllResponseHeaders());
 
             var debugurl = /X-Debug-URL: (.*)/i.exec($("#responseHeaders").val());
             if (debugurl) {
@@ -374,8 +455,6 @@ function setupDB() {
             var v = "0.42";
             postman.indexedDB.db = e.target.result;
             var db = postman.indexedDB.db;
-
-            console.log(db.version);
             
             //We can only create Object stores in a setVersion transaction
             if (v != db.version) {
@@ -404,8 +483,6 @@ function setupDB() {
 
                     requestStore.createIndex("timestamp", "timestamp", { unique: false});
                     collectionsStore.createIndex("timestamp", "timestamp", { unique: false});
-
-                    console.log("Final");
                     
                     collectionRequestsStore.createIndex("timestamp", "timestamp", { unique: false});
                     collectionRequestsStore.createIndex("collectionId", "collectionId", { unique: false});
@@ -720,6 +797,16 @@ function setupDB() {
             console.log(e);
         };
     };
+
+    postman.indexedDB.deleteHistory = function() {
+        var db = postman.indexedDB.db;
+        var clearTransaction = db.transaction(["requests"], IDBTransaction.READ_WRITE);
+        var clearRequest = clearTransaction.objectStore(["requests"]).clear();
+        clearRequest.onsuccess = function(event) {
+            console.log(event);
+            $('#historyItems').html("");
+        };
+    }
 
     postman.indexedDB.deleteCollectionRequest = function(id) {
         var db = postman.indexedDB.db;
@@ -1398,8 +1485,6 @@ function setResponseFormat(format) {
 
     var val = $('#codeData').html();
 
-    console.log("Setting response format as", format);
-
     $('#responseAsText').css("display", "block");
     $('#responseAsIFrame').css("display", "none");
     $('#codeData').removeClass();
@@ -1518,8 +1603,6 @@ postman.history.requestExists = function(request) {
         }
     }
 
-    console.log(index);
-
     return index;
 };
 
@@ -1551,5 +1634,19 @@ function attachSocialButtons() {
     currentContent = $('#aboutPostmanFacebookButton').html();
     if(currentContent === "" || !currentContent) {
         $('#aboutPostmanFacebookButton').html(socialButtons.facebook);
+    }
+}
+
+function clearHistory() {
+    console.log("Trying to clear the history");
+    postman.indexedDB.deleteHistory();
+}
+
+function toggleSidebarSection(section) {
+    if(section === 'history') {
+        $('#historyOptions').css("display", "block");
+    }
+    else if(section === 'collections') {
+        $('#historyOptions').css("display", "none");
     }
 }
