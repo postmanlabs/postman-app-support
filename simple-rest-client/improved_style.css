@@ -223,8 +223,7 @@ fieldset {
 
 #mainNavigation {
     float: right;
-    margin-right: 10px;
-    margin-top: 3px;
+    margin-right: 7px;
 }
 
 #mainNavigation ul li {
@@ -235,6 +234,7 @@ fieldset {
 #mainNavigation a {
     color: white;
     padding: 5px;
+    font-size: 11px;
     background: #BBB;
     border-radius: 5px;
     padding-left: 10px;
@@ -252,6 +252,14 @@ fieldset {
 
 #responseData {
     margin-top: 10px;
+}
+
+#respHeaders:focus,
+#responseHeaders:focus,
+#respHeadersContent:focus,
+#responseData:focus {
+    border: none;
+    outline: none !important;
 }
 
 #responseData pre {
@@ -274,7 +282,28 @@ fieldset {
     min-height: 125px;
 }
 
-#responseHeaders,
+.responseHeader {
+    font-family: Helvetica, arial, sans-serif;
+    list-style: none;
+    margin-bottom: 5px;
+    color: #111;
+}
+
+.responseHeader .responseHeaderName {
+    font-weight: bold;
+    color: #555;
+}
+
+.responseHeaderName {
+    float: left;
+    margin-right: 5px;
+    cursor: pointer;
+}
+
+.responseHeaderValue {
+    float: left;
+}
+
 #responsedata,
 #headers,
 #body, #codeData {
@@ -733,4 +762,24 @@ li .right {
 #aboutPostmanFacebookButton {
     float: left;
     margin-right: 10px;
+}
+
+#historyOptions {
+    position: absolute;
+    margin-left: 270px;
+    margin-top: 10px;
+}
+
+#historyOptions a {
+    font-size: 10px;
+    font-weight: bold;
+    background: #afafaf;
+    color: #fff;
+    border-radius: 3px;
+    padding: 4px;
+}
+
+#historyOptions a:hover {
+    background: #0069D6;
+    text-decoration: none;
 }
