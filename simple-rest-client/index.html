@@ -38,6 +38,10 @@
     <script type="text/javascript" src="js/jquery-ui-1.8.14.custom.min.js"></script>
     <script type="text/javascript" src="jquery.chili.min.js"></script>
     <script type="text/javascript" src="jquery.chili.recipes.js"></script>
+    <script type="text/javascript" src="js/dropbox/sha1.js"></script>
+    <script type="text/javascript" src="js/dropbox/oauth.js"></script>
+    <script type="text/javascript" src="js/util.js"></script>
+    <script type="text/javascript" src="js/dropbox/dropbox.js"></script>
     <script type="text/javascript" src="requester.js"></script>
 </head>
 <body>
@@ -53,6 +57,8 @@
                        data-keyboard="true">Settings</a></li>
                 <li><a href="javascript:void(0);" data-controls-modal="modalAboutPostman" data-backdrop="static"
                        data-keyboard="true" onclick="attachSocialButtons();">About</a></li>
+                <li><a href="javascript:void(0);" data-controls-modal="modalDropboxConnect" data-backdrop="static"
+                       data-keyboard="true" onclick="dropboxConnect();">Connect</a></li>
             </ul>
         </div>
     </div>
@@ -315,6 +321,18 @@
     </div>
     <div class="modal-footer">
         <a href="javascript:void(0);" onclick="closeAboutPostman();" class="btn primary">Close</a>
+    </div>
+</div>
+<div id="modalDropboxConnect" class="modal fade">
+    <div class="modal-header">
+        <a href="#" class="close">×</a>
+
+        <h3>Dropbox Connect</h3>
+    </div>
+    <div class="modal-body">
+        <p>
+            Redirecting to Dropbox...
+        </p>
     </div>
 </div>
 <!--- jQuery Templates -->
