@@ -1299,7 +1299,7 @@ $(document).ready(function() {
 
     refreshScrollPanes();
 
-    checkDropboxLogin();
+    //checkDropboxLogin();
 
     $('#formAddToCollection').submit(function() {
         submitAddToCollectionForm();
