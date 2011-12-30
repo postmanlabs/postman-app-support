@@ -41,7 +41,7 @@
     <script type="text/javascript" src="js/dropbox/sha1.js"></script>
     <script type="text/javascript" src="js/dropbox/oauth.js"></script>
     <script type="text/javascript" src="js/util.js"></script>
-    <script type="text/javascript" src="js/dropbox/dropbox.js"></script>
+    <!--<script type="text/javascript" src="js/dropbox/dropbox.js"></script>-->
     <script type="text/javascript" src="requester.js"></script>
 </head>
 <body>
@@ -57,7 +57,7 @@
                        data-keyboard="true">Settings</a></li>
                 <li><a href="javascript:void(0);" data-controls-modal="modalAboutPostman" data-backdrop="static"
                        data-keyboard="true" onclick="attachSocialButtons();">About</a></li>
-                <li><a href="javascript:void(0);" onclick="dropboxSync();">Sync</a></li>
+                <!--<li><a href="javascript:void(0);" onclick="dropboxSync();">Sync</a></li>-->
             </ul>
         </div>
     </div>
@@ -95,19 +95,19 @@
             <div class="span10">
                 <input type="text" name="url" id="url" tabindex="1" class="inputText" placeholder="URL">
             </div>
-            <div class="span6">
+            <div class="span2">
                 <span class="buttonLayout">
                     <button href="javascript:void(0);" class="btn small"
                             onclick="showParamsEditor('url')" data-toggle="toggle">Edit params
                     </button>
                 </span>
-                <span>
+                <!--<span>
                     <select class="medium" id="presets" onchange="fillPresetParams(this.value);">
                         <option>--Preset--</option>
                         <option value="oauth-request">OAuth-Request</option>
                         <option value="oauth-access">OAuth-Access</option>
                     </select>
-                </span>
+                </span>-->
             </div>
         </div>
 
@@ -368,7 +368,7 @@
         </p>
     </div>
 </div>
-<div id="modalDropboxSync" class="modal fade">
+<!--<div id="modalDropboxSync" class="modal fade">
 	<div class="modal-header">
         <a href="#" class="close">×</a>
         <h3>Dropbox Connect</h3>
@@ -378,7 +378,7 @@
             Redirecting to Dropbox...
         </p>
     </div>
-</div>
+</div>-->
 <!--- jQuery Templates -->
 <script id="itemCollectionSelectorList" type="text/x-jquery-tmpl">
     <option value="${id}">${name}</option>
