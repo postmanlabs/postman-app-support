@@ -299,11 +299,11 @@ dropbox.oauthRequest = function (param1, param2, callback) {
     OAuth.SignatureMethod.sign(message, accessor);
 
 
-    $.post(message.action, OAuth.getParameterMap(message.parameters), function (data) {
+    /*$.post(message.action, OAuth.getParameterMap(message.parameters), function (data) {
         callback(data);
-    });
+    });*/
 
-    /*$.ajax({
+    $.ajax({
         url:message.action,
         type:message.method,
         data:OAuth.getParameterMap(message.parameters),
@@ -317,7 +317,7 @@ dropbox.oauthRequest = function (param1, param2, callback) {
             //Something went wrong. Feel free to add a better error message if you want
             console.log(b);
         }
-   });*/
+    });
 }
 
 //Function to store data (tokens/cache) using either cookies or HTML5, depending on choice

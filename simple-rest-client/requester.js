@@ -65,6 +65,67 @@ statusCodes[503] = 'Service Unavailable';
 statusCodes[504] = 'Gateway Time-out';
 statusCodes[505] = 'HTTP Version not supported';
 
+var presetDetails = {
+    "oauth-request":[
+        {
+            key:"oauth_consumer_key",
+            value:"",
+            tooltip:"The Consumer Key",
+            action:null
+        },
+        {
+            key:"oauth_signature_method",
+            value:"HMAC-SHA1",
+            tooltip:"The signature method the Consumer used to sign the request.",
+            action:null
+        },
+        {
+            key:"oauth_timestamp",
+            value:OAuth.timestamp,
+            tooltip:"The timestamp is expressed in the number of seconds since January 1, 1970 00:00:00 GMT.",
+            action:OAuth.timestamp
+        },
+        {
+            key:"oauth_nonce",
+            value:OAuth.nonce,
+            tooltip:"A nonce is a random string, uniquely generated for each request.",
+            action:OAuth.nonce
+        },
+        {
+            key:"oauth_version",
+            value:"1.0",
+            tooltip:"OPTIONAL. If present, value MUST be 1.0 . Service Providers MUST assume the protocol version " +
+                "to be 1.0 if this parameter is not present. " +
+                "Service Providers’ response to non-1.0 value is left undefined.",
+            action:null
+        },
+        {
+            key:"oauth_signature",
+            value:"",
+            tooltip:"The signature.",
+            action:function () {
+                var message = {
+                    action:$('#url').val(),
+                    method:$('#methods li.active a').html(),
+                    parameters:[
+                        ["oauth_consumer_key", valuesFollowingInputValue("oauth_consumer_key")],
+                        ["oauth_signature_method", valuesFollowingInputValue("oauth_signature_method")],
+                        ["oauth_timestamp", valuesFollowingInputValue("oauth_timestamp")],
+                        ["oauth_nonce", valuesFollowingInputValue("oauth_nonce")]
+                    ]
+                };
+                if ($('input[value="oauth_token"]').length > 0) {
+                    message.parameters.push(["oauth_token", valuesFollowingInputValue("oauth_token")]);
+                }
+                $('input[value="oauth_signature"]').parent().siblings().children('.key').each(function () {
+                    message.parameters.push([this.val(), valuesFollowingInputValue(this.val())]);
+                });
+                return OAuth.SignatureMethod.sign(message);
+            }
+        }
+    ]
+};
+
 var headerDetails = {
     "accept-ranges": "Content-Types that are acceptable",
     "age": "The age the object has been in a proxy cache in seconds",

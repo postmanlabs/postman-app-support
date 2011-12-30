@@ -62,3 +62,7 @@ function getHeaderVars(data) {
 
     return vars;
 }
+
+function valuesFollowingInputValue(value) {
+    return $('input[value="' + value + '"] + input').val()
+}

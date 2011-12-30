@@ -95,11 +95,19 @@
             <div class="span10">
                 <input type="text" name="url" id="url" tabindex="1" class="inputText" placeholder="URL">
             </div>
-            <div class="span2">
-                    <span class="buttonLayout">
-                        <button href="javascript:void(0);" class="btn small"
-                                onclick="showParamsEditor('url')" data-toggle="toggle">Edit params
-                        </button></span>
+            <div class="span6">
+                <span class="buttonLayout">
+                    <button href="javascript:void(0);" class="btn small"
+                            onclick="showParamsEditor('url')" data-toggle="toggle">Edit params
+                    </button>
+                </span>
+                <span>
+                    <select class="medium" id="presets" onchange="fillPresetParams(this.value);">
+                        <option>--Preset--</option>
+                        <option value="oauth-request">OAuth-Request</option>
+                        <option value="oauth-access">OAuth-Access</option>
+                    </select>
+                </span>
             </div>
         </div>
 
