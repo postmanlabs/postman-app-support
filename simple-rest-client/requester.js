@@ -65,6 +65,67 @@ statusCodes[503] = 'Service Unavailable';
 statusCodes[504] = 'Gateway Time-out';
 statusCodes[505] = 'HTTP Version not supported';
 
+var presetDetails = {
+    "oauth-request":[
+        {
+            key:"oauth_consumer_key",
+            value:"",
+            tooltip:"The Consumer Key",
+            action:null
+        },
+        {
+            key:"oauth_signature_method",
+            value:"HMAC-SHA1",
+            tooltip:"The signature method the Consumer used to sign the request.",
+            action:null
+        },
+        {
+            key:"oauth_timestamp",
+            value:OAuth.timestamp,
+            tooltip:"The timestamp is expressed in the number of seconds since January 1, 1970 00:00:00 GMT.",
+            action:OAuth.timestamp
+        },
+        {
+            key:"oauth_nonce",
+            value:OAuth.nonce,
+            tooltip:"A nonce is a random string, uniquely generated for each request.",
+            action:OAuth.nonce
+        },
+        {
+            key:"oauth_version",
+            value:"1.0",
+            tooltip:"OPTIONAL. If present, value MUST be 1.0 . Service Providers MUST assume the protocol version " +
+                "to be 1.0 if this parameter is not present. " +
+                "Service Providers’ response to non-1.0 value is left undefined.",
+            action:null
+        },
+        {
+            key:"oauth_signature",
+            value:"",
+            tooltip:"The signature.",
+            action:function () {
+                var message = {
+                    action:$('#url').val(),
+                    method:$('#methods li.active a').html(),
+                    parameters:[
+                        ["oauth_consumer_key", valuesFollowingInputValue("oauth_consumer_key")],
+                        ["oauth_signature_method", valuesFollowingInputValue("oauth_signature_method")],
+                        ["oauth_timestamp", valuesFollowingInputValue("oauth_timestamp")],
+                        ["oauth_nonce", valuesFollowingInputValue("oauth_nonce")]
+                    ]
+                };
+                if ($('input[value="oauth_token"]').length > 0) {
+                    message.parameters.push(["oauth_token", valuesFollowingInputValue("oauth_token")]);
+                }
+                $('input[value="oauth_signature"]').parent().siblings().children('.key').each(function () {
+                    message.parameters.push([this.val(), valuesFollowingInputValue(this.val())]);
+                });
+                return OAuth.SignatureMethod.sign(message);
+            }
+        }
+    ]
+};
+
 var headerDetails = {
     "accept-ranges": "Content-Types that are acceptable",
     "age": "The age the object has been in a proxy cache in seconds",
@@ -1238,6 +1299,8 @@ $(document).ready(function() {
 
     refreshScrollPanes();
 
+    checkDropboxLogin();
+
     $('#formAddToCollection').submit(function() {
         submitAddToCollectionForm();
         return false;
@@ -1618,7 +1681,6 @@ function attachSocialButtons() {
         $('#aboutPostmanFacebookButton').html(socialButtons.facebook);
     }
 }
-
 function clearHistory() {
     console.log("Trying to clear the history");
     postman.indexedDB.deleteHistory();
@@ -1633,25 +1695,26 @@ function toggleSidebarSection(section) {
     }
 }
 
-function dropboxConnect() {
-    dropbox.login_v1();
-
-    /*var api_key = '7rodi7kz1ncgqc9cif0bmzvl3cvpp1zm';
-    $.getJSON("http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20xml%20where%20url%20%3D%20'" +
-        encodeURIComponent("https://www.box.net/api/1.0/rest?action=get_ticket&api_key=") +
-        api_key +
-        "'&format=json&callback=", function (response) {
-        window.ticket = response.query.results.response.ticket;
-        getAuthToken();
-        //window.location.href = 'https://m.box.net/api/1.0/auth/' + ticket;
-    });
-
-    function getAuthToken() {
-        $.getJSON("http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20xml%20where%20url%20%3D%20'" +
-            encodeURIComponent("https://www.box.net/api/1.0/rest?action=get_auth_token&api_key=" + api_key + "&ticket=" + ticket) +
-            "'&format=json&callback=", function (response) {
-            console.log(response);
-            //window.location.href = 'https://m.box.net/api/1.0/auth/' + ticket;
+function dropboxSync() {
+    if (!dropbox.isLoggedin()) {
+        $('#modalDropboxSync').modal('show');
+        dropbox.login_v1();
+    } else {
+        dropbox.oauthRequest({
+            url:"https://api.dropbox.com/1/oauth/access_token",
+            method:"POST"
+        }, [], function hello(data){
+            console.log(data);
         });
-    }*/
+        /*dropbox.getAccount(function accountData(data) {
+            console.log(data);
+        });*/
+    }
+}
+
+function checkDropboxLogin() {
+    if (dropbox.afterAuthentication === true) {
+        $('#modalDropboxSync .modal-body p').html('Succesfully connected to Dropbox!');
+        $('#modalDropboxSync').modal('show');
+    }
 }

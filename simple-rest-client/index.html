@@ -57,8 +57,7 @@
                        data-keyboard="true">Settings</a></li>
                 <li><a href="javascript:void(0);" data-controls-modal="modalAboutPostman" data-backdrop="static"
                        data-keyboard="true" onclick="attachSocialButtons();">About</a></li>
-                <li><a href="javascript:void(0);" data-controls-modal="modalDropboxConnect" data-backdrop="static"
-                       data-keyboard="true" onclick="dropboxConnect();">Connect</a></li>
+                <li><a href="javascript:void(0);" onclick="dropboxSync();">Sync</a></li>
             </ul>
         </div>
     </div>
@@ -96,11 +95,19 @@
             <div class="span10">
                 <input type="text" name="url" id="url" tabindex="1" class="inputText" placeholder="URL">
             </div>
-            <div class="span2">
-                    <span class="buttonLayout">
-                        <button href="javascript:void(0);" class="btn small"
-                                onclick="showParamsEditor('url')" data-toggle="toggle">Edit params
-                        </button></span>
+            <div class="span6">
+                <span class="buttonLayout">
+                    <button href="javascript:void(0);" class="btn small"
+                            onclick="showParamsEditor('url')" data-toggle="toggle">Edit params
+                    </button>
+                </span>
+                <span>
+                    <select class="medium" id="presets" onchange="fillPresetParams(this.value);">
+                        <option>--Preset--</option>
+                        <option value="oauth-request">OAuth-Request</option>
+                        <option value="oauth-access">OAuth-Access</option>
+                    </select>
+                </span>
             </div>
         </div>
 
@@ -361,10 +368,9 @@
         </p>
     </div>
 </div>
-<div id="modalDropboxConnect" class="modal fade">
-    <div class="modal-header">
+<div id="modalDropboxSync" class="modal fade">
+	<div class="modal-header">
         <a href="#" class="close">×</a>
-
         <h3>Dropbox Connect</h3>
     </div>
     <div class="modal-body">
