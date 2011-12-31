@@ -396,9 +396,6 @@ function readResponse() {
                 $("#debugLinks").css("display", "");
             }
 
-//            var responseTextFormatted = jQuery.trim(this.responseText).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-//            $("#codeData").val(responseTextFormatted);
-
             currentResponse.text = this.responseText;
 
             $("#respHeaders").css("display", "");
@@ -926,6 +923,9 @@ function hideEmptyHistoryMessage() {
 }
 
 function renderRequestToSidebar(url, method, id, position) {
+    if(url.length > 80) {
+        url = url.substring(0, 80) + "...";
+    }
     url = limitStringLineWidth(url, 40);
 
     var request = {
