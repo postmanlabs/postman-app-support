@@ -7,6 +7,9 @@
     <link rel="stylesheet" type="text/css" href="css/ui-lightness/jquery-ui-1.8.14.custom.css"/>
     <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"/>
     <link rel="stylesheet" type="text/css" href="css/jquery.jscrollpane.css"/>
+    <link rel="stylesheet" type="text/css" href="codemirror/lib/codemirror.css"/>
+    <link rel="stylesheet" type="text/css" href="codemirror/theme/neat.css"/>
+    <link rel="stylesheet" type="text/css" href="codemirror/theme/eclipse.css"/>
     <script>
         var _gaq = _gaq || [];
         _gaq.push(['_setAccount', 'UA-26564585-1']);
@@ -36,8 +39,6 @@
         //]]>
     </script>
     <script type="text/javascript" src="js/jquery-ui-1.8.14.custom.min.js"></script>
-    <script type="text/javascript" src="jquery.chili.min.js"></script>
-    <script type="text/javascript" src="jquery.chili.recipes.js"></script>
     <script type="text/javascript" src="js/dropbox/sha1.js"></script>
     <script type="text/javascript" src="js/dropbox/oauth.js"></script>
     <script type="text/javascript" src="js/util.js"></script>
@@ -233,18 +234,13 @@
                 <div id="respData" style="display:none">
                     <div id="langFormat">
                         <ul class="pills">
-                            <li id="langFormat-html" class="active">
-                                <a href="javascript:void(0);" onclick="setResponseFormat('html')">
-                                    XML
-                                </a>
-                            </li>
-                            <li id="langFormat-javascript">
-                                <a href="javascript:void(0);" onclick="setResponseFormat('javascript')">
-                                    JSON
+                            <li id="langFormat-parsed" class="active">
+                                <a href="javascript:void(0);" onclick="changeResponseFormat('parsed')">
+                                    Parsed
                                 </a>
                             </li>
                             <li id="langFormat-raw">
-                                <a href="javascript:void(0);" onclick="setResponseFormat('raw')">
+                                <a href="javascript:void(0);" onclick="changeResponseFormat('raw')">
                                     Raw
                                 </a>
                             </li>
@@ -252,14 +248,8 @@
                     </div>
                     <div name="responseData" id="responseData" contenteditable="true">
                         <div id="responseAsText">
-                                <pre><code name="codeData" id="codeData" class="chili-lang-html" data-formatted="false">
-                                    &nbsp;</code></pre>
-                        </div>
-                        <div id="responseAsIFrame">
-                            <div id="codeIFrame"></div>
-                        </div>
-                        <div id="responseAsImage">
-
+                            <textarea name="codeData" id="codeData" class="chili-lang-html" data-formatted="false">
+                            </textarea>
                         </div>
                     </div>
                 </div>
@@ -386,7 +376,9 @@
 <script id="itemResponseCode" type="text/x-jquery-tmpl">
     <div class="responseCode" data-placement="above" title="${code} ${name}" data-content="${detail}"
          rel="popover"><span class="label">Status</span>
-        <div class="data">${code} ${name}</div></div>
+
+        <div class="data">${code} ${name}</div>
+    </div>
 </script>
 <script id="itemResponseHeader" type="text/x-jquery-tmpl">
     <li class="responseHeader clearfix">
@@ -438,6 +430,14 @@
         </div>
     </li>
 </script>
+<script type="text/javascript" src="codemirror/lib/codemirror.js"></script>
+<script type="text/javascript" src="codemirror/lib/util/formatting.js"></script>
+<script type="text/javascript" src="codemirror/lib/util/foldcode.js"></script>
+<script type="text/javascript" src="codemirror/mode/xmlpure/xmlpure.js"></script>
+<script type="text/javascript" src="codemirror/mode/javascript/javascript.js"></script>
+<script type="text/javascript" src="codemirror/mode/xml/xml.js"></script>
+<script type="text/javascript" src="codemirror/mode/htmlmixed/htmlmixed.js"></script>
+<script type="text/javascript" src="js/jquery.tmpl.min.js"></script>
 <script type="text/javascript" src="js/jquery.tmpl.min.js"></script>
 <script type="text/javascript" src="js/jquery.mousewheel.js"></script>
 <script type="text/javascript" src="js/jquery.jscrollpane.js"></script>

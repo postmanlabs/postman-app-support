@@ -262,17 +262,6 @@ fieldset {
     outline: none !important;
 }
 
-#responseData pre {
-    border-color: #cce0e9;
-    border-radius: 10px;
-    border-style: solid;
-    border-width: 3px;
-    max-width: 1000px;
-    max-height: 800px;
-    padding: 5px;
-    overflow: scroll;
-}
-
 #respHeaders {
     margin-top: 20px;
     max-width: 1000px;
@@ -280,6 +269,10 @@ fieldset {
 
 #respHeaders textarea {
     min-height: 125px;
+}
+
+#respData {
+    max-height: 1000px;
 }
 
 .responseHeader {
@@ -537,10 +530,6 @@ li .right {
 #respHeadersContent {
     margin-top: 10px;
     margin-bottom: 15px;
-}
-
-#codeData {
-    background-color: white;
 }
 
 #responseAsIFrame {
