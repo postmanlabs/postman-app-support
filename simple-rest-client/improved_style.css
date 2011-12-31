@@ -313,6 +313,8 @@ fieldset {
 
 #pstatus {
     margin-top: 5px;
+    float: left;
+    margin-left: 20px;
 }
 
 #pbodysize {
@@ -782,4 +784,12 @@ li .right {
 #historyOptions a:hover {
     background: #0069D6;
     text-decoration: none;
+}
+
+.responseCode {
+    cursor: pointer;
+}
+
+.responseCode .data {
+    display: inline-block;
 }

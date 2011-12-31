@@ -42,6 +42,7 @@
     <script type="text/javascript" src="js/dropbox/oauth.js"></script>
     <script type="text/javascript" src="js/util.js"></script>
     <!--<script type="text/javascript" src="js/dropbox/dropbox.js"></script>-->
+    <script type="text/javascript" src="js/httpstatuscodes.js"></script>
     <script type="text/javascript" src="requester.js"></script>
 </head>
 <body>
@@ -214,9 +215,7 @@
             <div id="responsePrint">
                 <div class="row">
 
-                    <div id="pstatus" class="span2">
-                        <span class="label">Status</span>
-                        <span class="data">200 OK</span>
+                    <div id="pstatus">
                     </div>
 
                     <div id="ptime" class="span2">
@@ -360,6 +359,7 @@
 <div id="modalResponseError" class="modal fade">
     <div class="modal-header">
         <a href="#" class="close">×</a>
+
         <h3>Could not get any response</h3>
     </div>
     <div class="modal-body">
@@ -382,6 +382,11 @@
 <!--- jQuery Templates -->
 <script id="itemCollectionSelectorList" type="text/x-jquery-tmpl">
     <option value="${id}">${name}</option>
+</script>
+<script id="itemResponseCode" type="text/x-jquery-tmpl">
+    <div class="responseCode" data-placement="above" title="${code} ${name}" data-content="${detail}"
+         rel="popover"><span class="label">Status</span>
+        <div class="data">${code} ${name}</div></div>
 </script>
 <script id="itemResponseHeader" type="text/x-jquery-tmpl">
     <li class="responseHeader clearfix">
