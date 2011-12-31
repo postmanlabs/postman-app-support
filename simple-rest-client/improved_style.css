@@ -275,6 +275,15 @@ fieldset {
     max-height: 1000px;
 }
 
+#respData pre {
+    font-family: Consolas, monospace;
+}
+
+.CodeMirror-gutter-text {
+    cursor: pointer;
+    padding-left: 1em !important;
+}
+
 .responseHeader {
     font-family: Helvetica, arial, sans-serif;
     list-style: none;
@@ -302,6 +311,9 @@ fieldset {
 #body, #codeData {
     font-family: "Consolas", Courier, monospace, sans-serif;
     font-size: 12px;
+}
+
+#codeData {
 }
 
 #pstatus {

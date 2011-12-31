@@ -433,7 +433,6 @@ function readResponse() {
         }
     }
     else {
-        console.log("Could not get the response properly", this.readyState);
     }
 
     setContainerHeights();
@@ -1489,51 +1488,69 @@ function addUrlAutoComplete() {
 function changeResponseFormat(format) {
     $('#langFormat li').removeClass('active');
     $('#langFormat-' + format).addClass('active');
+
+    if(format === 'raw') {
+        postmanCodeMirror.toTextArea();
+        $('#codeData').val(currentResponse.text);
+        var codeDataWidth = $(document).width() - $('#sidebar').width() - 60;
+        $('#codeData').css("width", codeDataWidth + "px");
+        $('#codeData').css("height", "600px");
+    }
+    else {
+        $('#codeData').css("display", "none");
+        var mime = $('#codeData').attr('data-mime');
+        console.log("Showing codemirror now");
+        setResponseFormat(mime, currentResponse.text, "parsed", true);
+    }
+
 }
 
-function setResponseFormat(mime, response, format) {
+function setResponseFormat(mime, response, format, forceCreate) {
+    console.log(mime, response, format);
     $('#langFormat li').removeClass('active');
     $('#langFormat-' + format).addClass('active');
     $('#codeData').css("display", "none");
+
+    $('#codeData').attr("data-mime", mime);
 
     var codeDataArea = document.getElementById("codeData");
     var foldFunc;
     var mode;
     if (mime === 'javascript') {
         mode = 'javascript';
-        foldFunc = CodeMirror.newFoldFunction(CodeMirror.braceRangeFinder);
         try {
             var jsonObject = JSON.parse(response);
             var response = JSON.stringify(jsonObject, null, '\t');
         }
         catch (e) {
         }
+        foldFunc = CodeMirror.newFoldFunction(CodeMirror.braceRangeFinder);
     }
     else if (mime === 'html') {
         mode = 'xml';
         foldFunc = CodeMirror.newFoldFunction(CodeMirror.tagRangeFinder);
     }
 
-    console.log("Final mode is", mode);
-
-    if (!postmanCodeMirror) {
+    if (!postmanCodeMirror || forceCreate) {
         postmanCodeMirror = CodeMirror.fromTextArea(codeDataArea,
             {
                 mode:mode,
                 lineNumbers:true,
                 fixedGutter:true,
-                readOnly:true,
+                onGutterClick: foldFunc,
                 theme:'eclipse'
             });
 
         postmanCodeMirror.setValue(response);
-        //postmanCodeMirror.autoFormatRange(0, response.length);
     }
     else {
         postmanCodeMirror.setValue(response);
+        postmanCodeMirror.setOption("onGutterClick", foldFunc);
         postmanCodeMirror.setOption("mode", mode);
-        postmanCodeMirror.refresh();
+        postmanCodeMirror.setOption("theme", "eclipse");
     }
+
+    $('#codeData').val(response);
 }
 
 function attachSidebarListeners() {
