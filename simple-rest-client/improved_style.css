@@ -223,8 +223,7 @@ fieldset {
 
 #mainNavigation {
     float: right;
-    margin-right: 10px;
-    margin-top: 3px;
+    margin-right: 7px;
 }
 
 #mainNavigation ul li {
@@ -235,6 +234,7 @@ fieldset {
 #mainNavigation a {
     color: white;
     padding: 5px;
+    font-size: 11px;
     background: #BBB;
     border-radius: 5px;
     padding-left: 10px;
@@ -254,15 +254,12 @@ fieldset {
     margin-top: 10px;
 }
 
-#responseData pre {
-    border-color: #cce0e9;
-    border-radius: 10px;
-    border-style: solid;
-    border-width: 3px;
-    max-width: 1000px;
-    max-height: 800px;
-    padding: 5px;
-    overflow: scroll;
+#respHeaders:focus,
+#responseHeaders:focus,
+#respHeadersContent:focus,
+#responseData:focus {
+    border: none;
+    outline: none !important;
 }
 
 #respHeaders {
@@ -274,7 +271,41 @@ fieldset {
     min-height: 125px;
 }
 
-#responseHeaders,
+#respData {
+    max-height: 1000px;
+}
+
+#respData pre {
+    font-family: Consolas, monospace;
+}
+
+.CodeMirror-gutter-text {
+    cursor: pointer;
+    padding-left: 1em !important;
+}
+
+.responseHeader {
+    font-family: Helvetica, arial, sans-serif;
+    list-style: none;
+    margin-bottom: 5px;
+    color: #111;
+}
+
+.responseHeader .responseHeaderName {
+    font-weight: bold;
+    color: #555;
+}
+
+.responseHeaderName {
+    float: left;
+    margin-right: 5px;
+    cursor: pointer;
+}
+
+.responseHeaderValue {
+    float: left;
+}
+
 #responsedata,
 #headers,
 #body, #codeData {
@@ -282,8 +313,13 @@ fieldset {
     font-size: 12px;
 }
 
+#codeData {
+}
+
 #pstatus {
     margin-top: 5px;
+    float: left;
+    margin-left: 20px;
 }
 
 #pbodysize {
@@ -508,10 +544,6 @@ li .right {
     margin-bottom: 15px;
 }
 
-#codeData {
-    background-color: white;
-}
-
 #responseAsIFrame {
     width: 100%;
 }
@@ -733,4 +765,32 @@ li .right {
 #aboutPostmanFacebookButton {
     float: left;
     margin-right: 10px;
+}
+
+#historyOptions {
+    position: absolute;
+    margin-left: 270px;
+    margin-top: 10px;
+}
+
+#historyOptions a {
+    font-size: 10px;
+    font-weight: bold;
+    background: #afafaf;
+    color: #fff;
+    border-radius: 3px;
+    padding: 4px;
+}
+
+#historyOptions a:hover {
+    background: #0069D6;
+    text-decoration: none;
+}
+
+.responseCode {
+    cursor: pointer;
+}
+
+.responseCode .data {
+    display: inline-block;
 }

@@ -16,54 +16,112 @@
  specific language governing permissions and limitations
  under the License.
  */
-// Status codes as per rfc2616
-// @see http://tools.ietf.org/html/rfc2616#section-10
-var statusCodes = new Array();
-// Informational 1xx
-statusCodes[100] = 'Continue';
-statusCodes[101] = 'Switching Protocols';
-// Successful 2xx
-statusCodes[200] = 'OK';
-statusCodes[201] = 'Created';
-statusCodes[202] = 'Accepted';
-statusCodes[203] = 'Non-Authoritative Information';
-statusCodes[204] = 'No Content';
-statusCodes[205] = 'Reset Content';
-statusCodes[206] = 'Partial Content';
-// Redirection 3xx
-statusCodes[300] = 'Multiple Choices';
-statusCodes[301] = 'Moved Permanently';
-statusCodes[302] = 'Found';
-statusCodes[303] = 'See Other';
-statusCodes[304] = 'Not Modified';
-statusCodes[305] = 'Use Proxy';
-statusCodes[307] = 'Temporary Redirect';
-// Client Error 4xx
-statusCodes[400] = 'Bad Request';
-statusCodes[401] = 'Unauthorized';
-statusCodes[402] = 'Payment Required';
-statusCodes[403] = 'Forbidden';
-statusCodes[404] = 'Not Found';
-statusCodes[405] = 'Method Not Allowed';
-statusCodes[406] = 'Not Acceptable';
-statusCodes[407] = 'Proxy Authentication Required';
-statusCodes[408] = 'Request Time-out';
-statusCodes[409] = 'Conflict';
-statusCodes[410] = 'Gone';
-statusCodes[411] = 'Length Required';
-statusCodes[412] = 'Precondition Failed';
-statusCodes[413] = 'Request Entity Too Large';
-statusCodes[414] = 'Request-URI Too Long';
-statusCodes[415] = 'Unsupported Media Type';
-statusCodes[416] = 'Requested range not satisfiable';
-statusCodes[417] = 'Expectation Failed';
-// Server Error 5xx
-statusCodes[500] = 'Internal Server Error';
-statusCodes[501] = 'Not Implemented';
-statusCodes[502] = 'Bad Gateway';
-statusCodes[503] = 'Service Unavailable';
-statusCodes[504] = 'Gateway Time-out';
-statusCodes[505] = 'HTTP Version not supported';
+
+var presetDetails = {
+    "oauth-request":[
+        {
+            key:"oauth_consumer_key",
+            value:"",
+            tooltip:"The Consumer Key",
+            action:null
+        },
+        {
+            key:"oauth_signature_method",
+            value:"HMAC-SHA1",
+            tooltip:"The signature method the Consumer used to sign the request.",
+            action:null
+        },
+        {
+            key:"oauth_timestamp",
+            value:OAuth.timestamp,
+            tooltip:"The timestamp is expressed in the number of seconds since January 1, 1970 00:00:00 GMT.",
+            action:OAuth.timestamp
+        },
+        {
+            key:"oauth_nonce",
+            value:OAuth.nonce,
+            tooltip:"A nonce is a random string, uniquely generated for each request.",
+            action:OAuth.nonce
+        },
+        {
+            key:"oauth_version",
+            value:"1.0",
+            tooltip:"OPTIONAL. If present, value MUST be 1.0 . Service Providers MUST assume the protocol version " +
+                "to be 1.0 if this parameter is not present. " +
+                "Service Providers’ response to non-1.0 value is left undefined.",
+            action:null
+        },
+        {
+            key:"oauth_signature",
+            value:"",
+            tooltip:"The signature.",
+            action:function () {
+                var message = {
+                    action:$('#url').val(),
+                    method:$('#methods li.active a').html(),
+                    parameters:[
+                        ["oauth_consumer_key", valuesFollowingInputValue("oauth_consumer_key")],
+                        ["oauth_signature_method", valuesFollowingInputValue("oauth_signature_method")],
+                        ["oauth_timestamp", valuesFollowingInputValue("oauth_timestamp")],
+                        ["oauth_nonce", valuesFollowingInputValue("oauth_nonce")]
+                    ]
+                };
+                if ($('input[value="oauth_token"]').length > 0) {
+                    message.parameters.push(["oauth_token", valuesFollowingInputValue("oauth_token")]);
+                }
+                $('input[value="oauth_signature"]').parent().siblings().children('.key').each(function () {
+                    message.parameters.push([this.val(), valuesFollowingInputValue(this.val())]);
+                });
+                return OAuth.SignatureMethod.sign(message);
+            }
+        }
+    ]
+};
+
+var headerDetails = {
+    "accept-ranges":"Content-Types that are acceptable",
+    "age":"The age the object has been in a proxy cache in seconds",
+    "allow":"Valid actions for a specified resource. To be used for a 405 Method not allowed",
+    "cache-control":"Tells all caching mechanisms from server to client whether they may cache this object. It is measured in seconds",
+    "connection":"Options that are desired for the connection",
+    "content-encoding":"The type of encoding used on the data.",
+    "content-language":"The language the content is in",
+    "content-length":"The length of the response body in octets (8-bit bytes)",
+    "content-location":"An alternate location for the returned data",
+    "content-md5":"A Base64-encoded binary MD5 sum of the content of the response",
+    "content-disposition":"An opportunity to raise a \"File Download\" dialogue box for a known MIME type",
+    "content-range":"Where in a full body message this partial message belongs",
+    "content-type":"The mime type of this content",
+    "date":"The date and time that the message was sent",
+    "etag":"An identifier for a specific version of a resource, often a message digest",
+    "expires":"Gives the date/time after which the response is considered stale",
+    "last-modified":"The last modified date for the requested object, in RFC 2822 format",
+    "link":"Used to express a typed relationship with another resource, where the relation type is defined by RFC 5988",
+    "location":"Used in redirection, or when a new resource has been created.",
+    "p3p":"This header is supposed to set P3P policy, in the form of P3P:CP=\"your_compact_policy\". However, P3P did not take off, most browsers have never fully implemented it, a lot of websites set this header with fake policy text, that was enough to fool browsers the existence of P3P policy and grant permissions for third party cookies.",
+    "pragma":"Implementation-specific headers that may have various effects anywhere along the request-response chain.",
+    "proxy-authenticate":"Request authentication to access the proxy.",
+    "refresh":"Used in redirection, or when a new resource has been created. This refresh redirects after 5 seconds. This is a proprietary, non-standard header extension introduced by Netscape and supported by most web browsers.",
+    "retry-after":"If an entity is temporarily unavailable, this instructs the client to try again after a specified period of time (seconds).",
+    "server":"A name for the server",
+    "set-cookie":"an HTTP cookie",
+    "strict-transport-security":"A HSTS Policy informing the HTTP client how long to cache the HTTPS only policy and whether this applies to subdomains.",
+    "trailer":"The Trailer general field value indicates that the given set of header fields is present in the trailer of a message encoded with chunked transfer-coding.",
+    "transfer-encoding":"The form of encoding used to safely transfer the entity to the user. Currently defined methods are: chunked, compress, deflate, gzip, identity.",
+    "vary":"Tells downstream proxies how to match future request headers to decide whether the cached response can be used rather than requesting a fresh one from the origin server.",
+    "via":"Informs the client of proxies through which the response was sent.",
+    "warning":"A general warning about possible problems with the entity body.",
+    "www-authenticate":"Indicates the authentication scheme that should be used to access the requested entity.",
+    "x-requested-with":"Mainly used to identify Ajax requests. Most JavaScript frameworks send this header with value of XMLHttpRequest",
+    "x-do-not-track":"Requests a web application to disable their tracking of a user. Note that, as of yet, this is largely ignored by web applications. It does however open the door to future legislation requiring web applications to comply with a user's request to not be tracked. Mozilla implements the DNT header with a similar purpose.",
+    "dnt":"Requests a web application to disable their tracking of a user. This is Mozilla's version of the X-Do-Not-Track header (since Firefox 4.0 Beta 11). Safari and IE9 also have support for this header. On March 7, 2011, a draft proposal was submitted to IETF.",
+    "x-forwarded-for":"A de facto standard for identifying the originating IP address of a client connecting to a web server through an HTTP proxy or load balancer",
+    "x-frame-options":"Clickjacking protection: \"deny\" - no rendering within a frame, \"sameorigin\" - no rendering if origin mismatch",
+    "x-xss-protection":"Cross-site scripting (XSS) filter",
+    "x-content-type-options":"The only defined value, \"nosniff\", prevents Internet Explorer from MIME-sniffing a response away from the declared content-type",
+    "x-forwarded-proto":"A de facto standard for identifying the originating protocol of an HTTP request, since a reverse proxy (load balancer) may communicate with a web server using HTTP even if the request to the reverse proxy is HTTPS",
+    "x-powered-by":"Specifies the technology (ASP.NET, PHP, JBoss, e.g.) supporting the web application (version details are often in X-Runtime, X-Version, or X-AspNet-Version)"
+};
 
 var requests;
 var bodyFileData;
@@ -79,8 +137,11 @@ var currentResponse;
 var postman = {};
 postman.history = {};
 postman.history.requests = [];
+postman.settings = {};
 postman.indexedDB = {};
 postman.indexedDB.db = null;
+
+var postmanCodeMirror;
 
 // IndexedDB implementations still use API prefixes
 var indexedDB = window.indexedDB || // Use the standard DB API
@@ -92,9 +153,9 @@ var IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange;
 var IDBCursor = window.IDBCursor || window.webkitIDBCursor;
 
 var socialButtons = {
-    "facebook": '<iframe src="http://www.facebook.com/plugins/like.php?href=https%3A%2F%2Fchrome.google.com%2Fwebstore%2Fdetail%2Ffdmmgilgnpjigdojojpjoooidkmcomcm&amp;send=false&amp;layout=button_count&amp;width=250&amp;show_faces=true&amp;action=like&amp;colorscheme=light&amp;font&amp;height=21&amp;appId=26438002524" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:250px; height:21px;" allowTransparency="true"></iframe>',
-    "twitter": '<a href="https://twitter.com/share" class="twitter-share-button" data-url="https://chrome.google.com/webstore/detail/fdmmgilgnpjigdojojpjoooidkmcomcm" data-text="I am using Postman to kick some API ass!" data-count="horizontal" data-via="a85">Tweet</a><script type="text/javascript" src="http://platform.twitter.com/widgets.js"></script>',
-    "plusOne": '<script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script><g:plusone size="medium" href="https://chrome.google.com/webstore/detail/fdmmgilgnpjigdojojpjoooidkmcomcm"></g:plusone>'
+    "facebook":'<iframe src="http://www.facebook.com/plugins/like.php?href=https%3A%2F%2Fchrome.google.com%2Fwebstore%2Fdetail%2Ffdmmgilgnpjigdojojpjoooidkmcomcm&amp;send=false&amp;layout=button_count&amp;width=250&amp;show_faces=true&amp;action=like&amp;colorscheme=light&amp;font&amp;height=21&amp;appId=26438002524" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:250px; height:21px;" allowTransparency="true"></iframe>',
+    "twitter":'<a href="https://twitter.com/share" class="twitter-share-button" data-url="https://chrome.google.com/webstore/detail/fdmmgilgnpjigdojojpjoooidkmcomcm" data-text="I am using Postman to kick some API ass!" data-count="horizontal" data-via="a85">Tweet</a><script type="text/javascript" src="http://platform.twitter.com/widgets.js"></script>',
+    "plusOne":'<script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script><g:plusone size="medium" href="https://chrome.google.com/webstore/detail/fdmmgilgnpjigdojojpjoooidkmcomcm"></g:plusone>'
 };
 
 function Collection() {
@@ -174,6 +235,14 @@ function setRequestMethod(m) {
     requestMethod = m;
 }
 
+function ensureProperUrl(url) {
+    var a = "http";
+    if (url.indexOf(a) != 0) {
+        url = "http://" + url;
+    }
+    return url;
+}
+
 function sendRequest() {
     if ($("#url").val() != "") {
         var xhr = new XMLHttpRequest();
@@ -181,12 +250,15 @@ function sendRequest() {
         try {
             var headers = $("#headers").val();
             var url = $("#url").val();
+
+            url = ensureProperUrl(url);
+
             var method = getRequestMethod();
 
             var data = "";
             var bodyData = "";
 
-            xhr.open(method, $("#url").val(), true);
+            xhr.open(method, url, true);
 
             headers = headers.split("\n");
             for (var i = 0; i < headers.length; i++) {
@@ -207,7 +279,7 @@ function sendRequest() {
 
                     //Iterate through all key/values
 
-                    $('input[data-section=body]').each(function() {
+                    $('input[data-section=body]').each(function () {
                         var valueEl = $(this).next();
                         var type = valueEl.attr('type');
 
@@ -235,12 +307,10 @@ function sendRequest() {
             }
 
             requestStartTime = new Date().getTime();
-
             saveRequest(url, method, $("#headers").val(), data, dataMode);
-
             $('#submitRequest').button("loading");
         }
-        catch(e) {
+        catch (e) {
             console.log(e);
             $("#responseStatus").html("<span style=\"color:#FF0000\">" + chrome.i18n.getMessage("bad_request") + "</span>");
             $("#respHeaders").css("display", "none");
@@ -262,6 +332,33 @@ function sendRequest() {
     clearFields();
 }
 
+function setResponseHeaders(headersString) {
+    var headers = headersString.split("\n");
+    var count = headers.length;
+    var finalHeaders = [];
+    console.log(headers);
+    for (var i = 0; i < count; i++) {
+        var h = headers[i];
+        var hParts = h.split(":");
+
+        if (hParts && hParts.length > 0) {
+            var header = {
+                "name":hParts[0],
+                "value":hParts[1],
+                "description":headerDetails[hParts[0].toLowerCase()]
+            };
+
+            if (hParts[0] != "") {
+                finalHeaders.push(header);
+            }
+        }
+    }
+
+    $('#responseHeaders').html("");
+    $("#itemResponseHeader").tmpl(finalHeaders).appendTo("#responseHeaders");
+    $('.responseHeaderName').popover();
+}
+
 function readResponse() {
     currentResponse = new Response();
 
@@ -274,10 +371,24 @@ function readResponse() {
     if (this.readyState == 4) {
         try {
             if (this.status == 0) {
-                throw('Status = 0');
+                $('#modalResponseError').modal({
+                    keyboard:true,
+                    backdrop:"static"
+                });
+
+                $('#modalResponseError').modal('show');
             }
-            $("#responseStatus").html(this.status + ' ' + statusCodes[this.status]);
-            $("#responseHeaders").val(jQuery.trim(this.getAllResponseHeaders()));
+            var responseCode = {
+                'code':this.status,
+                'name':httpStatusCodes[this.status]['name'],
+                'detail':httpStatusCodes[this.status]['detail']
+            };
+
+            $('#pstatus').html('');
+            $('#itemResponseCode').tmpl([responseCode]).appendTo('#pstatus');
+            $('.responseCode').popover();
+
+            setResponseHeaders(this.getAllResponseHeaders());
 
             var debugurl = /X-Debug-URL: (.*)/i.exec($("#responseHeaders").val());
             if (debugurl) {
@@ -285,10 +396,7 @@ function readResponse() {
                 $("#debugLinks").css("display", "");
             }
 
-            var responseTextFormatted = jQuery.trim(this.responseText).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-            $("#codeData").html(responseTextFormatted);
-
-            currentResponse.text = responseTextFormatted;
+            currentResponse.text = this.responseText;
 
             $("#respHeaders").css("display", "");
             $("#respData").css("display", "");
@@ -314,16 +422,14 @@ function readResponse() {
             }
 
             $('#language').val(format);
-            setResponseFormat(format);
+            setResponseFormat(format, currentResponse.text, "parsed");
         }
-        catch(e) {
-            $("#responseStatus").html("No response.");
-            $("#respHeaders").css("display", "none");
-            $("#respData").css("display", "none");
-
-            $("#loader").css("display", "none");
-            $("#responsePrint").css("display", "");
+        catch (e) {
+            console.log("Something went wrong while receiving the response");
+            console.log(e);
         }
+    }
+    else {
     }
 
     setContainerHeights();
@@ -353,40 +459,33 @@ function init() {
     $("#respHeaders").css("display", "none");
     $("#respData").css("display", "none");
 
-    $("#submitRequest").click(function() {
+    $("#submitRequest").click(function () {
         sendRequest();
     });
-
-    $('#langFormat').change(function() {
-        var format = $('#language').val();
-        setResponseFormat(format);
-    })
 }
 
 function setupDB() {
-    postman.indexedDB.onerror = function(event) {
+    postman.indexedDB.onerror = function (event) {
         console.log(event);
     };
-    
-    postman.indexedDB.open = function() {
+
+    postman.indexedDB.open = function () {
         var request = indexedDB.open("postman", "POSTman request history");
-        request.onsuccess = function(e) {
+        request.onsuccess = function (e) {
             var v = "0.42";
             postman.indexedDB.db = e.target.result;
             var db = postman.indexedDB.db;
 
-            console.log(db.version);
-            
             //We can only create Object stores in a setVersion transaction
             if (v != db.version) {
                 console.log(v, "Version is not the same");
                 var setVrequest = db.setVersion(v);
-                
-                setVrequest.onfailure = function(e) {
+
+                setVrequest.onfailure = function (e) {
                     console.log(e);
                 };
-                
-                setVrequest.onsuccess = function(e) {
+
+                setVrequest.onsuccess = function (e) {
                     console.log(e);
                     if (db.objectStoreNames.contains("requests")) {
                         db.deleteObjectStore("requests");
@@ -398,18 +497,16 @@ function setupDB() {
                         db.deleteObjectStore("collection_requests");
                     }
 
-                    var requestStore = db.createObjectStore("requests", {keyPath: "id"});
-                    var collectionsStore = db.createObjectStore("collections", {keyPath: "id"});
-                    var collectionRequestsStore = db.createObjectStore("collection_requests", {keyPath: "id"});
+                    var requestStore = db.createObjectStore("requests", {keyPath:"id"});
+                    var collectionsStore = db.createObjectStore("collections", {keyPath:"id"});
+                    var collectionRequestsStore = db.createObjectStore("collection_requests", {keyPath:"id"});
 
-                    requestStore.createIndex("timestamp", "timestamp", { unique: false});
-                    collectionsStore.createIndex("timestamp", "timestamp", { unique: false});
+                    requestStore.createIndex("timestamp", "timestamp", { unique:false});
+                    collectionsStore.createIndex("timestamp", "timestamp", { unique:false});
 
-                    console.log("Final");
-                    
-                    collectionRequestsStore.createIndex("timestamp", "timestamp", { unique: false});
-                    collectionRequestsStore.createIndex("collectionId", "collectionId", { unique: false});
-                    
+                    collectionRequestsStore.createIndex("timestamp", "timestamp", { unique:false});
+                    collectionRequestsStore.createIndex("collectionId", "collectionId", { unique:false});
+
                     postman.indexedDB.getAllRequestItems();
                     postman.indexedDB.getCollections();
                 };
@@ -424,39 +521,39 @@ function setupDB() {
         request.onfailure = postman.indexedDB.onerror;
     };
 
-    postman.indexedDB.addCollection = function(collection) {
+    postman.indexedDB.addCollection = function (collection) {
         var db = postman.indexedDB.db;
         var trans = db.transaction(["collections"], IDBTransaction.READ_WRITE);
         var store = trans.objectStore("collections");
 
         var request = store.put({
-            "id": collection.id,
-            "name": collection.name,
-            "timestamp": new Date().getTime()
+            "id":collection.id,
+            "name":collection.name,
+            "timestamp":new Date().getTime()
         });
 
-        request.onsuccess = function(e) {
+        request.onsuccess = function (e) {
             console.log("Added collection to collection database", collection);
             postman.indexedDB.getCollections();
             postman.indexedDB.getAllRequestsInCollection(id);
         };
 
-        request.onerror = function(e) {
+        request.onerror = function (e) {
             console.log(e.value);
         }
     };
 
-    postman.indexedDB.addCollectionWithRequest = function(collection, collectionRequest) {
+    postman.indexedDB.addCollectionWithRequest = function (collection, collectionRequest) {
         var db = postman.indexedDB.db;
         var trans = db.transaction(["collections"], IDBTransaction.READ_WRITE);
         var store = trans.objectStore("collections");
 
         var request = store.put({
-            "id": collection.id,
-            "name": collection.name
+            "id":collection.id,
+            "name":collection.name
         });
 
-        request.onsuccess = function(e) {
+        request.onsuccess = function (e) {
             collectionRequest.collectionId = collection.id;
 
             $('#itemCollectionSelectorList').tmpl([collection]).appendTo('#selectCollection');
@@ -468,28 +565,28 @@ function setupDB() {
             postman.indexedDB.addCollectionRequest(collectionRequest, true);
         };
 
-        request.onerror = function(e) {
+        request.onerror = function (e) {
             console.log(e.value);
         }
     }
 
-    postman.indexedDB.addCollectionRequest = function(req, toRefreshSidebar) {
+    postman.indexedDB.addCollectionRequest = function (req, toRefreshSidebar) {
         var db = postman.indexedDB.db;
         var trans = db.transaction(["collection_requests"], IDBTransaction.READ_WRITE);
         var store = trans.objectStore("collection_requests");
 
         var collectionRequest = store.put({
-            "collectionId": req.collectionId,
-            "id": req.id,
-            "url": req.url.toString(),
-            "method": req.method.toString(),
-            "headers": req.headers.toString(),
-            "data": req.data.toString(),
-            "dataMode": req.dataMode.toString(),
-            "timestamp": req.timestamp
+            "collectionId":req.collectionId,
+            "id":req.id,
+            "url":req.url.toString(),
+            "method":req.method.toString(),
+            "headers":req.headers.toString(),
+            "data":req.data.toString(),
+            "dataMode":req.dataMode.toString(),
+            "timestamp":req.timestamp
         });
 
-        collectionRequest.onsuccess = function(e) {
+        collectionRequest.onsuccess = function (e) {
             var targetElement = "#collectionRequests-" + req.collectionId;
             addAvailableUrl(req.url);
             addUrlAutoComplete();
@@ -500,15 +597,15 @@ function setupDB() {
             refreshScrollPanes();
         };
 
-        collectionRequest.onerror = function(e) {
+        collectionRequest.onerror = function (e) {
             console.log(e.value);
         }
     };
 
-    postman.indexedDB.getCollections = function() {
+    postman.indexedDB.getCollections = function () {
         var db = postman.indexedDB.db;
 
-        if(db == null) {
+        if (db == null) {
             console.log("Db is null");
             return;
         }
@@ -523,7 +620,7 @@ function setupDB() {
         var keyRange = IDBKeyRange.lowerBound(0);
         var cursorRequest = store.openCursor(keyRange);
 
-        cursorRequest.onsuccess = function(e) {
+        cursorRequest.onsuccess = function (e) {
             var result = e.target.result;
 
             if (!!result == false) {
@@ -540,15 +637,17 @@ function setupDB() {
 
             addSidebarCollectionHeadListener(collection);
 
-            result.continue();
+            result.
+            continue
+            ();
         };
 
-        cursorRequest.onerror = function(e) {
+        cursorRequest.onerror = function (e) {
             console.log(e);
         };
     };
 
-    postman.indexedDB.getAllRequestsInCollection = function(id) {
+    postman.indexedDB.getAllRequestsInCollection = function (id) {
         $('#collectionRequests-' + id).html("");
         var db = postman.indexedDB.db;
         var trans = db.transaction(["collection_requests"], IDBTransaction.READ_WRITE);
@@ -560,7 +659,7 @@ function setupDB() {
         var index = store.index("collectionId");
         var cursorRequest = index.openCursor(keyRange);
 
-        cursorRequest.onsuccess = function(e) {
+        cursorRequest.onsuccess = function (e) {
             var result = e.target.result;
 
             if (!!result == false) {
@@ -579,27 +678,29 @@ function setupDB() {
             refreshScrollPanes();
 
             //This wil call onsuccess again and again until no more request is left
-            result.continue();
+            result.
+            continue
+            ();
         };
         cursorRequest.onerror = postman.indexedDB.onerror;
     };
 
-    postman.indexedDB.addRequest = function(id, url, method, headers, data, dataMode) {
+    postman.indexedDB.addRequest = function (id, url, method, headers, data, dataMode) {
         var db = postman.indexedDB.db;
         var trans = db.transaction(["requests"], IDBTransaction.READ_WRITE);
         var store = trans.objectStore("requests");
         var historyRequest = {
-            "id": id,
-            "url": url.toString(),
-            "method": method.toString(),
-            "headers": headers.toString(),
-            "data": data.toString(),
-            "dataMode": dataMode.toString(),
-            "timestamp": new Date().getTime()
+            "id":id,
+            "url":url.toString(),
+            "method":method.toString(),
+            "headers":headers.toString(),
+            "data":data.toString(),
+            "dataMode":dataMode.toString(),
+            "timestamp":new Date().getTime()
         };
 
         var index = postman.history.requestExists(historyRequest);
-        if(index >= 0) {
+        if (index >= 0) {
             var deletedId = postman.history.requests[index].id;
             postman.indexedDB.deleteRequest(deletedId);
             postman.history.requests.splice(index, 1);
@@ -607,22 +708,22 @@ function setupDB() {
 
         var request = store.put(historyRequest);
 
-        request.onsuccess = function(e) {
+        request.onsuccess = function (e) {
             //Re-render all the todos
             addAvailableUrl(url);
             addUrlAutoComplete();
             removeRequestFromSidebar(deletedId, false);
-            renderRequestToSidebar(url,  method, id, "top");
+            renderRequestToSidebar(url, method, id, "top");
             addSidebarRequestListener(historyRequest);
             postman.history.requests.push(historyRequest);
         };
 
-        request.onerror = function(e) {
+        request.onerror = function (e) {
             console.log(e.value);
         }
     };
 
-    postman.indexedDB.getRequest = function(id) {
+    postman.indexedDB.getRequest = function (id) {
         var db = postman.indexedDB.db;
         var trans = db.transaction(["requests"], IDBTransaction.READ_WRITE);
         var store = trans.objectStore("requests");
@@ -630,7 +731,7 @@ function setupDB() {
         //Get everything in the store
         var cursorRequest = store.get(id);
 
-        cursorRequest.onsuccess = function(e) {
+        cursorRequest.onsuccess = function (e) {
             var result = e.target.result;
             if (!!result == false)
                 return;
@@ -641,7 +742,7 @@ function setupDB() {
         cursorRequest.onerror = postman.indexedDB.onerror;
     };
 
-    postman.indexedDB.getCollectionRequest = function(id) {
+    postman.indexedDB.getCollectionRequest = function (id) {
         var db = postman.indexedDB.db;
         var trans = db.transaction(["collection_requests"], IDBTransaction.READ_WRITE);
         var store = trans.objectStore("collection_requests");
@@ -649,7 +750,7 @@ function setupDB() {
         //Get everything in the store
         var cursorRequest = store.get(id);
 
-        cursorRequest.onsuccess = function(e) {
+        cursorRequest.onsuccess = function (e) {
             var result = e.target.result;
             if (!!result == false)
                 return;
@@ -660,9 +761,9 @@ function setupDB() {
         cursorRequest.onerror = postman.indexedDB.onerror;
     };
 
-    postman.indexedDB.getAllRequestItems = function() {
+    postman.indexedDB.getAllRequestItems = function () {
         var db = postman.indexedDB.db;
-        if(db == null) {
+        if (db == null) {
             return;
         }
 
@@ -674,12 +775,12 @@ function setupDB() {
         var index = store.index("timestamp");
         var cursorRequest = index.openCursor(keyRange);
         var historyRequests = [];
-        
-        cursorRequest.onsuccess = function(e) {
+
+        cursorRequest.onsuccess = function (e) {
             var result = e.target.result;
 
             if (!!result == false) {
-                for(var i = 0; i < historyRequests.length; i++) {
+                for (var i = 0; i < historyRequests.length; i++) {
                     var r = historyRequests[i];
                     addAvailableUrl(r.url);
                     renderRequestToSidebar(r.url, r.method, r.id, "top");
@@ -691,7 +792,7 @@ function setupDB() {
                 $('#historyItems').fadeIn();
 
                 postman.history.requests = historyRequests;
-                
+
                 return;
             }
 
@@ -699,45 +800,57 @@ function setupDB() {
             historyRequests.push(request);
 
             //This wil call onsuccess again and again until no more request is left
-            result.continue();
+            result.
+            continue
+            ();
         };
 
         cursorRequest.onerror = postman.indexedDB.onerror;
     };
 
-    postman.indexedDB.deleteRequest = function(id) {
+    postman.indexedDB.deleteRequest = function (id) {
         var db = postman.indexedDB.db;
         var trans = db.transaction(["requests"], IDBTransaction.READ_WRITE, 0);
         var store = trans.objectStore(["requests"]);
 
         var request = store.delete(id);
 
-        request.onsuccess = function(e) {
+        request.onsuccess = function (e) {
             removeRequestFromSidebar(id);
         };
 
-        request.onerror = function(e) {
+        request.onerror = function (e) {
             console.log(e);
         };
     };
 
-    postman.indexedDB.deleteCollectionRequest = function(id) {
+    postman.indexedDB.deleteHistory = function () {
+        var db = postman.indexedDB.db;
+        var clearTransaction = db.transaction(["requests"], IDBTransaction.READ_WRITE);
+        var clearRequest = clearTransaction.objectStore(["requests"]).clear();
+        clearRequest.onsuccess = function (event) {
+            console.log(event);
+            $('#historyItems').html("");
+        };
+    }
+
+    postman.indexedDB.deleteCollectionRequest = function (id) {
         var db = postman.indexedDB.db;
         var trans = db.transaction(["collection_requests"], IDBTransaction.READ_WRITE, 0);
         var store = trans.objectStore(["collection_requests"]);
 
         var request = store.delete(id);
 
-        request.onsuccess = function(e) {
+        request.onsuccess = function (e) {
             removeRequestFromSidebar(id);
         };
 
-        request.onerror = function(e) {
+        request.onerror = function (e) {
             console.log(e);
         };
     };
 
-    postman.indexedDB.deleteAllCollectionRequests = function(id) {
+    postman.indexedDB.deleteAllCollectionRequests = function (id) {
         var db = postman.indexedDB.db;
         var trans = db.transaction(["collection_requests"], IDBTransaction.READ_WRITE);
 
@@ -748,7 +861,7 @@ function setupDB() {
         var index = store.index("collectionId");
         var cursorRequest = index.openCursor(keyRange);
 
-        cursorRequest.onsuccess = function(e) {
+        cursorRequest.onsuccess = function (e) {
             var result = e.target.result;
 
             if (!!result == false) {
@@ -757,24 +870,26 @@ function setupDB() {
 
             var request = result.value;
             postman.indexedDB.deleteCollectionRequest(request.id);
-            result.continue();
+            result.
+            continue
+            ();
         };
         cursorRequest.onerror = postman.indexedDB.onerror;
     };
 
-    postman.indexedDB.deleteCollection = function(id) {
+    postman.indexedDB.deleteCollection = function (id) {
         var db = postman.indexedDB.db;
         var trans = db.transaction(["collections"], IDBTransaction.READ_WRITE, 0);
         var store = trans.objectStore(["collections"]);
 
         var request = store.delete(id);
 
-        request.onsuccess = function(e) {
+        request.onsuccess = function (e) {
             removeCollectionFromSidebar(id);
             removeCollectionFromSelector(id);
         };
 
-        request.onerror = function(e) {
+        request.onerror = function (e) {
             console.log(e);
         };
     };
@@ -788,6 +903,14 @@ function initDB() {
 //History management functions
 function saveRequest(url, method, headers, data, dataMode) {
     var id = guid();
+    var maxHistoryCount = postman.settings.historyCount;
+    var requestsCount = postman.history.requests.length;
+    console.log(maxHistoryCount, requestsCount);
+    if (requestsCount >= maxHistoryCount) {
+        //Delete the last request
+        var lastRequest = postman.history.requests[requestsCount - 1];
+        postman.indexedDB.deleteRequest(lastRequest.id);
+    }
     postman.indexedDB.addRequest(id, url, method, headers, data, dataMode);
 }
 
@@ -800,13 +923,16 @@ function hideEmptyHistoryMessage() {
 }
 
 function renderRequestToSidebar(url, method, id, position) {
+    if(url.length > 80) {
+        url = url.substring(0, 80) + "...";
+    }
     url = limitStringLineWidth(url, 40);
 
     var request = {
-        "url": url,
-        "method": method,
-        "id": id,
-        "position": position
+        "url":url,
+        "method":method,
+        "id":id,
+        "position":position
     };
 
     if (position === 'top') {
@@ -821,18 +947,18 @@ function renderRequestToSidebar(url, method, id, position) {
 function removeRequestFromSidebar(id, toAnimate) {
     var historyRequests = postman.history.requests;
     var k = -1;
-    for(var i = 0; i < historyRequests.length; i++) {
-        if(historyRequests[i].id === id) {
+    for (var i = 0; i < historyRequests.length; i++) {
+        if (historyRequests[i].id === id) {
             k = i;
             break;
         }
     }
 
-    if(k >= 0) {
+    if (k >= 0) {
         postman.history.requests.splice(k, 1);
     }
 
-    if(toAnimate) {
+    if (toAnimate) {
         $('#sidebarRequest-' + id).slideUp(100);
     }
     else {
@@ -861,7 +987,7 @@ function loadCollectionRequest(id) {
 
 function loadRequestInEditor(request) {
     var method = request.method.toLowerCase();
-    
+
     $('#url').val(request.url);
 
     //Set proper class for method and the variable
@@ -878,7 +1004,7 @@ function loadRequestInEditor(request) {
         $('#body').css("display", "block");
 
         $('#data .pills li').removeClass("active");
-        if(dataMode == 'params') {
+        if (dataMode == 'params') {
             $('#selector-container-params').addClass("active");
             showParamsEditor("body");
         }
@@ -939,66 +1065,12 @@ function guid() {
     return (S4() + S4() + "-" + S4() + "-" + S4() + "-" + S4() + "-" + S4() + S4() + S4());
 }
 
-function getUrlVars(url) {
-    if (url === null) {
-        return [];
-    }
-
-    var quesLocation = url.indexOf('?');
-    var equalLocation = url.indexOf('=');
-
-    if(equalLocation < 0) {
-        return [];
-    }
-
-    if(quesLocation < 0) {
-        quesLocation = -1;
-    }
-
-    var vars = [], hash;
-    var hashes = url.slice(quesLocation + 1).split('&');
-    var element;
-
-    for (var i = 0; i < hashes.length; i++) {
-        hash = hashes[i].split('=');
-        element = {
-            "key": jQuery.trim(hash[0]),
-            "value": jQuery.trim(hash[1])
-        };
-
-        vars.push(element);
-    }
-
-    return vars;
-}
-
-function getHeaderVars(data) {
-    if (data === null || data === "") {
-        return [];
-    }
-
-    var vars = [], hash;
-    var hashes = data.split('\n');
-    var header;
-
-    for (var i = 0; i < hashes.length; i++) {
-        hash = hashes[i].split(":");
-        header = {
-            "key": jQuery.trim(hash[0]),
-            "value": jQuery.trim(hash[1])
-        };
-
-        vars.push(header);
-    }
-
-    return vars;
-}
 
 //Sets the param strings for header and url params
 function setParamsFromEditor(section) {
     var paramString = "";
 
-    $('input[data-section="' + section + '"]').each(function() {
+    $('input[data-section="' + section + '"]').each(function () {
         var val = $(this).next().val();
         if (val !== "" && $(this).val() !== "") {
             if (section !== 'headers') {
@@ -1035,7 +1107,7 @@ function showParamsEditor(section, a1) {
     if (section === 'headers') {
         params = getHeaderVars(data);
     }
-    else if(section === 'body') {
+    else if (section === 'body') {
         params = getUrlVars(data);
     }
     else {
@@ -1136,7 +1208,7 @@ function addHeaderListeners() {
 }
 
 function addBodyListeners() {
-    $('#body').blur(function() {
+    $('#body').blur(function () {
         showParamsEditor('body');
     });
 }
@@ -1153,15 +1225,33 @@ function setContainerHeights() {
 function refreshScrollPanes() {
     var newMainWidth = $('#container').width() - $('#sidebar').width();
     $('#main').width(newMainWidth + "px");
-    
+
     $('#sidebar').jScrollPane({
-        mouseWheelSpeed: 24
+        mouseWheelSpeed:24
     });
 }
 
-$(document).ready(function() {
+function initializeSettings() {
+    if (localStorage['historyCount']) {
+        postman.settings.historyCount = localStorage['historyCount'];
+    }
+    else {
+        postman.settings.historyCount = 100;
+        localStorage['historyCount'] = postman.settings.historyCount;
+    }
+
+    $('#historyCount').val(postman.settings.historyCount);
+
+    $('#historyCount').change(function () {
+        postman.settings.historyCount = $('#historyCount').val();
+        localStorage['historyCount'] = postman.settings.historyCount;
+    });
+}
+
+$(document).ready(function () {
     setupDB();
     initDB();
+    initializeSettings();
     lang();
     init();
 
@@ -1172,31 +1262,33 @@ $(document).ready(function() {
     setContainerHeights();
 
     refreshScrollPanes();
-    
-    $('#formAddToCollection').submit(function() {
+
+    //checkDropboxLogin();
+
+    $('#formAddToCollection').submit(function () {
         submitAddToCollectionForm();
         return false;
     });
-    
-    $('#methods ul li a').click(function() {
+
+    $('#methods ul li a').click(function () {
         $('#methods ul li').removeClass('active');
         $(this).parent().addClass('active');
         requestMethod = $(this).attr('data-method');
     });
 
-    $(window).resize(function() {
+    $(window).resize(function () {
         setContainerHeights();
     });
 });
 
 function addSidebarCollectionHeadListener(collection) {
     var targetElement = '#collection-' + collection.id + " .sidebar-collection-head";
-    $(targetElement).mouseenter(function() {
+    $(targetElement).mouseenter(function () {
         var actionsEl = jQuery('.collection-head-actions', this);
         actionsEl.css('display', 'block');
     });
 
-    $(targetElement).mouseleave(function() {
+    $(targetElement).mouseleave(function () {
         var actionsEl = jQuery('.collection-head-actions', this);
         actionsEl.css('display', 'none');
     });
@@ -1204,12 +1296,12 @@ function addSidebarCollectionHeadListener(collection) {
     var targetElementName = '#collection-' + collection.id + " .sidebar-collection-head-name";
     var targetElementLabel = '#collection-' + collection.id + " .collection-head-actions .label";
 
-    $(targetElementName).click(function() {
+    $(targetElementName).click(function () {
         var id = $(this).attr('data-id');
         toggleCollectionRequestList(id);
     });
 
-    $(targetElementLabel).click(function() {
+    $(targetElementLabel).click(function () {
         var id = $(this).parent().parent().parent().attr('data-id');
         toggleCollectionRequestList(id);
     });
@@ -1218,7 +1310,7 @@ function addSidebarCollectionHeadListener(collection) {
 function toggleCollectionRequestList(id) {
     var target = "#collectionRequests-" + id;
     var label = "#collection-" + id + " .collection-head-actions .label";
-    if($(target).css("display") == "none") {
+    if ($(target).css("display") == "none") {
         $(label).html("Hide");
         $(target).slideDown(100);
     }
@@ -1230,19 +1322,19 @@ function toggleCollectionRequestList(id) {
 
 function addSidebarRequestListener(request) {
     var targetElement = '#sidebarRequest-' + request.id;
-    $(targetElement).mouseenter(function() {
+    $(targetElement).mouseenter(function () {
         var actionsEl = jQuery('.request-actions', this);
         actionsEl.css('display', 'block');
     });
 
-    $(targetElement).mouseleave(function() {
+    $(targetElement).mouseleave(function () {
         var actionsEl = jQuery('.request-actions', this);
         actionsEl.css('display', 'none');
     });
 }
 
 function addEditorListeners(section) {
-    $('#' + section + '-ParamsFields div:last input').focus(function() {
+    $('#' + section + '-ParamsFields div:last input').focus(function () {
         //Select parent element
         var fieldsParent = $(this).parents(".editorFields");
         var id = fieldsParent.attr("id");
@@ -1261,14 +1353,14 @@ function addEditorListeners(section) {
         addParamInEditor(section);
     });
 
-    $('#' + section + '-ParamsFields div input').blur(function() {
+    $('#' + section + '-ParamsFields div input').blur(function () {
         var fieldsParent = $(this).parents(".editorFields");
         var id = fieldsParent.attr("id");
         var section = id.split("-")[0];
         setParamsFromEditor(section);
     });
 
-    $('#' + section + '-ParamsFields div select').change(function() {
+    $('#' + section + '-ParamsFields div select').change(function () {
         //var paramType = $('#' + section + '-ParamsFields div select').val();
         var paramType = $(this).val();
 
@@ -1304,7 +1396,7 @@ function addEditorListeners(section) {
         }
     });
 
-    $('.deleteParam').click(function() {
+    $('.deleteParam').click(function () {
         var fieldsParent = $(this).parents(".editorFields");
         var id = fieldsParent.attr("id");
         var section = id.split("-")[0];
@@ -1381,56 +1473,88 @@ function addHeaderAutoComplete() {
     ];
 
     $("#headers-ParamsFields .key").autocomplete({
-        source: availableHeaders,
-        delay: 50
+        source:availableHeaders,
+        delay:50
     });
 }
 
 function addUrlAutoComplete() {
     $("#url").autocomplete({
-        source: availableUrls,
-        delay: 50
+        source:availableUrls,
+        delay:50
     });
 }
-function setResponseFormat(format) {
+
+function changeResponseFormat(format) {
     $('#langFormat li').removeClass('active');
     $('#langFormat-' + format).addClass('active');
 
-    var val = $('#codeData').html();
-
-    console.log("Setting response format as", format);
-
-    $('#responseAsText').css("display", "block");
-    $('#responseAsIFrame').css("display", "none");
-    $('#codeData').removeClass();
-    $('#codeData').addClass('chili-lang-' + format);
-
-    var isFormatted = $('#codeData').attr('data-formatted');
-
-    if (format === 'javascript' && isFormatted === 'false') {
-        try {
-            var jsonObject = JSON.parse(val);
-            var text = JSON.stringify(jsonObject, null, '\t');
-            $('#codeData').html(text);
-            $('#codeData').attr('data-formatted', 'true');
-        }
-        catch(e) {
-
-        }
-    }
-
-    if(format !== 'raw') {
-        $.chili.options.automatic.active = true;
-        $('#codeData').chili();
+    if(format === 'raw') {
+        postmanCodeMirror.toTextArea();
+        $('#codeData').val(currentResponse.text);
+        var codeDataWidth = $(document).width() - $('#sidebar').width() - 60;
+        $('#codeData').css("width", codeDataWidth + "px");
+        $('#codeData').css("height", "600px");
     }
     else {
-        $('#codeData').attr('data-formatted', 'false');
-        $('#codeData').html(currentResponse.text);
+        $('#codeData').css("display", "none");
+        var mime = $('#codeData').attr('data-mime');
+        console.log("Showing codemirror now");
+        setResponseFormat(mime, currentResponse.text, "parsed", true);
     }
+
+}
+
+function setResponseFormat(mime, response, format, forceCreate) {
+    console.log(mime, response, format);
+    $('#langFormat li').removeClass('active');
+    $('#langFormat-' + format).addClass('active');
+    $('#codeData').css("display", "none");
+
+    $('#codeData').attr("data-mime", mime);
+
+    var codeDataArea = document.getElementById("codeData");
+    var foldFunc;
+    var mode;
+    if (mime === 'javascript') {
+        mode = 'javascript';
+        try {
+            var jsonObject = JSON.parse(response);
+            var response = JSON.stringify(jsonObject, null, '\t');
+        }
+        catch (e) {
+        }
+        foldFunc = CodeMirror.newFoldFunction(CodeMirror.braceRangeFinder);
+    }
+    else if (mime === 'html') {
+        mode = 'xml';
+        foldFunc = CodeMirror.newFoldFunction(CodeMirror.tagRangeFinder);
+    }
+
+    if (!postmanCodeMirror || forceCreate) {
+        postmanCodeMirror = CodeMirror.fromTextArea(codeDataArea,
+            {
+                mode:mode,
+                lineNumbers:true,
+                fixedGutter:true,
+                onGutterClick: foldFunc,
+                theme:'eclipse'
+            });
+
+        postmanCodeMirror.setValue(response);
+    }
+    else {
+        postmanCodeMirror.setValue(response);
+        postmanCodeMirror.setOption("onGutterClick", foldFunc);
+        postmanCodeMirror.setOption("mode", mode);
+        postmanCodeMirror.setOption("theme", "eclipse");
+    }
+
+    $('#codeData').val(response);
 }
 
 function attachSidebarListeners() {
-    $('#sidebarContainer .pills li').click(function() {
+    $('#sidebarContainer .pills li').click(function () {
         $('#sidebarContainer .pills li').removeClass("active");
         $(this).addClass("active");
         var section = jQuery('a', this).attr('data-id');
@@ -1445,7 +1569,7 @@ function showSidebarSection(section, previousSection) {
 }
 
 function initCollectionSelector() {
-    $('#collectionSelector').change(function(event) {
+    $('#collectionSelector').change(function (event) {
         var val = $('#collectionSelector').val();
     });
 }
@@ -1466,7 +1590,7 @@ function submitAddToCollectionForm() {
     collectionRequest.dataMode = dataMode;
     collectionRequest.time = new Date().getTime();
 
-    if(newCollection) {
+    if (newCollection) {
         //Add the new collection and get guid
         collection.id = guid();
         collection.name = newCollection;
@@ -1486,23 +1610,23 @@ function submitAddToCollectionForm() {
     $('#formModalAddToCollection').modal('hide');
 }
 
-postman.history.requestExists = function(request) {
+postman.history.requestExists = function (request) {
     var index = -1;
     var method = request.method.toLowerCase();
 
     console.log(method);
 
-    if(method === 'post' || method === 'put') {
+    if (method === 'post' || method === 'put') {
         return -1;
     }
 
     var requests = postman.history.requests;
-    
+
     for (var i = 0; i < requests.length; i++) {
         var r = requests[i];
         if (r.url.length != request.url.length ||
-                r.headers.length != request.headers.length ||
-                r.method != request.method) {
+            r.headers.length != request.headers.length ||
+            r.method != request.method) {
             index = -1;
         }
         else {
@@ -1518,8 +1642,6 @@ postman.history.requestExists = function(request) {
         }
     }
 
-    console.log(index);
-
     return index;
 };
 
@@ -1531,25 +1653,66 @@ function closeAboutPostman() {
     $('#modalAboutPostman').modal('hide');
 }
 
+function closeSettings() {
+    $('#modalSettings').modal('hide');
+}
+
 function addAvailableUrl(url) {
-    if($.inArray(url, availableUrls) == -1) {
+    if ($.inArray(url, availableUrls) == -1) {
         availableUrls.push(url);
     }
 }
 
 function attachSocialButtons() {
     var currentContent = $('#aboutPostmanTwitterButton').html();
-    if(currentContent === "" || !currentContent) {
+    if (currentContent === "" || !currentContent) {
         $('#aboutPostmanTwitterButton').html(socialButtons.twitter);
     }
 
     currentContent = $('#aboutPostmanPlusOneButton').html();
-    if(currentContent === "" || !currentContent) {
+    if (currentContent === "" || !currentContent) {
         $('#aboutPostmanPlusOneButton').html(socialButtons.plusOne);
     }
 
     currentContent = $('#aboutPostmanFacebookButton').html();
-    if(currentContent === "" || !currentContent) {
+    if (currentContent === "" || !currentContent) {
         $('#aboutPostmanFacebookButton').html(socialButtons.facebook);
+    }
+}
+function clearHistory() {
+    console.log("Trying to clear the history");
+    postman.indexedDB.deleteHistory();
+}
+
+function toggleSidebarSection(section) {
+    if (section === 'history') {
+        $('#historyOptions').css("display", "block");
+    }
+    else if (section === 'collections') {
+        $('#historyOptions').css("display", "none");
+    }
+}
+
+function dropboxSync() {
+    if (!dropbox.isLoggedin()) {
+        $('#modalDropboxSync').modal('show');
+        dropbox.login_v1();
+    } else {
+        dropbox.oauthRequest({
+            url:"https://api.dropbox.com/1/oauth/access_token",
+            method:"POST"
+        }, [], function hello(data) {
+            console.log(data);
+        });
+        /*dropbox.getAccount(function accountData(data) {
+         console.log(data);
+         });*/
+    }
+}
+
+function checkDropboxLogin() {
+    if (dropbox.afterAuthentication === true) {
+        $('#modalDropboxSync .modal-body p').html('Succesfully connected to Dropbox!');
+        $('#modalDropboxSync').modal('show');
     }
 }

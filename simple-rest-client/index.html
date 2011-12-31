@@ -7,6 +7,8 @@
     <link rel="stylesheet" type="text/css" href="css/ui-lightness/jquery-ui-1.8.14.custom.css"/>
     <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"/>
     <link rel="stylesheet" type="text/css" href="css/jquery.jscrollpane.css"/>
+    <link rel="stylesheet" type="text/css" href="codemirror/lib/codemirror.css"/>
+    <link rel="stylesheet" type="text/css" href="codemirror/theme/eclipse.css"/>
     <script>
         var _gaq = _gaq || [];
         _gaq.push(['_setAccount', 'UA-26564585-1']);
@@ -36,8 +38,11 @@
         //]]>
     </script>
     <script type="text/javascript" src="js/jquery-ui-1.8.14.custom.min.js"></script>
-    <script type="text/javascript" src="jquery.chili.min.js"></script>
-    <script type="text/javascript" src="jquery.chili.recipes.js"></script>
+    <script type="text/javascript" src="js/dropbox/sha1.js"></script>
+    <script type="text/javascript" src="js/dropbox/oauth.js"></script>
+    <script type="text/javascript" src="js/util.js"></script>
+    <!--<script type="text/javascript" src="js/dropbox/dropbox.js"></script>-->
+    <script type="text/javascript" src="js/httpstatuscodes.js"></script>
     <script type="text/javascript" src="requester.js"></script>
 </head>
 <body>
@@ -53,13 +58,21 @@
                        data-keyboard="true">Settings</a></li>
                 <li><a href="javascript:void(0);" data-controls-modal="modalAboutPostman" data-backdrop="static"
                        data-keyboard="true" onclick="attachSocialButtons();">About</a></li>
+                <!--<li><a href="javascript:void(0);" onclick="dropboxSync();">Sync</a></li>-->
             </ul>
         </div>
     </div>
     <div id="sidebarContainer" class="clearfix">
+        <div id="historyOptions">
+            <a href="javascript:void(0);" onclick="clearHistory()">
+                Clear
+            </a>
+        </div>
         <ul class="pills" data-tabs="tabs">
-            <li class="active"><a href="javascript:void(0);" data-id="history">History</a></li>
-            <li><a href="javascript:void(0);" data-id="collections">Collections</a></li>
+            <li class="active"><a href="javascript:void(0);" data-id="history"
+                                  onclick="toggleSidebarSection('history');">History</a></li>
+            <li><a href="javascript:void(0);" data-id="collections" onclick="toggleSidebarSection('collections');">Collections</a>
+            </li>
         </ul>
         <div id="sidebarSectionContainer">
             <div id="sidebarSection-history">
@@ -69,7 +82,6 @@
             </div>
             <div id="sidebarSection-collections">
                 <ul id="collectionItems" class="clearfix">
-
                 </ul>
             </div>
         </div>
@@ -85,10 +97,18 @@
                 <input type="text" name="url" id="url" tabindex="1" class="inputText" placeholder="URL">
             </div>
             <div class="span2">
-                    <span class="buttonLayout">
-                        <button href="javascript:void(0);" class="btn small"
-                                onclick="showParamsEditor('url')" data-toggle="toggle">Edit params
-                        </button></span>
+                <span class="buttonLayout">
+                    <button href="javascript:void(0);" class="btn small"
+                            onclick="showParamsEditor('url')" data-toggle="toggle">Edit params
+                    </button>
+                </span>
+                <!--<span>
+                    <select class="medium" id="presets" onchange="fillPresetParams(this.value);">
+                        <option>--Preset--</option>
+                        <option value="oauth-request">OAuth-Request</option>
+                        <option value="oauth-access">OAuth-Access</option>
+                    </select>
+                </span>-->
             </div>
         </div>
 
@@ -195,9 +215,7 @@
             <div id="responsePrint">
                 <div class="row">
 
-                    <div id="pstatus" class="span2">
-                        <span class="label">Status</span>
-                        <span class="data">200 OK</span>
+                    <div id="pstatus">
                     </div>
 
                     <div id="ptime" class="span2">
@@ -208,26 +226,20 @@
 
                 <div id="respHeaders">
                     <div id="respHeadersContent">
-                        <textarea name="responseHeaders" id="responseHeaders" tabindex="6"
-                                  class="inputText"></textarea>
+                        <div id="responseHeaders" tabindex="6"></div>
                     </div>
                 </div>
 
                 <div id="respData" style="display:none">
                     <div id="langFormat">
                         <ul class="pills">
-                            <li id="langFormat-html" class="active">
-                                <a href="javascript:void(0);" onclick="setResponseFormat('html')">
-                                    HTML/XML
-                                </a>
-                            </li>
-                            <li id="langFormat-javascript">
-                                <a href="javascript:void(0);" onclick="setResponseFormat('javascript')">
-                                    JSON
+                            <li id="langFormat-parsed" class="active">
+                                <a href="javascript:void(0);" onclick="changeResponseFormat('parsed')">
+                                    Parsed
                                 </a>
                             </li>
                             <li id="langFormat-raw">
-                                <a href="javascript:void(0);" onclick="setResponseFormat('raw')">
+                                <a href="javascript:void(0);" onclick="changeResponseFormat('raw')">
                                     Raw
                                 </a>
                             </li>
@@ -235,14 +247,8 @@
                     </div>
                     <div name="responseData" id="responseData" contenteditable="true">
                         <div id="responseAsText">
-                                <pre><code name="codeData" id="codeData" class="chili-lang-html" data-formatted="false">
-                                    &nbsp;</code></pre>
-                        </div>
-                        <div id="responseAsIFrame">
-                            <div id="codeIFrame"></div>
-                        </div>
-                        <div id="responseAsImage">
-
+                            <textarea name="codeData" id="codeData" class="chili-lang-html" data-formatted="false">
+                            </textarea>
                         </div>
                     </div>
                 </div>
@@ -284,6 +290,31 @@
         <a href="javascript:void(0);" onclick="closeAddToCollectionForm();" class="btn secondary">Cancel</a>
     </div>
 </div>
+<div id="modalSettings" class="modal fade">
+    <div class="modal-header">
+        <a href="#" class="close">×</a>
+
+        <h3>Settings</h3>
+    </div>
+    <div class="modal-body">
+        <form>
+            <div class="clearfix">
+                <label for="historyCount">Max history items</label>
+
+                <div class="input">
+                    <select class="medium" name="historyCount" id="historyCount">
+                        <option>50</option>
+                        <option>100</option>
+                        <option>200</option>
+                    </select>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <a href="javascript:void(0);" onclick="closeSettings();" class="btn primary">Close</a>
+    </div>
+</div>
 <div id="modalAboutPostman" class="modal fade">
     <div class="modal-header">
         <a href="#" class="close">×</a>
@@ -314,9 +345,46 @@
         <a href="javascript:void(0);" onclick="closeAboutPostman();" class="btn primary">Close</a>
     </div>
 </div>
+<div id="modalResponseError" class="modal fade">
+    <div class="modal-header">
+        <a href="#" class="close">×</a>
+
+        <h3>Could not get any response</h3>
+    </div>
+    <div class="modal-body">
+        <p>
+            Something went wrong while fetching the response. Check your request again.
+        </p>
+    </div>
+</div>
+<!--<div id="modalDropboxSync" class="modal fade">
+	<div class="modal-header">
+        <a href="#" class="close">×</a>
+        <h3>Dropbox Connect</h3>
+    </div>
+    <div class="modal-body">
+        <p>
+            Redirecting to Dropbox...
+        </p>
+    </div>
+</div>-->
 <!--- jQuery Templates -->
 <script id="itemCollectionSelectorList" type="text/x-jquery-tmpl">
     <option value="${id}">${name}</option>
+</script>
+<script id="itemResponseCode" type="text/x-jquery-tmpl">
+    <div class="responseCode" data-placement="above" title="${code} ${name}" data-content="${detail}"
+         rel="popover"><span class="label">Status</span>
+
+        <div class="data">${code} ${name}</div>
+    </div>
+</script>
+<script id="itemResponseHeader" type="text/x-jquery-tmpl">
+    <li class="responseHeader clearfix">
+        <div class="responseHeaderName" data-placement="above" title="${name}" data-content="${description}"
+             rel="popover">${name} &rarr;</div>
+        <div class="responseHeaderValue">${value}</div>
+    </li>
 </script>
 <script id="itemCollectionSidebarHead" type="text/x-jquery-tmpl">
     <li id="collection-${id}" data-id="${id}" class="sidebarCollection">
@@ -361,6 +429,14 @@
         </div>
     </li>
 </script>
+<script type="text/javascript" src="codemirror/lib/codemirror.js"></script>
+<script type="text/javascript" src="codemirror/lib/util/formatting.js"></script>
+<script type="text/javascript" src="codemirror/lib/util/foldcode.js"></script>
+<script type="text/javascript" src="codemirror/mode/xmlpure/xmlpure.js"></script>
+<script type="text/javascript" src="codemirror/mode/javascript/javascript.js"></script>
+<script type="text/javascript" src="codemirror/mode/xml/xml.js"></script>
+<script type="text/javascript" src="codemirror/mode/htmlmixed/htmlmixed.js"></script>
+<script type="text/javascript" src="js/jquery.tmpl.min.js"></script>
 <script type="text/javascript" src="js/jquery.tmpl.min.js"></script>
 <script type="text/javascript" src="js/jquery.mousewheel.js"></script>
 <script type="text/javascript" src="js/jquery.jscrollpane.js"></script>
