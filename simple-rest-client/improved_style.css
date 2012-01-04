@@ -349,8 +349,11 @@ fieldset {
 .paramsEditor .key,
 .paramsEditor .value {
     padding: 5px;
-    border: solid thin #ccc;
+    border: none;
     border-radius: 5px;
+    box-shadow: none;
+    border-bottom: solid thin #ccc;
+    border-radius: 0px;
 }
 
 .paramsEditor .file {
