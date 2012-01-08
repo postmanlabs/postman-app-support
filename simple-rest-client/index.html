@@ -94,7 +94,8 @@
 
         <div id="requestUrl" class="row clearfix">
             <div class="span10">
-                <input type="text" name="url" id="url" tabindex="1" class="inputText" placeholder="URL">
+                <input type="text" name="url" id="url" tabindex="1" class="inputTextLight"
+                       placeholder="Enter request URL here"/>
             </div>
             <div class="span2">
                 <span class="buttonLayout">
@@ -151,29 +152,17 @@
                 <textarea name="headers" id="headers" tabindex="3" class="inputText"
                           placeholder="Headers"></textarea>
             </div>
-            <div class="span2 editHeaderButton">
-                <a href="javascript:void(0);" class="btn small" onclick="showParamsEditor('headers')">Edit
-                    headers</a>
-            </div>
+            <strong>Headers</strong>
         </div>
 
         <div class="row">
             <div id="headers-ParamsEditor" class="span10 paramsEditor">
                 <div id="headers-ParamsFields" class="editorFields"></div>
-                <form class="form-stacked">
-                    <div id="headers-ParamsEditorActions" class="actions">
-                        <input type="button" id="cancelHeaderParamsButton" name="closeBodyParams"
-                               value="Save and close"
-                               class="btn primary medium"
-                               onclick="closeParamsEditor('headers')"/>
-
-                    </div>
-                </form>
             </div>
         </div>
 
         <div id="data">
-            <ul class="pills small" style="margin-bottom: 0px; height: 38px;">
+            <ul class="pills small" style="margin-bottom: 0px; height: 44px;">
                 <li id="selector-container-params" class="active">
                     <a href="javascript:void(0);" onclick="showBodyParamsEditor()" id="data-params">Params</a>
                 </li>

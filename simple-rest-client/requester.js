@@ -135,6 +135,7 @@ var currentSidebarSection = "history";
 var currentResponse;
 
 var postman = {};
+postman.currentRequest = {};
 postman.history = {};
 postman.history.requests = [];
 postman.settings = {};
@@ -266,8 +267,9 @@ function sendRequest() {
                 if (header[1]) {
                     xhr.setRequestHeader(header[0], header[1]);
                 }
-
             }
+
+            console.log(headers);
 
             if (jQuery.inArray(method, ["post", "put"]) > -1) {
                 if (dataMode === 'raw') {
@@ -462,6 +464,8 @@ function init() {
     $("#submitRequest").click(function () {
         sendRequest();
     });
+
+    showParamsEditor("headers");
 }
 
 function setupDB() {
@@ -1417,6 +1421,7 @@ function showBodyParamsEditor() {
     dataMode = "params";
     showParamsEditor('body');
 
+    $('#bodyDataContainer').css("display", "none");
     setCurrentDataFormat('params');
     removeBodyListeners();
     addBodyListeners();
@@ -1427,7 +1432,7 @@ function showRawEditor() {
     closeParamsEditor('body');
 
     setCurrentDataFormat('raw');
-
+    $('#bodyDataContainer').css("display", "block");
     removeBodyListeners();
     addBodyListeners();
 }

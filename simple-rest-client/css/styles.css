@@ -110,13 +110,33 @@ fieldset {
 
 .inputText {
     border-color: #cce0e9;
-    border-radius: 10px;
     border-style: solid;
     border-width: 2px;
     min-height: 18px;
     width: 100% !important;
     padding: 5px;
 }
+
+
+.inputTextLight {
+    border: none;
+    box-shadow: none;
+    border-radius: 0;
+    border-bottom-color: #CCC;
+    border-bottom-style: solid;
+    border-bottom-width: 2px;
+    min-height: 18px;
+    width: 100% !important;
+    padding: 5px;
+    padding-left: 0px;
+}
+
+.inputTextLight:focus {
+    border-bottom-color: #999;
+    outline: none;
+    box-shadow: none;
+}
+
 
 #request h4 {
     padding-bottom: 5px;
@@ -134,8 +154,7 @@ fieldset {
 }
 
 #url-ParamsEditor,
-#body-ParamsEditor,
-#headers-ParamsEditor {
+#body-ParamsEditor {
     display: none;
 }
 
@@ -353,7 +372,12 @@ fieldset {
     border-radius: 5px;
     box-shadow: none;
     border-bottom: solid thin #ccc;
-    border-radius: 0px;
+    border-radius: 0;
+}
+
+.paramsEditor .key:focus,
+.paramsEditor .value:focus {
+    border-color: #999;
 }
 
 .paramsEditor .file {
@@ -393,6 +417,7 @@ fieldset {
     margin-top: 5px;
     margin-bottom: 10px;
     width: 580px;
+    display: none;
 }
 
 #bodyDataContainer input {
@@ -518,6 +543,7 @@ li .right {
 }
 
 #headers {
+    display: none;
 }
 
 .editorFields input {
@@ -581,7 +607,6 @@ li .right {
 }
 
 #headers-ParamsEditor {
-    margin-top: 15px;
     width: 625px;
 }
 
@@ -591,6 +616,7 @@ li .right {
 
 #pheaders {
     margin-top: 10px;
+    margin-left: 5px;
 }
 
 #emptyHistoryMessage {
