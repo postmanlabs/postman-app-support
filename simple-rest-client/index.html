@@ -65,13 +65,13 @@
     <div id="sidebarContainer" class="clearfix">
         <div id="historyOptions" class="sectionOptions">
             <a href="javascript:void(0);" onclick="clearHistory()">
-                Clear
+                Clear history
             </a>
         </div>
         <div id="collectionsOptions" class="sectionOptions">
             <a href="javascript:void(0);"
                     data-controls-modal="formModalNewCollection" data-backdrop="static" data-keyboard="true">
-                New
+                New collection
             </a>
         </div>
         <ul class="pills" data-tabs="tabs">
@@ -395,6 +395,16 @@
     </div>
 </div>-->
 <!--- jQuery Templates -->
+<script id="messageNoHistoryTmpl" type="text/x-jquery-tmpl">
+    <div id="messageNoHistory">
+        Nothing in your history yet. You can automatically save and access your sent requests here.
+    </div>
+</script>
+<script id="messageNoCollectionTmpl" type="text/x-jquery-tmpl">
+    <div id="messageNoCollection">
+        You haven't created any collections yet. Collections let you group requests together for quick access.
+    </div>
+</script>
 <script id="itemCollectionSelectorList" type="text/x-jquery-tmpl">
     <option value="${id}">${name}</option>
 </script>

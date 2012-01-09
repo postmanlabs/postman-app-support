@@ -804,8 +804,16 @@ li .right {
 
 .sectionOptions {
     position: absolute;
-    margin-left: 270px;
+    margin-left: 200px;
     margin-top: 10px;
+}
+
+#historyOptions {
+    margin-left: 237px;
+}
+
+#collectionsOptions {
+    margin-left: 226px;
 }
 
 .sectionOptions a {
@@ -819,6 +827,7 @@ li .right {
 
 .sectionOptions a:hover {
     background: #0069D6;
+    color: white;
     text-decoration: none;
 }
 
@@ -832,4 +841,10 @@ li .right {
 
 .responseCode .data {
     display: inline-block;
+}
+
+#messageNoCollection,
+#messageNoHistory {
+    margin-top: 10px;
+
 }

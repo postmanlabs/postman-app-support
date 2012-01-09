@@ -535,7 +535,7 @@ function setupDB() {
         });
 
         request.onsuccess = function (e) {
-            console.log("Added collection to collection database", collection);
+            $('#messageNoCollection').remove();
             postman.indexedDB.getCollections();
             postman.indexedDB.getAllRequestsInCollection(collection.id);
         };
@@ -597,6 +597,7 @@ function setupDB() {
             $('#itemCollectionSidebarRequest').tmpl([req]).appendTo(targetElement);
             addSidebarRequestListener(req);
             refreshScrollPanes();
+            $('#messageNoCollection').remove();
         };
 
         collectionRequest.onerror = function (e) {
@@ -625,8 +626,9 @@ function setupDB() {
         cursorRequest.onsuccess = function (e) {
             var result = e.target.result;
             if (!!result == false) {
-                if(numCollections == 0) {
-                    console.log("Display message here");
+                if (numCollections == 0) {
+                    var obj = new Object();
+                    $('#messageNoCollectionTmpl').tmpl([obj]).appendTo('#sidebarSection-collections');
                 }
 
                 return;
@@ -643,7 +645,9 @@ function setupDB() {
 
             addSidebarCollectionHeadListener(collection);
 
-            result.continue();
+            result.
+            continue
+            ();
         };
 
         cursorRequest.onerror = function (e) {
@@ -682,9 +686,7 @@ function setupDB() {
             refreshScrollPanes();
 
             //This wil call onsuccess again and again until no more request is left
-            result.
-            continue
-            ();
+            result.continue();
         };
         cursorRequest.onerror = postman.indexedDB.onerror;
     };
@@ -797,6 +799,10 @@ function setupDB() {
 
                 postman.history.requests = historyRequests;
 
+                if(postman.history.requests.length == 0) {
+                    $('#messageNoHistoryTmpl').tmpl([new Object()]).appendTo('#sidebarSection-history');
+                }
+
                 return;
             }
 
@@ -804,9 +810,7 @@ function setupDB() {
             historyRequests.push(request);
 
             //This wil call onsuccess again and again until no more request is left
-            result.
-            continue
-            ();
+            result.continue();
         };
 
         cursorRequest.onerror = postman.indexedDB.onerror;
@@ -821,6 +825,7 @@ function setupDB() {
 
         request.onsuccess = function (e) {
             removeRequestFromSidebar(id);
+
         };
 
         request.onerror = function (e) {
@@ -833,8 +838,8 @@ function setupDB() {
         var clearTransaction = db.transaction(["requests"], IDBTransaction.READ_WRITE);
         var clearRequest = clearTransaction.objectStore(["requests"]).clear();
         clearRequest.onsuccess = function (event) {
-            console.log(event);
             $('#historyItems').html("");
+            $('#messageNoHistoryTmpl').tmpl([new Object()]).appendTo('#sidebarSection-history');
         };
     }
 
@@ -874,9 +879,7 @@ function setupDB() {
 
             var request = result.value;
             postman.indexedDB.deleteCollectionRequest(request.id);
-            result.
-            continue
-            ();
+            result.continue();
         };
         cursorRequest.onerror = postman.indexedDB.onerror;
     };
@@ -891,6 +894,10 @@ function setupDB() {
         request.onsuccess = function (e) {
             removeCollectionFromSidebar(id);
             removeCollectionFromSelector(id);
+            var numCollections = $('#collectionItems').children().length;
+            if (numCollections == 1) {
+                $('#messageNoCollectionTmpl').tmpl([new Object()]).appendTo('#sidebarSection-collections');
+            }
         };
 
         request.onerror = function (e) {
@@ -948,6 +955,9 @@ function renderRequestToSidebar(url, method, id, position) {
     else {
         $('#itemHistorySidebarRequest').tmpl([request]).appendTo('#historyItems');
     }
+
+    console.log("Removing history");
+    $('#messageNoHistory').remove();
     refreshScrollPanes();
 }
 
@@ -963,6 +973,9 @@ function removeRequestFromSidebar(id, toAnimate) {
 
     if (k >= 0) {
         postman.history.requests.splice(k, 1);
+        if(postman.history.requests.length == 0) {
+            $('#messageNoHistoryTmpl').tmpl([new Object()]).appendTo('#sidebarSection-history');
+        }
     }
 
     if (toAnimate) {
@@ -1111,8 +1124,8 @@ function showParamsEditor(section, a1) {
     var data = $('#' + section).val();
 
     var params;
-    var placeHolderKey = "key";
-    var placeHolderValue = "value";
+    var placeHolderKey = "Key";
+    var placeHolderValue = "Value";
 
     if (section === 'headers') {
         params = getHeaderVars(data);
@@ -1185,8 +1198,8 @@ function closeParamsEditor(section) {
 }
 
 function addParamInEditor(section) {
-    var placeHolderKey = "key";
-    var placeHolderValue = "value";
+    var placeHolderKey = "Key";
+    var placeHolderValue = "Value";
 
     if (section === 'headers') {
         placeHolderKey = "Header";
@@ -1311,6 +1324,12 @@ $(document).ready(function () {
         submitAddToCollectionForm();
         return false;
     });
+
+    $('#formNewCollection').submit(function () {
+        submitNewCollectionForm();
+        return false;
+    });
+
 
     $('#methods ul li a').click(function () {
         $('#methods ul li').removeClass('active');
