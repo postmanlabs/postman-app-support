@@ -621,15 +621,19 @@ function setupDB() {
         //Get everything in the store
         var keyRange = IDBKeyRange.lowerBound(0);
         var cursorRequest = store.openCursor(keyRange);
-
+        numCollections = 0;
         cursorRequest.onsuccess = function (e) {
             var result = e.target.result;
-
             if (!!result == false) {
+                if(numCollections == 0) {
+                    console.log("Display message here");
+                }
+
                 return;
             }
 
             var collection = result.value;
+            numCollections++;
             $('#itemCollectionSelectorList').tmpl([collection]).appendTo('#selectCollection');
             $('#itemCollectionSidebarHead').tmpl([collection]).appendTo('#collectionItems');
             refreshScrollPanes();
