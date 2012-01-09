@@ -271,6 +271,8 @@ fieldset {
 
 #responseData {
     margin-top: 10px;
+    z-index: 10;
+    background: white;
 }
 
 #respHeaders:focus,
@@ -847,4 +849,16 @@ li .right {
 #messageNoHistory {
     margin-top: 10px;
 
+}
+
+#respDataActions {
+    position: absolute;
+    margin-left: -50px;
+    margin-top: 0;
+    width: 150px;
+    text-align: center;
+}
+
+#respDataActions a {
+    width: 75px;
 }

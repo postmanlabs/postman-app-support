@@ -141,6 +141,9 @@ postman.history.requests = [];
 postman.settings = {};
 postman.indexedDB = {};
 postman.indexedDB.db = null;
+postman.response = {};
+postman.response.state = {};
+postman.response.state.size = "normal";
 
 var postmanCodeMirror;
 
@@ -686,7 +689,9 @@ function setupDB() {
             refreshScrollPanes();
 
             //This wil call onsuccess again and again until no more request is left
-            result.continue();
+            result.
+            continue
+            ();
         };
         cursorRequest.onerror = postman.indexedDB.onerror;
     };
@@ -799,7 +804,7 @@ function setupDB() {
 
                 postman.history.requests = historyRequests;
 
-                if(postman.history.requests.length == 0) {
+                if (postman.history.requests.length == 0) {
                     $('#messageNoHistoryTmpl').tmpl([new Object()]).appendTo('#sidebarSection-history');
                 }
 
@@ -810,7 +815,9 @@ function setupDB() {
             historyRequests.push(request);
 
             //This wil call onsuccess again and again until no more request is left
-            result.continue();
+            result.
+            continue
+            ();
         };
 
         cursorRequest.onerror = postman.indexedDB.onerror;
@@ -879,7 +886,9 @@ function setupDB() {
 
             var request = result.value;
             postman.indexedDB.deleteCollectionRequest(request.id);
-            result.continue();
+            result.
+            continue
+            ();
         };
         cursorRequest.onerror = postman.indexedDB.onerror;
     };
@@ -973,7 +982,7 @@ function removeRequestFromSidebar(id, toAnimate) {
 
     if (k >= 0) {
         postman.history.requests.splice(k, 1);
-        if(postman.history.requests.length == 0) {
+        if (postman.history.requests.length == 0) {
             $('#messageNoHistoryTmpl').tmpl([new Object()]).appendTo('#sidebarSection-history');
         }
     }
@@ -1803,4 +1812,40 @@ function checkDropboxLogin() {
         $('#modalDropboxSync .modal-body p').html('Succesfully connected to Dropbox!');
         $('#modalDropboxSync').modal('show');
     }
+}
+
+function toggleResponseBodySize() {
+    if (postman.response.state.size == "normal") {
+        postman.response.state.size = "maximized";
+        $('#responseBodyToggle').html("Back to normal");
+        postman.response.state.width = $('#respData').width();
+        postman.response.state.height = $('#respData').height();
+        postman.response.state.display = $('#respData').css("display");
+        postman.response.state.position = $('#respData').css("position");
+
+        $('#respData').css("position", "absolute");
+        $('#respData').css("left", 0);
+        $('#respData').css("top", 0);
+        $('#respData').css("width", $(document).width() - 20);
+        $('#respData').css("height", $(document).height());
+        $('#respData').css("z-index", 100);
+        $('#respData').css("background-color", "white");
+        $('#respData').css("padding", "10px");
+    }
+    else {
+        postman.response.state.size = "normal";
+        $('#responseBodyToggle').html("Maximize");
+        $('#respData').css("position", postman.response.state.position);
+        $('#respData').css("left", 0);
+        $('#respData').css("top", 0);
+        $('#respData').css("width", postman.response.state.width);
+        $('#respData').css("height", postman.response.state.height);
+        $('#respData').css("z-index", 10);
+        $('#respData').css("background-color", "white");
+        $('#respData').css("padding", "0px");
+    }
+}
+
+function minimizeResponseBody() {
+    $('#respData').css("padding", "0px");
 }

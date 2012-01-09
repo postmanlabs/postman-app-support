@@ -70,7 +70,7 @@
         </div>
         <div id="collectionsOptions" class="sectionOptions">
             <a href="javascript:void(0);"
-                    data-controls-modal="formModalNewCollection" data-backdrop="static" data-keyboard="true">
+               data-controls-modal="formModalNewCollection" data-backdrop="static" data-keyboard="true">
                 New collection
             </a>
         </div>
@@ -226,6 +226,11 @@
                 </div>
 
                 <div id="respData" style="display:none">
+                    <div id="respDataActions" class="sectionOptions">
+                        <a href="javascript:void(0);" class="sectionOptions" onclick="toggleResponseBodySize();" id="responseBodyToggle">
+                            Maximize
+                        </a>
+                    </div>
                     <div id="langFormat">
                         <ul class="pills">
                             <li id="langFormat-parsed" class="active">
