@@ -63,9 +63,15 @@
         </div>
     </div>
     <div id="sidebarContainer" class="clearfix">
-        <div id="historyOptions">
+        <div id="historyOptions" class="sectionOptions">
             <a href="javascript:void(0);" onclick="clearHistory()">
                 Clear
+            </a>
+        </div>
+        <div id="collectionsOptions" class="sectionOptions">
+            <a href="javascript:void(0);"
+                    data-controls-modal="formModalNewCollection" data-backdrop="static" data-keyboard="true">
+                New
             </a>
         </div>
         <ul class="pills" data-tabs="tabs">
@@ -152,7 +158,6 @@
                 <textarea name="headers" id="headers" tabindex="3" class="inputText"
                           placeholder="Headers"></textarea>
             </div>
-            <strong>Headers</strong>
         </div>
 
         <div class="row">
@@ -189,7 +194,8 @@
                 </div>
                 <div id="requestActionsOptions">
                     <button class="btn large"
-                            data-controls-modal="formModalAddToCollection" data-backdrop="static" data-keyboard="true">
+                            data-controls-modal="formModalAddToCollection" data-backdrop="static"
+                            data-keyboard="true">
                         Add to collection
                     </button>
                 </div>
@@ -246,8 +252,29 @@
     </section>
 </div>
 </div>
-<div id="formModalAddToCollection"
-     class="modal fade">
+<div id="formModalNewCollection" class="modal fade">
+    <div class="modal-header">
+        <a href="#" class="close">×</a>
+
+        <h3>Create a new collection</h3>
+    </div>
+    <div class="modal-body">
+        <form id="formNewCollection">
+            <div class="clearfix" id="newCollectionContainer">
+                <label for="newCollection">Collection name</label>
+
+                <div class="input">
+                    <input type="text" class="medium" name="newCollectionBlank" id="newCollectionBlank"/>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <a href="javascript:void(0);" onclick="submitNewCollectionForm();" class="btn primary">Create</a>
+        <a href="javascript:void(0);" onclick="closeNewCollectionForm();" class="btn secondary">Cancel</a>
+    </div>
+</div>
+<div id="formModalAddToCollection" class="modal fade">
     <div class="modal-header">
         <a href="#" class="close">×</a>
 
@@ -275,8 +302,8 @@
         </form>
     </div>
     <div class="modal-footer">
-        <a href="javascript:void(0);" onclick="submitAddToCollectionForm();" class="btn primary">Done</a>
-        <a href="javascript:void(0);" onclick="closeAddToCollectionForm();" class="btn secondary">Cancel</a>
+        <a href="javascript:void(0);" onclick="submitNewCollectionForm();" class="btn primary">Done</a>
+        <a href="javascript:void(0);" onclick="closeNewCollectionForm();" class="btn secondary">Cancel</a>
     </div>
 </div>
 <div id="modalSettings" class="modal fade">
@@ -292,9 +319,19 @@
 
                 <div class="input">
                     <select class="medium" name="historyCount" id="historyCount">
-                        <option>50</option>
-                        <option>100</option>
-                        <option>200</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                        <option value="200">200</option>
+                    </select>
+                </div>
+            </div>
+            <div class="clearfix">
+                <label for="historyCount">Auto save request</label>
+
+                <div class="input">
+                    <select class="medium" name="autoSaveRequest" id="autoSaveRequest">
+                        <option value="yes">Yes</option>
+                        <option value="no">No</option>
                     </select>
                 </div>
             </div>

@@ -411,6 +411,7 @@ fieldset {
 
 #data {
     margin-top: 10px;
+    display: none;
 }
 
 #bodyDataContainer {
@@ -523,6 +524,10 @@ li .right {
     padding-bottom: 0px;
 }
 
+#response {
+    display: none;
+}
+
 #requestUrl {
     margin-top: 10px;
 }
@@ -607,6 +612,7 @@ li .right {
 }
 
 #headers-ParamsEditor {
+    margin-top: 5px;
     width: 625px;
 }
 
@@ -796,13 +802,13 @@ li .right {
     margin-right: 10px;
 }
 
-#historyOptions {
+.sectionOptions {
     position: absolute;
     margin-left: 270px;
     margin-top: 10px;
 }
 
-#historyOptions a {
+.sectionOptions a {
     font-size: 10px;
     font-weight: bold;
     background: #afafaf;
@@ -811,9 +817,13 @@ li .right {
     padding: 4px;
 }
 
-#historyOptions a:hover {
+.sectionOptions a:hover {
     background: #0069D6;
     text-decoration: none;
+}
+
+#collectionsOptions {
+    display: none;
 }
 
 .responseCode {

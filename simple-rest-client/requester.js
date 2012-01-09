@@ -269,8 +269,6 @@ function sendRequest() {
                 }
             }
 
-            console.log(headers);
-
             if (jQuery.inArray(method, ["post", "put"]) > -1) {
                 if (dataMode === 'raw') {
                     data = $("#body").val();
@@ -364,6 +362,7 @@ function setResponseHeaders(headersString) {
 function readResponse() {
     currentResponse = new Response();
 
+    $('#response').css("display", "block");
     $('#submitRequest').button("reset");
 
     $('#responseStatus').css("display", "block");
@@ -428,7 +427,6 @@ function readResponse() {
         }
         catch (e) {
             console.log("Something went wrong while receiving the response");
-            console.log(e);
         }
     }
     else {
@@ -441,7 +439,7 @@ function readResponse() {
 //Manages showing/hiding the PUT/POST additional UI
 function showRequestMethodUi(type) {
     if (jQuery.inArray(type, ["POST", "PUT"]) > -1) {
-        $("#data").css("display", "");
+        $("#data").css("display", "block");
         showBodyParamsEditor();
     } else {
         closeParamsEditor('body');
@@ -539,7 +537,7 @@ function setupDB() {
         request.onsuccess = function (e) {
             console.log("Added collection to collection database", collection);
             postman.indexedDB.getCollections();
-            postman.indexedDB.getAllRequestsInCollection(id);
+            postman.indexedDB.getAllRequestsInCollection(collection.id);
         };
 
         request.onerror = function (e) {
@@ -641,9 +639,7 @@ function setupDB() {
 
             addSidebarCollectionHeadListener(collection);
 
-            result.
-            continue
-            ();
+            result.continue();
         };
 
         cursorRequest.onerror = function (e) {
@@ -906,16 +902,19 @@ function initDB() {
 
 //History management functions
 function saveRequest(url, method, headers, data, dataMode) {
-    var id = guid();
-    var maxHistoryCount = postman.settings.historyCount;
-    var requestsCount = postman.history.requests.length;
-    console.log(maxHistoryCount, requestsCount);
-    if (requestsCount >= maxHistoryCount) {
-        //Delete the last request
-        var lastRequest = postman.history.requests[requestsCount - 1];
-        postman.indexedDB.deleteRequest(lastRequest.id);
+    if (postman.settings.autoSaveRequest) {
+        var id = guid();
+        var maxHistoryCount = postman.settings.historyCount;
+        var requestsCount = postman.history.requests.length;
+        console.log(maxHistoryCount, requestsCount);
+        if (requestsCount >= maxHistoryCount) {
+            //Delete the last request
+            var lastRequest = postman.history.requests[requestsCount - 1];
+            postman.indexedDB.deleteRequest(lastRequest.id);
+        }
+        postman.indexedDB.addRequest(id, url, method, headers, data, dataMode);
     }
-    postman.indexedDB.addRequest(id, url, method, headers, data, dataMode);
+
 }
 
 function showEmptyHistoryMessage() {
@@ -927,7 +926,7 @@ function hideEmptyHistoryMessage() {
 }
 
 function renderRequestToSidebar(url, method, id, position) {
-    if(url.length > 80) {
+    if (url.length > 80) {
         url = url.substring(0, 80) + "...";
     }
     url = limitStringLineWidth(url, 40);
@@ -1108,8 +1107,13 @@ function showParamsEditor(section, a1) {
     var data = $('#' + section).val();
 
     var params;
+    var placeHolderKey = "key";
+    var placeHolderValue = "value";
+
     if (section === 'headers') {
         params = getHeaderVars(data);
+        placeHolderKey = "Header";
+        placeHolderValue = "Value";
     }
     else if (section === 'body') {
         params = getUrlVars(data);
@@ -1123,16 +1127,17 @@ function showParamsEditor(section, a1) {
 
     //@todo Replace this with jquery templates
     //@todo Remove for in
-
     var paramsLength = params.length;
+
+
     for (var index = 0; i < paramsLength; index++) {
         var element = params[index];
         var key = element.key;
         var value = element.value;
 
         editorHtml += "<div>";
-        editorHtml += "<input type=\"text\" data-section=\"" + section + "\" name=\"" + section + "[key][]\" class=\"key\" placeholder=\"key\" value=\"" + key + "\"/>";
-        editorHtml += "<input type=\"text\" name=\"" + section + "[value][]\" class=\"value\" placeholder=\"value\" value=\"" + value + "\"/>";
+        editorHtml += "<input type=\"text\" data-section=\"" + section + "\" name=\"" + section + "[key][]\" class=\"key\" placeholder=\"" + placeHolderKey + "\" value=\"" + key + "\"/>";
+        editorHtml += "<input type=\"text\" name=\"" + section + "[value][]\" class=\"value\" placeholder=\"" + placeHolderValue + "\" value=\"" + value + "\"/>";
         if (section == 'body') {
             editorHtml += "<select><option value= \"text\">Text</option>";
             editorHtml += "<option value= \"file\">File</option></select>";
@@ -1147,9 +1152,9 @@ function showParamsEditor(section, a1) {
 
     editorHtml += "<div>";
     editorHtml += "<input type=\"text\" data-section=\"" + section + "\" name=\"" + section + "[key][]\"";
-    editorHtml += "class=\"key\" placeholder=\"key\"/>";
+    editorHtml += "class=\"key\" placeholder=\"" + placeHolderKey + "\"/>";
     editorHtml += "<input type=\"text\" name=\"" + section + "[value][]\"";
-    editorHtml += "class=\"value\" placeholder=\"value\"/>";
+    editorHtml += "class=\"value\" placeholder=\"" + placeHolderValue + "\"/>";
 
     if (section == 'body') {
         editorHtml += "<select><option value= \"text\">Text</option>";
@@ -1176,10 +1181,18 @@ function closeParamsEditor(section) {
 }
 
 function addParamInEditor(section) {
+    var placeHolderKey = "key";
+    var placeHolderValue = "value";
+
+    if (section === 'headers') {
+        placeHolderKey = "Header";
+        placeHolderValue = "Value";
+    }
+
     var newElementHtml = "";
     newElementHtml += "<div>";
-    newElementHtml += "<input type=\"text\" data-section=\"" + section + "\" name=\"" + section + "[key][]\" class=\"key\" placeholder=\"" + "key" + "\"/>";
-    newElementHtml += "<input type=\"text\" name=\"" + section + "[value][]\" class=\"value\" placeholder=\"" + "value" + "\"/>";
+    newElementHtml += "<input type=\"text\" data-section=\"" + section + "\" name=\"" + section + "[key][]\" class=\"key\" placeholder=\"" + placeHolderKey + "\"/>";
+    newElementHtml += "<input type=\"text\" name=\"" + section + "[value][]\" class=\"value\" placeholder=\"" + placeHolderValue + "\"/>";
     if (section == 'body') {
         newElementHtml += "<select><option value= \"text\">Text</option>";
         newElementHtml += "<option value= \"file\">File</option></select>";
@@ -1244,11 +1257,32 @@ function initializeSettings() {
         localStorage['historyCount'] = postman.settings.historyCount;
     }
 
+    if (localStorage['autoSaveRequest']) {
+        postman.settings.autoSaveRequest = localStorage['autoSaveRequest'];
+    }
+    else {
+        postman.settings.autoSaveRequest = true;
+        localStorage['autoSaveRequest'] = postman.settings.autoSaveRequest;
+    }
+
     $('#historyCount').val(postman.settings.historyCount);
+    $('#autoSaveRequest').val(postman.settings.autoSaveRequest);
 
     $('#historyCount').change(function () {
         postman.settings.historyCount = $('#historyCount').val();
         localStorage['historyCount'] = postman.settings.historyCount;
+    });
+
+    $('#autoSaveRequest').change(function () {
+        var val = $('#autoSaveRequest').val();
+        if (val == 'yes') {
+            postman.settings.autoSaveRequest = true;
+        }
+        else {
+            postman.settings.autoSaveRequest = false;
+        }
+
+        localStorage['autoSaveRequest'] = postman.settings.autoSaveRequest;
     });
 }
 
@@ -1403,9 +1437,12 @@ function addEditorListeners(section) {
     $('.deleteParam').click(function () {
         var fieldsParent = $(this).parents(".editorFields");
         var id = fieldsParent.attr("id");
-        var section = id.split("-")[0];
-        $(this).parent().remove();
-        setParamsFromEditor(section);
+        if (id) {
+            var section = id.split("-")[0];
+            $(this).parent().remove();
+            setParamsFromEditor(section);
+        }
+
     });
 
     if (section === 'headers') {
@@ -1494,7 +1531,7 @@ function changeResponseFormat(format) {
     $('#langFormat li').removeClass('active');
     $('#langFormat-' + format).addClass('active');
 
-    if(format === 'raw') {
+    if (format === 'raw') {
         postmanCodeMirror.toTextArea();
         $('#codeData').val(currentResponse.text);
         var codeDataWidth = $(document).width() - $('#sidebar').width() - 60;
@@ -1542,7 +1579,7 @@ function setResponseFormat(mime, response, format, forceCreate) {
                 mode:mode,
                 lineNumbers:true,
                 fixedGutter:true,
-                onGutterClick: foldFunc,
+                onGutterClick:foldFunc,
                 theme:'eclipse'
             });
 
@@ -1615,6 +1652,23 @@ function submitAddToCollectionForm() {
     $('#formModalAddToCollection').modal('hide');
 }
 
+function submitNewCollectionForm() {
+    var newCollection = $('#newCollectionBlank').val();
+
+    var collection = new Collection();
+
+    if (newCollection) {
+        //Add the new collection and get guid
+        collection.id = guid();
+        collection.name = newCollection;
+        console.log(collection);
+        postman.indexedDB.addCollection(collection);
+
+        $('#newCollectionBlank').val("");
+    }
+
+    $('#formModalNewCollection').modal('hide');
+}
 postman.history.requestExists = function (request) {
     var index = -1;
     var method = request.method.toLowerCase();
@@ -1650,6 +1704,10 @@ postman.history.requestExists = function (request) {
     return index;
 };
 
+function closeNewCollectionForm() {
+    $('#formModalAddToCollection').modal('hide');
+}
+
 function closeAddToCollectionForm() {
     $('#formModalAddToCollection').modal('hide');
 }
@@ -1684,17 +1742,19 @@ function attachSocialButtons() {
         $('#aboutPostmanFacebookButton').html(socialButtons.facebook);
     }
 }
+
 function clearHistory() {
-    console.log("Trying to clear the history");
     postman.indexedDB.deleteHistory();
 }
 
 function toggleSidebarSection(section) {
     if (section === 'history') {
         $('#historyOptions').css("display", "block");
+        $('#collectionsOptions').css("display", "none");
     }
     else if (section === 'collections') {
         $('#historyOptions').css("display", "none");
+        $('#collectionsOptions').css("display", "block");
     }
 }
 
