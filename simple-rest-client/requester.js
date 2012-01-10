@@ -1737,7 +1737,7 @@ postman.history.requestExists = function (request) {
 };
 
 function closeNewCollectionForm() {
-    $('#formModalAddToCollection').modal('hide');
+    $('#formModalNewCollection').modal('hide');
 }
 
 function closeAddToCollectionForm() {

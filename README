@@ -2,6 +2,21 @@ Postman
 =======
 Postman is a tool to help developers work with APIs more efficiently and avoid repetitive steps.
 
+0.5.3
+1. Reorganized files
+2. Cleaner input fields to reduce clutter
+3. Added new collection button
+4. Added empty views for history and collections
+5. Added maximize request toggle
+6. Toggle for auto saving requests to history
+
+0.5.2
+
+1. Detailed help for HTTP status codes and headers
+2. Code folding for XML and JSON responses
+3. Clear history with one click
+4. Use 'http' as default before URLs
+
 Features:
 
 1. Collections to organize and save complete requests for later use.
