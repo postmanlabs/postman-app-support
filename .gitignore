@@ -1,1 +1,6 @@
 .idea/
+design/
+screenshots/
+*.crx
+*.pem
+*.zip
