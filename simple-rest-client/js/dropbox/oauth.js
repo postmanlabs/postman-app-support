@@ -327,6 +327,9 @@ OAuth.setProperties(OAuth, // utility functions
     }
 ,
     nonce: function nonce(length) {
+        if (length == undefined) {
+            length = 6;
+        }
         var chars = OAuth.nonce.CHARS;
         var result = "";
         for (var i = 0; i < length; ++i) {
@@ -400,7 +403,7 @@ OAuth.setProperties(OAuth.SignatureMethod, // class members
             name = "HMAC-SHA1";
             OAuth.setParameter(message, "oauth_signature_method", name);
         }
-        OAuth.SignatureMethod.newMethod(name, accessor).sign(message);
+        return OAuth.SignatureMethod.newMethod(name, accessor).sign(message);
     }
 ,
     /** Instantiate a SignatureMethod for the given method name. */
