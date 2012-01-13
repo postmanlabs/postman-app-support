@@ -1854,7 +1854,6 @@ function toggleResponseBodySize() {
 function minimizeResponseBody() {
     $('#respData').css("padding", "0px");
 }
-}
 
 function fillPresetParams(value) {
     for (i in presetDetails[value]) {
@@ -1874,7 +1873,7 @@ function setupKeyboardShortcuts() {
     $(document).bind('keydown', 'n', function () {
         startNewRequest();
         return false;
-    });a
+    });
     $(document).bind('keydown', 'h', function () {
         $('#headers-ParamsFields div:first-child input:first-child').focus();
         return false;
