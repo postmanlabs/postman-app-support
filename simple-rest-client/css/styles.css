@@ -8,6 +8,14 @@ html, body {
     margin:  0;
 }
 
+/*Bootstrap overrides*/
+.pills li a {
+    font-size: 11px;
+    font-weight: bold;
+    border-radius: 5px;
+    padding: 0 7px;
+}
+
 #container {
     height: 100%;
     width: 100%;
@@ -87,14 +95,6 @@ header h1 {
     padding-left: 20px;
 }
 
-/*
-.radio {
-    width:2em;
-    height:2em;
-    color:#e3e3e3;
-    background-color:#cce0e9;
-}
-*/
 legend {
     color: #4c4c4c;
     padding-top: 10px;
@@ -109,9 +109,7 @@ fieldset {
 }
 
 .inputText {
-    border-color: #cce0e9;
-    border-style: solid;
-    border-width: 2px;
+    border: 2px solid #cce0e9;
     min-height: 18px;
     width: 100% !important;
     padding: 5px;
@@ -119,12 +117,10 @@ fieldset {
 
 
 .inputTextLight {
-    border: none;
+    border-style: none;
+    border-bottom: 1px solid #CCC;
     box-shadow: none;
     border-radius: 0;
-    border-bottom-color: #CCC;
-    border-bottom-style: solid;
-    border-bottom-width: 2px;
     min-height: 18px;
     width: 100% !important;
     padding: 5px;
@@ -286,6 +282,7 @@ fieldset {
 #respHeaders {
     margin-top: 20px;
     max-width: 1000px;
+    font-size: 11px;
 }
 
 #respHeaders textarea {
@@ -521,15 +518,18 @@ li .right {
 
 #request,
 #response {
-    padding: 20px;
-    padding-top: 7px;
-    padding-bottom: 0px;
+    padding: 7px 20px 20px;
+    border-bottom: solid thin #EFEFEF;
 }
 
 #response {
     display: none;
 }
 
+#response fieldset {
+    padding-top: 0;
+    margin-top: 0;
+}
 #requestUrl {
     margin-top: 10px;
 }
@@ -861,4 +861,8 @@ li .right {
 
 #respDataActions a {
     width: 75px;
+}
+
+#requestTypes {
+    margin-top: 3px;
 }

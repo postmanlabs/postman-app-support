@@ -196,6 +196,18 @@ function Response() {
     this.text = "";
 }
 
+function startNewRequest() {
+    $("#url").val("");
+    clearFields();
+
+    //clearHeaders
+    //close edit params
+    $('.method-selectors li').removeClass('active');
+    $('.method-selector-get').addClass('active');
+    showRequestMethodUi('GET');
+    $('#url').focus();
+}
+
 function clearFields() {
     $("#response").css("display", "");
     $("#loader").css("display", "");
@@ -233,10 +245,6 @@ function limitStringLineWidth(string, numChars) {
 
 function getRequestMethod() {
     return requestMethod;
-}
-
-function setRequestMethod(m) {
-    requestMethod = m;
 }
 
 function ensureProperUrl(url) {
@@ -1312,45 +1320,6 @@ function initializeSettings() {
     });
 }
 
-$(document).ready(function () {
-    setupDB();
-    initDB();
-    initializeSettings();
-    lang();
-    init();
-
-    addHeaderListeners();
-    addUrlAutoComplete();
-    attachSidebarListeners();
-    initCollectionSelector();
-    setContainerHeights();
-
-    refreshScrollPanes();
-
-    //checkDropboxLogin();
-
-    $('#formAddToCollection').submit(function () {
-        submitAddToCollectionForm();
-        return false;
-    });
-
-    $('#formNewCollection').submit(function () {
-        submitNewCollectionForm();
-        return false;
-    });
-
-
-    $('#methods ul li a').click(function () {
-        $('#methods ul li').removeClass('active');
-        $(this).parent().addClass('active');
-        requestMethod = $(this).attr('data-method');
-    });
-
-    $(window).resize(function () {
-        setContainerHeights();
-    });
-});
-
 function addSidebarCollectionHeadListener(collection) {
     var targetElement = '#collection-' + collection.id + " .sidebar-collection-head";
     $(targetElement).mouseenter(function () {
@@ -1849,3 +1818,82 @@ function toggleResponseBodySize() {
 function minimizeResponseBody() {
     $('#respData').css("padding", "0px");
 }
+
+function setupKeyboardShortcuts() {
+    console.log("Setting up shortcuts");
+    $(document).bind('keydown', 'backspace', function () {
+        $('#url').focus();
+        return false;
+    });
+    $(document).bind('keydown', 'n', function () {
+        startNewRequest();
+        return false;
+    });a
+    $(document).bind('keydown', 'h', function () {
+        $('#headers-ParamsFields div:first-child input:first-child').focus();
+        return false;
+    });
+    $(document).bind('keydown', 's', function () {
+        sendRequest();
+        return false;
+    });
+    $(document).bind('keydown', 'f', function () {
+        toggleResponseBodySize();
+    });
+    $(document).bind('keydown', 'p', function () {
+        //If not opened open param editor
+        //If opened close params editorn
+        //Focus on the params editor
+        showParamsEditor('url');
+    });
+    $(document).bind('keydown', 'a', function () {
+        $('#formModalAddToCollection').modal({
+            keyboard:true,
+            backdrop:"static"
+        });
+        $('#formModalAddToColllection').modal('show');
+        $('#selectCollectionContainer').focus();
+        //Focus on the form element
+        return false;
+    });
+}
+
+$(document).ready(function () {
+    setupDB();
+    initDB();
+    initializeSettings();
+    lang();
+    init();
+
+    addHeaderListeners();
+    addUrlAutoComplete();
+    attachSidebarListeners();
+    setupKeyboardShortcuts();
+    initCollectionSelector();
+    setContainerHeights();
+
+    refreshScrollPanes();
+
+    //checkDropboxLogin();
+
+    $('#formAddToCollection').submit(function () {
+        submitAddToCollectionForm();
+        return false;
+    });
+
+    $('#formNewCollection').submit(function () {
+        submitNewCollectionForm();
+        return false;
+    });
+
+
+    $('#methods ul li a').click(function () {
+        $('#methods ul li').removeClass('active');
+        $(this).parent().addClass('active');
+        requestMethod = $(this).attr('data-method');
+    });
+
+    $(window).resize(function () {
+        setContainerHeights();
+    });
+});

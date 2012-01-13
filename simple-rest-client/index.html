@@ -77,7 +77,11 @@
         <ul class="pills" data-tabs="tabs">
             <li class="active"><a href="javascript:void(0);" data-id="history"
                                   onclick="toggleSidebarSection('history');">History</a></li>
-            <li><a href="javascript:void(0);" data-id="collections" onclick="toggleSidebarSection('collections');">Collections</a>
+            <li>
+                <a href="javascript:void(0);" data-id="collections" onclick="toggleSidebarSection('collections');">Collections</a>
+            </li>
+            <li>
+                <a href="javascript:void(0);" data-id="collections" onclick="toggleSidebarSection('globals');">Globals</a>
             </li>
         </ul>
         <div id="sidebarSectionContainer">
@@ -95,9 +99,14 @@
     <div id="sidebarFiller"></div>
 </div>
 <div id="main" class="content">
-    <section id="request">
-        <h2><img src="images/request.jpg" alt="REQUEST" height="15px"/></h2>
-
+    <section id="request">        
+        <div id="requestTypes">
+            <ul class="pills">
+                <li class="active"><a href="#">Normal</a></li>
+                <li><a href="#">Basic Auth</a></li>
+                <li><a href="#">OAuth 1.0</a></li>
+            </ul>
+        </div>
         <div id="requestUrl" class="row clearfix">
             <div class="span10">
                 <input type="text" name="url" id="url" tabindex="1" class="inputTextLight"
@@ -124,9 +133,9 @@
             <form class="form-stacked">
                 <div id="url-ParamsEditorActions" class="actions">
                     <input type="button" id="cancelUrlParamsButton"
-                           class="btn primary medium"
+                           class="btn primary small"
                            name="closeUrlParams"
-                           value="Save and close"
+                           value="Save"
                            placeholder="URL..."
                            onclick="closeParamsEditor('url')"/>
                 </div>
@@ -187,13 +196,13 @@
         <form class="form-stacked">
             <div id="requestActions" class="actions clearfix">
                 <div id="requestActionsMain">
-                    <button class="btn large primary" data-loading-text="Fetching data..." type="button"
+                    <button class="btn primary" data-loading-text="Fetching data..." type="button"
                             data-complete-text="Send request" id="submitRequest" tabindex="5">
                         Send
                     </button>
                 </div>
                 <div id="requestActionsOptions">
-                    <button class="btn large"
+                    <button class="btn"
                             data-controls-modal="formModalAddToCollection" data-backdrop="static"
                             data-keyboard="true">
                         Add to collection
@@ -205,11 +214,8 @@
 
     <section id="response">
         <fieldset>
-            <h2><img src="images/response.jpg" alt="RESPONSE" height="15px"/></h2>
-
             <div id="responsePrint">
                 <div class="row">
-
                     <div id="pstatus">
                     </div>
 
@@ -478,7 +484,7 @@
 <script type="text/javascript" src="codemirror/mode/xml/xml.js"></script>
 <script type="text/javascript" src="codemirror/mode/htmlmixed/htmlmixed.js"></script>
 <script type="text/javascript" src="js/jquery.tmpl.min.js"></script>
-<script type="text/javascript" src="js/jquery.tmpl.min.js"></script>
+<script type="text/javascript" src="js/jquery.hotkeys.js"></script>
 <script type="text/javascript" src="js/jquery.mousewheel.js"></script>
 <script type="text/javascript" src="js/jquery.jscrollpane.js"></script>
 <script type="text/javascript" src="js/bootstrap-twipsy.js"></script>
