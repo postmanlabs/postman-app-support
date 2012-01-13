@@ -26,6 +26,13 @@ var presetDetails = {
             action:null
         },
         {
+            key:"oauth_consumer_secret",
+            value:"",
+            tooltip:"The Consumer Secret",
+            action:null,
+            send: false
+        },
+        {
             key:"oauth_signature_method",
             value:"HMAC-SHA1",
             tooltip:"The signature method the Consumer used to sign the request.",
@@ -35,13 +42,19 @@ var presetDetails = {
             key:"oauth_timestamp",
             value:OAuth.timestamp,
             tooltip:"The timestamp is expressed in the number of seconds since January 1, 1970 00:00:00 GMT.",
-            action:OAuth.timestamp
+            action:{
+                title:"Generate",
+                method:OAuth.timestamp
+            }
         },
         {
             key:"oauth_nonce",
             value:OAuth.nonce,
             tooltip:"A nonce is a random string, uniquely generated for each request.",
-            action:OAuth.nonce
+            action:{
+                title: "Generate",
+                method: OAuth.nonce
+            }
         },
         {
             key:"oauth_version",
@@ -55,24 +68,25 @@ var presetDetails = {
             key:"oauth_signature",
             value:"",
             tooltip:"The signature.",
-            action:function () {
-                var message = {
-                    action:$('#url').val(),
-                    method:$('#methods li.active a').html(),
-                    parameters:[
-                        ["oauth_consumer_key", valuesFollowingInputValue("oauth_consumer_key")],
-                        ["oauth_signature_method", valuesFollowingInputValue("oauth_signature_method")],
-                        ["oauth_timestamp", valuesFollowingInputValue("oauth_timestamp")],
-                        ["oauth_nonce", valuesFollowingInputValue("oauth_nonce")]
-                    ]
-                };
-                if ($('input[value="oauth_token"]').length > 0) {
-                    message.parameters.push(["oauth_token", valuesFollowingInputValue("oauth_token")]);
+            action:{
+                title:"Generate",
+                method:function () {
+                    var message = {
+                        action:$('#url').val(),
+                        method:$('#methods li.active a').html(),
+                        parameters:[]
+                    };
+                    $('input.key').each(function () {
+                        if ($(this).val() != 'oauth_signature' && $(this).val() != 'oauth_consumer_secret' && $(this).val() != '') {
+                            message.parameters.push([$(this).val(), valuesFollowingInputValue($(this).val())]);
+                        }
+                    });
+                    var accessor = {
+                        consumerSecret: $('input.key[value="oauth_consumer_secret"]').val(),
+                        tokenSecret: "u3f86hur8sguwbn"
+                    };
+                    return OAuth.SignatureMethod.sign(message, accessor);
                 }
-                $('input[value="oauth_signature"]').parent().siblings().children('.key').each(function () {
-                    message.parameters.push([this.val(), valuesFollowingInputValue(this.val())]);
-                });
-                return OAuth.SignatureMethod.sign(message);
             }
         }
     ]
@@ -648,9 +662,7 @@ function setupDB() {
 
             addSidebarCollectionHeadListener(collection);
 
-            result.
-            continue
-            ();
+            result.continue();
         };
 
         cursorRequest.onerror = function (e) {
@@ -689,9 +701,7 @@ function setupDB() {
             refreshScrollPanes();
 
             //This wil call onsuccess again and again until no more request is left
-            result.
-            continue
-            ();
+            result.continue();
         };
         cursorRequest.onerror = postman.indexedDB.onerror;
     };
@@ -886,9 +896,7 @@ function setupDB() {
 
             var request = result.value;
             postman.indexedDB.deleteCollectionRequest(request.id);
-            result.
-            continue
-            ();
+            result.continue();
         };
         cursorRequest.onerror = postman.indexedDB.onerror;
     };
@@ -1206,7 +1214,7 @@ function closeParamsEditor(section) {
     $('#' + section + '-ParamsEditor').css("display", "none");
 }
 
-function addParamInEditor(section) {
+function addParamInEditor(section, prefill) {
     var placeHolderKey = "Key";
     var placeHolderValue = "Value";
 
@@ -1215,17 +1223,45 @@ function addParamInEditor(section) {
         placeHolderValue = "Value";
     }
 
+    var key = "", value = "", send = "";
+
+    if (prefill != undefined) {
+        if (prefill.key != undefined) {
+            key = "value=\"" + prefill.key + "\"";
+        }
+        if (prefill.value != undefined) {
+            if (typeof prefill.value === 'function') {
+                value = "value=\"" + prefill.value() + "\"";
+            } else {
+                value = "value=\"" + prefill.value + "\"";
+            }
+        }
+        if (prefill.send != undefined && prefill.send === false) {
+            send = " send=\"false\" ";
+        }
+    }
+
     var newElementHtml = "";
     newElementHtml += "<div>";
-    newElementHtml += "<input type=\"text\" data-section=\"" + section + "\" name=\"" + section + "[key][]\" class=\"key\" placeholder=\"" + placeHolderKey + "\"/>";
-    newElementHtml += "<input type=\"text\" name=\"" + section + "[value][]\" class=\"value\" placeholder=\"" + placeHolderValue + "\"/>";
+    newElementHtml += "<input type=\"text\" data-section=\"" + section + "\" name=\"" + section + "[key][]\"  " + key + send + " class=\"key\" placeholder=\"" + placeHolderKey + "\"/>";
+    newElementHtml += "<input type=\"text\" name=\"" + section + "[value][]\"  " + value + " class=\"value\" placeholder=\"" + placeHolderValue + "\"/>";
     if (section == 'body') {
         newElementHtml += "<select><option value= \"text\">Text</option>";
         newElementHtml += "<option value= \"file\">File</option></select>";
     }
+    if (prefill!=undefined && prefill.action != undefined && prefill.action != null) {
+        newElementHtml += "<span class=\"label important\"><a href=\"#\" class=\"field-action\">" + prefill.action.title + "</a></span>";
+    }
     newElementHtml += "</div>";
     $('#' + section + '-ParamsFields').append(newElementHtml);
-    addEditorListeners(section);
+    if (prefill!=undefined && prefill.action != undefined && prefill.action != null) {
+        $('.field-action:last').click(function(){
+            $(this).parent().prev().prev().val(prefill.action.method());
+        });
+    }
+    if (prefill == undefined) {
+        addEditorListeners(section);
+    }
 }
 
 function addFileParamInEditor(section) {
@@ -1848,4 +1884,13 @@ function toggleResponseBodySize() {
 
 function minimizeResponseBody() {
     $('#respData').css("padding", "0px");
+}
+
+function fillPresetParams(value) {
+    for (i in presetDetails[value]) {
+        var field = presetDetails[value][i];
+        addParamInEditor("body", field);
+    }
+    $('#body-ParamsEditor').show();
+    addParamInEditor("body");
 }
