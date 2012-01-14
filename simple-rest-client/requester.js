@@ -82,8 +82,92 @@ var presetDetails = {
                         }
                     });
                     var accessor = {
+                        consumerSecret: $('input.key[value="oauth_consumer_secret"]').val()                        
+                    };
+                    return OAuth.SignatureMethod.sign(message, accessor);
+                }
+            }
+        }
+    ], "oauth-access":[
+        {
+            key:"oauth_consumer_key",
+            value:"",
+            tooltip:"The Consumer Key",
+            action:null
+        },
+        {
+            key:"oauth_consumer_secret",
+            value:"",
+            tooltip:"The Consumer Secret",
+            action:null,
+            send: false
+        },
+        {
+            key:"oauth_token",
+            value:"",
+            tooltip:"The Request Token",
+            action:null            
+        },
+        {
+            key:"oauth_token_secret",
+            value:"",
+            tooltip:"The Request Token Secret",
+            action:null,
+            send: false
+        },
+        {
+            key:"oauth_signature_method",
+            value:"HMAC-SHA1",
+            tooltip:"The signature method the Consumer used to sign the request.",
+            action:null
+        },
+        {
+            key:"oauth_timestamp",
+            value:OAuth.timestamp,
+            tooltip:"The timestamp is expressed in the number of seconds since January 1, 1970 00:00:00 GMT.",
+            action:{
+                title:"Generate",
+                method:OAuth.timestamp
+            }
+        },
+        {
+            key:"oauth_nonce",
+            value:OAuth.nonce,
+            tooltip:"A nonce is a random string, uniquely generated for each request.",
+            action:{
+                title: "Generate",
+                method: OAuth.nonce
+            }
+        },
+        {
+            key:"oauth_version",
+            value:"1.0",
+            tooltip:"OPTIONAL. If present, value MUST be 1.0 . Service Providers MUST assume the protocol version " +
+                "to be 1.0 if this parameter is not present. " +
+                "Service Providers’ response to non-1.0 value is left undefined.",
+            action:null
+        },
+        {
+            key:"oauth_signature",
+            value:"",
+            tooltip:"The signature.",
+            action:{
+                title:"Generate",
+                method:function () {
+                    var message = {
+                        action:$('#url').val(),
+                        method:$('#methods li.active a').html(),
+                        parameters:[]
+                    };
+                    $('input.key').each(function () {
+                        if ($(this).val() != 'oauth_signature' && $(this).val() != 'oauth_consumer_secret' 
+                        && $(this).val() != 'oauth_token_secret' && $(this).val() != '') {
+                            message.parameters.push([$(this).val(), valuesFollowingInputValue($(this).val())]);
+                        }
+                    });
+                    var accessor = {
                         consumerSecret: $('input.key[value="oauth_consumer_secret"]').val(),
-                        tokenSecret: "u3f86hur8sguwbn"
+                        tokenSecret: $('input.key[value="oauth_token_secret"]').val()
                     };
                     return OAuth.SignatureMethod.sign(message, accessor);
                 }
