@@ -80,9 +80,6 @@
             <li>
                 <a href="javascript:void(0);" data-id="collections" onclick="toggleSidebarSection('collections');">Collections</a>
             </li>
-            <li>
-                <a href="javascript:void(0);" data-id="collections" onclick="toggleSidebarSection('globals');">Globals</a>
-            </li>
         </ul>
         <div id="sidebarSectionContainer">
             <div id="sidebarSection-history">
@@ -99,168 +96,260 @@
     <div id="sidebarFiller"></div>
 </div>
 <div id="main" class="content">
-    <section id="request">        
-        <div id="requestTypes">
-            <ul class="pills">
-                <li class="active"><a href="#">Normal</a></li>
-                <li><a href="#">Basic Auth</a></li>
-                <li><a href="#">OAuth 1.0</a></li>
-            </ul>
-        </div>
-        <div id="requestUrl" class="row clearfix">
-            <div class="span10">
-                <input type="text" name="url" id="url" tabindex="1" class="inputTextLight"
-                       placeholder="Enter request URL here"/>
-            </div>
-            <div class="span2">
-                <span class="buttonLayout">
-                    <button href="javascript:void(0);" class="btn small"
-                            onclick="showParamsEditor('url')">Edit params
-                    </button>
-                </span>
-                <span>
-                    <select class="medium" id="presets" onchange="fillPresetParams(this.value);">
-                        <option>--Preset--</option>
-                        <option value="oauth-request">OAuth-Request</option>
-                        <option value="oauth-access">OAuth-Access</option>
-                    </select>
-                </span>
-            </div>
-        </div>
+<section id="request">
+<div id="requestTypes" class="clearfix">
+    <ul class="helper-tabs">
+        <li class="active" data-id="normal">Normal</li>
+        <li data-id="basicAuth">Basic Auth</li>
+        <li data-id="oAuth1">OAuth 1.0</li>
+    </ul>
+</div>
+<div id="requestHelpers" class="clearfix">
+    <div id="requestHelper-normal" class="requestHelpers"></div>
+    <div id="requestHelper-basicAuth" class="requestHelpers">
+        <div class="requestHelperFormContainer">
+            <form>
+                <div class="clearfix">
+                    <label>Username</label>
 
-        <div id="url-ParamsEditor" class="paramsEditor">
-            <div id="url-ParamsFields" class="editorFields"></div>
-            <form class="form-stacked">
-                <div id="url-ParamsEditorActions" class="actions">
-                    <input type="button" id="cancelUrlParamsButton"
-                           class="btn primary small"
-                           name="closeUrlParams"
-                           value="Save"
-                           placeholder="URL..."
-                           onclick="closeParamsEditor('url')"/>
+                    <div class="input">
+                        <input type="text" id="requestHelper-basicAuth-username" class="cleanInput"/>
+                    </div>
+                </div>
+                <div class="clearfix">
+                    <label>Password</label>
+
+                    <div class="input">
+                        <input type="text" id="requestHelper-basicAuth-password" class="cleanInput"/>
+                    </div>
+                </div>
+                <div class="clearfix">
+                    <div class="input">
+                        <button class="btn small secondary" onclick="hideRequestHelper('basicAuth')">Minimize</button>
+                    </div>
                 </div>
             </form>
         </div>
-
-        <div id="methods" class="clearfix">
-            <ul class="method-selectors pills small" style="margin-bottom: 10px;">
-                <li class="method-selector-get active"><a id="method-get" href="javascript:void(0);"
-                                                          data-method="get"
-                                                          onclick="showRequestMethodUi('GET');">GET</a></li>
-                <li class="method-selector-post"><a id="method-post" href="javascript:void(0);" data-method="post"
-                                                    onclick="showRequestMethodUi('POST');">POST</a></li>
-                <li class="method-selector-put"><a id="method-put" href="javascript:void(0);" data-method="put"
-                                                   onclick="showRequestMethodUi('PUT');">PUT</a></li>
-                <li class="method-selector-delete"><a id="method-delete" href="javascript:void(0);"
-                                                      data-method="delete"
-                                                      onclick="showRequestMethodUi('DELETE');">DELETE</a></li>
-                <li class="method-selector-head"><a id="method-head" href="javascript:void(0);" data-method="head"
-                                                    onclick="showRequestMethodUi('HEAD');">HEAD</a></li>
-                <li class="method-selector-options"><a id="method-options" href="javascript:void(0);"
-                                                       data-method="options"
-                                                       onclick="showRequestMethodUi('OPTIONS');">OPTIONS</a></li>
-            </ul>
+        <div class="requestHelperFormDescription">
+            <h4>Note</h4>
+            The authorization header will be generated and added as a custom header when you click save.
         </div>
+    </div>
+    <div id="requestHelper-oAuth1" class="requestHelpers">
+        <div class="requestHelperFormContainer">
+            <form>
+                <div class="clearfix">
+                    <label>Consumer Key</label>
 
-        <div id="pheaders" class="row clearfix">
-            <div class="span10 headersContainer">
-                <textarea name="headers" id="headers" tabindex="3" class="inputText"
-                          placeholder="Headers"></textarea>
+                    <div class="input">
+                        <input type="text" id="requestHelper-oauth1-consumerKey" class="cleanInput"/>
+                    </div>
+                </div>
+                <div class="clearfix">
+                    <label>Consumer Secret</label>
+
+                    <div class="input">
+                        <input type="text" id="requestHelper-oauth1-consumerSecret" class="cleanInput"/>
+                    </div>
+                </div>
+                <div class="clearfix">
+                    <label>Signature Method</label>
+
+                    <div class="input">
+                        <input type="text" id="requestHelper-oauth1-signatureMethod" class="cleanInput"
+                               value="HMAC-SHA1"/>
+                    </div>
+                </div>
+                <div class="clearfix">
+                    <label>Timestamp</label>
+
+                    <div class="input">
+                        <input type="text" id="requestHelper-oauth1-timestamp" class="cleanInput"/>
+                    </div>
+                </div>
+                <div class="clearfix">
+                    <label>Nonce</label>
+
+                    <div class="input">
+                        <input type="text" id="requestHelper-oauth1-nonce" class="cleanInput"/>
+                    </div>
+                </div>
+                <div class="clearfix">
+                    <label>Version</label>
+
+                    <div class="input">
+                        <input type="text" id="requestHelper-oauth1-version" class="cleanInput" value="1.0"/>
+                    </div>
+                </div>
+                <div class="clearfix">
+                    <label>Signature</label>
+
+                    <div class="input">
+                        <input type="text" id="requestHelper-oauth1-signature" class="cleanInput"/>
+                    </div>
+                </div>
+                <div class="clearfix">
+                    <div class="input">
+                        <button class="btn small secondary" onclick="hideRequestHelper('oAuth1')">Minimize</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="requestHelperFormDescription">
+            <h4>Note</h4>
+            The OAuth signature will be added to the header list when you click save. It'll be updated automatically
+            when you update the URL parameters.
+        </div>
+    </div>
+</div>
+<div id="requestUrl" class="row clearfix">
+    <div class="span10">
+        <input type="text" name="url" id="url" tabindex="1" class="inputTextLight"
+               placeholder="Enter request URL here"/>
+    </div>
+    <div class="span2">
+        <span class="buttonLayout">
+            <button href="javascript:void(0);" class="btn small"
+                    onclick="showParamsEditor('url')">Edit params
+            </button>
+        </span>
+    </div>
+</div>
+
+<div id="url-ParamsEditor" class="paramsEditor">
+    <div id="url-ParamsFields" class="editorFields"></div>
+    <form class="form-stacked">
+        <div id="url-ParamsEditorActions" class="actions">
+            <input type="button" id="cancelUrlParamsButton"
+                   class="btn primary small"
+                   name="closeUrlParams"
+                   value="Save"
+                   placeholder="URL..."
+                   onclick="closeParamsEditor('url')"/>
+        </div>
+    </form>
+</div>
+
+<div id="methods" class="clearfix">
+    <ul class="method-selectors pills small" style="margin-bottom: 10px;">
+        <li class="method-selector-get active"><a id="method-get" href="javascript:void(0);"
+                                                  data-method="get"
+                                                  onclick="showRequestMethodUi('GET');">GET</a></li>
+        <li class="method-selector-post"><a id="method-post" href="javascript:void(0);" data-method="post"
+                                            onclick="showRequestMethodUi('POST');">POST</a></li>
+        <li class="method-selector-put"><a id="method-put" href="javascript:void(0);" data-method="put"
+                                           onclick="showRequestMethodUi('PUT');">PUT</a></li>
+        <li class="method-selector-delete"><a id="method-delete" href="javascript:void(0);"
+                                              data-method="delete"
+                                              onclick="showRequestMethodUi('DELETE');">DELETE</a></li>
+        <li class="method-selector-head"><a id="method-head" href="javascript:void(0);" data-method="head"
+                                            onclick="showRequestMethodUi('HEAD');">HEAD</a></li>
+        <li class="method-selector-options"><a id="method-options" href="javascript:void(0);"
+                                               data-method="options"
+                                               onclick="showRequestMethodUi('OPTIONS');">OPTIONS</a></li>
+    </ul>
+</div>
+
+<div id="pheaders" class="row clearfix">
+    <div class="span10 headersContainer">
+        <textarea name="headers" id="headers" tabindex="3" class="inputText"
+                  placeholder="Headers"></textarea>
+    </div>
+</div>
+
+<div class="row">
+    <div id="headers-ParamsEditor" class="span10 paramsEditor">
+        <div id="headers-ParamsFields" class="editorFields"></div>
+    </div>
+</div>
+
+<div id="data">
+    <ul class="pills small" style="margin-bottom: 0px; height: 44px;">
+        <li id="selector-container-params" class="active">
+            <a href="javascript:void(0);" onclick="showBodyParamsEditor()" id="data-params">Params</a>
+        </li>
+        <li id="selector-container-raw">
+            <a href="javascript:void(0);" onclick="showRawEditor()" id="data-raw">Raw body</a>
+        </li>
+    </ul>
+    <div id="bodyDataContainer">
+        <textarea name="data" id="body" tabindex="4" class="inputText"></textarea>
+    </div>
+
+    <div id="body-ParamsEditor" class="paramsEditor">
+        <div id="body-ParamsFields" class="editorFields"></div>
+    </div>
+</div>
+
+<form class="form-stacked">
+    <div id="requestActions" class="actions clearfix">
+        <div id="requestActionsMain">
+            <button class="btn primary" data-loading-text="Fetching data..." type="button"
+                    data-complete-text="Send request" id="submitRequest" tabindex="5">
+                Send
+            </button>
+        </div>
+        <div id="requestActionsOptions">
+            <button class="btn"
+                    data-controls-modal="formModalAddToCollection" data-backdrop="static"
+                    data-keyboard="true">
+                Add to collection
+            </button>
+        </div>
+    </div>
+</form>
+</section>
+
+<section id="response">
+    <fieldset>
+        <div id="responsePrint">
+            <div class="row">
+                <div id="pstatus">
+                </div>
+
+                <div id="ptime" class="span2">
+                    <span class="label">Time</span>
+                    <span class="data">0 millisecs</span>
+                </div>
+            </div>
+
+            <div id="respHeaders">
+                <div id="respHeadersContent">
+                    <div id="responseHeaders" tabindex="6"></div>
+                </div>
+            </div>
+
+            <div id="respData" style="display:none">
+                <div id="respDataActions" class="sectionOptions">
+                    <a href="javascript:void(0);" class="sectionOptions" onclick="toggleResponseBodySize();"
+                       id="responseBodyToggle">
+                        Maximize
+                    </a>
+                </div>
+                <div id="langFormat">
+                    <ul class="pills">
+                        <li id="langFormat-parsed" class="active">
+                            <a href="javascript:void(0);" onclick="changeResponseFormat('parsed')">
+                                Parsed
+                            </a>
+                        </li>
+                        <li id="langFormat-raw">
+                            <a href="javascript:void(0);" onclick="changeResponseFormat('raw')">
+                                Raw
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div name="responseData" id="responseData" contenteditable="true">
+                    <div id="responseAsText">
+                        <textarea name="codeData" id="codeData" class="chili-lang-html" data-formatted="false">
+                        </textarea>
+                    </div>
+                </div>
             </div>
         </div>
-
-        <div class="row">
-            <div id="headers-ParamsEditor" class="span10 paramsEditor">
-                <div id="headers-ParamsFields" class="editorFields"></div>
-            </div>
-        </div>
-
-        <div id="data">
-            <ul class="pills small" style="margin-bottom: 0px; height: 44px;">
-                <li id="selector-container-params" class="active">
-                    <a href="javascript:void(0);" onclick="showBodyParamsEditor()" id="data-params">Params</a>
-                </li>
-                <li id="selector-container-raw">
-                    <a href="javascript:void(0);" onclick="showRawEditor()" id="data-raw">Raw body</a>
-                </li>
-            </ul>
-            <div id="bodyDataContainer">
-                <textarea name="data" id="body" tabindex="4" class="inputText"></textarea>
-            </div>
-
-            <div id="body-ParamsEditor" class="paramsEditor">
-                <div id="body-ParamsFields" class="editorFields"></div>
-            </div>
-        </div>
-
-        <form class="form-stacked">
-            <div id="requestActions" class="actions clearfix">
-                <div id="requestActionsMain">
-                    <button class="btn primary" data-loading-text="Fetching data..." type="button"
-                            data-complete-text="Send request" id="submitRequest" tabindex="5">
-                        Send
-                    </button>
-                </div>
-                <div id="requestActionsOptions">
-                    <button class="btn"
-                            data-controls-modal="formModalAddToCollection" data-backdrop="static"
-                            data-keyboard="true">
-                        Add to collection
-                    </button>
-                </div>
-            </div>
-        </form>
-    </section>
-
-    <section id="response">
-        <fieldset>
-            <div id="responsePrint">
-                <div class="row">
-                    <div id="pstatus">
-                    </div>
-
-                    <div id="ptime" class="span2">
-                        <span class="label">Time</span>
-                        <span class="data">0 millisecs</span>
-                    </div>
-                </div>
-
-                <div id="respHeaders">
-                    <div id="respHeadersContent">
-                        <div id="responseHeaders" tabindex="6"></div>
-                    </div>
-                </div>
-
-                <div id="respData" style="display:none">
-                    <div id="respDataActions" class="sectionOptions">
-                        <a href="javascript:void(0);" class="sectionOptions" onclick="toggleResponseBodySize();" id="responseBodyToggle">
-                            Maximize
-                        </a>
-                    </div>
-                    <div id="langFormat">
-                        <ul class="pills">
-                            <li id="langFormat-parsed" class="active">
-                                <a href="javascript:void(0);" onclick="changeResponseFormat('parsed')">
-                                    Parsed
-                                </a>
-                            </li>
-                            <li id="langFormat-raw">
-                                <a href="javascript:void(0);" onclick="changeResponseFormat('raw')">
-                                    Raw
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                    <div name="responseData" id="responseData" contenteditable="true">
-                        <div id="responseAsText">
-                            <textarea name="codeData" id="codeData" class="chili-lang-html" data-formatted="false">
-                            </textarea>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </fieldset>
-    </section>
+    </fieldset>
+</section>
 </div>
 </div>
 <div id="formModalNewCollection" class="modal fade">

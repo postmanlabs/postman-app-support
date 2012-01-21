@@ -1903,6 +1903,33 @@ function setupKeyboardShortcuts() {
     });
 }
 
+function hideRequestHelper(type) {
+    $('#requestHelpers').css("display", "none");
+}
+
+function showRequestHelper(type) {
+    if(type != "normal") {
+        $('#requestHelpers').css("display", "block");
+    }
+    else {
+        $('#requestHelpers').css("display", "none");
+    }
+
+    $('.requestHelpers').css("display", "none");
+    $('#requestHelper-' + type).css("display", "block");
+
+}
+
+function setupRequestHelpers() {
+    $("#requestTypes ul li").click(function() {
+        $("#requestTypes ul li").removeClass("active");
+        $(this).addClass("active");
+        var type = $(this).attr('data-id');
+        console.log('Clicked ' + type);
+        showRequestHelper(type);
+    });
+}
+
 $(document).ready(function () {
     setupDB();
     initDB();
@@ -1916,7 +1943,7 @@ $(document).ready(function () {
     setupKeyboardShortcuts();
     initCollectionSelector();
     setContainerHeights();
-
+    setupRequestHelpers();
     refreshScrollPanes();
 
     //checkDropboxLogin();

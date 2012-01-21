@@ -59,6 +59,19 @@ header {
     z-index: 2;
 }
 
+.cleanInput {
+    padding: 5px;
+    border: none;
+    box-shadow: none;
+    border-bottom: solid thin #ccc;
+    border-radius: 0;
+}
+
+.cleanInput:focus {
+    outline: none;
+    border-bottom-color: #999;
+}
+
 #main {
     background: #fff;
     float: left;
@@ -131,12 +144,6 @@ fieldset {
     border-bottom-color: #999;
     outline: none;
     box-shadow: none;
-}
-
-
-#request h4 {
-    padding-bottom: 5px;
-    text-transform: uppercase;
 }
 
 .headerText {
@@ -368,7 +375,6 @@ fieldset {
 .paramsEditor .value {
     padding: 5px;
     border: none;
-    border-radius: 5px;
     box-shadow: none;
     border-bottom: solid thin #ccc;
     border-radius: 0;
@@ -518,7 +524,7 @@ li .right {
 
 #request,
 #response {
-    padding: 7px 20px 20px;
+    padding: 0 0px 20px 20px;
     border-bottom: solid thin #EFEFEF;
 }
 
@@ -863,6 +869,76 @@ li .right {
     width: 75px;
 }
 
+.helper-tabs {
+    position: absolute;
+    margin: 0;
+    padding: 0;
+}
+.helper-tabs li {
+    float: left;
+    font-size: 11px;
+    font-weight: bold;
+    list-style: none;
+    padding: 10px;
+    border-left: solid thin #ccc;
+    border-bottom: solid thin #fff;
+    color: #ccc;
+    cursor: pointer;
+    height: 14px;
+}
+
+.helper-tabs li:hover {
+    color: #333;
+}
+
+.helper-tabs li.active {
+    color: black;
+    height: 15px;
+}
+
+.helper-tabs li:last-child {
+    border-right: solid thin #ccc;
+}
+
+.helper-tabs li:first-child {
+    border-left: none;
+}
+
 #requestTypes {
-    margin-top: 3px;
+    border-bottom: solid thin #ccc;
+    height: 35px;
+    margin-left: -20px;
+    margin-bottom: 12px;
+}
+
+#requestHelpers {
+    display: none;
+    border-bottom: solid thin #ccc;
+    margin-left: -20px;
+}
+
+.requestHelpers label {
+    font-size: 11px;
+    font-weight: bold;
+}
+
+.requestHelpers div.input {
+}
+
+.requestHelperFormContainer {
+    float: left;
+    width: 400px;
+}
+
+.requestHelperFormDescription {
+    float: left;
+    color: #555;
+    font-size: 11px;
+    width: 400px;
+}
+
+.requestHelperFormDescription h4 {
+    font-size: 12px;
+    text-transform: none;
+    padding-bottom: 0;
 }
