@@ -65,10 +65,11 @@ header {
     box-shadow: none;
     border-bottom: solid thin #ccc;
     border-radius: 0;
+    outline: none;
 }
 
 .cleanInput:focus {
-    outline: none;
+    outline: 0 !important;
     border-bottom-color: #999;
 }
 

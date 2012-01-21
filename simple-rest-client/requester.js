@@ -30,7 +30,7 @@ var presetDetails = {
             value:"",
             tooltip:"The Consumer Secret",
             action:null,
-            send: false
+            send:false
         },
         {
             key:"oauth_signature_method",
@@ -52,8 +52,8 @@ var presetDetails = {
             value:OAuth.nonce,
             tooltip:"A nonce is a random string, uniquely generated for each request.",
             action:{
-                title: "Generate",
-                method: OAuth.nonce
+                title:"Generate",
+                method:OAuth.nonce
             }
         },
         {
@@ -82,8 +82,8 @@ var presetDetails = {
                         }
                     });
                     var accessor = {
-                        consumerSecret: $('input.key[value="oauth_consumer_secret"]').val(),
-                        tokenSecret: "u3f86hur8sguwbn"
+                        consumerSecret:$('input.key[value="oauth_consumer_secret"]').val(),
+                        tokenSecret:"u3f86hur8sguwbn"
                     };
                     return OAuth.SignatureMethod.sign(message, accessor);
                 }
@@ -670,7 +670,9 @@ function setupDB() {
 
             addSidebarCollectionHeadListener(collection);
 
-            result.continue();
+            result.
+            continue
+            ();
         };
 
         cursorRequest.onerror = function (e) {
@@ -709,7 +711,9 @@ function setupDB() {
             refreshScrollPanes();
 
             //This wil call onsuccess again and again until no more request is left
-            result.continue();
+            result.
+            continue
+            ();
         };
         cursorRequest.onerror = postman.indexedDB.onerror;
     };
@@ -904,7 +908,9 @@ function setupDB() {
 
             var request = result.value;
             postman.indexedDB.deleteCollectionRequest(request.id);
-            result.continue();
+            result.
+            continue
+            ();
         };
         cursorRequest.onerror = postman.indexedDB.onerror;
     };
@@ -1038,6 +1044,8 @@ function loadRequestInEditor(request) {
     //Set proper class for method and the variable
 
     $('#headers').val(request.headers);
+    showParamsEditor('headers');
+
     $('#urlParamsEditor').css("display", "none");
     $('#response').css("display", "none");
 
@@ -1223,6 +1231,7 @@ function closeParamsEditor(section) {
 }
 
 function addParamInEditor(section, prefill) {
+    console.log(section, prefill);
     var placeHolderKey = "Key";
     var placeHolderValue = "Value";
 
@@ -1257,13 +1266,16 @@ function addParamInEditor(section, prefill) {
         newElementHtml += "<select><option value= \"text\">Text</option>";
         newElementHtml += "<option value= \"file\">File</option></select>";
     }
-    if (prefill!=undefined && prefill.action != undefined && prefill.action != null) {
+    if (prefill != undefined && prefill.action != undefined && prefill.action != null) {
         newElementHtml += "<span class=\"label important\"><a href=\"#\" class=\"field-action\">" + prefill.action.title + "</a></span>";
     }
     newElementHtml += "</div>";
+
+    console.log(newElementHtml);
+
     $('#' + section + '-ParamsFields').append(newElementHtml);
-    if (prefill!=undefined && prefill.action != undefined && prefill.action != null) {
-        $('.field-action:last').click(function(){
+    if (prefill != undefined && prefill.action != undefined && prefill.action != null) {
+        $('.field-action:last').click(function () {
             $(this).parent().prev().prev().val(prefill.action.method());
         });
     }
@@ -1865,32 +1877,30 @@ function fillPresetParams(value) {
 }
 
 function setupKeyboardShortcuts() {
-    console.log("Setting up shortcuts");
     $(document).bind('keydown', 'backspace', function () {
         $('#url').focus();
         return false;
     });
+
     $(document).bind('keydown', 'n', function () {
         startNewRequest();
         return false;
     });
+
     $(document).bind('keydown', 'h', function () {
         $('#headers-ParamsFields div:first-child input:first-child').focus();
         return false;
     });
+
     $(document).bind('keydown', 's', function () {
         sendRequest();
         return false;
     });
-    $(document).bind('keydown', 'f', function () {
+
+    $(document).bind('keydown', 'm', function () {
         toggleResponseBodySize();
     });
-    $(document).bind('keydown', 'p', function () {
-        //If not opened open param editor
-        //If opened close params editorn
-        //Focus on the params editor
-        showParamsEditor('url');
-    });
+
     $(document).bind('keydown', 'a', function () {
         $('#formModalAddToCollection').modal({
             keyboard:true,
@@ -1903,12 +1913,42 @@ function setupKeyboardShortcuts() {
     });
 }
 
+function processBasicAuthRequestHelper() {
+    console.log("Processing headers");
+    var headers = getHeaderVars($('#headers').val());
+    console.log(headers);
+    var authHeaderKey = "Authorization";
+    var username = $('#requestHelper-basicAuth-username').val();
+    var password = $('#requestHelper-basicAuth-password').val();
+    var rawString = username + ":" + password;
+
+    var headerVal = "Basic " + rawString;
+    if (authHeaderKey in headers) {
+        headers[authHeaderKey] = headerVal;
+    }
+    else {
+    }
+    var headersVal = $('#headers').val();
+    var st = "\nAuthorization: " + rawString + "\n";
+    headersVal += st;
+
+    $('#headers').val(headersVal);
+    showParamsEditor('headers');
+}
+
 function hideRequestHelper(type) {
     $('#requestHelpers').css("display", "none");
+
+    if (type === 'basicAuth') {
+        processBasicAuthRequestHelper();
+    }
+    else if (type === 'oAuth1') {
+
+    }
 }
 
 function showRequestHelper(type) {
-    if(type != "normal") {
+    if (type != "normal") {
         $('#requestHelpers').css("display", "block");
     }
     else {
@@ -1921,7 +1961,7 @@ function showRequestHelper(type) {
 }
 
 function setupRequestHelpers() {
-    $("#requestTypes ul li").click(function() {
+    $("#requestTypes ul li").click(function () {
         $("#requestTypes ul li").removeClass("active");
         $(this).addClass("active");
         var type = $(this).attr('data-id');
