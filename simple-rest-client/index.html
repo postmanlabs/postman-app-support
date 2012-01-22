@@ -103,6 +103,9 @@
         <li data-id="basicAuth">Basic Auth</li>
         <li data-id="oAuth1">OAuth 1.0</li>
     </ul>
+    <div class="topSidebar">
+        <a href="javascript:void(0);" onclick="showModal('modalShortcuts');">Keyboard shortcuts</a></strong>
+    </div>
 </div>
 <div id="requestHelpers" class="clearfix">
     <div id="requestHelper-normal" class="requestHelpers"></div>
@@ -125,7 +128,7 @@
                 </div>
                 <div class="clearfix">
                     <div class="input">
-                        <button class="btn small secondary" onclick="hideRequestHelper('basicAuth')">Minimize</button>
+                        <a href="javascript:void(0);" class="btn small secondary" onclick="hideRequestHelper('basicAuth')">Minimize</a>
                     </div>
                 </div>
             </form>
@@ -190,7 +193,7 @@
                 </div>
                 <div class="clearfix">
                     <div class="input">
-                        <button class="btn small secondary" onclick="hideRequestHelper('oAuth1')">Minimize</button>
+                        <a href="javascript:void(0);" class="btn small secondary" onclick="hideRequestHelper('oAuth1')">Minimize</a>
                     </div>
                 </div>
             </form>
@@ -469,6 +472,51 @@
     </div>
     <div class="modal-footer">
         <a href="javascript:void(0);" onclick="closeAboutPostman();" class="btn primary">Close</a>
+    </div>
+</div>
+<div id="modalShortcuts" class="modal fade">
+    <div class="modal-header">
+        <a href="#" class="close">×</a>
+
+        <h3>Shortcuts</h3>
+    </div>
+    <div class="modal-body">
+        <table>
+            <thead>
+            <tr>
+                <th>Action</th>
+                <th>Shortcut key</th>
+            </tr>
+            </thead>
+            <tr>
+                <td>New request</td>
+                <td><strong>n</strong></td>
+            </tr>
+            <tr>
+                <td>Send a request</td>
+                <td><strong>s</strong></td>
+            </tr>
+            <tr>
+                <td>Maximize/minimze request body</td>
+                <td><strong>m</strong></td>
+            </tr>
+            <tr>
+                <td>Edit headers</td>
+                <td><strong>h</strong></td>
+            </tr>
+            <tr>
+                <td>Add request to collection</td>
+                <td><strong>a</strong></td>
+            </tr>
+            <tr>
+                <td>Help</td>
+                <td><strong>?</strong></td>
+            </tr>
+
+        </table>
+    </div>
+    <div class="modal-footer">
+        <a href="javascript:void(0);" onclick="closeModal('modalShortcuts');" class="btn primary">Close</a>
     </div>
 </div>
 <div id="modalResponseError" class="modal fade">

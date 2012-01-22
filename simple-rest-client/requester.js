@@ -1193,7 +1193,7 @@ function showParamsEditor(section, a1) {
             editorHtml += "<option value= \"file\">File</option></select>";
         }
         //editorHtml += "</div>";
-        editorHtml += "<a href=\"javascript:void(0);\" class=\"deleteParam\" tabIndex=\"-1\">";
+        editorHtml += "<a href=\"javascript:void(0);\" class=\"deleteParam\">";
         editorHtml += "<img class=\"deleteButton\" src=\"images/delete.png\"/>";
         editorHtml += "</a>";
         editorHtml += "</div>";
@@ -1432,7 +1432,7 @@ function addEditorListeners(section) {
         var parent = $(this).parent();
 
         //Add a delete link
-        var deleteHtml = "<a href=\"javascript:void(0);\" class=\"deleteParam\" tabIndex=\"-1\">";
+        var deleteHtml = "<a href=\"javascript:void(0);\" class=\"deleteParam\">";
         deleteHtml += "<img class=\"deleteButton\" src=\"images/delete.png\"/>";
         deleteHtml += "</a>";
         parent.append(deleteHtml);
@@ -1470,7 +1470,7 @@ function addEditorListeners(section) {
             }
 
             if ($(this).siblings().length > 2) {
-                newElementHtml += "<a href=\"javascript:void(0);\" class=\"deleteParam\" tabIndex=\"-1\">";
+                newElementHtml += "<a href=\"javascript:void(0);\" class=\"deleteParam\">";
                 newElementHtml += "<img class=\"deleteButton\" src=\"images/delete.png\"/>";
                 newElementHtml += "</a>";
             }
@@ -1765,6 +1765,18 @@ function closeAboutPostman() {
     $('#modalAboutPostman').modal('hide');
 }
 
+function closeModal(id) {
+    $('#' + id).modal('hide');
+}
+
+function showModal(id) {
+    $('#' + id).modal({
+        keyboard:true,
+        backdrop:"static"
+    });
+    $('#' + id).modal('show');
+}
+
 function closeSettings() {
     $('#modalSettings').modal('hide');
 }
@@ -1901,6 +1913,10 @@ function setupKeyboardShortcuts() {
         toggleResponseBodySize();
     });
 
+    $(document).bind('keydown', 'shift+/', function () {
+        showModal('modalShortcuts');
+    });
+
     $(document).bind('keydown', 'a', function () {
         $('#formModalAddToCollection').modal({
             keyboard:true,
@@ -1940,11 +1956,12 @@ function hideRequestHelper(type) {
     $('#requestHelpers').css("display", "none");
 
     if (type === 'basicAuth') {
-        processBasicAuthRequestHelper();
+        //processBasicAuthRequestHelper();
     }
     else if (type === 'oAuth1') {
 
     }
+    return false;
 }
 
 function showRequestHelper(type) {
@@ -1957,7 +1974,7 @@ function showRequestHelper(type) {
 
     $('.requestHelpers').css("display", "none");
     $('#requestHelper-' + type).css("display", "block");
-
+    return false;
 }
 
 function setupRequestHelpers() {
@@ -1965,7 +1982,6 @@ function setupRequestHelpers() {
         $("#requestTypes ul li").removeClass("active");
         $(this).addClass("active");
         var type = $(this).attr('data-id');
-        console.log('Clicked ' + type);
         showRequestHelper(type);
     });
 }

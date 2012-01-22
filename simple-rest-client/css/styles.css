@@ -916,6 +916,7 @@ li .right {
     display: none;
     border-bottom: solid thin #ccc;
     margin-left: -20px;
+    margin-bottom: 15px;
 }
 
 .requestHelpers label {
@@ -942,4 +943,15 @@ li .right {
     font-size: 12px;
     text-transform: none;
     padding-bottom: 0;
+}
+
+.topSidebar {
+    float: right;
+    margin-right: 5px;
+    margin-top: 10px;
+}
+
+.topSidebar a {
+    font-size: 11px;
+    font-weight: bold;
 }
