@@ -150,6 +150,9 @@ var currentResponse;
 
 var postman = {};
 postman.currentRequest = {};
+postman.currentRequest.url = "";
+postman.currentRequest.body = "";
+postman.currentRequest.headers = [];
 postman.history = {};
 postman.history.requests = [];
 postman.settings = {};
@@ -235,6 +238,29 @@ function clearFields() {
     $("#respData").css("display", "none");
 
     $('#codeData').attr('data-formatted', 'false');
+}
+
+postman.initializeHeadersFromString = function(data) {
+    if (data === null || data === "") {
+        postman.currentRequest.headers = [];
+    }
+    else {
+        var vars = [], hash;
+        var hashes = data.split('\n');
+        var header;
+
+        for (var i = 0; i < hashes.length; i++) {
+            hash = hashes[i].split(":");
+            header = {
+                "name": jQuery.trim(hash[0]),
+                "value": jQuery.trim(hash[1])
+            };
+
+            vars.push(header);
+        }
+
+        postman.currentRequest.headers = vars;
+    }
 }
 
 function limitStringLineWidth(string, numChars) {
@@ -987,7 +1013,6 @@ function renderRequestToSidebar(url, method, id, position) {
         $('#itemHistorySidebarRequest').tmpl([request]).appendTo('#historyItems');
     }
 
-    console.log("Removing history");
     $('#messageNoHistory').remove();
     refreshScrollPanes();
 }
@@ -1044,6 +1069,7 @@ function loadRequestInEditor(request) {
     //Set proper class for method and the variable
 
     $('#headers').val(request.headers);
+    postman.initializeHeadersFromString(request.headers);
     showParamsEditor('headers');
 
     $('#urlParamsEditor').css("display", "none");
@@ -1122,7 +1148,8 @@ function guid() {
 //Sets the param strings for header and url params
 function setParamsFromEditor(section) {
     var paramString = "";
-
+    var h = [];
+    //Goes through each item in the param editor and generates a param string
     $('input[data-section="' + section + '"]').each(function () {
         var val = $(this).next().val();
         if (val !== "" && $(this).val() !== "") {
@@ -1133,8 +1160,17 @@ function setParamsFromEditor(section) {
                 paramString += $(this).val() + ": " + val + "\n";
             }
 
+            if (section == "headers") {
+                var header = {
+                    name:$(this).val(),
+                    value:val
+                };
+
+                h.push(header);
+            }
         }
     });
+
 
     paramString = paramString.substr(0, paramString.length - 1);
 
@@ -1142,18 +1178,19 @@ function setParamsFromEditor(section) {
         var url = $('#url').val();
         var baseUrl = url.split("?")[0];
         $('#' + section).val(baseUrl + "?" + paramString);
+        postman.currentRequest.url = $('#url').val();
     }
     else if (section === 'body') {
         $('#' + section).val(paramString);
+        postman.currentRequest.body = paramString;
     }
     else if (section === 'headers') {
+        postman.currentRequest.headers = h;
         $('#' + section).val(paramString);
     }
-
 }
 
-function showParamsEditor(section, a1) {
-    a1 = a1 || a1;
+function showParamsEditor(section) {
     var data = $('#' + section).val();
 
     var params;
@@ -1183,30 +1220,35 @@ function showParamsEditor(section, a1) {
         var key = element.key;
         var value = element.value;
 
-        rowData = {
-            section: section,
-            placeHolderKey: placeHolderKey,
-            placeHolderValue: placeHolderValue,
-            key: key,
-            value: value,
-            inputType: "text",
-            canBeClosed: true
-        };
-        rows.push(rowData);
+        if (key != "") {
+            rowData = {
+                section:section,
+                placeHolderKey:placeHolderKey,
+                placeHolderValue:placeHolderValue,
+                key:key,
+                value:value,
+                inputType:"text",
+                canBeClosed:true
+            };
+            rows.push(rowData);
+        }
+
+
         i++;
     }
 
     rowData = {
-        section: section,
-        placeHolderKey: placeHolderKey,
-        placeHolderValue: placeHolderValue,
-        key: "",
-        value: "",
-        inputType: "text",
-        canBeClosed: false
+        section:section,
+        placeHolderKey:placeHolderKey,
+        placeHolderValue:placeHolderValue,
+        key:"",
+        value:"",
+        inputType:"text",
+        canBeClosed:false
     };
 
     rows.push(rowData);
+
     $('#itemEditorHeader').tmpl(rows).appendTo('#' + section + '-ParamsFields');
     $('#' + section + '-ParamsEditor').fadeIn();
 
@@ -1224,8 +1266,7 @@ function closeParamsEditor(section) {
     $('#' + section + '-ParamsEditor').css("display", "none");
 }
 
-function addParamInEditor(section, prefill) {
-    console.log(section, prefill);
+function addParamInEditor(section, data) {
     var placeHolderKey = "Key";
     var placeHolderValue = "Value";
 
@@ -1234,16 +1275,24 @@ function addParamInEditor(section, prefill) {
         placeHolderValue = "Value";
     }
 
-    var key = "", value = "", send = "";
+
+    var key = "";
+    var value = "";
+    var send = "";
+
+    if (data) {
+        key = data.key;
+        value = data.value;
+    }
 
     var rowData = {
-        section: section,
-        placeHolderKey: placeHolderKey,
-        placeHolderValue: placeHolderValue,
-        key: key,
-        value: value,
-        canBeClosed: false,
-        inputType: "text"
+        section:section,
+        placeHolderKey:placeHolderKey,
+        placeHolderValue:placeHolderValue,
+        key:key,
+        value:value,
+        canBeClosed:false,
+        inputType:"text"
     };
 
     $('#itemEditorHeader').tmpl([rowData]).appendTo('#' + section + '-ParamsFields');
@@ -1413,20 +1462,20 @@ function addEditorListeners(section) {
 
         if (paramType) {
             var rowData = {
-                section: section,
-                placeHolderKey: placeHolderKey,
-                placeHolderValue: placeHolderValue,
-                key: key,
-                value: value,
-                inputType: "text",
-                canBeClosed: false
+                section:section,
+                placeHolderKey:placeHolderKey,
+                placeHolderValue:placeHolderValue,
+                key:key,
+                value:value,
+                inputType:"text",
+                canBeClosed:false
             };
 
             if ($(this).siblings().length > 2) {
                 rowData.canBeClosed = true;
             }
 
-            if(paramType === "text") {
+            if (paramType === "text") {
                 rowData.selectedText = "selected";
                 rowData.selectedFile = "";
             }
@@ -1550,14 +1599,12 @@ function changeResponseFormat(format) {
     else {
         $('#codeData').css("display", "none");
         var mime = $('#codeData').attr('data-mime');
-        console.log("Showing codemirror now");
         setResponseFormat(mime, currentResponse.text, "parsed", true);
     }
 
 }
 
 function setResponseFormat(mime, response, format, forceCreate) {
-    console.log(mime, response, format);
     $('#langFormat li').removeClass('active');
     $('#langFormat-' + format).addClass('active');
     $('#codeData').css("display", "none");
@@ -1670,7 +1717,6 @@ function submitNewCollectionForm() {
         //Add the new collection and get guid
         collection.id = guid();
         collection.name = newCollection;
-        console.log(collection);
         postman.indexedDB.addCollection(collection);
 
         $('#newCollectionBlank').val("");
@@ -1681,8 +1727,6 @@ function submitNewCollectionForm() {
 postman.history.requestExists = function (request) {
     var index = -1;
     var method = request.method.toLowerCase();
-
-    console.log(method);
 
     if (method === 'post' || method === 'put') {
         return -1;
@@ -1839,15 +1883,6 @@ function minimizeResponseBody() {
     $('#respData').css("padding", "0px");
 }
 
-function fillPresetParams(value) {
-    for (i in presetDetails[value]) {
-        var field = presetDetails[value][i];
-        addParamInEditor("body", field);
-    }
-    $('#body-ParamsEditor').show();
-    addParamInEditor("body");
-}
-
 function setupKeyboardShortcuts() {
     $(document).bind('keydown', 'backspace', function () {
         $('#url').focus();
@@ -1889,34 +1924,60 @@ function setupKeyboardShortcuts() {
     });
 }
 
+function setHeadersParamString(headers) {
+    var headersLength = headers.length;
+    var paramString = "";
+    for (var i = 0; i < headersLength; i++) {
+        var h = headers[i];
+        if (h.name && h.name !== "") {
+            paramString += h.name + ": " + h.value + "\n";
+        }
+    }
+    $('#headers').val(paramString);
+}
 function processBasicAuthRequestHelper() {
     console.log("Processing headers");
-    var headers = getHeaderVars($('#headers').val());
+    var headers = postman.currentRequest.headers;
     console.log(headers);
+
+    var headersLength = headers.length;
+    var pos = -1;
+
+    //Improve this or put it inside a function
+    for (var i = 0; i < headersLength; i++) {
+        var h = headers[i];
+        if (h.name === "Authorization") {
+            pos = i;
+            break;
+        }
+    }
+
     var authHeaderKey = "Authorization";
     var username = $('#requestHelper-basicAuth-username').val();
     var password = $('#requestHelper-basicAuth-password').val();
     var rawString = username + ":" + password;
+    var encodedString = "Basic " + btoa(rawString);
 
-    var headerVal = "Basic " + rawString;
-    if (authHeaderKey in headers) {
-        headers[authHeaderKey] = headerVal;
+    if (pos >= 0) {
+        headers[pos] = {
+            name:"Authorization",
+            value:encodedString
+        };
     }
     else {
+        headers.push({name:"Authorization", value:encodedString});
     }
-    var headersVal = $('#headers').val();
-    var st = "\nAuthorization: " + rawString + "\n";
-    headersVal += st;
 
-    $('#headers').val(headersVal);
-    showParamsEditor('headers');
+    postman.currentRequest.headers = headers;
+    setHeadersParamString(headers);
+    showParamsEditor("headers");
 }
 
 function hideRequestHelper(type) {
     $('#requestHelpers').css("display", "none");
 
     if (type === 'basicAuth') {
-        //processBasicAuthRequestHelper();
+        processBasicAuthRequestHelper();
     }
     else if (type === 'oAuth1') {
 
