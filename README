@@ -2,6 +2,14 @@ Postman
 =======
 Postman is a tool to help developers work with APIs more efficiently and avoid repetitive steps.
 
+0.5.5
+1. Clean up user interface
+2. Basic Auth and OAuth 1.0 request helpers - help you create the headers
+3. Keyboard shortcuts
+
+0.5.4
+1. Bug fixes related to dialogs
+
 0.5.3
 1. Reorganized files
 2. Cleaner input fields to reduce clutter

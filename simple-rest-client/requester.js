@@ -240,7 +240,7 @@ function clearFields() {
     $('#codeData').attr('data-formatted', 'false');
 }
 
-postman.initializeHeadersFromString = function(data) {
+postman.initializeHeadersFromString = function (data) {
     if (data === null || data === "") {
         postman.currentRequest.headers = [];
     }
@@ -252,8 +252,8 @@ postman.initializeHeadersFromString = function(data) {
         for (var i = 0; i < hashes.length; i++) {
             hash = hashes[i].split(":");
             header = {
-                "name": jQuery.trim(hash[0]),
-                "value": jQuery.trim(hash[1])
+                "name":jQuery.trim(hash[0]),
+                "value":jQuery.trim(hash[1])
             };
 
             vars.push(header);
@@ -1774,10 +1774,6 @@ function closeModal(id) {
 }
 
 function showModal(id) {
-    $('#' + id).modal({
-        keyboard:true,
-        backdrop:"static"
-    });
     $('#' + id).modal('show');
 }
 
@@ -1935,10 +1931,9 @@ function setHeadersParamString(headers) {
     }
     $('#headers').val(paramString);
 }
+
 function processBasicAuthRequestHelper() {
-    console.log("Processing headers");
     var headers = postman.currentRequest.headers;
-    console.log(headers);
 
     var headersLength = headers.length;
     var pos = -1;
@@ -2022,6 +2017,12 @@ $(document).ready(function () {
     setContainerHeights();
     setupRequestHelpers();
     refreshScrollPanes();
+
+
+    $('#modalShortcuts').modal({
+        keyboard:true,
+        backdrop:"static"
+    });
 
     //checkDropboxLogin();
 
