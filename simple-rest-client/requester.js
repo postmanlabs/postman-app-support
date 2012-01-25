@@ -1062,6 +1062,7 @@ function loadCollectionRequest(id) {
 }
 
 function loadRequestInEditor(request) {
+    showRequestHelper("normal");
     var method = request.method.toLowerCase();
 
     $('#url').val(request.url);
@@ -1981,6 +1982,8 @@ function hideRequestHelper(type) {
 }
 
 function showRequestHelper(type) {
+    $("#requestTypes ul li").removeClass("active");
+    $('#requestTypes ul li[data-id=' + type + ']').addClass('active');
     if (type != "normal") {
         $('#requestHelpers').css("display", "block");
     }
