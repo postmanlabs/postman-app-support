@@ -1174,46 +1174,40 @@ function showParamsEditor(section, a1) {
 
     var editorHtml = "";
     var i = 0;
-
-    //@todo Replace this with jquery templates
-    //@todo Remove for in
     var paramsLength = params.length;
-
-
+    var rowData = {};
+    var rows = [];
+    $('#' + section + '-ParamsFields').html("");
     for (var index = 0; i < paramsLength; index++) {
         var element = params[index];
         var key = element.key;
         var value = element.value;
 
-        editorHtml += "<div>";
-        editorHtml += "<input type=\"text\" data-section=\"" + section + "\" name=\"" + section + "[key][]\" class=\"key\" placeholder=\"" + placeHolderKey + "\" value=\"" + key + "\"/>";
-        editorHtml += "<input type=\"text\" name=\"" + section + "[value][]\" class=\"value\" placeholder=\"" + placeHolderValue + "\" value=\"" + value + "\"/>";
-        if (section == 'body') {
-            editorHtml += "<select><option value= \"text\">Text</option>";
-            editorHtml += "<option value= \"file\">File</option></select>";
-        }
-        //editorHtml += "</div>";
-        editorHtml += "<a href=\"javascript:void(0);\" class=\"deleteParam\">";
-        editorHtml += "<img class=\"deleteButton\" src=\"images/delete.png\"/>";
-        editorHtml += "</a>";
-        editorHtml += "</div>";
+        rowData = {
+            section: section,
+            placeHolderKey: placeHolderKey,
+            placeHolderValue: placeHolderValue,
+            key: key,
+            value: value,
+            inputType: "text",
+            canBeClosed: true
+        };
+        rows.push(rowData);
         i++;
     }
 
-    editorHtml += "<div>";
-    editorHtml += "<input type=\"text\" data-section=\"" + section + "\" name=\"" + section + "[key][]\"";
-    editorHtml += "class=\"key\" placeholder=\"" + placeHolderKey + "\"/>";
-    editorHtml += "<input type=\"text\" name=\"" + section + "[value][]\"";
-    editorHtml += "class=\"value\" placeholder=\"" + placeHolderValue + "\"/>";
+    rowData = {
+        section: section,
+        placeHolderKey: placeHolderKey,
+        placeHolderValue: placeHolderValue,
+        key: "",
+        value: "",
+        inputType: "text",
+        canBeClosed: false
+    };
 
-    if (section == 'body') {
-        editorHtml += "<select><option value= \"text\">Text</option>";
-        editorHtml += "<option value= \"file\">File</option></select>";
-    }
-
-    editorHtml += "</div>";
-
-    $('#' + section + '-ParamsFields').html(editorHtml);
+    rows.push(rowData);
+    $('#itemEditorHeader').tmpl(rows).appendTo('#' + section + '-ParamsFields');
     $('#' + section + '-ParamsEditor').fadeIn();
 
     addEditorListeners(section);
@@ -1242,59 +1236,18 @@ function addParamInEditor(section, prefill) {
 
     var key = "", value = "", send = "";
 
-    if (prefill != undefined) {
-        if (prefill.key != undefined) {
-            key = "value=\"" + prefill.key + "\"";
-        }
-        if (prefill.value != undefined) {
-            if (typeof prefill.value === 'function') {
-                value = "value=\"" + prefill.value() + "\"";
-            } else {
-                value = "value=\"" + prefill.value + "\"";
-            }
-        }
-        if (prefill.send != undefined && prefill.send === false) {
-            send = " send=\"false\" ";
-        }
-    }
+    var rowData = {
+        section: section,
+        placeHolderKey: placeHolderKey,
+        placeHolderValue: placeHolderValue,
+        key: key,
+        value: value,
+        canBeClosed: false,
+        inputType: "text"
+    };
 
-    var newElementHtml = "";
-    newElementHtml += "<div>";
-    newElementHtml += "<input type=\"text\" data-section=\"" + section + "\" name=\"" + section + "[key][]\"  " + key + send + " class=\"key\" placeholder=\"" + placeHolderKey + "\"/>";
-    newElementHtml += "<input type=\"text\" name=\"" + section + "[value][]\"  " + value + " class=\"value\" placeholder=\"" + placeHolderValue + "\"/>";
-    if (section == 'body') {
-        newElementHtml += "<select><option value= \"text\">Text</option>";
-        newElementHtml += "<option value= \"file\">File</option></select>";
-    }
-    if (prefill != undefined && prefill.action != undefined && prefill.action != null) {
-        newElementHtml += "<span class=\"label important\"><a href=\"#\" class=\"field-action\">" + prefill.action.title + "</a></span>";
-    }
-    newElementHtml += "</div>";
-
-    console.log(newElementHtml);
-
-    $('#' + section + '-ParamsFields').append(newElementHtml);
-    if (prefill != undefined && prefill.action != undefined && prefill.action != null) {
-        $('.field-action:last').click(function () {
-            $(this).parent().prev().prev().val(prefill.action.method());
-        });
-    }
-    if (prefill == undefined) {
-        addEditorListeners(section);
-    }
-}
-
-function addFileParamInEditor(section) {
-    if (section == 'body') {
-        var containerHtml = "<div>";
-        containerHtml += '<input type="text" data-section=\"" + section + "\" name="body[key][]" placeholder="key"/>';
-        containerHtml += '<input type="file" data-section=\"" + section + "\" name="body[value][]" multiple/>';
-        containerHtml += "<select><option value= \"text\">Text</option>";
-        containerHtml += "<option value= \"file\">File</option></select>";
-        containerHtml += "</div>";
-        $('#' + section + '-ParamsFields').append(containerHtml);
-        addEditorListeners(section);
-    }
+    $('#itemEditorHeader').tmpl([rowData]).appendTo('#' + section + '-ParamsFields');
+    addEditorListeners(section);
 }
 
 function changeParamInEditor(target) {
@@ -1383,12 +1336,12 @@ function addSidebarCollectionHeadListener(collection) {
     var targetElementName = '#collection-' + collection.id + " .sidebar-collection-head-name";
     var targetElementLabel = '#collection-' + collection.id + " .collection-head-actions .label";
 
-    $(targetElementName).click(function () {
+    $(targetElementName).bind("click", function () {
         var id = $(this).attr('data-id');
         toggleCollectionRequestList(id);
     });
 
-    $(targetElementLabel).click(function () {
+    $(targetElementLabel).bind("click", function () {
         var id = $(this).parent().parent().parent().attr('data-id');
         toggleCollectionRequestList(id);
     });
@@ -1451,39 +1404,47 @@ function addEditorListeners(section) {
         //var paramType = $('#' + section + '-ParamsFields div select').val();
         var paramType = $(this).val();
 
-        //var x = $(this).val();
-        if (paramType) {
-            var newElementHtml = "";
-            newElementHtml += "<div>";
-            newElementHtml += "<input type=\"text\" data-section=\"" + section + "\" name=\"" + section + "[key][]\" class=\"key\" placeholder=\"" + "key" + "\"/>";
+        placeHolderKey = "Key";
+        placeHolderValue = "Value";
 
-            if (paramType == "text") {
-                //addParamInEditor(sect);
-                newElementHtml += "<input type=\"text\" name=\"" + section + "[value][]\" class=\"value\" placeholder=\"" + "value" + "\"/>";
-                newElementHtml += "<select><option value= \"text\">Text</option>";
-                newElementHtml += "<option value= \"file\">File</option></select>";
-            }
-            else {
-                newElementHtml += '<input type="file" name="body[value][]" multiple class=\"value file\"/>';
-                newElementHtml += "<select><option value= \"file\">File</option>";
-                newElementHtml += "<option value= \"text\">Text</option></select>";
-            }
+        var key = "";
+        var value = "";
+        var send = "";
+
+        if (paramType) {
+            var rowData = {
+                section: section,
+                placeHolderKey: placeHolderKey,
+                placeHolderValue: placeHolderValue,
+                key: key,
+                value: value,
+                inputType: "text",
+                canBeClosed: false
+            };
 
             if ($(this).siblings().length > 2) {
-                newElementHtml += "<a href=\"javascript:void(0);\" class=\"deleteParam\">";
-                newElementHtml += "<img class=\"deleteButton\" src=\"images/delete.png\"/>";
-                newElementHtml += "</a>";
+                rowData.canBeClosed = true;
             }
-            newElementHtml += "</div>";
-            $(this).parent().html(newElementHtml);
+
+            if(paramType === "text") {
+                rowData.selectedText = "selected";
+                rowData.selectedFile = "";
+            }
+            else {
+                rowData.selectedText = "";
+                rowData.selectedFile = "selected";
+            }
+
+            rowData.inputType = paramType;
+
+            $('#itemEditorHeader').tmpl([rowData]).appendTo($(this).parent().empty());
             addEditorListeners(section);
         }
         else {
-            alert(" WTF " + paramType);
         }
     });
 
-    $('.deleteParam').click(function () {
+    $('.deleteParam').bind("click", function () {
         var fieldsParent = $(this).parents(".editorFields");
         var id = fieldsParent.attr("id");
         if (id) {
@@ -1491,7 +1452,6 @@ function addEditorListeners(section) {
             $(this).parent().remove();
             setParamsFromEditor(section);
         }
-
     });
 
     if (section === 'headers') {
@@ -1645,7 +1605,7 @@ function setResponseFormat(mime, response, format, forceCreate) {
 }
 
 function attachSidebarListeners() {
-    $('#sidebarContainer .pills li').click(function () {
+    $('#sidebarContainer .pills li').bind("click", function () {
         $('#sidebarContainer .pills li').removeClass("active");
         $(this).addClass("active");
         var section = jQuery('a', this).attr('data-id');
@@ -1978,7 +1938,7 @@ function showRequestHelper(type) {
 }
 
 function setupRequestHelpers() {
-    $("#requestTypes ul li").click(function () {
+    $("#requestTypes ul li").bind("click", function () {
         $("#requestTypes ul li").removeClass("active");
         $(this).addClass("active");
         var type = $(this).attr('data-id');
@@ -2015,7 +1975,7 @@ $(document).ready(function () {
     });
 
 
-    $('#methods ul li a').click(function () {
+    $('#methods ul li a').bind("click", function () {
         $('#methods ul li').removeClass('active');
         $(this).parent().addClass('active');
         requestMethod = $(this).attr('data-method');

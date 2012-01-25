@@ -128,7 +128,8 @@
                 </div>
                 <div class="clearfix">
                     <div class="input">
-                        <a href="javascript:void(0);" class="btn small secondary" onclick="hideRequestHelper('basicAuth')">Minimize</a>
+                        <a href="javascript:void(0);" class="btn small secondary"
+                           onclick="hideRequestHelper('basicAuth')">Minimize</a>
                     </div>
                 </div>
             </form>
@@ -612,6 +613,49 @@
             <a href="javascript:void(0);"><span class="label">${method}</span> {{html url}}</a>
         </div>
     </li>
+</script>
+<script id="itemEditorStandard" type="text/x-jquery-tmpl">
+
+</script>
+<script id="itemEditorHeader" type="text/x-jquery-tmpl">
+    <div>
+        <input type="text"
+               data-section="${section}"
+               name="${section}[key][]"
+               class="key ui-autocomplete-input"
+               placeholder="${placeHolderKey}"
+               autocomplete="off"
+               role="textbox"
+               value="${key}"
+               aria-autocomplete="list"
+               aria-haspopup="true"/>
+        {{if inputType == "file" }}
+        <input type="file"
+               name="${section}[value][]"
+               class="file"
+               multiple
+               placeholder="${placeHolderValue}"/>
+        {{/if}}
+        {{if inputType == "text" }}
+        <input type="text"
+               name="${section}[value][]"
+               class="value"
+               value="${value}"
+               placeholder="${placeHolderValue}"/>
+        {{/if}}
+        {{if section == "body" }}
+            <select>
+                <option value="text" ${selectedText}>Text</option>
+                <option value="file" ${selectedFile}>File</option>
+            </select>
+        {{/if}}
+
+        {{if canBeClosed}}
+        <a href="javascript:void(0);" class="deleteParam">
+            <img class="deleteButton" src="images/delete.png">
+        </a>
+        {{/if}}
+    </div>
 </script>
 <script type="text/javascript" src="codemirror/lib/codemirror.js"></script>
 <script type="text/javascript" src="codemirror/lib/util/formatting.js"></script>

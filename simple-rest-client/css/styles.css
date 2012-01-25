@@ -622,7 +622,7 @@ li .right {
 
 #headers-ParamsEditor {
     margin-top: 5px;
-    width: 625px;
+    width: 635px;
 }
 
 #requestUrl {
@@ -778,6 +778,10 @@ li .right {
 #url-ParamsEditor .value,
 #headers-ParamsEditor .value {
     width: 281px;
+}
+
+#body-ParamsEditor .file {
+    width: 239px;
 }
 
 .form-stacked {
