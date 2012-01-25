@@ -822,27 +822,13 @@ li .right {
 }
 
 #historyOptions {
-    margin-left: 237px;
+    margin-left: 280px;
 }
 
 #collectionsOptions {
-    margin-left: 226px;
+    margin-left: 280px;
 }
 
-.sectionOptions a {
-    font-size: 10px;
-    font-weight: bold;
-    background: #afafaf;
-    color: #fff;
-    border-radius: 3px;
-    padding: 4px;
-}
-
-.sectionOptions a:hover {
-    background: #0069D6;
-    color: white;
-    text-decoration: none;
-}
 
 #collectionsOptions {
     display: none;
@@ -864,7 +850,7 @@ li .right {
 
 #respDataActions {
     position: absolute;
-    margin-left: -50px;
+    margin-left: -150px;
     margin-top: 0;
     width: 150px;
     text-align: center;
@@ -951,11 +937,16 @@ li .right {
 
 .topSidebar {
     float: right;
-    margin-right: 5px;
-    margin-top: 10px;
+    margin-right: 15px;
+    margin-top: 5px;
 }
 
 .topSidebar a {
     font-size: 11px;
     font-weight: bold;
+    text-decoration: none;
+}
+
+.topSidebar a:hover {
+    text-decoration: none;
 }

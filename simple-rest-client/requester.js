@@ -1846,7 +1846,7 @@ function checkDropboxLogin() {
 function toggleResponseBodySize() {
     if (postman.response.state.size == "normal") {
         postman.response.state.size = "maximized";
-        $('#responseBodyToggle').html("Back to normal");
+        $('#responseBodyToggle img').attr("src", "images/full-screen-exit-alt-2.png");
         postman.response.state.width = $('#respData').width();
         postman.response.state.height = $('#respData').height();
         postman.response.state.display = $('#respData').css("display");
@@ -1863,7 +1863,7 @@ function toggleResponseBodySize() {
     }
     else {
         postman.response.state.size = "normal";
-        $('#responseBodyToggle').html("Maximize");
+        $('#responseBodyToggle img').attr("src", "images/full-screen-alt-4.png");
         $('#respData').css("position", postman.response.state.position);
         $('#respData').css("left", 0);
         $('#respData').css("top", 0);
@@ -1900,7 +1900,7 @@ function setupKeyboardShortcuts() {
         return false;
     });
 
-    $(document).bind('keydown', 'm', function () {
+    $(document).bind('keydown', 'f', function () {
         toggleResponseBodySize();
     });
 

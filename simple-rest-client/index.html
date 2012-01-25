@@ -65,13 +65,13 @@
     <div id="sidebarContainer" class="clearfix">
         <div id="historyOptions" class="sectionOptions">
             <a href="javascript:void(0);" onclick="clearHistory()">
-                Clear history
+                <img src="images/trash-empty.png" width="24px" height="24px"/>
             </a>
         </div>
         <div id="collectionsOptions" class="sectionOptions">
             <a href="javascript:void(0);"
                data-controls-modal="formModalNewCollection" data-backdrop="static" data-keyboard="true">
-                New collection
+                <img src="images/file-add.png" width="24px" height="24px"/>
             </a>
         </div>
         <ul class="pills" data-tabs="tabs">
@@ -104,7 +104,11 @@
         <li data-id="oAuth1">OAuth 1.0</li>
     </ul>
     <div class="topSidebar">
-        <a href="javascript:void(0);" onclick="showModal('modalShortcuts');">Keyboard shortcuts</a></strong>
+
+        <a href="javascript:void(0);" onclick="showModal('modalShortcuts');">
+            <img src="images/keyboard.png" width="24px" height="24px" style="vertical-align: middle;"/>
+            Shortcuts
+        </a>
     </div>
 </div>
 <div id="requestHelpers" class="clearfix">
@@ -129,7 +133,7 @@
                 <div class="clearfix">
                     <div class="input">
                         <a href="javascript:void(0);" class="btn small secondary"
-                           onclick="hideRequestHelper('basicAuth')">Minimize</a>
+                           onclick="hideRequestHelper('basicAuth')">Refresh headers</a>
                     </div>
                 </div>
             </form>
@@ -194,7 +198,9 @@
                 </div>
                 <div class="clearfix">
                     <div class="input">
-                        <a href="javascript:void(0);" class="btn small secondary" onclick="hideRequestHelper('oAuth1')">Minimize</a>
+                        <a href="javascript:void(0);" class="btn small secondary" onclick="hideRequestHelper('oAuth1')">
+                            Refresh request
+                        </a>
                     </div>
                 </div>
             </form>
@@ -327,7 +333,7 @@
                 <div id="respDataActions" class="sectionOptions">
                     <a href="javascript:void(0);" class="sectionOptions" onclick="toggleResponseBodySize();"
                        id="responseBodyToggle">
-                        Maximize
+                        <img src="images/full-screen-alt-4.png" width="24px" height="24px"/>
                     </a>
                 </div>
                 <div id="langFormat">
@@ -499,7 +505,7 @@
             </tr>
             <tr>
                 <td>Maximize/minimze request body</td>
-                <td><strong>m</strong></td>
+                <td><strong>f</strong></td>
             </tr>
             <tr>
                 <td>Edit headers</td>
