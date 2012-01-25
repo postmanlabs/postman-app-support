@@ -215,12 +215,14 @@ function Response() {
 
 function startNewRequest() {
     $("#url").val("");
+    $('#headers').val("");
     clearFields();
 
     //clearHeaders
     //close edit params
     $('.method-selectors li').removeClass('active');
     $('.method-selector-get').addClass('active');
+    showParamsEditor("headers");
     showRequestMethodUi('GET');
     $('#url').focus();
 }

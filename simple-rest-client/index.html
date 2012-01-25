@@ -500,6 +500,10 @@
                 <td><strong>n</strong></td>
             </tr>
             <tr>
+                <td>Edit URL</td>
+                <td><strong>Backspace</strong></td>
+            </tr>
+            <tr>
                 <td>Send a request</td>
                 <td><strong>s</strong></td>
             </tr>
@@ -650,10 +654,12 @@
                placeholder="${placeHolderValue}"/>
         {{/if}}
         {{if section == "body" }}
-            <select>
-                <option value="text" ${selectedText}>Text</option>
-                <option value="file" ${selectedFile}>File</option>
-            </select>
+        <select>
+            <option value="text"
+            ${selectedText}>Text</option>
+            <option value="file"
+            ${selectedFile}>File</option>
+        </select>
         {{/if}}
 
         {{if canBeClosed}}
