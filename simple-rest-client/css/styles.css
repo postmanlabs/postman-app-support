@@ -354,7 +354,7 @@ fieldset {
 
 .paramsEditor {
     margin-bottom: 10px;
-    width: 680px;
+    width: 630px;
 }
 
 .paramsEditor .actions {
@@ -622,7 +622,7 @@ li .right {
 
 #headers-ParamsEditor {
     margin-top: 5px;
-    width: 635px;
+    width: 630px;
 }
 
 #requestUrl {

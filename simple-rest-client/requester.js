@@ -491,6 +491,11 @@ function readResponse() {
 
 //Manages showing/hiding the PUT/POST additional UI
 function showRequestMethodUi(type) {
+    $('#methods ul li').removeClass('active');
+    var t = type.toLowerCase();
+    $('.method-selector-' + t).addClass('active');
+    requestMethod = t;
+
     if (jQuery.inArray(type, ["POST", "PUT"]) > -1) {
         $("#data").css("display", "block");
         showBodyParamsEditor();
@@ -1252,9 +1257,8 @@ function showParamsEditor(section) {
 
     rows.push(rowData);
 
-    $('#itemEditorHeader').tmpl(rows).appendTo('#' + section + '-ParamsFields');
+    $('#itemParamsEditor').tmpl(rows).appendTo('#' + section + '-ParamsFields');
     $('#' + section + '-ParamsEditor').fadeIn();
-
     addEditorListeners(section);
 }
 
@@ -1263,8 +1267,8 @@ function deleteParam(section) {
 }
 
 function closeParamsEditor(section) {
-    $('#' + section + '-ParamsFields div:last input').unbind('focus');
-    $('#' + section + '-ParamsFields input').unbind('blur');
+    $('#' + section + '-ParamsFields div:last input').unbind('focus', sectionParamsLastInputFocusHandler);
+    $('#' + section + '-ParamsFields input').unbind('blur', sectionParamsInputBlurHandler);
     $('#' + section + '-ParamsEditor input.key').autocomplete("destroy");
     $('#' + section + '-ParamsEditor').css("display", "none");
 }
@@ -1298,7 +1302,7 @@ function addParamInEditor(section, data) {
         inputType:"text"
     };
 
-    $('#itemEditorHeader').tmpl([rowData]).appendTo('#' + section + '-ParamsFields');
+    $('#itemParamsEditor').tmpl([rowData]).appendTo('#' + section + '-ParamsFields');
     addEditorListeners(section);
 }
 
@@ -1425,96 +1429,111 @@ function addSidebarRequestListener(request) {
     });
 }
 
-function addEditorListeners(section) {
-    $('#' + section + '-ParamsFields div:last input').focus(function () {
-        //Select parent element
-        var fieldsParent = $(this).parents(".editorFields");
-        var id = fieldsParent.attr("id");
-        var section = id.split("-")[0];
+var sectionParamsLastInputFocusHandler = function (evt) {
+    //Select parent element
+    var fieldsParent = $(this).parents(".editorFields");
+    var id = fieldsParent.attr("id");
+    var section = id.split("-")[0];
 
-        $('#' + section + '-ParamsFields div:last input').unbind('focus');
+    $('#' + section + '-ParamsFields div:last input').unbind('focus', sectionParamsLastInputFocusHandler);
 
-        var parent = $(this).parent();
+    var parent = $(this).parent();
 
-        //Add a delete link
-        var deleteHtml = "<a href=\"javascript:void(0);\" class=\"deleteParam\">";
-        deleteHtml += "<img class=\"deleteButton\" src=\"images/delete.png\"/>";
-        deleteHtml += "</a>";
-        parent.append(deleteHtml);
+    //Add a delete link
+    var deleteHtml = "<a href=\"javascript:void(0);\" class=\"deleteParam\">";
+    deleteHtml += "<img class=\"deleteButton\" src=\"images/delete.png\"/>";
+    deleteHtml += "</a>";
+    parent.append(deleteHtml);
 
-        addParamInEditor(section);
-    });
+    addParamInEditor(section);
+    return true;
+};
 
-    $('#' + section + '-ParamsFields div input').blur(function () {
-        var fieldsParent = $(this).parents(".editorFields");
-        var id = fieldsParent.attr("id");
-        var section = id.split("-")[0];
-        setParamsFromEditor(section);
-    });
+var sectionParamsInputBlurHandler = function (evt) {
+    var fieldsParent = $(this).parents(".editorFields");
+    var id = fieldsParent.attr("id");
+    var section = id.split("-")[0];
+    setParamsFromEditor(section);
+};
 
-    $('#' + section + '-ParamsFields div select').change(function () {
-        //var paramType = $('#' + section + '-ParamsFields div select').val();
-        var paramType = $(this).val();
+var sectionParamsSelectChangeHandler = function (evt) {
+    //var paramType = $('#' + section + '-ParamsFields div select').val();
+    var paramType = $(this).val();
 
-        placeHolderKey = "Key";
-        placeHolderValue = "Value";
+    placeHolderKey = "Key";
+    placeHolderValue = "Value";
 
-        var key = "";
-        var value = "";
-        var send = "";
+    var key = "";
+    var value = "";
+    var send = "";
 
-        if (paramType) {
-            var rowData = {
-                section:section,
-                placeHolderKey:placeHolderKey,
-                placeHolderValue:placeHolderValue,
-                key:key,
-                value:value,
-                inputType:"text",
-                canBeClosed:false
-            };
+    var fieldsParent = $(this).parents(".editorFields");
+    var id = fieldsParent.attr("id");
+    var section = id.split("-")[0];
 
-            if ($(this).siblings().length > 2) {
-                rowData.canBeClosed = true;
-            }
+    if (paramType) {
+        var rowData = {
+            section: section,
+            placeHolderKey:placeHolderKey,
+            placeHolderValue:placeHolderValue,
+            key:key,
+            value:value,
+            inputType:"text",
+            canBeClosed:false
+        };
 
-            if (paramType === "text") {
-                rowData.selectedText = "selected";
-                rowData.selectedFile = "";
-            }
-            else {
-                rowData.selectedText = "";
-                rowData.selectedFile = "selected";
-            }
+        if ($(this).siblings().length > 2) {
+            rowData.canBeClosed = true;
+        }
 
-            rowData.inputType = paramType;
-
-            $('#itemEditorHeader').tmpl([rowData]).appendTo($(this).parent().empty());
-            addEditorListeners(section);
+        if (paramType === "text") {
+            rowData.selectedText = "selected";
+            rowData.selectedFile = "";
         }
         else {
+            rowData.selectedText = "";
+            rowData.selectedFile = "selected";
         }
-    });
 
-    $('.deleteParam').bind("click", function () {
-        var fieldsParent = $(this).parents(".editorFields");
-        var id = fieldsParent.attr("id");
-        if (id) {
-            var section = id.split("-")[0];
-            $(this).parent().remove();
-            setParamsFromEditor(section);
-        }
-    });
+        rowData.inputType = paramType;
 
+        $('#itemParamsEditor').tmpl([rowData]).appendTo($(this).parent().empty());
+        addEditorListeners(section);
+    }
+    else {
+    }
+};
+
+var deleteParamHandler = function(evt) {
+    var fieldsParent = $(this).parents(".editorFields");
+    var id = fieldsParent.attr("id");
+    if (id) {
+        var section = id.split("-")[0];
+        $(this).parent().remove();
+        setParamsFromEditor(section);
+    }
+}
+
+function addEditorListeners(section) {
+    $('#' + section + '-ParamsFields div:last input').bind("focus", sectionParamsLastInputFocusHandler);
+    $('#' + section + '-ParamsFields div input').bind("blur", sectionParamsInputBlurHandler);
+    $('#' + section + '-ParamsFields div select').bind("change", sectionParamsSelectChangeHandler);
+    $('.deleteParam').bind("click", deleteParamHandler);
     if (section === 'headers') {
         addHeaderAutoComplete();
     }
+
+    $('#' + section + '-ParamsFields div input').unbind('keydown', 'esc', escInputHandler);
+    $('#' + section + '-ParamsFields div select').unbind('keydown', 'esc', escInputHandler);
+    $('#' + section + '-ParamsFields div input').bind('keydown', 'esc', escInputHandler);
+    $('#' + section + '-ParamsFields div select').bind('keydown', 'esc', escInputHandler);
 }
 
 function setCurrentDataFormat(method) {
     $('#data ul li').removeClass('active');
     $('#data-' + method).parent().addClass('active');
 }
+
 function showBodyParamsEditor() {
     dataMode = "params";
     showParamsEditor('body');
@@ -1882,25 +1901,84 @@ function minimizeResponseBody() {
     $('#respData').css("padding", "0px");
 }
 
+var escInputHandler = function (evt) {
+    $(evt.target).blur();
+};
+
 function setupKeyboardShortcuts() {
-    $(document).bind('keydown', 'backspace', function () {
+
+    var selectGetHandler = function (evt) {
+        showRequestMethodUi('GET');
+        return false;
+    };
+
+    var selectPostHandler = function (evt) {
+        showRequestMethodUi('POST');
+        return false;
+    };
+
+    var selectPutHandler = function (evt) {
+        showRequestMethodUi('PUT');
+        return false;
+    };
+
+    var selectDeleteHandler = function (evt) {
+        showRequestMethodUi('DELETE');
+        return false;
+    };
+
+    var selectHeadHandler = function (evt) {
+        showRequestMethodUi('HEAD');
+        return false;
+    };
+
+    var selectOptionsHandler = function (evt) {
+        showRequestMethodUi('OPTIONS');
+        return false;
+    };
+
+    var clearHistoryHandler = function (evt) {
+        clearHistory();
+        return false;
+    };
+
+    var urlFocusHandler = function (evt) {
         $('#url').focus();
         return false;
-    });
+    };
 
-    $(document).bind('keydown', 'n', function () {
+    var newRequestHandler = function (evt) {
         startNewRequest();
-        return false;
-    });
+    };
+
+    $('input').bind('keydown', 'esc', escInputHandler);
+    $('select').bind('keydown', 'esc', escInputHandler);
+
+    $(document).bind('keydown', 'alt+1', selectGetHandler);
+    $(document).bind('keydown', 'alt+2', selectPostHandler);
+    $(document).bind('keydown', 'alt+3', selectPutHandler);
+    $(document).bind('keydown', 'alt+4', selectDeleteHandler);
+    $(document).bind('keydown', 'alt+5', selectHeadHandler);
+    $(document).bind('keydown', 'alt+6', selectOptionsHandler);
+    $(document).bind('keydown', 'alt+c', clearHistoryHandler);
+    $(document).bind('keydown', 'backspace', urlFocusHandler);
+    $(document).bind('keydown', 'alt+n', newRequestHandler);
 
     $(document).bind('keydown', 'h', function () {
         $('#headers-ParamsFields div:first-child input:first-child').focus();
         return false;
     });
 
-    $(document).bind('keydown', 's', function () {
+    $(document).bind('keydown', 'return', function () {
         sendRequest();
         return false;
+    });
+
+    $(document).bind('keydown', 'p', function () {
+        if(requestMethod === "post" || requestMethod === "put") {
+            $('#body-ParamsFields div:first-child input:first-child').focus();
+            return false;
+        }
     });
 
     $(document).bind('keydown', 'f', function () {
@@ -1918,6 +1996,7 @@ function setupKeyboardShortcuts() {
         });
         $('#formModalAddToColllection').modal('show');
         $('#selectCollectionContainer').focus();
+
         //Focus on the form element
         return false;
     });
@@ -2014,6 +2093,8 @@ $(document).ready(function () {
     lang();
     init();
 
+    $('a[rel="twipsy"]').twipsy();
+
     addHeaderListeners();
     addUrlAutoComplete();
     attachSidebarListeners();
@@ -2039,13 +2120,6 @@ $(document).ready(function () {
     $('#formNewCollection').submit(function () {
         submitNewCollectionForm();
         return false;
-    });
-
-
-    $('#methods ul li a').bind("click", function () {
-        $('#methods ul li').removeClass('active');
-        $(this).parent().addClass('active');
-        requestMethod = $(this).attr('data-method');
     });
 
     $(window).resize(function () {

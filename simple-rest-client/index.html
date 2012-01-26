@@ -64,12 +64,16 @@
     </div>
     <div id="sidebarContainer" class="clearfix">
         <div id="historyOptions" class="sectionOptions">
-            <a href="javascript:void(0);" onclick="clearHistory()">
+            <a href="javascript:void(0);" onclick="clearHistory()"
+               data-offset="10"
+               data-placement="above" rel="twipsy" title="Clear history">
                 <img src="images/trash-empty.png" width="24px" height="24px"/>
             </a>
         </div>
         <div id="collectionsOptions" class="sectionOptions">
             <a href="javascript:void(0);"
+               data-offset="10"
+               data-placement="above" rel="twipsy" title="Add new collection"
                data-controls-modal="formModalNewCollection" data-backdrop="static" data-keyboard="true">
                 <img src="images/file-add.png" width="24px" height="24px"/>
             </a>
@@ -481,10 +485,9 @@
         <a href="javascript:void(0);" onclick="closeAboutPostman();" class="btn primary">Close</a>
     </div>
 </div>
-<div id="modalShortcuts" class="modal fade">
+<div id="modalShortcuts" class="modal fade" style="max-height: 600px;">
     <div class="modal-header">
         <a href="#" class="close">×</a>
-
         <h3>Shortcuts</h3>
     </div>
     <div class="modal-body">
@@ -497,37 +500,46 @@
             </thead>
             <tr>
                 <td>New request</td>
-                <td><strong>n</strong></td>
+                <td><strong>Alt + n</strong></td>
             </tr>
             <tr>
                 <td>Edit URL</td>
                 <td><strong>Backspace</strong></td>
             </tr>
             <tr>
-                <td>Send a request</td>
-                <td><strong>s</strong></td>
+                <td>Edit headers</td>
+                <td><strong>h</strong></td>
+            </tr>
+            <tr>
+                <td>Edit request body</td>
+                <td><strong>p</strong></td>
+            </tr>
+            <tr>
+                <td>Send request</td>
+                <td><strong>Enter/Return</strong></td>
             </tr>
             <tr>
                 <td>Maximize/minimze request body</td>
                 <td><strong>f</strong></td>
             </tr>
             <tr>
-                <td>Edit headers</td>
-                <td><strong>h</strong></td>
-            </tr>
-            <tr>
                 <td>Add request to collection</td>
                 <td><strong>a</strong></td>
             </tr>
             <tr>
-                <td>Help</td>
+                <td>Clear history</td>
+                <td><strong>Alt + c</strong></td>
+            </tr>
+            <tr>
+                <td>Request method</td>
+                <td><strong>Alt + 1/2/3/4/5/6</strong></td>
+            </tr>
+            <tr>
+                <td>This window</td>
                 <td><strong>?</strong></td>
             </tr>
 
         </table>
-    </div>
-    <div class="modal-footer">
-        <a href="javascript:void(0);" onclick="closeModal('modalShortcuts');" class="btn primary">Close</a>
     </div>
 </div>
 <div id="modalResponseError" class="modal fade">
@@ -627,7 +639,7 @@
 <script id="itemEditorStandard" type="text/x-jquery-tmpl">
 
 </script>
-<script id="itemEditorHeader" type="text/x-jquery-tmpl">
+<script id="itemParamsEditor" type="text/x-jquery-tmpl">
     <div>
         <input type="text"
                data-section="${section}"
