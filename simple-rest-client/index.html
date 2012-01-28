@@ -154,50 +154,64 @@
                     <label>Consumer Key</label>
 
                     <div class="input">
-                        <input type="text" id="requestHelper-oauth1-consumerKey" class="cleanInput"/>
+                        <input type="text" id="requestHelper-oauth1-consumerKey" class="cleanInput signatureParam"
+                               key="oauth_consumer_key"/>
                     </div>
                 </div>
                 <div class="clearfix">
                     <label>Consumer Secret</label>
 
                     <div class="input">
-                        <input type="text" id="requestHelper-oauth1-consumerSecret" class="cleanInput"/>
+                        <input type="text" id="requestHelper-oauth1-consumerSecret" class="cleanInput"
+                               key="oauth_consumer_secret"/>
+                    </div>
+                </div>
+                <div class="clearfix">
+                    <label>Token</label>
+
+                    <div class="input">
+                        <input type="text" id="requestHelper-oauth1-token" class="cleanInput signatureParam"
+                               key="oauth_token"/>
+                    </div>
+                </div>
+                <div class="clearfix">
+                    <label>Token Secret</label>
+
+                    <div class="input">
+                        <input type="text" id="requestHelper-oauth1-tokenSecret" class="cleanInput"
+                               key="oauth_token_secret"/>
                     </div>
                 </div>
                 <div class="clearfix">
                     <label>Signature Method</label>
 
                     <div class="input">
-                        <input type="text" id="requestHelper-oauth1-signatureMethod" class="cleanInput"
-                               value="HMAC-SHA1"/>
+                        <input type="text" id="requestHelper-oauth1-signatureMethod" class="cleanInput signatureParam"
+                               value="HMAC-SHA1" key="oauth_signature_method"/>
                     </div>
                 </div>
                 <div class="clearfix">
                     <label>Timestamp</label>
 
                     <div class="input">
-                        <input type="text" id="requestHelper-oauth1-timestamp" class="cleanInput"/>
+                        <input type="text" id="requestHelper-oauth1-timestamp" class="cleanInput signatureParam"
+                                key="oauth_timestamp"/>
                     </div>
                 </div>
                 <div class="clearfix">
                     <label>Nonce</label>
 
                     <div class="input">
-                        <input type="text" id="requestHelper-oauth1-nonce" class="cleanInput"/>
+                        <input type="text" id="requestHelper-oauth1-nonce" class="cleanInput signatureParam"
+                                key="oauth_nonce"/>
                     </div>
                 </div>
                 <div class="clearfix">
                     <label>Version</label>
 
                     <div class="input">
-                        <input type="text" id="requestHelper-oauth1-version" class="cleanInput" value="1.0"/>
-                    </div>
-                </div>
-                <div class="clearfix">
-                    <label>Signature</label>
-
-                    <div class="input">
-                        <input type="text" id="requestHelper-oauth1-signature" class="cleanInput"/>
+                        <input type="text" id="requestHelper-oauth1-version" class="cleanInput signatureParam" value="1.0"
+                               key="oauth_version"/>
                     </div>
                 </div>
                 <div class="clearfix">
@@ -485,7 +499,7 @@
         <a href="javascript:void(0);" onclick="closeAboutPostman();" class="btn primary">Close</a>
     </div>
 </div>
-<div id="modalShortcuts" class="modal fade" style="max-height: 600px;">
+<div id="modalShortcuts" class="modal fade">
     <div class="modal-header">
         <a href="#" class="close">×</a>
         <h3>Shortcuts</h3>
@@ -538,7 +552,6 @@
                 <td>This window</td>
                 <td><strong>?</strong></td>
             </tr>
-
         </table>
     </div>
 </div>

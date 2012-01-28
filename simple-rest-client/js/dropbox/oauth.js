@@ -327,9 +327,6 @@ OAuth.setProperties(OAuth, // utility functions
     }
 ,
     nonce: function nonce(length) {
-        if (length == undefined) {
-            length = 6;
-        }
         var chars = OAuth.nonce.CHARS;
         var result = "";
         for (var i = 0; i < length; ++i) {

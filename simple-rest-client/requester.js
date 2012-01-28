@@ -17,81 +17,6 @@
  under the License.
  */
 
-var presetDetails = {
-    "oauth-request":[
-        {
-            key:"oauth_consumer_key",
-            value:"",
-            tooltip:"The Consumer Key",
-            action:null
-        },
-        {
-            key:"oauth_consumer_secret",
-            value:"",
-            tooltip:"The Consumer Secret",
-            action:null,
-            send:false
-        },
-        {
-            key:"oauth_signature_method",
-            value:"HMAC-SHA1",
-            tooltip:"The signature method the Consumer used to sign the request.",
-            action:null
-        },
-        {
-            key:"oauth_timestamp",
-            value:OAuth.timestamp,
-            tooltip:"The timestamp is expressed in the number of seconds since January 1, 1970 00:00:00 GMT.",
-            action:{
-                title:"Generate",
-                method:OAuth.timestamp
-            }
-        },
-        {
-            key:"oauth_nonce",
-            value:OAuth.nonce,
-            tooltip:"A nonce is a random string, uniquely generated for each request.",
-            action:{
-                title:"Generate",
-                method:OAuth.nonce
-            }
-        },
-        {
-            key:"oauth_version",
-            value:"1.0",
-            tooltip:"OPTIONAL. If present, value MUST be 1.0 . Service Providers MUST assume the protocol version " +
-                "to be 1.0 if this parameter is not present. " +
-                "Service Providers’ response to non-1.0 value is left undefined.",
-            action:null
-        },
-        {
-            key:"oauth_signature",
-            value:"",
-            tooltip:"The signature.",
-            action:{
-                title:"Generate",
-                method:function () {
-                    var message = {
-                        action:$('#url').val(),
-                        method:$('#methods li.active a').html(),
-                        parameters:[]
-                    };
-                    $('input.key').each(function () {
-                        if ($(this).val() != 'oauth_signature' && $(this).val() != 'oauth_consumer_secret' && $(this).val() != '') {
-                            message.parameters.push([$(this).val(), valuesFollowingInputValue($(this).val())]);
-                        }
-                    });
-                    var accessor = {
-                        consumerSecret:$('input.key[value="oauth_consumer_secret"]').val(),
-                        tokenSecret:"u3f86hur8sguwbn"
-                    };
-                    return OAuth.SignatureMethod.sign(message, accessor);
-                }
-            }
-        }
-    ]
-};
-
 var headerDetails = {
     "accept-ranges":"Content-Types that are acceptable",
     "age":"The age the object has been in a proxy cache in seconds",
@@ -153,6 +78,7 @@ postman.currentRequest = {};
 postman.currentRequest.url = "";
 postman.currentRequest.body = "";
 postman.currentRequest.headers = [];
+postman.currentRequest.method = "GET";
 postman.history = {};
 postman.history.requests = [];
 postman.settings = {};
@@ -491,6 +417,7 @@ function readResponse() {
 
 //Manages showing/hiding the PUT/POST additional UI
 function showRequestMethodUi(type) {
+    postman.currentRequest.method = type.toUpperCase();
     $('#methods ul li').removeClass('active');
     var t = type.toLowerCase();
     $('.method-selector-' + t).addClass('active');
@@ -1071,6 +998,7 @@ function loadCollectionRequest(id) {
 function loadRequestInEditor(request) {
     showRequestHelper("normal");
     var method = request.method.toLowerCase();
+    postman.currentRequest.method = method.toUpperCase();
 
     $('#url').val(request.url);
 
@@ -2057,7 +1985,7 @@ function hideRequestHelper(type) {
         processBasicAuthRequestHelper();
     }
     else if (type === 'oAuth1') {
-
+        processOAuth1RequestHelper();
     }
     return false;
 }
@@ -2072,6 +2000,10 @@ function showRequestHelper(type) {
         $('#requestHelpers').css("display", "none");
     }
 
+    if(type.toLowerCase() === 'oauth1') {
+        generateOAuth1RequestHelper();
+    }
+
     $('.requestHelpers').css("display", "none");
     $('#requestHelper-' + type).css("display", "block");
     return false;
@@ -2084,6 +2016,100 @@ function setupRequestHelpers() {
         var type = $(this).attr('data-id');
         showRequestHelper(type);
     });
+}
+
+function generateOAuth1RequestHelper() {
+    $('#requestHelper-oauth1-timestamp').val(OAuth.timestamp());
+    $('#requestHelper-oauth1-nonce').val(OAuth.nonce(6));
+}
+
+function generateSignature() {
+    var message = {
+        action:$('#url').val().trim(),
+        method:$('#methods li.active a').html(),
+        parameters:[]
+    };
+    //all the fields defined by oauth
+    $('input.signatureParam').each(function () {
+        if ($(this).val() != '') {
+            message.parameters.push([$(this).attr('key'), $(this).val()]);
+        }
+    });
+    //all the extra GET parameters
+    $('#body-ParamsFields input.key, #url-ParamsFields input.key').each(function () {
+        if ($(this).val() != '') {
+            message.parameters.push([$(this).val(), $(this).next().val()]);
+        }
+    });
+
+    var accessor = {};
+    if ($('input[key="oauth_consumer_secret"]').val() != '') {
+        accessor.consumerSecret = $('input[key="oauth_consumer_secret"]').val();
+    }
+    if ($('input[key="oauth_token_secret"]').val() != '') {
+        accessor.tokenSecret = $('input[key="oauth_token_secret"]').val();
+    }
+
+    return OAuth.SignatureMethod.sign(message, accessor);
+}
+
+function setBodyParamString(url, params) {
+    var paramsLength = params.length;
+    var paramArr = [];
+    for (var i = 0; i < paramsLength; i++) {
+        var p = params[i];
+        if (p.name && p.name !== "") {
+            paramArr.push(p.name + "=" + p.value);
+        }
+    }
+    $('#body').val(paramArr.join('&'));
+}
+
+function setUrlParamString(url, params) {
+    var paramArr = [];
+    var urlParams = getUrlVars(url);
+    for (var i = 0; i < urlParams.length; i++) {
+        var p = urlParams[i];
+        if (p.key && p.key !== "") {
+            paramArr.push(p.key + "=" + p.value);
+        }
+    }
+    for (var i = 0; i < params.length; i++) {
+        var p = params[i];
+        if (p.name && p.name !== "") {
+            paramArr.push(p.name + "=" + p.value);
+        }
+    }
+
+    var baseUrl = url.split("?")[0];
+    $('#url').val(baseUrl + "?" + paramArr.join('&'));
+}
+
+function processOAuth1RequestHelper() {
+    var params = [];
+
+    var signatureKey = "oauth_signature";
+    var signature = generateSignature();
+    params.push({name:signatureKey, value:signature});
+
+    $('input.signatureParam').each(function(){
+        if ($(this).val() != '') {
+            params.push({name:$(this).attr('key'), value:$(this).val()});
+        }
+    });
+
+    if(postman.currentRequest.method === 'GET') {
+        var url = $('#url').val();
+        //postman.currentRequest.headers = body + ;
+        setUrlParamString(url, params);
+        showParamsEditor("url");
+    } else {
+        var body = postman.currentRequest.body;
+        //postman.currentRequest.headers = body + ;
+        setBodyParamString(body, params);
+        showParamsEditor("body");
+    }
+
 }
 
 $(document).ready(function () {

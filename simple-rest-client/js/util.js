@@ -26,10 +26,10 @@ function getUrlVars(url, associative) {
     var element;
 
     for (var i = 0; i < hashes.length; i++) {
-        hash = hashes[i].split('=');
+        equalLocation = hashes[i].indexOf('=');
         element = {
-            "key": jQuery.trim(hash[0]),
-            "value": jQuery.trim(hash[1])
+            "key":hashes[i].slice(0, equalLocation),
+            "value":hashes[i].slice(equalLocation + 1)
         };
         (associative == true)?(varsAssoc[element.key] =element.value):(vars.push(element));
     }
