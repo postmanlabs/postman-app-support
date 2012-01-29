@@ -1586,7 +1586,8 @@ function setResponseFormat(mime, response, format, forceCreate) {
                 lineNumbers:true,
                 fixedGutter:true,
                 onGutterClick:foldFunc,
-                theme:'eclipse'
+                theme:'eclipse',
+                lineWrapping: true
             });
 
         postmanCodeMirror.setValue(response);
@@ -1595,6 +1596,7 @@ function setResponseFormat(mime, response, format, forceCreate) {
         postmanCodeMirror.setValue(response);
         postmanCodeMirror.setOption("onGutterClick", foldFunc);
         postmanCodeMirror.setOption("mode", mode);
+        postmanCodeMirror.setOption("lineWrapping", true);
         postmanCodeMirror.setOption("theme", "eclipse");
     }
 
@@ -1880,6 +1882,7 @@ function setupKeyboardShortcuts() {
     };
 
     $('input').bind('keydown', 'esc', escInputHandler);
+    $('textarea').bind('keydown', 'esc', escInputHandler);
     $('select').bind('keydown', 'esc', escInputHandler);
 
     $(document).bind('keydown', 'alt+1', selectGetHandler);

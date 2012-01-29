@@ -680,6 +680,15 @@ li .right {
     display: none;
 }
 
+#modalShortcuts {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-top: -300px;
+    margin-left: -250px;
+    display: none;
+}
+
 #newCollectionContainer {
 }
 

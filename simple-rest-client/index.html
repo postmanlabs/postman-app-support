@@ -499,6 +499,18 @@
         <a href="javascript:void(0);" onclick="closeAboutPostman();" class="btn primary">Close</a>
     </div>
 </div>
+<div id="modalResponseError" class="modal fade">
+    <div class="modal-header">
+        <a href="#" class="close">×</a>
+
+        <h3>Could not get any response</h3>
+    </div>
+    <div class="modal-body">
+        <p>
+            Something went wrong while fetching the response. Check your request again.
+        </p>
+    </div>
+</div>
 <div id="modalShortcuts" class="modal fade">
     <div class="modal-header">
         <a href="#" class="close">×</a>
@@ -507,10 +519,10 @@
     <div class="modal-body">
         <table>
             <thead>
-            <tr>
-                <th>Action</th>
-                <th>Shortcut key</th>
-            </tr>
+                <tr>
+                    <td>Action</td>
+                    <td>Shortcut key</td>
+                </tr>
             </thead>
             <tr>
                 <td>New request</td>
@@ -533,7 +545,7 @@
                 <td><strong>Enter/Return</strong></td>
             </tr>
             <tr>
-                <td>Maximize/minimze request body</td>
+                <td>Maximize/minimze response</td>
                 <td><strong>f</strong></td>
             </tr>
             <tr>
@@ -553,18 +565,6 @@
                 <td><strong>?</strong></td>
             </tr>
         </table>
-    </div>
-</div>
-<div id="modalResponseError" class="modal fade">
-    <div class="modal-header">
-        <a href="#" class="close">×</a>
-
-        <h3>Could not get any response</h3>
-    </div>
-    <div class="modal-body">
-        <p>
-            Something went wrong while fetching the response. Check your request again.
-        </p>
     </div>
 </div>
 <!--<div id="modalDropboxSync" class="modal fade">
