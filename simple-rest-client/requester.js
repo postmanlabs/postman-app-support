@@ -2027,6 +2027,11 @@ function generateOAuth1RequestHelper() {
 }
 
 function generateSignature() {
+    if ($('#url').val() == '') {
+        $('#requestHelpers').css("display", "block");
+        alert('Please enter the URL first.');
+        return null;
+    }
     var message = {
         action:$('#url').val().trim(),
         method:$('#methods li.active a').html(),
@@ -2093,6 +2098,10 @@ function processOAuth1RequestHelper() {
 
     var signatureKey = "oauth_signature";
     var signature = generateSignature();
+    if (signature == null) {
+        return;
+    }
+
     params.push({name:signatureKey, value:signature});
 
     $('input.signatureParam').each(function(){
