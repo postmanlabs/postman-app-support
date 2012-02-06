@@ -418,12 +418,10 @@ function readResponse() {
 //Manages showing/hiding the PUT/POST additional UI
 function showRequestMethodUi(type) {
     postman.currentRequest.method = type.toUpperCase();
-    $('#methods ul li').removeClass('active');
     var t = type.toLowerCase();
-    $('.method-selector-' + t).addClass('active');
     requestMethod = t;
 
-    if (jQuery.inArray(type, ["POST", "PUT"]) > -1) {
+    if (jQuery.inArray(type, ["post", "put", "patch"]) > -1) {
         $("#data").css("display", "block");
         showBodyParamsEditor();
     } else {
@@ -448,7 +446,10 @@ function init() {
         sendRequest();
     });
 
-    showParamsEditor("headers");
+    $('#requestMethodSelector').change(function() {
+        var val = $(this).val();
+        showRequestMethodUi(val);
+    });
 }
 
 function setupDB() {
@@ -1034,8 +1035,6 @@ function loadRequestInEditor(request) {
         closeParamsEditor("body");
     }
 
-    $('#methods ul li').removeClass('active');
-    $('#method-' + method).parent().addClass('active');
     requestMethod = method;
 
     closeParamsEditor("url");
@@ -2029,6 +2028,8 @@ function generateOAuth1RequestHelper() {
 function generateSignature() {
     var message = {
         action:$('#url').val().trim(),
+
+        //TODO Change this to use postman.currentRequest.method
         method:$('#methods li.active a').html(),
         parameters:[]
     };

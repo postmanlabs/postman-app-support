@@ -108,7 +108,6 @@
         <li data-id="oAuth1">OAuth 1.0</li>
     </ul>
     <div class="topSidebar">
-
         <a href="javascript:void(0);" onclick="showModal('modalShortcuts');">
             <img src="images/keyboard.png" width="24px" height="24px" style="vertical-align: middle;"/>
             Shortcuts
@@ -231,14 +230,30 @@
     </div>
 </div>
 <div id="requestUrl" class="row clearfix">
-    <div class="span10">
+    <div class="span8">
         <input type="text" name="url" id="url" tabindex="1" class="inputTextLight"
                placeholder="Enter request URL here"/>
     </div>
     <div class="span2">
+        <select id="requestMethodSelector">
+            <option value="get" selected>GET</option>
+            <option value="post">POST</option>
+            <option value="put">PUT</option>
+            <option value="patch">PATCH</option>
+            <option value="delete">DELETE</option>
+            <option value="head">HEAD</option>
+            <option value="options">OPTIONS</option>
+        </select>
+    </div>
+    <div class="span4">
         <span class="buttonLayout">
             <button href="javascript:void(0);" class="btn small"
                     onclick="showParamsEditor('url')">Edit params
+            </button>
+        </span>
+        <span class="buttonLayout">
+            <button href="javascript:void(0);" class="btn small"
+                    onclick="showParamsEditor('headers')">Edit headers
             </button>
         </span>
     </div>
@@ -246,36 +261,14 @@
 
 <div id="url-ParamsEditor" class="paramsEditor">
     <div id="url-ParamsFields" class="editorFields"></div>
-    <form class="form-stacked">
-        <div id="url-ParamsEditorActions" class="actions">
-            <input type="button" id="cancelUrlParamsButton"
-                   class="btn primary small"
-                   name="closeUrlParams"
-                   value="Save"
-                   placeholder="URL..."
-                   onclick="closeParamsEditor('url')"/>
-        </div>
-    </form>
-</div>
-
-<div id="methods" class="clearfix">
-    <ul class="method-selectors pills small" style="margin-bottom: 10px;">
-        <li class="method-selector-get active"><a id="method-get" href="javascript:void(0);"
-                                                  data-method="get"
-                                                  onclick="showRequestMethodUi('GET');">GET</a></li>
-        <li class="method-selector-post"><a id="method-post" href="javascript:void(0);" data-method="post"
-                                            onclick="showRequestMethodUi('POST');">POST</a></li>
-        <li class="method-selector-put"><a id="method-put" href="javascript:void(0);" data-method="put"
-                                           onclick="showRequestMethodUi('PUT');">PUT</a></li>
-        <li class="method-selector-delete"><a id="method-delete" href="javascript:void(0);"
-                                              data-method="delete"
-                                              onclick="showRequestMethodUi('DELETE');">DELETE</a></li>
-        <li class="method-selector-head"><a id="method-head" href="javascript:void(0);" data-method="head"
-                                            onclick="showRequestMethodUi('HEAD');">HEAD</a></li>
-        <li class="method-selector-options"><a id="method-options" href="javascript:void(0);"
-                                               data-method="options"
-                                               onclick="showRequestMethodUi('OPTIONS');">OPTIONS</a></li>
-    </ul>
+    <div id="url-ParamsEditorActions">
+        <input type="button" id="cancelUrlParamsButton"
+               class="btn primary small"
+               name="closeUrlParams"
+               value="Save"
+               placeholder="URL..."
+               onclick="closeParamsEditor('url')"/>
+    </div>
 </div>
 
 <div id="pheaders" class="row clearfix">
@@ -288,6 +281,13 @@
 <div class="row">
     <div id="headers-ParamsEditor" class="span10 paramsEditor">
         <div id="headers-ParamsFields" class="editorFields"></div>
+            <div id="headers-ParamsEditorActions">
+                <input type="button" id="cancelHeadersParamsButton"
+                       class="btn primary small"
+                       name="closeHeadersParams"
+                       value="Save"
+                       onclick="closeParamsEditor('headers')"/>
+            </div>
     </div>
 </div>
 
@@ -309,23 +309,19 @@
     </div>
 </div>
 
-<form class="form-stacked">
-    <div id="requestActions" class="actions clearfix">
-        <div id="requestActionsMain">
-            <button class="btn primary" data-loading-text="Fetching data..." type="button"
-                    data-complete-text="Send request" id="submitRequest" tabindex="5">
-                Send
-            </button>
-        </div>
-        <div id="requestActionsOptions">
-            <button class="btn"
-                    data-controls-modal="formModalAddToCollection" data-backdrop="static"
-                    data-keyboard="true">
-                Add to collection
-            </button>
-        </div>
+<div id="requestActions" class="clearfix">
+    <div id="requestActionsMain">
+        <button class="btn primary" data-loading-text="Fetching data..." type="button"
+                data-complete-text="Send request" id="submitRequest" tabindex="5">
+            Send
+        </button>
+        <button class="btn"
+                data-controls-modal="formModalAddToCollection" data-backdrop="static"
+                data-keyboard="true">
+            Add to collection
+        </button>
     </div>
-</form>
+</div>
 </section>
 
 <section id="response">
@@ -517,11 +513,11 @@
         <h3>Shortcuts</h3>
     </div>
     <div class="modal-body">
-        <table>
+        <table class="table table-bordered table-striped">
             <thead>
                 <tr>
-                    <td>Action</td>
-                    <td>Shortcut key</td>
+                    <th>Action</th>
+                    <th>Shortcut key</th>
                 </tr>
             </thead>
             <tr>

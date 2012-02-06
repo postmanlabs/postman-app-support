@@ -44,6 +44,10 @@ html, body {
     outline: none;
 }
 
+#requestMethodSelector {
+    width: 90px;
+}
+
 header {
     display: block;
     font-size: 13px;
@@ -158,7 +162,8 @@ fieldset {
 }
 
 #url-ParamsEditor,
-#body-ParamsEditor {
+#body-ParamsEditor,
+#headers-ParamsEditor {
     display: none;
 }
 
