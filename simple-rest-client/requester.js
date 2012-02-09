@@ -88,6 +88,9 @@ postman.response = {};
 postman.response.state = {};
 postman.response.state.size = "normal";
 
+postman.codeMirror = {};
+postman.codeMirror.mode = "html";
+
 var postmanCodeMirror;
 
 // IndexedDB implementations still use API prefixes
@@ -814,7 +817,7 @@ function setupDB() {
                 console.log(e);
             };
         }
-        catch(e) {
+        catch (e) {
             console.log(e);
         }
 
@@ -1575,6 +1578,8 @@ function setResponseFormat(mime, response, format, forceCreate) {
         foldFunc = CodeMirror.newFoldFunction(CodeMirror.tagRangeFinder);
     }
 
+    postman.codeMirror.mode = mode;
+
     if (!postmanCodeMirror || forceCreate) {
         postmanCodeMirror = CodeMirror.fromTextArea(codeDataArea,
             {
@@ -2164,19 +2169,76 @@ $(document).ready(function () {
     });
 
 
-    CodeMirror.defineMode("links", function (config, parserConfig) {
-        return {
-            token:function (stream, state) {
-                if (stream.match(/^\b(www\.([^\s]+))\b/)) {
-                    return "link";
-                }
+    // Utility function that allows modes to be combined. The mode given
+    // as the base argument takes care of most of the normal mode
+    // functionality, but a second (typically simple) mode is used, which
+    // can override the style of text. Both modes get to parse all of the
+    // text, but when both assign a non-null style to a piece of code, the
+    // overlay wins, unless the combine argument was true, in which case
+    // the styles are combined.
 
+    CodeMirror.overlayParser = function (base, overlay, combine) {
+        return {
+            startState:function () {
+                return {
+                    base:CodeMirror.startState(base),
+                    overlay:CodeMirror.startState(overlay),
+                    basePos:0, baseCur:null,
+                    overlayPos:0, overlayCur:null
+                };
+            },
+            copyState:function (state) {
+                return {
+                    base:CodeMirror.copyState(base, state.base),
+                    overlay:CodeMirror.copyState(overlay, state.overlay),
+                    basePos:state.basePos, baseCur:null,
+                    overlayPos:state.overlayPos, overlayCur:null
+                };
+            },
+
+            token:function (stream, state) {
+                if (stream.start == state.basePos) {
+                    state.baseCur = base.token(stream, state.base);
+                    state.basePos = stream.pos;
+                }
+                if (stream.start == state.overlayPos) {
+                    stream.pos = stream.start;
+                    state.overlayCur = overlay.token(stream, state.overlay);
+                    state.overlayPos = stream.pos;
+                }
+                stream.pos = Math.min(state.basePos, state.overlayPos);
+                if (stream.eol()) state.basePos = state.overlayPos = 0;
+
+                if (state.overlayCur == null) return state.baseCur;
+                if (state.baseCur != null && combine) return state.baseCur + " " + state.overlayCur;
+                else return state.overlayCur;
+            },
+
+            indent:function (state, textAfter) {
+                return base.indent(state.base, textAfter);
+            },
+            electricChars:base.electricChars
+        };
+    };
+
+    CodeMirror.defineMode("links", function (config, parserConfig) {
+        console.log(config, parserConfig);
+        var linksOverlay = {
+            token:function (stream, state) {
                 if (stream.eatSpace()) {
                     return null;
+                }
+
+                if (a = stream.match(/https?:\/\/.*(?=[<"'\n\t\s])/, false)) {
+                    while ((ch = stream.next()) != null) {
+                    }
+                    return "link";
                 }
 
                 stream.skipToEnd();
             }
         };
+
+        return CodeMirror.overlayParser(CodeMirror.getMode(config, parserConfig.backdrop || postman.codeMirror.mode), linksOverlay);
     });
 });
