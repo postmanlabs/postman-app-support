@@ -162,8 +162,7 @@ fieldset {
 }
 
 #url-ParamsEditor,
-#body-ParamsEditor,
-#headers-ParamsEditor {
+#body-ParamsEditor {
     display: none;
 }
 

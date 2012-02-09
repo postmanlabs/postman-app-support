@@ -227,77 +227,68 @@ function sendRequest() {
     if ($("#url").val() != "") {
         var xhr = new XMLHttpRequest();
         xhr.onreadystatechange = readResponse;
-        try {
-            var headers = $("#headers").val();
-            var url = $("#url").val();
 
-            url = ensureProperUrl(url);
+        var headers = $("#headers").val();
+        var url = $("#url").val();
 
-            var method = getRequestMethod();
+        url = ensureProperUrl(url);
 
-            var data = "";
-            var bodyData = "";
+        var method = getRequestMethod();
 
-            xhr.open(method, url, true);
+        var data = "";
+        var bodyData = "";
 
-            headers = headers.split("\n");
-            for (var i = 0; i < headers.length; i++) {
-                var header = headers[i].split(": ");
-                if (header[1]) {
-                    xhr.setRequestHeader(header[0], header[1]);
-                }
+        xhr.open(method, url, true);
+
+        headers = headers.split("\n");
+        for (var i = 0; i < headers.length; i++) {
+            var header = headers[i].split(": ");
+            if (header[1]) {
+                xhr.setRequestHeader(header[0], header[1]);
             }
+        }
 
-            if (jQuery.inArray(method, ["post", "put"]) > -1) {
-                if (dataMode === 'raw') {
-                    data = $("#body").val();
-                    bodyData = data;
-                }
-                else if (dataMode === 'params') {
-                    bodyData = new FormData();
+        if (jQuery.inArray(method, ["post", "put"]) > -1) {
+            if (dataMode === 'raw') {
+                data = $("#body").val();
+                bodyData = data;
+            }
+            else if (dataMode === 'params') {
+                bodyData = new FormData();
 
-                    //Iterate through all key/values
+                //Iterate through all key/values
 
-                    $('input[data-section=body]').each(function () {
-                        var valueEl = $(this).next();
-                        var type = valueEl.attr('type');
+                $('input[data-section=body]').each(function () {
+                    var valueEl = $(this).next();
+                    var type = valueEl.attr('type');
 
-                        if ($(this).val() !== '') {
-                            if (type === 'file') {
-                                var domEl = $(this).next().get(0);
-                                var len = domEl.files.length;
-                                for (var i = 0; i < len; i++) {
-                                    bodyData.append($(this).val(), domEl.files[i]);
-                                }
-                            }
-                            else {
-                                bodyData.append($(this).val(), valueEl.val());
+                    if ($(this).val() !== '') {
+                        if (type === 'file') {
+                            var domEl = $(this).next().get(0);
+                            var len = domEl.files.length;
+                            for (var i = 0; i < len; i++) {
+                                bodyData.append($(this).val(), domEl.files[i]);
                             }
                         }
-                    });
+                        else {
+                            bodyData.append($(this).val(), valueEl.val());
+                        }
+                    }
+                });
 
-                    data = $('#body').val();
-                }
-
-                //Check if a file is being sent
-                xhr.send(bodyData);
-            } else {
-                xhr.send();
+                data = $('#body').val();
             }
 
-            requestStartTime = new Date().getTime();
-            saveRequest(url, method, $("#headers").val(), data, dataMode);
-            $('#submitRequest').button("loading");
+            //Check if a file is being sent
+            xhr.send(bodyData);
+        } else {
+            xhr.send();
         }
-        catch (e) {
-            console.log(e);
-            $("#responseStatus").html("<span style=\"color:#FF0000\">" + chrome.i18n.getMessage("bad_request") + "</span>");
-            $("#respHeaders").css("display", "none");
-            $("#respData").css("display", "none");
 
-            $("#loader").css("display", "none");
-            $("#responsePrint").css("display", "");
-        }
+        requestStartTime = new Date().getTime();
+        saveRequest(url, method, $("#headers").val(), data, dataMode);
+        $('#submitRequest').button("loading");
+
     } else {
         console.log("no uri");
         $("#responseStatus").html("<span style=\"color:#FF0000\">" + chrome.i18n.getMessage("bad_request") + "</span>");
@@ -446,7 +437,7 @@ function init() {
         sendRequest();
     });
 
-    $('#requestMethodSelector').change(function() {
+    $('#requestMethodSelector').change(function () {
         var val = $(this).val();
         showRequestMethodUi(val);
     });
@@ -807,20 +798,26 @@ function setupDB() {
     };
 
     postman.indexedDB.deleteRequest = function (id) {
-        var db = postman.indexedDB.db;
-        var trans = db.transaction(["requests"], IDBTransaction.READ_WRITE, 0);
-        var store = trans.objectStore(["requests"]);
+        try {
+            var db = postman.indexedDB.db;
+            var trans = db.transaction(["requests"], IDBTransaction.READ_WRITE);
+            var store = trans.objectStore(["requests"]);
 
-        var request = store.delete(id);
+            var request = store.delete(id);
 
-        request.onsuccess = function (e) {
-            removeRequestFromSidebar(id);
+            request.onsuccess = function (e) {
+                removeRequestFromSidebar(id);
 
-        };
+            };
 
-        request.onerror = function (e) {
+            request.onerror = function (e) {
+                console.log(e);
+            };
+        }
+        catch(e) {
             console.log(e);
-        };
+        }
+
     };
 
     postman.indexedDB.deleteHistory = function () {
@@ -835,7 +832,7 @@ function setupDB() {
 
     postman.indexedDB.deleteCollectionRequest = function (id) {
         var db = postman.indexedDB.db;
-        var trans = db.transaction(["collection_requests"], IDBTransaction.READ_WRITE, 0);
+        var trans = db.transaction(["collection_requests"], IDBTransaction.READ_WRITE);
         var store = trans.objectStore(["collection_requests"]);
 
         var request = store.delete(id);
@@ -878,7 +875,7 @@ function setupDB() {
 
     postman.indexedDB.deleteCollection = function (id) {
         var db = postman.indexedDB.db;
-        var trans = db.transaction(["collections"], IDBTransaction.READ_WRITE, 0);
+        var trans = db.transaction(["collections"], IDBTransaction.READ_WRITE);
         var store = trans.objectStore(["collections"]);
 
         var request = store.delete(id);
@@ -1400,7 +1397,7 @@ var sectionParamsSelectChangeHandler = function (evt) {
 
     if (paramType) {
         var rowData = {
-            section: section,
+            section:section,
             placeHolderKey:placeHolderKey,
             placeHolderValue:placeHolderValue,
             key:key,
@@ -1431,7 +1428,7 @@ var sectionParamsSelectChangeHandler = function (evt) {
     }
 };
 
-var deleteParamHandler = function(evt) {
+var deleteParamHandler = function (evt) {
     var fieldsParent = $(this).parents(".editorFields");
     var id = fieldsParent.attr("id");
     if (id) {
@@ -1581,12 +1578,12 @@ function setResponseFormat(mime, response, format, forceCreate) {
     if (!postmanCodeMirror || forceCreate) {
         postmanCodeMirror = CodeMirror.fromTextArea(codeDataArea,
             {
-                mode:mode,
+                mode:"links",
                 lineNumbers:true,
                 fixedGutter:true,
                 onGutterClick:foldFunc,
                 theme:'eclipse',
-                lineWrapping: true
+                lineWrapping:true
             });
 
         postmanCodeMirror.setValue(response);
@@ -1594,7 +1591,7 @@ function setResponseFormat(mime, response, format, forceCreate) {
     else {
         postmanCodeMirror.setValue(response);
         postmanCodeMirror.setOption("onGutterClick", foldFunc);
-        postmanCodeMirror.setOption("mode", mode);
+        postmanCodeMirror.setOption("mode", "links");
         postmanCodeMirror.setOption("lineWrapping", true);
         postmanCodeMirror.setOption("theme", "eclipse");
     }
@@ -1905,7 +1902,7 @@ function setupKeyboardShortcuts() {
     });
 
     $(document).bind('keydown', 'p', function () {
-        if(requestMethod === "post" || requestMethod === "put") {
+        if (requestMethod === "post" || requestMethod === "put") {
             $('#body-ParamsFields div:first-child input:first-child').focus();
             return false;
         }
@@ -2002,7 +1999,7 @@ function showRequestHelper(type) {
         $('#requestHelpers').css("display", "none");
     }
 
-    if(type.toLowerCase() === 'oauth1') {
+    if (type.toLowerCase() === 'oauth1') {
         generateOAuth1RequestHelper();
     }
 
@@ -2105,13 +2102,13 @@ function processOAuth1RequestHelper() {
 
     params.push({name:signatureKey, value:signature});
 
-    $('input.signatureParam').each(function(){
+    $('input.signatureParam').each(function () {
         if ($(this).val() != '') {
             params.push({name:$(this).attr('key'), value:$(this).val()});
         }
     });
 
-    if(postman.currentRequest.method === 'GET') {
+    if (postman.currentRequest.method === 'GET') {
         var url = $('#url').val();
         //postman.currentRequest.headers = body + ;
         setUrlParamString(url, params);
@@ -2142,6 +2139,7 @@ $(document).ready(function () {
     setContainerHeights();
     setupRequestHelpers();
     refreshScrollPanes();
+    showParamsEditor("headers");
 
 
     $('#modalShortcuts').modal({
@@ -2163,5 +2161,22 @@ $(document).ready(function () {
 
     $(window).resize(function () {
         setContainerHeights();
+    });
+
+
+    CodeMirror.defineMode("links", function (config, parserConfig) {
+        return {
+            token:function (stream, state) {
+                if (stream.match(/^\b(www\.([^\s]+))\b/)) {
+                    return "link";
+                }
+
+                if (stream.eatSpace()) {
+                    return null;
+                }
+
+                stream.skipToEnd();
+            }
+        };
     });
 });
