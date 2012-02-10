@@ -446,6 +446,12 @@ function init() {
     });
 }
 
+postman.loadNewRequestFromLink = function(link) {
+    console.log("Loading new request", link);
+    startNewRequest();
+    $('#url').val(link);
+}
+
 function setupDB() {
     postman.indexedDB.onerror = function (event) {
         console.log(event);
@@ -1590,7 +1596,8 @@ function setResponseFormat(mime, response, format, forceCreate) {
                 fixedGutter:true,
                 onGutterClick:foldFunc,
                 theme:'eclipse',
-                lineWrapping:true
+                lineWrapping:true,
+                readOnly: true
             });
 
         postmanCodeMirror.setValue(response);
@@ -1601,6 +1608,7 @@ function setResponseFormat(mime, response, format, forceCreate) {
         postmanCodeMirror.setOption("mode", "links");
         postmanCodeMirror.setOption("lineWrapping", true);
         postmanCodeMirror.setOption("theme", "eclipse");
+        postmanCodeMirror.setOption("readOnly", true);
     }
 
     $('#codeData').val(response);
@@ -2168,14 +2176,48 @@ $(document).ready(function () {
     CodeMirror.defineMode("links", function (config, parserConfig) {
         console.log(config, parserConfig);
         var linksOverlay = {
+            startState: function() {
+                return {
+                    link: "",
+                    pos: 0
+                }
+            },
+
             token:function (stream, state) {
                 if (stream.eatSpace()) {
                     return null;
                 }
 
-                if (a = stream.match(/https?:\/\/.*(?=[<"'\n\t\s])/, false)) {
-                    while ((ch = stream.next()) != null) {
+                if (matches = stream.match(/https?:\/\/[^'"]*(?=[<"'\n\t\s])/, false)) {
+                    //Eat all characters before http link
+                    var m = stream.match(/.*(?=https?)/, true);
+                    if(m) {
+                        if(m[0].length > 0) {
+                            return null;
+                        }
                     }
+
+                    var pos = stream.string.search(matches[0]);
+                    state.link = matches[0];
+                    state.pos = pos;
+
+                    var currentPos = stream.current().search(matches[0]);
+
+                    while(currentPos < 0) {
+                        var ch = stream.next();
+                        if(ch == "\"" || ch == "'") {
+                            stream.backUp(1);
+                            break;
+                        }
+
+                        if(ch == null) {
+
+                            break;
+                        }
+
+                        currentPos = stream.current().search(matches[0]);
+                    }
+
                     return "link";
                 }
 
@@ -2185,4 +2227,9 @@ $(document).ready(function () {
 
         return CodeMirror.overlayParser(CodeMirror.getMode(config, parserConfig.backdrop || postman.codeMirror.mode), linksOverlay);
     });
+
+    $('#respData').on("click", ".cm-link", function() {
+        var link = $(this).html();
+        postman.loadNewRequestFromLink(link);
+    })
 });

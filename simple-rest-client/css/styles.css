@@ -968,3 +968,12 @@ li .right {
 .topSidebar a:hover {
     text-decoration: none;
 }
+
+.cm-link {
+    cursor: pointer;
+}
+
+.cm-link:hover {
+    color: #555 !important;
+    text-decoration: none;
+}
