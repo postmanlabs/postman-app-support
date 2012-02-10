@@ -236,7 +236,7 @@ function sendRequest() {
 
         url = ensureProperUrl(url);
 
-        var method = getRequestMethod();
+        var method = getRequestMethod().toUpperCase();
 
         var data = "";
         var bodyData = "";
@@ -1037,7 +1037,7 @@ function loadRequestInEditor(request) {
 
     $('#requestMethodSelector').val(method);
 
-    if (method === 'post' || method === 'put') {
+    if (method === 'post' || method === 'put' || method === 'patch') {
         var dataMode = request.dataMode.toLowerCase();
 
         $('#data').css("display", "block");
