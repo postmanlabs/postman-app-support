@@ -384,11 +384,12 @@ function readResponse() {
             $('#ptime .data').html(diff + " ms");
             $('#pbodysize .data').html(diff + " bytes");
 
-            //Set chili options according to the Content-Type header
             var contentType = this.getResponseHeader("Content-Type");
 
             var type = 'html';
             var format = 'html';
+
+            console.log(contentType);
 
             if (contentType.search(/json/i) != -1) {
                 type = 'json';
@@ -396,7 +397,23 @@ function readResponse() {
             }
 
             $('#language').val(format);
-            setResponseFormat(format, currentResponse.text, "parsed");
+
+            if(contentType.search(/image/i) == -1) {
+                $('#responseAsText').css("display", "block");
+                $('#responseAsImage').css("display", "none");
+                $('#langFormat').css("display", "block");
+                $('#respDataActions').css("display", "block");
+                setResponseFormat(format, currentResponse.text, "parsed");
+            }
+            else {
+                $('#responseAsText').css("display", "none");
+                $('#responseAsImage').css("display", "block");
+                var imgLink = $('#url').val();
+                $('#langFormat').css("display", "none");
+                $('#respDataActions').css("display", "none");
+                $('#responseAsImage').html("<img src='" + imgLink + "'/>");
+            }
+
         }
         catch (e) {
             console.log("Something went wrong while receiving the response");
@@ -446,7 +463,7 @@ function init() {
     });
 }
 
-postman.loadNewRequestFromLink = function(link) {
+postman.loadNewRequestFromLink = function (link) {
     console.log("Loading new request", link);
     startNewRequest();
     $('#url').val(link);
@@ -1571,6 +1588,7 @@ function setResponseFormat(mime, response, format, forceCreate) {
     var codeDataArea = document.getElementById("codeData");
     var foldFunc;
     var mode;
+
     if (mime === 'javascript') {
         mode = 'javascript';
         try {
@@ -1587,7 +1605,6 @@ function setResponseFormat(mime, response, format, forceCreate) {
     }
 
     postman.codeMirror.mode = mode;
-
     if (!postmanCodeMirror || forceCreate) {
         postmanCodeMirror = CodeMirror.fromTextArea(codeDataArea,
             {
@@ -1597,10 +1614,11 @@ function setResponseFormat(mime, response, format, forceCreate) {
                 onGutterClick:foldFunc,
                 theme:'eclipse',
                 lineWrapping:true,
-                readOnly: true
+                readOnly:true
             });
 
         postmanCodeMirror.setValue(response);
+
     }
     else {
         postmanCodeMirror.setValue(response);
@@ -2176,10 +2194,10 @@ $(document).ready(function () {
     CodeMirror.defineMode("links", function (config, parserConfig) {
         console.log(config, parserConfig);
         var linksOverlay = {
-            startState: function() {
+            startState:function () {
                 return {
-                    link: "",
-                    pos: 0
+                    link:"",
+                    pos:0
                 }
             },
 
@@ -2188,30 +2206,27 @@ $(document).ready(function () {
                     return null;
                 }
 
+                //@todo Needs to be improved upon
                 if (matches = stream.match(/https?:\/\/[^'"]*(?=[<"'\n\t\s])/, false)) {
                     //Eat all characters before http link
                     var m = stream.match(/.*(?=https?)/, true);
-                    if(m) {
-                        if(m[0].length > 0) {
+                    if (m) {
+                        if (m[0].length > 0) {
                             return null;
                         }
                     }
 
                     var pos = stream.string.search(matches[0]);
-                    state.link = matches[0];
-                    state.pos = pos;
-
                     var currentPos = stream.current().search(matches[0]);
 
-                    while(currentPos < 0) {
+                    while (currentPos < 0) {
                         var ch = stream.next();
-                        if(ch == "\"" || ch == "'") {
+                        if (ch == "\"" || ch == "'") {
                             stream.backUp(1);
                             break;
                         }
 
-                        if(ch == null) {
-
+                        if (ch == null) {
                             break;
                         }
 
@@ -2228,8 +2243,9 @@ $(document).ready(function () {
         return CodeMirror.overlayParser(CodeMirror.getMode(config, parserConfig.backdrop || postman.codeMirror.mode), linksOverlay);
     });
 
-    $('#respData').on("click", ".cm-link", function() {
+    $('#respData').on("click", ".cm-link", function () {
         var link = $(this).html();
         postman.loadNewRequestFromLink(link);
-    })
+    });
+
 });
