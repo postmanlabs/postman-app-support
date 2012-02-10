@@ -1012,6 +1012,8 @@ function loadRequestInEditor(request) {
     $('#urlParamsEditor').css("display", "none");
     $('#response').css("display", "none");
 
+    $('#requestMethodSelector').val(method);
+
     if (method === 'post' || method === 'put') {
         var dataMode = request.dataMode.toLowerCase();
 
@@ -1368,7 +1370,7 @@ var sectionParamsLastInputFocusHandler = function (evt) {
 
     //Add a delete link
     var deleteHtml = "<a href=\"javascript:void(0);\" class=\"deleteParam\">";
-    deleteHtml += "<img class=\"deleteButton\" src=\"images/delete.png\"/>";
+    deleteHtml += "<img class=\"deleteButton\" src=\"img/delete.png\"/>";
     deleteHtml += "</a>";
     parent.append(deleteHtml);
 
@@ -1605,8 +1607,8 @@ function setResponseFormat(mime, response, format, forceCreate) {
 }
 
 function attachSidebarListeners() {
-    $('#sidebarContainer .pills li').bind("click", function () {
-        $('#sidebarContainer .pills li').removeClass("active");
+    $('#sidebarContainer .nav-pills li').bind("click", function () {
+        $('#sidebarContainer .nav-pills li').removeClass("active");
         $(this).addClass("active");
         var section = jQuery('a', this).attr('data-id');
         showSidebarSection(section, currentSidebarSection);
@@ -1762,6 +1764,7 @@ function clearHistory() {
 }
 
 function toggleSidebarSection(section) {
+    console.log("Change section", section);
     if (section === 'history') {
         $('#historyOptions').css("display", "block");
         $('#collectionsOptions').css("display", "none");
@@ -1770,6 +1773,8 @@ function toggleSidebarSection(section) {
         $('#historyOptions').css("display", "none");
         $('#collectionsOptions').css("display", "block");
     }
+
+    return true;
 }
 
 function dropboxSync() {
@@ -1799,7 +1804,7 @@ function checkDropboxLogin() {
 function toggleResponseBodySize() {
     if (postman.response.state.size == "normal") {
         postman.response.state.size = "maximized";
-        $('#responseBodyToggle img').attr("src", "images/full-screen-exit-alt-2.png");
+        $('#responseBodyToggle img').attr("src", "img/full-screen-exit-alt-2.png");
         postman.response.state.width = $('#respData').width();
         postman.response.state.height = $('#respData').height();
         postman.response.state.display = $('#respData').css("display");
@@ -1816,7 +1821,7 @@ function toggleResponseBodySize() {
     }
     else {
         postman.response.state.size = "normal";
-        $('#responseBodyToggle img').attr("src", "images/full-screen-alt-4.png");
+        $('#responseBodyToggle img').attr("src", "img/full-screen-alt-4.png");
         $('#respData').css("position", postman.response.state.position);
         $('#respData').css("left", 0);
         $('#respData').css("top", 0);
@@ -2134,7 +2139,7 @@ $(document).ready(function () {
     lang();
     init();
 
-    $('a[rel="twipsy"]').twipsy();
+    $('a[rel="tooltip"]').tooltip();
 
     addHeaderListeners();
     addUrlAutoComplete();
@@ -2145,14 +2150,6 @@ $(document).ready(function () {
     setupRequestHelpers();
     refreshScrollPanes();
     showParamsEditor("headers");
-
-
-    $('#modalShortcuts').modal({
-        keyboard:true,
-        backdrop:"static"
-    });
-
-    //checkDropboxLogin();
 
     $('#formAddToCollection').submit(function () {
         submitAddToCollectionForm();
@@ -2167,59 +2164,6 @@ $(document).ready(function () {
     $(window).resize(function () {
         setContainerHeights();
     });
-
-
-    // Utility function that allows modes to be combined. The mode given
-    // as the base argument takes care of most of the normal mode
-    // functionality, but a second (typically simple) mode is used, which
-    // can override the style of text. Both modes get to parse all of the
-    // text, but when both assign a non-null style to a piece of code, the
-    // overlay wins, unless the combine argument was true, in which case
-    // the styles are combined.
-
-    CodeMirror.overlayParser = function (base, overlay, combine) {
-        return {
-            startState:function () {
-                return {
-                    base:CodeMirror.startState(base),
-                    overlay:CodeMirror.startState(overlay),
-                    basePos:0, baseCur:null,
-                    overlayPos:0, overlayCur:null
-                };
-            },
-            copyState:function (state) {
-                return {
-                    base:CodeMirror.copyState(base, state.base),
-                    overlay:CodeMirror.copyState(overlay, state.overlay),
-                    basePos:state.basePos, baseCur:null,
-                    overlayPos:state.overlayPos, overlayCur:null
-                };
-            },
-
-            token:function (stream, state) {
-                if (stream.start == state.basePos) {
-                    state.baseCur = base.token(stream, state.base);
-                    state.basePos = stream.pos;
-                }
-                if (stream.start == state.overlayPos) {
-                    stream.pos = stream.start;
-                    state.overlayCur = overlay.token(stream, state.overlay);
-                    state.overlayPos = stream.pos;
-                }
-                stream.pos = Math.min(state.basePos, state.overlayPos);
-                if (stream.eol()) state.basePos = state.overlayPos = 0;
-
-                if (state.overlayCur == null) return state.baseCur;
-                if (state.baseCur != null && combine) return state.baseCur + " " + state.overlayCur;
-                else return state.overlayCur;
-            },
-
-            indent:function (state, textAfter) {
-                return base.indent(state.base, textAfter);
-            },
-            electricChars:base.electricChars
-        };
-    };
 
     CodeMirror.defineMode("links", function (config, parserConfig) {
         console.log(config, parserConfig);

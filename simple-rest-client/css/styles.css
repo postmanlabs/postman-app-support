@@ -349,7 +349,7 @@ fieldset {
 #pstatus {
     margin-top: 5px;
     float: left;
-    margin-left: 20px;
+    margin-left: 30px;
 }
 
 #pbodysize {
@@ -625,12 +625,7 @@ li .right {
 }
 
 #headers-ParamsEditor {
-    margin-top: 5px;
     width: 630px;
-}
-
-#requestUrl {
-    margin-bottom: 10px;
 }
 
 #pheaders {
@@ -783,9 +778,19 @@ li .right {
     cursor: pointer;
 }
 
+#url-ParamsEditor {
+    margin-left: -20px;
+    padding-left: 20px;
+    width: 100%;
+    border-bottom: solid thin #ccc;
+}
 #url-ParamsEditor .key,
 #headers-ParamsEditor .key {
     width: 282px;
+}
+
+#url-ParamsEditorActions {
+    margin-top: 10px;
 }
 
 #url-ParamsEditor .value,
@@ -831,7 +836,7 @@ li .right {
 .sectionOptions {
     position: absolute;
     margin-left: 200px;
-    margin-top: 10px;
+    margin-top: 5px;
 }
 
 #historyOptions {

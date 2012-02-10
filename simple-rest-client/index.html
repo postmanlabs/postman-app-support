@@ -37,26 +37,18 @@
         })()
         //]]>
     </script>
-    <script type="text/javascript" src="js/jquery-ui-1.8.14.custom.min.js"></script>
-    <script type="text/javascript" src="js/dropbox/sha1.js"></script>
-    <script type="text/javascript" src="js/dropbox/oauth.js"></script>
-    <script type="text/javascript" src="js/util.js"></script>
-    <!--<script type="text/javascript" src="js/dropbox/dropbox.js"></script>-->
-    <script type="text/javascript" src="js/httpstatuscodes.js"></script>
 </head>
 <body>
 <div id="container" class="clearfix">
 <div id="sidebar">
     <div id="header" class="clearfix">
         <div id="logo">
-            <img src="images/logo-grey.png" alt="POSTMAN" height="15px"/>
+            <img src="img/logo-grey.png" alt="POSTMAN" height="15px" width="100px"/>
         </div>
         <div id="mainNavigation">
             <ul>
-                <li><a href="javascript:void(0);" data-controls-modal="modalSettings" data-backdrop="static"
-                       data-keyboard="true">Settings</a></li>
-                <li><a href="javascript:void(0);" data-controls-modal="modalAboutPostman" data-backdrop="static"
-                       data-keyboard="true" onclick="attachSocialButtons();">About</a></li>
+                <li><a href="#modalSettings" data-toggle="modal">Settings</a></li>
+                <li><a href="#modalAboutPostman" data-toggle="modal" onclick="attachSocialButtons();">About</a></li>
                 <!--<li><a href="javascript:void(0);" onclick="dropboxSync();">Sync</a></li>-->
             </ul>
         </div>
@@ -64,20 +56,18 @@
     <div id="sidebarContainer" class="clearfix">
         <div id="historyOptions" class="sectionOptions">
             <a href="javascript:void(0);" onclick="clearHistory()"
-               data-offset="10"
-               data-placement="above" rel="twipsy" title="Clear history">
-                <img src="images/trash-empty.png" width="24px" height="24px"/>
+               rel="tooltip" data-original-title="Clear history">
+                <img src="img/trash-empty.png" width="24px" height="24px"/>
             </a>
         </div>
         <div id="collectionsOptions" class="sectionOptions">
-            <a href="javascript:void(0);"
-               data-offset="10"
-               data-placement="above" rel="twipsy" title="Add new collection"
-               data-controls-modal="formModalNewCollection" data-backdrop="static" data-keyboard="true">
-                <img src="images/file-add.png" width="24px" height="24px"/>
+            <a href="#formModalNewCollection"
+               rel="tooltip" data-original-title="Add new collection"
+               data-toggle="modal" data-backdrop="static" data-keyboard="true">
+                <img src="img/file-add.png" width="24px" height="24px"/>
             </a>
         </div>
-        <ul class="pills" data-tabs="tabs">
+        <ul class="nav nav-pills">
             <li class="active"><a href="javascript:void(0);" data-id="history"
                                   onclick="toggleSidebarSection('history');">History</a></li>
             <li>
@@ -108,7 +98,7 @@
     </ul>
     <div class="topSidebar">
         <a href="javascript:void(0);" onclick="showModal('modalShortcuts');">
-            <img src="images/keyboard.png" width="24px" height="24px" style="vertical-align: middle;"/>
+            <img src="img/keyboard.png" width="24px" height="24px" style="vertical-align: middle;"/>
             Shortcuts
         </a>
     </div>
@@ -117,24 +107,24 @@
     <div id="requestHelper-normal" class="requestHelpers"></div>
     <div id="requestHelper-basicAuth" class="requestHelpers">
         <div class="requestHelperFormContainer">
-            <form>
-                <div class="clearfix">
-                    <label>Username</label>
+            <form class="form form-horizontal">
+                <div class="control-group">
+                    <label class="control-label">Username</label>
 
-                    <div class="input">
+                    <div class="controls">
                         <input type="text" id="requestHelper-basicAuth-username" class="cleanInput"/>
                     </div>
                 </div>
-                <div class="clearfix">
-                    <label>Password</label>
+                <div class="control-group">
+                    <label class="control-label">Password</label>
 
-                    <div class="input">
+                    <div class="controls">
                         <input type="text" id="requestHelper-basicAuth-password" class="cleanInput"/>
                     </div>
                 </div>
-                <div class="clearfix">
-                    <div class="input">
-                        <a href="javascript:void(0);" class="btn small secondary"
+                <div class="control-group">
+                    <div class="controls">
+                        <a href="javascript:void(0);" class="btn btn-small btn-secondary"
                            onclick="hideRequestHelper('basicAuth')">Refresh headers</a>
                     </div>
                 </div>
@@ -147,75 +137,75 @@
     </div>
     <div id="requestHelper-oAuth1" class="requestHelpers">
         <div class="requestHelperFormContainer">
-            <form>
-                <div class="clearfix">
+            <form class="form-horizontal">
+                <div class="control-group">
                     <label>Consumer Key</label>
 
-                    <div class="input">
+                    <div class="controls">
                         <input type="text" id="requestHelper-oauth1-consumerKey" class="cleanInput signatureParam"
                                key="oauth_consumer_key"/>
                     </div>
                 </div>
-                <div class="clearfix">
+                <div class="control-group">
                     <label>Consumer Secret</label>
 
-                    <div class="input">
+                    <div class="controls">
                         <input type="text" id="requestHelper-oauth1-consumerSecret" class="cleanInput"
                                key="oauth_consumer_secret"/>
                     </div>
                 </div>
-                <div class="clearfix">
+                <div class="control-group">
                     <label>Token</label>
 
-                    <div class="input">
+                    <div class="controls">
                         <input type="text" id="requestHelper-oauth1-token" class="cleanInput signatureParam"
                                key="oauth_token"/>
                     </div>
                 </div>
-                <div class="clearfix">
+                <div class="control-group">
                     <label>Token Secret</label>
 
-                    <div class="input">
+                    <div class="controls">
                         <input type="text" id="requestHelper-oauth1-tokenSecret" class="cleanInput"
                                key="oauth_token_secret"/>
                     </div>
                 </div>
-                <div class="clearfix">
+                <div class="control-group">
                     <label>Signature Method</label>
 
-                    <div class="input">
+                    <div class="controls">
                         <input type="text" id="requestHelper-oauth1-signatureMethod" class="cleanInput signatureParam"
                                value="HMAC-SHA1" key="oauth_signature_method"/>
                     </div>
                 </div>
-                <div class="clearfix">
+                <div class="control-group">
                     <label>Timestamp</label>
 
-                    <div class="input">
+                    <div class="controls">
                         <input type="text" id="requestHelper-oauth1-timestamp" class="cleanInput signatureParam"
                                key="oauth_timestamp"/>
                     </div>
                 </div>
-                <div class="clearfix">
+                <div class="control-group">
                     <label>Nonce</label>
 
-                    <div class="input">
+                    <div class="controls">
                         <input type="text" id="requestHelper-oauth1-nonce" class="cleanInput signatureParam"
                                key="oauth_nonce"/>
                     </div>
                 </div>
-                <div class="clearfix">
+                <div class="control-group">
                     <label>Version</label>
 
-                    <div class="input">
+                    <div class="controls">
                         <input type="text" id="requestHelper-oauth1-version" class="cleanInput signatureParam"
                                value="1.0"
                                key="oauth_version"/>
                     </div>
                 </div>
-                <div class="clearfix">
-                    <div class="input">
-                        <a href="javascript:void(0);" class="btn small secondary" onclick="hideRequestHelper('oAuth1')">
+                <div class="control-group">
+                    <div class="controls">
+                        <a href="javascript:void(0);" class="btn btn-small btn-secondary" onclick="hideRequestHelper('oAuth1')">
                             Refresh request
                         </a>
                     </div>
@@ -230,11 +220,11 @@
     </div>
 </div>
 <div id="requestUrl" class="row clearfix">
-    <div class="span8">
+    <div class="span6">
         <input type="text" name="url" id="url" tabindex="1" class="inputTextLight"
                placeholder="Enter request URL here"/>
     </div>
-    <div class="span2">
+    <div class="span1">
         <select id="requestMethodSelector">
             <option value="get" selected>GET</option>
             <option value="post">POST</option>
@@ -245,9 +235,9 @@
             <option value="options">OPTIONS</option>
         </select>
     </div>
-    <div class="span4">
+    <div class="span2">
         <span class="buttonLayout">
-            <button href="javascript:void(0);" class="btn small"
+            <button href="javascript:void(0);" class="btn btn-small"
                     onclick="showParamsEditor('url')">Edit params
             </button>
         </span>
@@ -258,9 +248,9 @@
     <div id="url-ParamsFields" class="editorFields"></div>
     <div id="url-ParamsEditorActions">
         <input type="button" id="cancelUrlParamsButton"
-               class="btn primary small"
+               class="btn btn-small"
                name="closeUrlParams"
-               value="Save"
+               value="Close"
                placeholder="URL..."
                onclick="closeParamsEditor('url')"/>
     </div>
@@ -280,7 +270,7 @@
 </div>
 
 <div id="data">
-    <ul class="pills small" style="margin-bottom: 0px; height: 44px;">
+    <ul class="nav nav-pills small" style="margin-bottom: 0px; height: 44px;">
         <li id="selector-container-params" class="active">
             <a href="javascript:void(0);" onclick="showBodyParamsEditor()" id="data-params">Params</a>
         </li>
@@ -299,12 +289,13 @@
 
 <div id="requestActions" class="clearfix">
     <div id="requestActionsMain">
-        <button class="btn primary" data-loading-text="Fetching data..." type="button"
+        <button class="btn btn-primary" data-loading-text="Fetching data..." type="button"
                 data-complete-text="Send request" id="submitRequest" tabindex="5">
             Send
         </button>
         <button class="btn"
-                data-controls-modal="formModalAddToCollection" data-backdrop="static"
+                href="#formModalAddToCollection"
+                data-toggle="modal" data-backdrop="static"
                 data-keyboard="true">
             Add to collection
         </button>
@@ -335,11 +326,11 @@
                 <div id="respDataActions" class="sectionOptions">
                     <a href="javascript:void(0);" class="sectionOptions" onclick="toggleResponseBodySize();"
                        id="responseBodyToggle">
-                        <img src="images/full-screen-alt-4.png" width="24px" height="24px"/>
+                        <img src="img/full-screen-alt-4.png" width="24px" height="24px"/>
                     </a>
                 </div>
                 <div id="langFormat">
-                    <ul class="pills">
+                    <ul class="nav nav-pills">
                         <li id="langFormat-parsed" class="active">
                             <a href="javascript:void(0);" onclick="changeResponseFormat('parsed')">
                                 Parsed
@@ -366,38 +357,35 @@
 </div>
 <div id="formModalNewCollection" class="modal fade">
     <div class="modal-header">
-        <a href="#" class="close">×</a>
-
+        <a href="#" class="close" data-dismiss="modal">×</a>
         <h3>Create a new collection</h3>
     </div>
     <div class="modal-body">
-        <form id="formNewCollection">
-            <div class="clearfix" id="newCollectionContainer">
-                <label for="newCollection">Collection name</label>
-
-                <div class="input">
+        <form class="form form-horizontal" id="formNewCollection">
+            <div class="control-group" id="newCollectionContainer">
+                <label class="control-label" id="newCollection">Collection name</label>
+                <div class="controls">
                     <input type="text" class="medium" name="newCollectionBlank" id="newCollectionBlank"/>
                 </div>
             </div>
         </form>
     </div>
     <div class="modal-footer">
-        <a href="javascript:void(0);" onclick="submitNewCollectionForm();" class="btn primary">Create</a>
-        <a href="javascript:void(0);" onclick="closeNewCollectionForm();" class="btn secondary">Cancel</a>
+        <a href="javascript:void(0);" onclick="submitNewCollectionForm();" class="btn btn-primary">Create</a>
+        <a href="javascript:void(0);" onclick="closeNewCollectionForm();" class="btn btn-secondary">Cancel</a>
     </div>
 </div>
 <div id="formModalAddToCollection" class="modal fade">
     <div class="modal-header">
-        <a href="#" class="close">×</a>
-
+        <a href="#" class="close" data-dismiss="modal">×</a>
         <h3>Add request to a collection</h3>
     </div>
     <div class="modal-body">
         <form id="formAddToCollection">
-            <div class="clearfix" id="selectCollectionContainer">
-                <label for="selectCollection">Select a collection</label>
+            <div class="control-group" id="selectCollectionContainer">
+                <label class="control-group" for="selectCollection">Select a collection</label>
 
-                <div class="input">
+                <div class="controls">
                     <select name="selectCollection" class="medium" id="selectCollection">
                         <option value="_select">Select</option>
                     </select>
@@ -420,16 +408,15 @@
 </div>
 <div id="modalSettings" class="modal fade">
     <div class="modal-header">
-        <a href="#" class="close">×</a>
-
+        <a href="#" class="close" data-dismiss="modal">×</a>
         <h3>Settings</h3>
     </div>
     <div class="modal-body">
-        <form>
-            <div class="clearfix">
-                <label for="historyCount">Max history items</label>
+        <form class="form-horizontal">
+            <div class="control-group">
+                <label class="control-label" for="historyCount">Max history items</label>
 
-                <div class="input">
+                <div class="controls">
                     <select class="medium" name="historyCount" id="historyCount">
                         <option value="50">50</option>
                         <option value="100">100</option>
@@ -437,10 +424,10 @@
                     </select>
                 </div>
             </div>
-            <div class="clearfix">
-                <label for="historyCount">Auto save request</label>
+            <div class="control-group">
+                <label class="control-label" for="historyCount">Auto save request</label>
 
-                <div class="input">
+                <div class="controls">
                     <select class="medium" name="autoSaveRequest" id="autoSaveRequest">
                         <option value="yes">Yes</option>
                         <option value="no">No</option>
@@ -450,13 +437,12 @@
         </form>
     </div>
     <div class="modal-footer">
-        <a href="javascript:void(0);" onclick="closeSettings();" class="btn primary">Close</a>
+        <a href="javascript:void(0);" onclick="closeSettings();" class="btn btn-primary">Close</a>
     </div>
 </div>
 <div id="modalAboutPostman" class="modal fade">
     <div class="modal-header">
-        <a href="#" class="close">×</a>
-
+        <a href="#" class="close" data-dismiss="modal">×</a>
         <h3>About Postman</h3>
     </div>
     <div class="modal-body">
@@ -481,13 +467,12 @@
         </div>
     </div>
     <div class="modal-footer">
-        <a href="javascript:void(0);" onclick="closeAboutPostman();" class="btn primary">Close</a>
+        <a href="javascript:void(0);" onclick="closeAboutPostman();" class="btn btn-primary">Close</a>
     </div>
 </div>
 <div id="modalResponseError" class="modal fade">
     <div class="modal-header">
-        <a href="#" class="close">×</a>
-
+        <a href="#" class="close" data-dismiss="modal">×</a>
         <h3>Could not get any response</h3>
     </div>
     <div class="modal-body">
@@ -498,8 +483,7 @@
 </div>
 <div id="modalShortcuts" class="modal fade">
     <div class="modal-header">
-        <a href="#" class="close">×</a>
-
+        <a href="#" class="close" data-dismiss="modal">×</a>
         <h3>Shortcuts</h3>
     </div>
     <div class="modal-body">
@@ -579,15 +563,14 @@
     <option value="${id}">${name}</option>
 </script>
 <script id="itemResponseCode" type="text/x-jquery-tmpl">
-    <div class="responseCode" data-placement="above" title="${code} ${name}" data-content="${detail}"
+    <div class="responseCode" data-placement="top" data-original-title="${code} ${name}" data-content="${detail}"
          rel="popover"><span class="label">Status</span>
-
         <div class="data">${code} ${name}</div>
     </div>
 </script>
 <script id="itemResponseHeader" type="text/x-jquery-tmpl">
     <li class="responseHeader clearfix">
-        <div class="responseHeaderName" data-placement="above" title="${name}" data-content="${description}"
+        <div class="responseHeaderName" data-placement="top" data-original-title="${name}" data-content="${description}"
              rel="popover">${name} &rarr;</div>
         <div class="responseHeaderValue">${value}</div>
     </li>
@@ -599,7 +582,7 @@
                 <span class="label">Show</span>
                 <a href="javascript:void(0);"
                    onclick="deleteCollection('${id}');">
-                    <img src="images/delete.png" style="vertical-align: middle;"/>
+                    <img src="img/delete.png" style="vertical-align: middle;"/>
                 </a>
             </div>
             <div class="sidebar-collection-head-name" data-id="${id}">
@@ -614,7 +597,7 @@
         <div class="request-actions">
             <a href="javascript:void(0);"
                onclick="deleteCollectionRequest('${id}');">
-                <img src="images/delete.png"/>
+                <img src="img/delete.png"/>
             </a>
         </div>
         <div class="request" onclick="loadCollectionRequest('${id}')">
@@ -627,7 +610,7 @@
         <div class="request-actions">
             <a href="javascript:void(0);"
                onclick="deleteRequest('${id}');">
-                <img src="images/delete.png"/>
+                <img src="img/delete.png"/>
             </a>
         </div>
         <div class="request" onclick="loadRequest('${id}')">
@@ -675,11 +658,16 @@
 
         {{if canBeClosed}}
         <a href="javascript:void(0);" class="deleteParam">
-            <img class="deleteButton" src="images/delete.png">
+            <img class="deleteButton" src="img/delete.png">
         </a>
         {{/if}}
     </div>
 </script>
+<script type="text/javascript" src="js/jquery-ui-1.8.14.custom.min.js"></script>
+<script type="text/javascript" src="js/dropbox/sha1.js"></script>
+<script type="text/javascript" src="js/dropbox/oauth.js"></script>
+<script type="text/javascript" src="js/util.js"></script>
+<script type="text/javascript" src="js/httpstatuscodes.js"></script>
 <script type="text/javascript" src="codemirror/lib/codemirror.js"></script>
 <script type="text/javascript" src="codemirror/lib/util/formatting.js"></script>
 <script type="text/javascript" src="codemirror/lib/util/foldcode.js"></script>
@@ -687,16 +675,12 @@
 <script type="text/javascript" src="codemirror/mode/javascript/javascript.js"></script>
 <script type="text/javascript" src="codemirror/mode/xml/xml.js"></script>
 <script type="text/javascript" src="codemirror/mode/htmlmixed/htmlmixed.js"></script>
+<script type="text/javascript" src="js/codemirror.overlayParser.js"></script>
 <script type="text/javascript" src="js/jquery.tmpl.min.js"></script>
 <script type="text/javascript" src="js/jquery.hotkeys.js"></script>
 <script type="text/javascript" src="js/jquery.mousewheel.js"></script>
 <script type="text/javascript" src="js/jquery.jscrollpane.js"></script>
-<script type="text/javascript" src="js/bootstrap-twipsy.js"></script>
-<script type="text/javascript" src="js/bootstrap-modal.js"></script>
-<script type="text/javascript" src="js/bootstrap-alerts.js"></script>
-<script type="text/javascript" src="js/bootstrap-buttons.js"></script>
-<script type="text/javascript" src="js/bootstrap-popover.js"></script>
-<script type="text/javascript" src="js/bootstrap-tabs.js"></script>
+<script type="text/javascript" src="js/bootstrap.min.js"></script>
 <script type="text/javascript" src="requester.js"></script>
 <script text="text/javascript">
     $(":input:first").focus();
