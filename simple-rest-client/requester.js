@@ -236,7 +236,7 @@ function sendRequest() {
 
         url = ensureProperUrl(url);
 
-        var method = getRequestMethod().toUpperCase();
+        var method = getRequestMethod();
 
         var data = "";
         var bodyData = "";
@@ -251,7 +251,7 @@ function sendRequest() {
             }
         }
 
-        if (jQuery.inArray(method, ["post", "put"]) > -1) {
+        if (jQuery.inArray(method, ["post", "put", "patch"]) > -1) {
             if (dataMode === 'raw') {
                 data = $("#body").val();
                 bodyData = data;
@@ -388,8 +388,6 @@ function readResponse() {
 
             var type = 'html';
             var format = 'html';
-
-            console.log(contentType);
 
             if (contentType.search(/json/i) != -1) {
                 type = 'json';
