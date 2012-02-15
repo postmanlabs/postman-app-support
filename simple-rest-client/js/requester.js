@@ -19,11 +19,10 @@
 var requests;
 var postman = {};
 
-postman.availableUrls = [];
-
 postman.history = {};
 postman.history.requests = [];
 postman.settings = {};
+
 postman.indexedDB = {};
 postman.indexedDB.db = null;
 
@@ -41,6 +40,15 @@ postman.editor = {
     mode: "html",
     codeMirror: null
 };
+
+postman.urlCache = {
+    urls: [],
+    addUrl: function(url) {
+        if ($.inArray(url, this.urls) == -1) {
+            this.urls.push(url);
+        }
+    }
+}
 
 postman.currentRequest = {
     url:"",
@@ -151,7 +159,7 @@ function startNewRequest() {
     $('.method-selectors li').removeClass('active');
     $('.method-selector-get').addClass('active');
     showParamsEditor("headers");
-    showRequestMethodUi('GET');
+    showRequestMethodUi('get');
     $('#url').focus();
 }
 
@@ -354,8 +362,6 @@ function readResponse() {
             var type = 'html';
             var format = 'html';
 
-            console.log(contentType);
-
             if (contentType.search(/json/i) != -1) {
                 type = 'json';
                 format = 'javascript';
@@ -557,7 +563,7 @@ function setupDB() {
 
         collectionRequest.onsuccess = function (e) {
             var targetElement = "#collectionRequests-" + req.collectionId;
-            addAvailableUrl(req.url);
+            postman.urlCache.addUrl(req.url);
             addUrlAutoComplete();
 
             req.url = limitStringLineWidth(req.url, 43);
@@ -644,7 +650,7 @@ function setupDB() {
             var request = result.value;
             var targetElement = "#collectionRequests-" + request.collectionId;
 
-            addAvailableUrl(request.url);
+            postman.urlCache.addUrl(request.url);
             addUrlAutoComplete();
 
             request.url = limitStringLineWidth(request.url, 40);
@@ -685,7 +691,7 @@ function setupDB() {
 
         request.onsuccess = function (e) {
             //Re-render all the todos
-            addAvailableUrl(url);
+            postman.urlCache.addUrl(url);
             addUrlAutoComplete();
             removeRequestFromSidebar(deletedId, false);
             renderRequestToSidebar(url, method, id, "top");
@@ -757,7 +763,7 @@ function setupDB() {
             if (!!result == false) {
                 for (var i = 0; i < historyRequests.length; i++) {
                     var r = historyRequests[i];
-                    addAvailableUrl(r.url);
+                    postman.urlCache.addUrl(r.url);
                     renderRequestToSidebar(r.url, r.method, r.id, "top");
                     addSidebarRequestListener(r);
                 }
@@ -1481,7 +1487,7 @@ function addHeaderAutoComplete() {
 
 function addUrlAutoComplete() {
     $("#url").autocomplete({
-        source:postman.availableUrls,
+        source:postman.urlCache.urls,
         delay:50
     });
 }
@@ -1689,12 +1695,6 @@ function closeSettings() {
     $('#modalSettings').modal('hide');
 }
 
-function addAvailableUrl(url) {
-    if ($.inArray(url, postman.availableUrls) == -1) {
-        postman.availableUrls.push(url);
-    }
-}
-
 function clearHistory() {
     postman.indexedDB.deleteHistory();
 }
@@ -1780,32 +1780,32 @@ var escInputHandler = function (evt) {
 function setupKeyboardShortcuts() {
 
     var selectGetHandler = function (evt) {
-        showRequestMethodUi('GET');
+        showRequestMethodUi('get');
         return false;
     };
 
     var selectPostHandler = function (evt) {
-        showRequestMethodUi('POST');
+        showRequestMethodUi('post');
         return false;
     };
 
     var selectPutHandler = function (evt) {
-        showRequestMethodUi('PUT');
+        showRequestMethodUi('put');
         return false;
     };
 
     var selectDeleteHandler = function (evt) {
-        showRequestMethodUi('DELETE');
+        showRequestMethodUi('delete');
         return false;
     };
 
     var selectHeadHandler = function (evt) {
-        showRequestMethodUi('HEAD');
+        showRequestMethodUi('head');
         return false;
     };
 
     var selectOptionsHandler = function (evt) {
-        showRequestMethodUi('OPTIONS');
+        showRequestMethodUi('options');
         return false;
     };
 
@@ -2054,7 +2054,7 @@ function processOAuth1RequestHelper() {
         }
     });
 
-    if (postman.currentRequest.method === 'GET') {
+    if (postman.currentRequest.method === "get") {
         var url = $('#url').val();
         //postman.currentRequest.headers = body + ;
         setUrlParamString(url, params);
@@ -2075,7 +2075,7 @@ $(document).ready(function () {
     init();
 
     $('a[rel="tooltip"]').tooltip();
-    
+
     addUrlAutoComplete();
     attachSidebarListeners();
     setupKeyboardShortcuts();
