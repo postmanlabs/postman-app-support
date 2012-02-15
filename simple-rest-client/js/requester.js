@@ -17,24 +17,15 @@
  under the License.
  */
 var requests;
-var availableUrls = [];
-var currentSidebarSection = "history";
-
 var postman = {};
+
+postman.availableUrls = [];
 
 postman.history = {};
 postman.history.requests = [];
 postman.settings = {};
 postman.indexedDB = {};
 postman.indexedDB.db = null;
-postman.response = {};
-postman.response.state = {};
-postman.response.state.size = "normal";
-
-postman.codeMirror = {};
-postman.codeMirror.mode = "html";
-
-var postmanCodeMirror;
 
 // IndexedDB implementations still use API prefixes
 var indexedDB = window.indexedDB || // Use the standard DB API
@@ -45,46 +36,73 @@ var IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction;
 var IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange;
 var IDBCursor = window.IDBCursor || window.webkitIDBCursor;
 
-var socialButtons = {
-    "facebook":'<iframe src="http://www.facebook.com/plugins/like.php?href=https%3A%2F%2Fchrome.google.com%2Fwebstore%2Fdetail%2Ffdmmgilgnpjigdojojpjoooidkmcomcm&amp;send=false&amp;layout=button_count&amp;width=250&amp;show_faces=true&amp;action=like&amp;colorscheme=light&amp;font&amp;height=21&amp;appId=26438002524" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:250px; height:21px;" allowTransparency="true"></iframe>',
-    "twitter":'<a href="https://twitter.com/share" class="twitter-share-button" data-url="https://chrome.google.com/webstore/detail/fdmmgilgnpjigdojojpjoooidkmcomcm" data-text="I am using Postman to kick some API ass!" data-count="horizontal" data-via="a85">Tweet</a><script type="text/javascript" src="http://platform.twitter.com/widgets.js"></script>',
-    "plusOne":'<script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script><g:plusone size="medium" href="https://chrome.google.com/webstore/detail/fdmmgilgnpjigdojojpjoooidkmcomcm"></g:plusone>'
+
+postman.editor = {
+    mode: "html",
+    codeMirror: null
 };
 
-
-
 postman.currentRequest = {
-    url: "",
-    urlParams: {},
-    body: "",
-    bodyParams: {},
-    headers: [],
-    method: "get",
-    dataMode: "params",
-    methodsWithBody: ["post", "put", "patch"],
+    url:"",
+    urlParams:{},
+    body:"",
+    bodyParams:{},
+    headers:[],
+    method:"get",
+    dataMode:"params",
+    methodsWithBody:["post", "put", "patch"],
 
-    response: {
-        startTime: 0,
-        endTime: 0,
-        totalTime: 0,
-        status: "",
-        time: 0,
-        headers: {},
-        mime: "",
-        previewType: "parsed",
+    response:{
+        startTime:0,
+        endTime:0,
+        totalTime:0,
+        status:"",
+        time:0,
+        headers:{},
+        mime:"",
+        state: {
+            size: "normal"
+        },
+        previewType:"parsed",
 
-        getTotalTime: function() {
+        getTotalTime:function () {
             this.totalTime = this.endTime - this.startTime;
             return this.totalTime;
         }
     },
 
-    isMethodWithBody: function(method) {
-        if($.inArray(method, this.methodsWithBody) >= 0) {
+    isMethodWithBody:function (method) {
+        if ($.inArray(method, this.methodsWithBody) >= 0) {
             return true;
         }
         else {
             return false;
+        }
+    }
+};
+
+postman.interface = {
+    currentSidebarSection: "history",
+    socialButtons: {
+        "facebook":'<iframe src="http://www.facebook.com/plugins/like.php?href=https%3A%2F%2Fchrome.google.com%2Fwebstore%2Fdetail%2Ffdmmgilgnpjigdojojpjoooidkmcomcm&amp;send=false&amp;layout=button_count&amp;width=250&amp;show_faces=true&amp;action=like&amp;colorscheme=light&amp;font&amp;height=21&amp;appId=26438002524" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:250px; height:21px;" allowTransparency="true"></iframe>',
+        "twitter":'<a href="https://twitter.com/share" class="twitter-share-button" data-url="https://chrome.google.com/webstore/detail/fdmmgilgnpjigdojojpjoooidkmcomcm" data-text="I am using Postman to kick some API ass!" data-count="horizontal" data-via="a85">Tweet</a><script type="text/javascript" src="http://platform.twitter.com/widgets.js"></script>',
+        "plusOne":'<script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script><g:plusone size="medium" href="https://chrome.google.com/webstore/detail/fdmmgilgnpjigdojojpjoooidkmcomcm"></g:plusone>'
+    },
+
+    attachSocialButtons: function() {
+        var currentContent = $('#aboutPostmanTwitterButton').html();
+        if (currentContent === "" || !currentContent) {
+            $('#aboutPostmanTwitterButton').html(this.socialButtons.twitter);
+        }
+
+        currentContent = $('#aboutPostmanPlusOneButton').html();
+        if (currentContent === "" || !currentContent) {
+            $('#aboutPostmanPlusOneButton').html(this.socialButtons.plusOne);
+        }
+
+        currentContent = $('#aboutPostmanFacebookButton').html();
+        if (currentContent === "" || !currentContent) {
+            $('#aboutPostmanFacebookButton').html(this.socialButtons.facebook);
         }
     }
 };
@@ -1481,7 +1499,7 @@ function addHeaderAutoComplete() {
 
 function addUrlAutoComplete() {
     $("#url").autocomplete({
-        source:availableUrls,
+        source:postman.availableUrls,
         delay:50
     });
 }
@@ -1491,7 +1509,7 @@ function changeResponseFormat(format) {
     $('#langFormat-' + format).addClass('active');
 
     if (format === 'raw') {
-        postmanCodeMirror.toTextArea();
+        postman.editor.codeMirror.toTextArea();
         $('#codeData').val(postman.currentRequest.response.text);
         var codeDataWidth = $(document).width() - $('#sidebar').width() - 60;
         $('#codeData').css("width", codeDataWidth + "px");
@@ -1531,9 +1549,9 @@ function setResponseFormat(mime, response, format, forceCreate) {
         foldFunc = CodeMirror.newFoldFunction(CodeMirror.tagRangeFinder);
     }
 
-    postman.codeMirror.mode = mode;
-    if (!postmanCodeMirror || forceCreate) {
-        postmanCodeMirror = CodeMirror.fromTextArea(codeDataArea,
+    postman.editor.mode = mode;
+    if (!postman.editor.codeMirror || forceCreate) {
+        postman.editor.codeMirror = CodeMirror.fromTextArea(codeDataArea,
             {
                 mode:"links",
                 lineNumbers:true,
@@ -1544,16 +1562,16 @@ function setResponseFormat(mime, response, format, forceCreate) {
                 readOnly:true
             });
 
-        postmanCodeMirror.setValue(response);
+        postman.editor.codeMirror.setValue(response);
 
     }
     else {
-        postmanCodeMirror.setValue(response);
-        postmanCodeMirror.setOption("onGutterClick", foldFunc);
-        postmanCodeMirror.setOption("mode", "links");
-        postmanCodeMirror.setOption("lineWrapping", true);
-        postmanCodeMirror.setOption("theme", "eclipse");
-        postmanCodeMirror.setOption("readOnly", true);
+        postman.editor.codeMirror.setValue(response);
+        postman.editor.codeMirror.setOption("onGutterClick", foldFunc);
+        postman.editor.codeMirror.setOption("mode", "links");
+        postman.editor.codeMirror.setOption("lineWrapping", true);
+        postman.editor.codeMirror.setOption("theme", "eclipse");
+        postman.editor.codeMirror.setOption("readOnly", true);
     }
 
     $('#codeData').val(response);
@@ -1564,13 +1582,13 @@ function attachSidebarListeners() {
         $('#sidebarContainer .nav-pills li').removeClass("active");
         $(this).addClass("active");
         var section = jQuery('a', this).attr('data-id');
-        showSidebarSection(section, currentSidebarSection);
+        showSidebarSection(section, postman.interface.currentSidebarSection);
     });
 }
 
 function showSidebarSection(section, previousSection) {
     $('#sidebarSection-' + previousSection).css("display", "none");
-    currentSidebarSection = section;
+    postman.interface.currentSidebarSection = section;
     $('#sidebarSection-' + section).fadeIn();
 }
 
@@ -1690,25 +1708,8 @@ function closeSettings() {
 }
 
 function addAvailableUrl(url) {
-    if ($.inArray(url, availableUrls) == -1) {
-        availableUrls.push(url);
-    }
-}
-
-function attachSocialButtons() {
-    var currentContent = $('#aboutPostmanTwitterButton').html();
-    if (currentContent === "" || !currentContent) {
-        $('#aboutPostmanTwitterButton').html(socialButtons.twitter);
-    }
-
-    currentContent = $('#aboutPostmanPlusOneButton').html();
-    if (currentContent === "" || !currentContent) {
-        $('#aboutPostmanPlusOneButton').html(socialButtons.plusOne);
-    }
-
-    currentContent = $('#aboutPostmanFacebookButton').html();
-    if (currentContent === "" || !currentContent) {
-        $('#aboutPostmanFacebookButton').html(socialButtons.facebook);
+    if ($.inArray(url, postman.availableUrls) == -1) {
+        postman.availableUrls.push(url);
     }
 }
 
@@ -1755,13 +1756,13 @@ function checkDropboxLogin() {
 }
 
 function toggleResponseBodySize() {
-    if (postman.response.state.size == "normal") {
-        postman.response.state.size = "maximized";
+    if (postman.currentRequest.response.state.size == "normal") {
+        postman.currentRequest.response.state.size = "maximized";
         $('#responseBodyToggle img').attr("src", "img/full-screen-exit-alt-2.png");
-        postman.response.state.width = $('#respData').width();
-        postman.response.state.height = $('#respData').height();
-        postman.response.state.display = $('#respData').css("display");
-        postman.response.state.position = $('#respData').css("position");
+        postman.currentRequest.response.state.width = $('#respData').width();
+        postman.currentRequest.response.state.height = $('#respData').height();
+        postman.currentRequest.response.state.display = $('#respData').css("display");
+        postman.currentRequest.response.state.position = $('#respData').css("position");
 
         $('#respData').css("position", "absolute");
         $('#respData').css("left", 0);
@@ -1773,13 +1774,13 @@ function toggleResponseBodySize() {
         $('#respData').css("padding", "10px");
     }
     else {
-        postman.response.state.size = "normal";
+        postman.currentRequest.state.size = "normal";
         $('#responseBodyToggle img').attr("src", "img/full-screen-alt-4.png");
-        $('#respData').css("position", postman.response.state.position);
+        $('#respData').css("position", postman.currentRequest.response.state.position);
         $('#respData').css("left", 0);
         $('#respData').css("top", 0);
-        $('#respData').css("width", postman.response.state.width);
-        $('#respData').css("height", postman.response.state.height);
+        $('#respData').css("width", postman.currentRequest.response.state.width);
+        $('#respData').css("height", postman.currentRequest.response.state.height);
         $('#respData').css("z-index", 10);
         $('#respData').css("background-color", "white");
         $('#respData').css("padding", "0px");
@@ -2165,7 +2166,7 @@ $(document).ready(function () {
             }
         };
 
-        return CodeMirror.overlayParser(CodeMirror.getMode(config, parserConfig.backdrop || postman.codeMirror.mode), linksOverlay);
+        return CodeMirror.overlayParser(CodeMirror.getMode(config, parserConfig.backdrop || postman.editor.mode), linksOverlay);
     });
 
     $('#respData').on("click", ".cm-link", function () {
@@ -2173,4 +2174,8 @@ $(document).ready(function () {
         postman.loadNewRequestFromLink(link);
     });
 
+    $('#modalAboutPostman').click(function () {
+        postman.interface.attachSocialButtons();
+        return false;
+    });
 });
