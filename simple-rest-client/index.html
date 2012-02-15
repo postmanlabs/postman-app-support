@@ -7,7 +7,6 @@
     <link rel="stylesheet" type="text/css" href="css/ui-lightness/jquery-ui-1.8.14.custom.css"/>
     <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"/>
     <link rel="stylesheet" type="text/css" href="css/jquery.jscrollpane.css"/>
-    <link rel="stylesheet" type="text/css" href="css/jquery.contextMenu.css"/>
     <link rel="stylesheet" type="text/css" href="codemirror/lib/codemirror.css"/>
     <link rel="stylesheet" type="text/css" href="codemirror/theme/eclipse.css"/>
     <script>
@@ -49,7 +48,6 @@
             <ul>
                 <li><a href="#modalSettings" data-toggle="modal">Settings</a></li>
                 <li><a href="#modalAboutPostman" data-toggle="modal" onclick="attachSocialButtons();">About</a></li>
-                <!--<li><a href="javascript:void(0);" onclick="dropboxSync();">Sync</a></li>-->
             </ul>
         </div>
     </div>
@@ -205,7 +203,8 @@
                 </div>
                 <div class="control-group">
                     <div class="controls">
-                        <a href="javascript:void(0);" class="btn btn-small btn-secondary" onclick="hideRequestHelper('oAuth1')">
+                        <a href="javascript:void(0);" class="btn btn-small btn-secondary"
+                           onclick="hideRequestHelper('oAuth1')">
                             Refresh request
                         </a>
                     </div>
@@ -361,12 +360,14 @@
 <div id="formModalNewCollection" class="modal fade">
     <div class="modal-header">
         <a href="#" class="close" data-dismiss="modal">×</a>
+
         <h3>Create a new collection</h3>
     </div>
     <div class="modal-body">
         <form class="form form-horizontal" id="formNewCollection">
             <div class="control-group" id="newCollectionContainer">
                 <label class="control-label" id="newCollection">Collection name</label>
+
                 <div class="controls">
                     <input type="text" class="medium" name="newCollectionBlank" id="newCollectionBlank"/>
                 </div>
@@ -381,6 +382,7 @@
 <div id="formModalAddToCollection" class="modal fade">
     <div class="modal-header">
         <a href="#" class="close" data-dismiss="modal">×</a>
+
         <h3>Add request to a collection</h3>
     </div>
     <div class="modal-body">
@@ -412,6 +414,7 @@
 <div id="modalSettings" class="modal fade">
     <div class="modal-header">
         <a href="#" class="close" data-dismiss="modal">×</a>
+
         <h3>Settings</h3>
     </div>
     <div class="modal-body">
@@ -446,6 +449,7 @@
 <div id="modalAboutPostman" class="modal fade">
     <div class="modal-header">
         <a href="#" class="close" data-dismiss="modal">×</a>
+
         <h3>About Postman</h3>
     </div>
     <div class="modal-body">
@@ -476,6 +480,7 @@
 <div id="modalResponseError" class="modal fade">
     <div class="modal-header">
         <a href="#" class="close" data-dismiss="modal">×</a>
+
         <h3>Could not get any response</h3>
     </div>
     <div class="modal-body">
@@ -487,6 +492,7 @@
 <div id="modalShortcuts" class="modal fade">
     <div class="modal-header">
         <a href="#" class="close" data-dismiss="modal">×</a>
+
         <h3>Shortcuts</h3>
     </div>
     <div class="modal-body">
@@ -569,6 +575,7 @@
 <script id="itemResponseCode" type="text/x-jquery-tmpl">
     <div class="responseCode" data-placement="top" data-original-title="${code} ${name}" data-content="${detail}"
          rel="popover"><span class="label">Status</span>
+
         <div class="data">${code} ${name}</div>
     </div>
 </script>
@@ -623,7 +630,6 @@
     </li>
 </script>
 <script id="itemEditorStandard" type="text/x-jquery-tmpl">
-
 </script>
 <script id="itemParamsEditor" type="text/x-jquery-tmpl">
     <div>

@@ -17,22 +17,11 @@
  under the License.
  */
 var requests;
-var bodyFileData;
-var dataMode = "params";
-var requestStartTime = 0;
-var requestEndTime = 0;
-var requestMethod = 'GET';
-var dataInputType = "text";
 var availableUrls = [];
 var currentSidebarSection = "history";
-var currentResponse;
 
 var postman = {};
-postman.currentRequest = {};
-postman.currentRequest.url = "";
-postman.currentRequest.body = "";
-postman.currentRequest.headers = [];
-postman.currentRequest.method = "GET";
+
 postman.history = {};
 postman.history.requests = [];
 postman.settings = {};
@@ -60,6 +49,44 @@ var socialButtons = {
     "facebook":'<iframe src="http://www.facebook.com/plugins/like.php?href=https%3A%2F%2Fchrome.google.com%2Fwebstore%2Fdetail%2Ffdmmgilgnpjigdojojpjoooidkmcomcm&amp;send=false&amp;layout=button_count&amp;width=250&amp;show_faces=true&amp;action=like&amp;colorscheme=light&amp;font&amp;height=21&amp;appId=26438002524" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:250px; height:21px;" allowTransparency="true"></iframe>',
     "twitter":'<a href="https://twitter.com/share" class="twitter-share-button" data-url="https://chrome.google.com/webstore/detail/fdmmgilgnpjigdojojpjoooidkmcomcm" data-text="I am using Postman to kick some API ass!" data-count="horizontal" data-via="a85">Tweet</a><script type="text/javascript" src="http://platform.twitter.com/widgets.js"></script>',
     "plusOne":'<script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script><g:plusone size="medium" href="https://chrome.google.com/webstore/detail/fdmmgilgnpjigdojojpjoooidkmcomcm"></g:plusone>'
+};
+
+
+
+postman.currentRequest = {
+    url: "",
+    urlParams: {},
+    body: "",
+    bodyParams: {},
+    headers: [],
+    method: "get",
+    dataMode: "params",
+    methodsWithBody: ["post", "put", "patch"],
+
+    response: {
+        startTime: 0,
+        endTime: 0,
+        totalTime: 0,
+        status: "",
+        time: 0,
+        headers: {},
+        mime: "",
+        previewType: "parsed",
+
+        getTotalTime: function() {
+            this.totalTime = this.endTime - this.startTime;
+            return this.totalTime;
+        }
+    },
+
+    isMethodWithBody: function(method) {
+        if($.inArray(method, this.methodsWithBody) >= 0) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
 };
 
 function Collection() {
@@ -148,10 +175,6 @@ postman.initializeHeadersFromString = function (data) {
     }
 }
 
-function getRequestMethod() {
-    return requestMethod;
-}
-
 function sendRequest() {
     if ($("#url").val() != "") {
         var xhr = new XMLHttpRequest();
@@ -162,7 +185,7 @@ function sendRequest() {
 
         url = ensureProperUrl(url);
 
-        var method = getRequestMethod().toUpperCase();
+        var method = postman.currentRequest.method;
 
         var data = "";
         var bodyData = "";
@@ -177,12 +200,12 @@ function sendRequest() {
             }
         }
 
-        if (jQuery.inArray(method, ["post", "put"]) > -1) {
-            if (dataMode === 'raw') {
+        if (postman.currentRequest.isMethodWithBody(method)) {
+            if (postman.currentRequest.dataMode === 'raw') {
                 data = $("#body").val();
                 bodyData = data;
             }
-            else if (dataMode === 'params') {
+            else if (postman.currentRequest.dataMode === 'params') {
                 bodyData = new FormData();
 
                 //Iterate through all key/values
@@ -214,8 +237,8 @@ function sendRequest() {
             xhr.send();
         }
 
-        requestStartTime = new Date().getTime();
-        saveRequest(url, method, $("#headers").val(), data, dataMode);
+        postman.currentRequest.response.startTime = new Date().getTime();
+        saveRequest(url, method, $("#headers").val(), data, postman.currentRequest.dataMode);
         $('#submitRequest').button("loading");
 
     } else {
@@ -259,8 +282,6 @@ function setResponseHeaders(headersString) {
 }
 
 function readResponse() {
-    currentResponse = new Response();
-
     $('#response').css("display", "block");
     $('#submitRequest').button("reset");
 
@@ -296,7 +317,7 @@ function readResponse() {
                 $("#debugLinks").css("display", "");
             }
 
-            currentResponse.text = this.responseText;
+            postman.currentRequest.response.text = this.responseText;
 
             $("#respHeaders").css("display", "");
             $("#respData").css("display", "");
@@ -304,8 +325,8 @@ function readResponse() {
             $("#loader").css("display", "none");
             $("#responsePrint").css("display", "");
 
-            requestEndTime = new Date().getTime();
-            var diff = requestEndTime - requestStartTime;
+            postman.currentRequest.response.endTime = new Date().getTime();
+            var diff = postman.currentRequest.response.getTotalTime();
 
             $('#ptime .data').html(diff + " ms");
             $('#pbodysize .data').html(diff + " bytes");
@@ -324,12 +345,12 @@ function readResponse() {
 
             $('#language').val(format);
 
-            if(contentType.search(/image/i) == -1) {
+            if (contentType.search(/image/i) == -1) {
                 $('#responseAsText').css("display", "block");
                 $('#responseAsImage').css("display", "none");
                 $('#langFormat').css("display", "block");
                 $('#respDataActions').css("display", "block");
-                setResponseFormat(format, currentResponse.text, "parsed");
+                setResponseFormat(format, postman.currentRequest.response.text, "parsed");
             }
             else {
                 $('#responseAsText').css("display", "none");
@@ -354,11 +375,10 @@ function readResponse() {
 
 //Manages showing/hiding the PUT/POST additional UI
 function showRequestMethodUi(type) {
-    postman.currentRequest.method = type.toUpperCase();
     var t = type.toLowerCase();
-    requestMethod = t;
+    postman.currentRequest.method = t;
 
-    if (jQuery.inArray(type, ["post", "put", "patch"]) > -1) {
+    if (postman.currentRequest.isMethodWithBody(t)) {
         $("#data").css("display", "block");
         showBodyParamsEditor();
     } else {
@@ -986,7 +1006,7 @@ function loadRequestInEditor(request) {
         closeParamsEditor("body");
     }
 
-    requestMethod = method;
+    postman.currentRequest.method = method;
 
     closeParamsEditor("url");
     clearResponse();
@@ -1394,7 +1414,7 @@ function setCurrentDataFormat(method) {
 }
 
 function showBodyParamsEditor() {
-    dataMode = "params";
+    postman.currentRequest.dataMode = "params";
     showParamsEditor('body');
 
     $('#bodyDataContainer').css("display", "none");
@@ -1404,7 +1424,7 @@ function showBodyParamsEditor() {
 }
 
 function showRawEditor() {
-    dataMode = "raw";
+    postman.currentRequest.dataMode = "raw";
     closeParamsEditor('body');
 
     setCurrentDataFormat('raw');
@@ -1472,7 +1492,7 @@ function changeResponseFormat(format) {
 
     if (format === 'raw') {
         postmanCodeMirror.toTextArea();
-        $('#codeData').val(currentResponse.text);
+        $('#codeData').val(postman.currentRequest.response.text);
         var codeDataWidth = $(document).width() - $('#sidebar').width() - 60;
         $('#codeData').css("width", codeDataWidth + "px");
         $('#codeData').css("height", "600px");
@@ -1480,7 +1500,7 @@ function changeResponseFormat(format) {
     else {
         $('#codeData').css("display", "none");
         var mime = $('#codeData').attr('data-mime');
-        setResponseFormat(mime, currentResponse.text, "parsed", true);
+        setResponseFormat(mime, postman.currentRequest.response.text, "parsed", true);
     }
 
 }
@@ -1571,9 +1591,9 @@ function submitAddToCollectionForm() {
 
     collectionRequest.headers = $("#headers").val();
     collectionRequest.url = $("#url").val();
-    collectionRequest.method = getRequestMethod();
+    collectionRequest.method = postman.currentRequest.method;
     collectionRequest.data = $('#body').val();
-    collectionRequest.dataMode = dataMode;
+    collectionRequest.dataMode = postman.currentRequest.dataMode;
     collectionRequest.time = new Date().getTime();
 
     if (newCollection) {
@@ -1845,7 +1865,7 @@ function setupKeyboardShortcuts() {
     });
 
     $(document).bind('keydown', 'p', function () {
-        if (requestMethod === "post" || requestMethod === "put") {
+        if (postman.currentRequest.isMethodWithBody(postman.currentRequest.method)) {
             $('#body-ParamsFields div:first-child input:first-child').focus();
             return false;
         }
