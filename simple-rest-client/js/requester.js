@@ -1209,20 +1209,6 @@ function changeParamInEditor(target) {
     }
 }
 
-function addHeaderListeners() {
-}
-
-function addBodyListeners() {
-    $('#body').blur(function () {
-        showParamsEditor('body');
-    });
-}
-
-function removeBodyListeners() {
-    $('#body').unbind("focus");
-    $('#body').unbind("blur");
-}
-
 function setContainerHeights() {
     refreshScrollPanes();
 }
@@ -1437,8 +1423,6 @@ function showBodyParamsEditor() {
 
     $('#bodyDataContainer').css("display", "none");
     setCurrentDataFormat('params');
-    removeBodyListeners();
-    addBodyListeners();
 }
 
 function showRawEditor() {
@@ -1447,8 +1431,6 @@ function showRawEditor() {
 
     setCurrentDataFormat('raw');
     $('#bodyDataContainer').css("display", "block");
-    removeBodyListeners();
-    addBodyListeners();
 }
 
 //Headers list from Wikipedia http://en.wikipedia.org/wiki/List_of_HTTP_header_fields
@@ -2093,8 +2075,7 @@ $(document).ready(function () {
     init();
 
     $('a[rel="tooltip"]').tooltip();
-
-    addHeaderListeners();
+    
     addUrlAutoComplete();
     attachSidebarListeners();
     setupKeyboardShortcuts();
