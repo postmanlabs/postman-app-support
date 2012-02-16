@@ -1936,7 +1936,7 @@ function setupKeyboardShortcuts() {
     });
 
     $(document).bind('keydown', 'p', function () {
-        if (requestMethod === "post" || requestMethod === "put") {
+        if (requestMethod === "post" || requestMethod === "put" || requestMethod === "patch") {
             $('#body-ParamsFields div:first-child input:first-child').focus();
             return false;
         }
@@ -2064,9 +2064,7 @@ function generateSignature() {
     }
     var message = {
         action:$('#url').val().trim(),
-
-        //TODO Change this to use postman.currentRequest.method
-        method:$('#methods li.active a').html(),
+        method: postman.currentRequest.method,
         parameters:[]
     };
     //all the fields defined by oauth
@@ -2142,6 +2140,7 @@ function processOAuth1RequestHelper() {
         }
     });
 
+    console.log(postman.currentRequest.method);
     if (postman.currentRequest.method === 'GET') {
         var url = $('#url').val();
         //postman.currentRequest.headers = body + ;
