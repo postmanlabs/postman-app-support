@@ -21,7 +21,6 @@ var postman = {};
 
 postman.history = {};
 postman.history.requests = [];
-postman.settings = {};
 
 postman.indexedDB = {};
 postman.indexedDB.db = null;
@@ -49,6 +48,48 @@ postman.urlCache = {
         }
     }
 }
+
+postman.settings = {
+    historyCount: 50,
+    autoSaveRequest: true,
+    initialize: function() {
+        if (localStorage['historyCount']) {
+            this.historyCount = localStorage['historyCount'];
+        }
+        else {
+            this.historyCount = 100;
+            localStorage['historyCount'] = this.historyCount;
+        }
+
+        if (localStorage['autoSaveRequest']) {
+            this.autoSaveRequest = localStorage['autoSaveRequest'];
+        }
+        else {
+            this.autoSaveRequest = true;
+            localStorage['autoSaveRequest'] = this.autoSaveRequest;
+        }
+
+        $('#historyCount').val(this.historyCount);
+        $('#autoSaveRequest').val(this.autoSaveRequest);
+
+        $('#historyCount').change(function () {
+            this.historyCount = $('#historyCount').val();
+            localStorage['historyCount'] = this.historyCount;
+        });
+
+        $('#autoSaveRequest').change(function () {
+            var val = $('#autoSaveRequest').val();
+            if (val == 'yes') {
+                this.autoSaveRequest = true;
+            }
+            else {
+                this.autoSaveRequest = false;
+            }
+
+            localStorage['autoSaveRequest'] = this.autoSaveRequest;
+        });
+    }
+};
 
 postman.currentRequest = {
     url:"",
@@ -134,6 +175,101 @@ postman.interface = {
             this.currentSection = section;
             $('#sidebarSection-' + section).fadeIn();
             return true;
+        },
+
+        addRequest: function(url, method, id, position) {
+            if (url.length > 80) {
+                url = url.substring(0, 80) + "...";
+            }
+            url = limitStringLineWidth(url, 40);
+
+            var request = {
+                url:url,
+                method:method,
+                id:id,
+                position:position
+            };
+
+            if (position === 'top') {
+                $('#itemHistorySidebarRequest').tmpl([request]).prependTo('#historyItems');
+            }
+            else {
+                $('#itemHistorySidebarRequest').tmpl([request]).appendTo('#historyItems');
+            }
+
+            $('#messageNoHistory').remove();
+            postman.interface.refreshScrollPanes();
+        },
+
+        addRequestListeners: function(request) {
+            var targetElement = '#sidebarRequest-' + request.id;
+            $(targetElement).mouseenter(function () {
+                var actionsEl = jQuery('.request-actions', this);
+                actionsEl.css('display', 'block');
+            });
+
+            $(targetElement).mouseleave(function () {
+                var actionsEl = jQuery('.request-actions', this);
+                actionsEl.css('display', 'none');
+            });
+        },
+
+        removeRequest: function(id, toAnimate) {
+            var historyRequests = postman.history.requests;
+            var k = -1;
+            for (var i = 0; i < historyRequests.length; i++) {
+                if (historyRequests[i].id === id) {
+                    k = i;
+                    break;
+                }
+            }
+
+            if (k >= 0) {
+                postman.history.requests.splice(k, 1);
+                if (postman.history.requests.length == 0) {
+                    $('#messageNoHistoryTmpl').tmpl([new Object()]).appendTo('#sidebarSection-history');
+                }
+            }
+
+            if (toAnimate) {
+                $('#sidebarRequest-' + id).slideUp(100);
+            }
+            else {
+                $('#sidebarRequest-' + id).remove();
+            }
+
+            postman.interface.refreshScrollPanes();
+        },
+
+        addCollectionHeadListeners: function(collection) {
+            var targetElement = '#collection-' + collection.id + " .sidebar-collection-head";
+            $(targetElement).mouseenter(function () {
+                var actionsEl = jQuery('.collection-head-actions', this);
+                actionsEl.css('display', 'block');
+            });
+
+            $(targetElement).mouseleave(function () {
+                var actionsEl = jQuery('.collection-head-actions', this);
+                actionsEl.css('display', 'none');
+            });
+
+            var targetElementName = '#collection-' + collection.id + " .sidebar-collection-head-name";
+            var targetElementLabel = '#collection-' + collection.id + " .collection-head-actions .label";
+
+            $(targetElementName).bind("click", function () {
+                var id = $(this).attr('data-id');
+                toggleCollectionRequestList(id);
+            });
+
+            $(targetElementLabel).bind("click", function () {
+                var id = $(this).parent().parent().parent().attr('data-id');
+                toggleCollectionRequestList(id);
+            });
+        },
+
+        removeCollection: function(id) {
+            $('#collection-' + id).slideUp(100);
+            postman.interface.refreshScrollPanes();
         }
     }
 };
@@ -561,7 +697,7 @@ function setupDB() {
             $('#itemCollectionSelectorList').tmpl([collection]).appendTo('#selectCollection');
             $('#itemCollectionSidebarHead').tmpl([collection]).appendTo('#collectionItems');
 
-            addSidebarCollectionHeadListener(collection);
+            postman.interface.sidebar.addCollectionHeadListeners(collection);
             postman.interface.refreshScrollPanes();
 
             postman.indexedDB.addCollectionRequest(collectionRequest, true);
@@ -595,7 +731,7 @@ function setupDB() {
 
             req.url = limitStringLineWidth(req.url, 43);
             $('#itemCollectionSidebarRequest').tmpl([req]).appendTo(targetElement);
-            addSidebarRequestListener(req);
+            postman.interface.sidebar.addRequestListeners(req);
             postman.interface.refreshScrollPanes();
             $('#messageNoCollection').remove();
         };
@@ -643,7 +779,7 @@ function setupDB() {
             postman.indexedDB.getAllRequestsInCollection(collection.id);
             //This wil call onsuccess again and again until no more request is left
 
-            addSidebarCollectionHeadListener(collection);
+            postman.interface.sidebar.addCollectionHeadListeners(collection);
 
             result.
             continue
@@ -682,7 +818,7 @@ function setupDB() {
 
             request.url = limitStringLineWidth(request.url, 40);
             $('#itemCollectionSidebarRequest').tmpl([request]).appendTo(targetElement);
-            addSidebarRequestListener(request);
+            postman.interface.sidebar.addRequestListeners(request);
             postman.interface.refreshScrollPanes();
 
             //This wil call onsuccess again and again until no more request is left
@@ -720,9 +856,9 @@ function setupDB() {
             //Re-render all the todos
             postman.urlCache.addUrl(url);
             addUrlAutoComplete();
-            removeRequestFromSidebar(deletedId, false);
-            renderRequestToSidebar(url, method, id, "top");
-            addSidebarRequestListener(historyRequest);
+            postman.interface.sidebar.removeRequest(deletedId, false);
+            postman.interface.sidebar.addRequest(url, method, id, "top");
+            postman.interface.sidebar.addRequestListeners(historyRequest);
             postman.history.requests.push(historyRequest);
         };
 
@@ -791,8 +927,8 @@ function setupDB() {
                 for (var i = 0; i < historyRequests.length; i++) {
                     var r = historyRequests[i];
                     postman.urlCache.addUrl(r.url);
-                    renderRequestToSidebar(r.url, r.method, r.id, "top");
-                    addSidebarRequestListener(r);
+                    postman.interface.sidebar.addRequest(r.url, r.method, r.id, "top");
+                    postman.interface.sidebar.addRequestListeners(r);
                 }
 
                 addUrlAutoComplete();
@@ -829,7 +965,7 @@ function setupDB() {
             var request = store.delete(id);
 
             request.onsuccess = function (e) {
-                removeRequestFromSidebar(id);
+                postman.interface.sidebar.removeRequest(id);
 
             };
 
@@ -861,7 +997,7 @@ function setupDB() {
         var request = store.delete(id);
 
         request.onsuccess = function (e) {
-            removeRequestFromSidebar(id);
+            postman.interface.sidebar.removeRequest(id);
         };
 
         request.onerror = function (e) {
@@ -904,7 +1040,7 @@ function setupDB() {
         var request = store.delete(id);
 
         request.onsuccess = function (e) {
-            removeCollectionFromSidebar(id);
+            postman.interface.sidebar.removeCollection(id);
             removeCollectionFromSelector(id);
             var numCollections = $('#collectionItems').children().length;
             if (numCollections == 1) {
@@ -946,62 +1082,6 @@ function showEmptyHistoryMessage() {
 
 function hideEmptyHistoryMessage() {
     $('#emptyHistoryMessage').css("display", "none");
-}
-
-function renderRequestToSidebar(url, method, id, position) {
-    if (url.length > 80) {
-        url = url.substring(0, 80) + "...";
-    }
-    url = limitStringLineWidth(url, 40);
-
-    var request = {
-        "url":url,
-        "method":method,
-        "id":id,
-        "position":position
-    };
-
-    if (position === 'top') {
-        $('#itemHistorySidebarRequest').tmpl([request]).prependTo('#historyItems');
-    }
-    else {
-        $('#itemHistorySidebarRequest').tmpl([request]).appendTo('#historyItems');
-    }
-
-    $('#messageNoHistory').remove();
-    postman.interface.refreshScrollPanes();
-}
-
-function removeRequestFromSidebar(id, toAnimate) {
-    var historyRequests = postman.history.requests;
-    var k = -1;
-    for (var i = 0; i < historyRequests.length; i++) {
-        if (historyRequests[i].id === id) {
-            k = i;
-            break;
-        }
-    }
-
-    if (k >= 0) {
-        postman.history.requests.splice(k, 1);
-        if (postman.history.requests.length == 0) {
-            $('#messageNoHistoryTmpl').tmpl([new Object()]).appendTo('#sidebarSection-history');
-        }
-    }
-
-    if (toAnimate) {
-        $('#sidebarRequest-' + id).slideUp(100);
-    }
-    else {
-        $('#sidebarRequest-' + id).remove();
-    }
-
-    postman.interface.refreshScrollPanes();
-}
-
-function removeCollectionFromSidebar(id) {
-    $('#collection-' + id).slideUp(100);
-    postman.interface.refreshScrollPanes();
 }
 
 function removeCollectionFromSelector(id) {
@@ -1242,70 +1322,6 @@ function changeParamInEditor(target) {
     }
 }
 
-function initializeSettings() {
-    if (localStorage['historyCount']) {
-        postman.settings.historyCount = localStorage['historyCount'];
-    }
-    else {
-        postman.settings.historyCount = 100;
-        localStorage['historyCount'] = postman.settings.historyCount;
-    }
-
-    if (localStorage['autoSaveRequest']) {
-        postman.settings.autoSaveRequest = localStorage['autoSaveRequest'];
-    }
-    else {
-        postman.settings.autoSaveRequest = true;
-        localStorage['autoSaveRequest'] = postman.settings.autoSaveRequest;
-    }
-
-    $('#historyCount').val(postman.settings.historyCount);
-    $('#autoSaveRequest').val(postman.settings.autoSaveRequest);
-
-    $('#historyCount').change(function () {
-        postman.settings.historyCount = $('#historyCount').val();
-        localStorage['historyCount'] = postman.settings.historyCount;
-    });
-
-    $('#autoSaveRequest').change(function () {
-        var val = $('#autoSaveRequest').val();
-        if (val == 'yes') {
-            postman.settings.autoSaveRequest = true;
-        }
-        else {
-            postman.settings.autoSaveRequest = false;
-        }
-
-        localStorage['autoSaveRequest'] = postman.settings.autoSaveRequest;
-    });
-}
-
-function addSidebarCollectionHeadListener(collection) {
-    var targetElement = '#collection-' + collection.id + " .sidebar-collection-head";
-    $(targetElement).mouseenter(function () {
-        var actionsEl = jQuery('.collection-head-actions', this);
-        actionsEl.css('display', 'block');
-    });
-
-    $(targetElement).mouseleave(function () {
-        var actionsEl = jQuery('.collection-head-actions', this);
-        actionsEl.css('display', 'none');
-    });
-
-    var targetElementName = '#collection-' + collection.id + " .sidebar-collection-head-name";
-    var targetElementLabel = '#collection-' + collection.id + " .collection-head-actions .label";
-
-    $(targetElementName).bind("click", function () {
-        var id = $(this).attr('data-id');
-        toggleCollectionRequestList(id);
-    });
-
-    $(targetElementLabel).bind("click", function () {
-        var id = $(this).parent().parent().parent().attr('data-id');
-        toggleCollectionRequestList(id);
-    });
-}
-
 function toggleCollectionRequestList(id) {
     var target = "#collectionRequests-" + id;
     var label = "#collection-" + id + " .collection-head-actions .label";
@@ -1317,19 +1333,6 @@ function toggleCollectionRequestList(id) {
         $(label).html("Show");
         $(target).slideUp(100);
     }
-}
-
-function addSidebarRequestListener(request) {
-    var targetElement = '#sidebarRequest-' + request.id;
-    $(targetElement).mouseenter(function () {
-        var actionsEl = jQuery('.request-actions', this);
-        actionsEl.css('display', 'block');
-    });
-
-    $(targetElement).mouseleave(function () {
-        var actionsEl = jQuery('.request-actions', this);
-        actionsEl.css('display', 'none');
-    });
 }
 
 var sectionParamsLastInputFocusHandler = function (evt) {
@@ -1717,7 +1720,7 @@ function toggleResponseBodySize() {
         $('#respData').css("padding", "10px");
     }
     else {
-        postman.currentRequest.state.size = "normal";
+        postman.currentRequest.response.state.size = "normal";
         $('#responseBodyToggle img').attr("src", "img/full-screen-alt-4.png");
         $('#respData').css("position", postman.currentRequest.response.state.position);
         $('#respData').css("left", 0);
@@ -2034,7 +2037,7 @@ function processOAuth1RequestHelper() {
 $(document).ready(function () {
     setupDB();
     initDB();
-    initializeSettings();
+    postman.settings.initialize();
     init();
 
     $('a[rel="tooltip"]').tooltip();
