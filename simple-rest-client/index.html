@@ -53,8 +53,7 @@
     </div>
     <div id="sidebarContainer" class="clearfix">
         <div id="historyOptions" class="sectionOptions">
-            <a href="javascript:void(0);" onclick="clearHistory()"
-               rel="tooltip" data-original-title="Clear history">
+            <a href="javascript:void(0);" class="history-actions-delete" rel="tooltip" data-original-title="Clear history">
                 <img src="img/trash-empty.png" width="24px" height="24px"/>
             </a>
         </div>
@@ -616,13 +615,12 @@
 <script id="itemHistorySidebarRequest" type="text/x-jquery-tmpl">
     <li id="sidebarRequest-${id}" class="sidebarHistoryRequest clearfix">
         <div class="request-actions">
-            <a href="javascript:void(0);"
-               onclick="deleteRequest('${id}');">
+            <a href="javascript:void(0);" data-request-id="${id}" class="request-actions-delete">
                 <img src="img/delete.png"/>
             </a>
         </div>
-        <div class="request" onclick="loadRequest('${id}')">
-            <a href="javascript:void(0);"><span class="label">${method}</span> {{html url}}</a>
+        <div class="request">
+            <a href="javascript:void(0);" data-request-id="${id}"><span class="label">${method}</span> {{html url}}</a>
         </div>
     </li>
 </script>
