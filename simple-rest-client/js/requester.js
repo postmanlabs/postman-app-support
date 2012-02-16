@@ -2018,11 +2018,11 @@ function generateSignature() {
     }
     var message = {
         action:$('#url').val().trim(),
-
-        //TODO Change this to use postman.currentRequest.method
-        method:$('#methods li.active a').html(),
+        method: postman.currentRequest.method,
         parameters:[]
     };
+
+    console.log(message);
     //all the fields defined by oauth
     $('input.signatureParam').each(function () {
         if ($(this).val() != '') {
@@ -2098,6 +2098,7 @@ function processOAuth1RequestHelper() {
         }
     });
 
+    console.log(postman.currentRequest.method);
     if (postman.currentRequest.method === "get") {
         var url = $('#url').val();
         //postman.currentRequest.headers = body + ;
