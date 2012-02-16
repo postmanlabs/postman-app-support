@@ -58,8 +58,7 @@
             </a>
         </div>
         <div id="collectionsOptions" class="sectionOptions">
-            <a href="#formModalNewCollection"
-               rel="tooltip" data-original-title="Add new collection"
+            <a href="#formModalNewCollection" rel="tooltip" data-original-title="Add new collection"
                data-toggle="modal" data-backdrop="static" data-keyboard="true">
                 <img src="img/file-add.png" width="24px" height="24px"/>
             </a>
@@ -362,7 +361,7 @@
     <div class="modal-body">
         <form class="form form-horizontal" id="formNewCollection">
             <div class="control-group" id="newCollectionContainer">
-                <label class="control-label" id="newCollection">Collection name</label>
+                <label class="control-label">Collection name</label>
 
                 <div class="controls">
                     <input type="text" class="medium" name="newCollectionBlank" id="newCollectionBlank"/>
@@ -397,14 +396,14 @@
                 <label for="newCollection">or add to a new one</label>
 
                 <div class="input">
-                    <input type="text" class="medium" name="newCollection" id="newCollection"/>
+                    <input type="text" class="medium" id="newCollection"/>
                 </div>
             </div>
         </form>
     </div>
     <div class="modal-footer">
-        <a href="javascript:void(0);" onclick="submitAddToCollectionForm();" class="btn primary">Done</a>
-        <a href="javascript:void(0);" data-dismiss="modal" class="btn secondary">Cancel</a>
+        <a href="javascript:void(0);" class="btn btn-primary">Done</a>
+        <a href="javascript:void(0);" data-dismiss="modal" class="btn btn-secondary">Cancel</a>
     </div>
 </div>
 <div id="modalSettings" class="modal fade">
@@ -587,8 +586,7 @@
         <div class="sidebar-collection-head">
             <div class="collection-head-actions">
                 <span class="label">Show</span>
-                <a href="javascript:void(0);"
-                   onclick="deleteCollection('${id}');">
+                <a href="javascript:void(0);" class="collection-actions-delete" data-id="${id}">
                     <img src="img/delete.png" style="vertical-align: middle;"/>
                 </a>
             </div>
@@ -600,20 +598,19 @@
     </li>
 </script>
 <script id="itemCollectionSidebarRequest" type="text/x-jquery-tmpl">
-    <li id="sidebarRequest-${id}" class="sidebarCollectionRequest clearfix">
+    <li id="sidebarRequest-${id}" class="sidebarCollectionRequest sidebarRequest clearfix">
         <div class="request-actions">
-            <a href="javascript:void(0);"
-               onclick="deleteCollectionRequest('${id}');">
+            <a href="javascript:void(0);" data-id="${id}" class="request-actions-delete">
                 <img src="img/delete.png"/>
             </a>
         </div>
-        <div class="request" onclick="loadCollectionRequest('${id}')">
+        <div class="request request-actions-load" data-id="${id}">
             <a href="javascript:void(0);"><span class="label">${method}</span> {{html url}}</a>
         </div>
     </li>
 </script>
 <script id="itemHistorySidebarRequest" type="text/x-jquery-tmpl">
-    <li id="sidebarRequest-${id}" class="sidebarHistoryRequest clearfix">
+    <li id="sidebarRequest-${id}" class="sidebarHistoryRequest sidebarRequest clearfix">
         <div class="request-actions">
             <a href="javascript:void(0);" data-request-id="${id}" class="request-actions-delete">
                 <img src="img/delete.png"/>

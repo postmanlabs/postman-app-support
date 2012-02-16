@@ -32,6 +32,7 @@ var IDBCursor = window.IDBCursor || window.webkitIDBCursor;
 
 postman.initialize = function () {
     this.history.initialize();
+    this.collections.initialize();
     this.settings.initialize();
     this.interface.initialize();
 };
@@ -46,7 +47,15 @@ postman.urlCache = {
     addUrl:function (url) {
         if ($.inArray(url, this.urls) == -1) {
             this.urls.push(url);
+            this.refreshAutoComplete();
         }
+    },
+
+    refreshAutoComplete: function() {
+        $("#url").autocomplete({
+            source:postman.urlCache.urls,
+            delay:50
+        });
     }
 }
 
@@ -183,6 +192,39 @@ postman.history = {
         return index;
     },
 
+    getAllRequests: function() {
+        postman.indexedDB.getAllRequestItems(function(historyRequests) {
+            var outAr = [];
+            for (var i = 0; i < historyRequests.length; i++) {
+                var r = historyRequests[i];
+                postman.urlCache.addUrl(r.url);
+
+                var url = historyRequests[i].url;
+
+                if (url.length > 80) {
+                    url = url.substring(0, 80) + "...";
+                }
+                url = limitStringLineWidth(url, 40);
+
+                var request = {
+                    url:url,
+                    method:historyRequests[i].method,
+                    id:historyRequests[i].id,
+                    position:"top"
+                };
+
+                outAr.push(request);
+            }
+
+            $('#itemHistorySidebarRequest').tmpl(outAr).prependTo('#historyItems');
+            $('#historyItems').fadeIn();
+            postman.history.requests = historyRequests;
+            if (postman.history.requests.length == 0) {
+                $('#messageNoHistoryTmpl').tmpl([new Object()]).appendTo('#sidebarSection-history');
+            }
+        })
+
+    },
 
     loadRequest:function (id) {
         postman.indexedDB.getRequest(id, function (request) {
@@ -190,49 +232,42 @@ postman.history = {
         });
     },
 
-    saveRequest: function(url, method, headers, data, dataMode) {
-        if (postman.settings.autoSaveRequest) {
-            var id = guid();
-            var maxHistoryCount = postman.settings.historyCount;
-            var requests = this.requests;
-            var requestsCount = this.requests.length;
+    addRequest: function(url, method, headers, data, dataMode) {
+        var id = guid();
+        var maxHistoryCount = postman.settings.historyCount;
+        var requests = this.requests;
+        var requestsCount = this.requests.length;
 
-            if (requestsCount >= maxHistoryCount) {
-                //Delete the last request
-                var lastRequest = requests[requestsCount - 1];
-                this.deleteRequest(lastRequest.id);
-            }
-
-            var historyRequest = {
-                "id":id,
-                "url":url.toString(),
-                "method":method.toString(),
-                "headers":headers.toString(),
-                "data":data.toString(),
-                "dataMode":dataMode.toString(),
-                "timestamp":new Date().getTime()
-            };
-
-            var index = this.requestExists(historyRequest);
-
-            if (index >= 0) {
-                var deletedId = requests[index].id;
-                this.deleteRequest(deletedId);
-            }
-
-            postman.indexedDB.addRequest(historyRequest, function(request) {
-                postman.urlCache.addUrl(request.url);
-                addUrlAutoComplete();
-                postman.interface.sidebar.addRequest(request.url, request.method, id, "top");
-                postman.interface.sidebar.addRequestListeners(request);
-                postman.history.requests.push(request);
-            });
+        if (requestsCount >= maxHistoryCount) {
+            //Delete the last request
+            var lastRequest = requests[requestsCount - 1];
+            this.deleteRequest(lastRequest.id);
         }
+
+        var historyRequest = {
+            "id":id,
+            "url":url.toString(),
+            "method":method.toString(),
+            "headers":headers.toString(),
+            "data":data.toString(),
+            "dataMode":dataMode.toString(),
+            "timestamp":new Date().getTime()
+        };
+
+        var index = this.requestExists(historyRequest);
+
+        if (index >= 0) {
+            var deletedId = requests[index].id;
+            this.deleteRequest(deletedId);
+        }
+
+        postman.indexedDB.addRequest(historyRequest, function(request) {
+            postman.urlCache.addUrl(request.url);
+            postman.interface.sidebar.addRequest(request.url, request.method, id, "top");
+            postman.history.requests.push(request);
+        });
     },
 
-    addRequest: function() {
-
-    },
 
     deleteRequest:function (id) {
         postman.indexedDB.deleteRequest(id, function (request_id) {
@@ -261,6 +296,197 @@ postman.history = {
         });
     }
 };
+
+postman.collections = {
+    items: [],
+
+    initialize: function() {
+        this.addCollectionListeners();
+    },
+
+    addCollectionListeners:function () {
+        $('#collectionItems').on("mouseenter", ".sidebarCollection .sidebar-collection-head", function (event) {
+            var actionsEl = jQuery('.collection-head-actions', this);
+            actionsEl.css('display', 'block');
+        });
+
+        $('#collectionItems').on("mouseleave", ".sidebarCollection .sidebar-collection-head", function (event) {
+            var actionsEl = jQuery('.collection-head-actions', this);
+            actionsEl.css('display', 'none');
+        });
+
+        $('#collectionItems').on("click", ".sidebar-collection-head-name",  function (event) {
+            var id = $(this).attr('data-id');
+            postman.collections.toggleRequestList(id);
+        });
+
+        $('#collectionItems').on("click", ".collection-head-actions .label",  function (event) {
+            var id = $(this).parent().parent().parent().attr('data-id');
+            postman.collections.toggleRequestList(id);
+        });
+
+        $('#collectionItems').on("click", ".request-actions-delete",  function (event) {
+            var id = $(this).attr('data-id');
+            postman.collections.deleteCollectionRequest(id);
+        });
+
+        $('#collectionItems').on("click", ".request-actions-load",  function (event) {
+            var id = $(this).attr('data-id');
+            postman.collections.getCollectionRequest(id);
+        });
+
+        $('#collectionItems').on("click", ".collection-actions-delete",  function (event) {
+            var id = $(this).attr('data-id');
+            postman.collections.deleteCollection(id);
+        });
+    },
+
+    getCollectionRequest: function(id) {
+        postman.indexedDB.getCollectionRequest(id, function(request) {
+            loadRequestInEditor(request);
+        });
+    },
+
+    toggleRequestList: function(id) {
+        var target = "#collectionRequests-" + id;
+        var label = "#collection-" + id + " .collection-head-actions .label";
+        if ($(target).css("display") == "none") {
+            $(label).html("Hide");
+            $(target).slideDown(100);
+        }
+        else {
+            $(label).html("Show");
+            $(target).slideUp(100);
+        }
+    },
+
+    addCollection: function() {
+        var newCollection = $('#newCollectionBlank').val();
+
+        var collection = new Collection();
+
+        if (newCollection) {
+            //Add the new collection and get guid
+            collection.id = guid();
+            collection.name = newCollection;
+            postman.indexedDB.addCollection(collection, function(collection) {
+                $('#messageNoCollection').remove();
+                postman.collections.getAllCollections();
+                postman.indexedDB.getAllRequestsInCollection(collection.id);
+            });
+
+            $('#newCollectionBlank').val("");
+        }
+
+        $('#formModalNewCollection').modal('hide');
+    },
+
+    addRequestToCollection: function() {
+        var existingCollectionId = $('#selectCollection').val();
+        var newCollection = $("#newCollection").val();
+        var collection = new Collection();
+
+        var collectionRequest = new CollectionRequest();
+        collectionRequest.id = guid();
+        collectionRequest.headers = $("#headers").val();
+        collectionRequest.url = $("#url").val();
+        collectionRequest.method = postman.currentRequest.method;
+        collectionRequest.data = $('#body').val();
+        collectionRequest.dataMode = postman.currentRequest.dataMode;
+        collectionRequest.time = new Date().getTime();
+
+        if (newCollection) {
+            //Add the new collection and get guid
+            collection.id = guid();
+            collection.name = newCollection;
+            postman.indexedDB.addCollection(collection, function(collection) {
+                $('#newCollection').val("");
+                collectionRequest.collectionId = collection.id;
+                $('#itemCollectionSelectorList').tmpl([collection]).appendTo('#selectCollection');
+                $('#itemCollectionSidebarHead').tmpl([collection]).appendTo('#collectionItems');
+                postman.interface.refreshScrollPanes();
+                postman.indexedDB.addCollectionRequest(collectionRequest, function(req) {
+                    var targetElement = "#collectionRequests-" + req.collectionId;
+                    postman.urlCache.addUrl(req.url);
+
+                    req.url = limitStringLineWidth(req.url, 43);
+                    $('#itemCollectionSidebarRequest').tmpl([req]).appendTo(targetElement);
+                    postman.interface.refreshScrollPanes();
+                    $('#messageNoCollection').remove();
+                });
+            });
+        }
+        else {
+            //Get guid of existing collection
+            collection.id = existingCollectionId;
+            collectionRequest.collectionId = collection.id;
+            postman.indexedDB.addCollectionRequest(collectionRequest, function(req) {
+                var targetElement = "#collectionRequests-" + req.collectionId;
+                postman.urlCache.addUrl(req.url);
+
+                req.url = limitStringLineWidth(req.url, 43);
+                $('#itemCollectionSidebarRequest').tmpl([req]).appendTo(targetElement);
+                postman.interface.refreshScrollPanes();
+                $('#messageNoCollection').remove();
+            });
+        }
+    },
+
+    getAllCollections: function() {
+        $('#collectionItems').html("");
+        $('#selectCollection').html("<option>Select</option>");
+        postman.indexedDB.getCollections(function(items) {
+            postman.collections.items = items;
+            if (items.length == 0) {
+                //Replace this with showEmptyMessage
+                $('#messageNoCollectionTmpl').tmpl([{}]).appendTo('#sidebarSection-collections');
+            }
+
+            $('#itemCollectionSelectorList').tmpl(items).appendTo('#selectCollection');
+            $('#itemCollectionSidebarHead').tmpl(items).appendTo('#collectionItems');
+
+            var itemsLength = items.length;
+            for(var i = 0; i < itemsLength; i++) {
+                postman.collections.getAllRequestsInCollection(items[i].id);
+            }
+
+            postman.interface.refreshScrollPanes();
+        });
+    },
+
+    getAllRequestsInCollection: function(id) {
+        $('#collectionRequests-' + id).html("");
+        postman.indexedDB.getAllRequestsInCollection(id, function(requests) {
+            var targetElement = "#collectionRequests-" + id;
+            var count = requests.length;
+
+            for(var i = 0; i < count; i++) {
+                postman.urlCache.addUrl(requests[i].url);
+                requests[i].url = limitStringLineWidth(requests[i].url, 40);
+            }
+
+            $('#itemCollectionSidebarRequest').tmpl(requests).appendTo(targetElement);
+            postman.interface.refreshScrollPanes();
+        });
+    },
+
+    deleteCollectionRequest: function(id) {
+        postman.indexedDB.deleteCollectionRequest(id, function() {
+            postman.interface.sidebar.removeRequestFromHistory(id);
+        });
+    },
+
+    deleteCollection: function(id) {
+        postman.indexedDB.deleteCollection(id, function() {
+            postman.interface.sidebar.removeCollection(id);
+            removeCollectionFromSelector(id);
+            var numCollections = $('#collectionItems').children().length;
+            if (numCollections == 1) {
+                $('#messageNoCollectionTmpl').tmpl([new Object()]).appendTo('#sidebarSection-collections');
+            }
+        });
+    }
+}
 
 postman.interface = {
     socialButtons:{
@@ -315,13 +541,19 @@ postman.interface = {
             $('#historyItems').on("click", ".request a", function (event) {
                 var request_id = $(this).attr('data-request-id');
                 postman.history.loadRequest(request_id);
-            })
+            });
+
+            this.addRequestListeners();
         },
 
         select:function (section) {
             $('#sidebarSection-' + this.currentSection).css("display", "none");
+            $('#' + this.currentSection + 'Options').css("display", "none");
+
             this.currentSection = section;
+
             $('#sidebarSection-' + section).fadeIn();
+            $('#' + section + 'Options').css("display", "block");
             return true;
         },
 
@@ -349,14 +581,13 @@ postman.interface = {
             postman.interface.refreshScrollPanes();
         },
 
-        addRequestListeners:function (request) {
-            var targetElement = '#sidebarRequest-' + request.id;
-            $(targetElement).mouseenter(function () {
+        addRequestListeners:function () {
+            $('#sidebarContainer').on("mouseenter", ".sidebarRequest", function () {
                 var actionsEl = jQuery('.request-actions', this);
                 actionsEl.css('display', 'block');
             });
 
-            $(targetElement).mouseleave(function () {
+            $('#sidebarContainer').on("mouseleave", ".sidebarRequest", function () {
                 var actionsEl = jQuery('.request-actions', this);
                 actionsEl.css('display', 'none');
             });
@@ -378,32 +609,6 @@ postman.interface = {
             }
 
             postman.interface.refreshScrollPanes();
-        },
-
-        addCollectionHeadListeners:function (collection) {
-            var targetElement = '#collection-' + collection.id + " .sidebar-collection-head";
-            $(targetElement).mouseenter(function () {
-                var actionsEl = jQuery('.collection-head-actions', this);
-                actionsEl.css('display', 'block');
-            });
-
-            $(targetElement).mouseleave(function () {
-                var actionsEl = jQuery('.collection-head-actions', this);
-                actionsEl.css('display', 'none');
-            });
-
-            var targetElementName = '#collection-' + collection.id + " .sidebar-collection-head-name";
-            var targetElementLabel = '#collection-' + collection.id + " .collection-head-actions .label";
-
-            $(targetElementName).bind("click", function () {
-                var id = $(this).attr('data-id');
-                toggleCollectionRequestList(id);
-            });
-
-            $(targetElementLabel).bind("click", function () {
-                var id = $(this).parent().parent().parent().attr('data-id');
-                toggleCollectionRequestList(id);
-            });
         },
 
         removeCollection:function (id) {
@@ -562,7 +767,10 @@ function sendRequest() {
         }
 
         postman.currentRequest.response.startTime = new Date().getTime();
-        postman.history.saveRequest(url, method, $("#headers").val(), data, postman.currentRequest.dataMode);
+
+        if (postman.settings.autoSaveRequest) {
+            postman.history.addRequest(url, method, $("#headers").val(), data, postman.currentRequest.dataMode);
+        }
 
         $('#submitRequest').button("loading");
 
@@ -583,7 +791,6 @@ function setResponseHeaders(headersString) {
     var headers = headersString.split("\n");
     var count = headers.length;
     var finalHeaders = [];
-    console.log(headers);
     for (var i = 0; i < count; i++) {
         var h = headers[i];
         var hParts = h.split(":");
@@ -785,13 +992,13 @@ function setupDB() {
                     collectionRequestsStore.createIndex("timestamp", "timestamp", { unique:false});
                     collectionRequestsStore.createIndex("collectionId", "collectionId", { unique:false});
 
-                    postman.indexedDB.getAllRequestItems();
-                    postman.indexedDB.getCollections();
+                    postman.history.getAllRequests();
+                    postman.collections.getAllCollections();
                 };
             }
             else {
-                postman.indexedDB.getAllRequestItems();
-                postman.indexedDB.getCollections();
+                postman.history.getAllRequests();
+                postman.collections.getAllCollections();
             }
 
         };
@@ -799,7 +1006,7 @@ function setupDB() {
         request.onfailure = postman.indexedDB.onerror;
     };
 
-    postman.indexedDB.addCollection = function (collection) {
+    postman.indexedDB.addCollection = function (collection, callback) {
         var db = postman.indexedDB.db;
         var trans = db.transaction(["collections"], IDBTransaction.READ_WRITE);
         var store = trans.objectStore("collections");
@@ -811,9 +1018,7 @@ function setupDB() {
         });
 
         request.onsuccess = function (e) {
-            $('#messageNoCollection').remove();
-            postman.indexedDB.getCollections();
-            postman.indexedDB.getAllRequestsInCollection(collection.id);
+            callback(collection);
         };
 
         request.onerror = function (e) {
@@ -821,34 +1026,7 @@ function setupDB() {
         }
     };
 
-    postman.indexedDB.addCollectionWithRequest = function (collection, collectionRequest) {
-        var db = postman.indexedDB.db;
-        var trans = db.transaction(["collections"], IDBTransaction.READ_WRITE);
-        var store = trans.objectStore("collections");
-
-        var request = store.put({
-            "id":collection.id,
-            "name":collection.name
-        });
-
-        request.onsuccess = function (e) {
-            collectionRequest.collectionId = collection.id;
-
-            $('#itemCollectionSelectorList').tmpl([collection]).appendTo('#selectCollection');
-            $('#itemCollectionSidebarHead').tmpl([collection]).appendTo('#collectionItems');
-
-            postman.interface.sidebar.addCollectionHeadListeners(collection);
-            postman.interface.refreshScrollPanes();
-
-            postman.indexedDB.addCollectionRequest(collectionRequest, true);
-        };
-
-        request.onerror = function (e) {
-            console.log(e.value);
-        }
-    }
-
-    postman.indexedDB.addCollectionRequest = function (req, toRefreshSidebar) {
+    postman.indexedDB.addCollectionRequest = function (req, callback) {
         var db = postman.indexedDB.db;
         var trans = db.transaction(["collection_requests"], IDBTransaction.READ_WRITE);
         var store = trans.objectStore("collection_requests");
@@ -865,15 +1043,7 @@ function setupDB() {
         });
 
         collectionRequest.onsuccess = function (e) {
-            var targetElement = "#collectionRequests-" + req.collectionId;
-            postman.urlCache.addUrl(req.url);
-            addUrlAutoComplete();
-
-            req.url = limitStringLineWidth(req.url, 43);
-            $('#itemCollectionSidebarRequest').tmpl([req]).appendTo(targetElement);
-            postman.interface.sidebar.addRequestListeners(req);
-            postman.interface.refreshScrollPanes();
-            $('#messageNoCollection').remove();
+            callback(req);
         };
 
         collectionRequest.onerror = function (e) {
@@ -881,16 +1051,12 @@ function setupDB() {
         }
     };
 
-    postman.indexedDB.getCollections = function () {
+    postman.indexedDB.getCollections = function (callback) {
         var db = postman.indexedDB.db;
 
         if (db == null) {
-            console.log("Db is null");
             return;
         }
-
-        $('#collectionItems').html("");
-        $('#selectCollection').html("<option>Select</option>");
 
         var trans = db.transaction(["collections"], IDBTransaction.READ_WRITE);
         var store = trans.objectStore("collections");
@@ -898,32 +1064,21 @@ function setupDB() {
         //Get everything in the store
         var keyRange = IDBKeyRange.lowerBound(0);
         var cursorRequest = store.openCursor(keyRange);
-        numCollections = 0;
+        var numCollections = 0;
+        var items = [];
         cursorRequest.onsuccess = function (e) {
             var result = e.target.result;
             if (!!result == false) {
-                if (numCollections == 0) {
-                    var obj = new Object();
-                    $('#messageNoCollectionTmpl').tmpl([obj]).appendTo('#sidebarSection-collections');
-                }
-
+                callback(items);
                 return;
             }
 
             var collection = result.value;
             numCollections++;
-            $('#itemCollectionSelectorList').tmpl([collection]).appendTo('#selectCollection');
-            $('#itemCollectionSidebarHead').tmpl([collection]).appendTo('#collectionItems');
-            postman.interface.refreshScrollPanes();
 
-            postman.indexedDB.getAllRequestsInCollection(collection.id);
-            //This wil call onsuccess again and again until no more request is left
+            items.push(collection);
 
-            postman.interface.sidebar.addCollectionHeadListeners(collection);
-
-            result.
-            continue
-            ();
+            result.continue();
         };
 
         cursorRequest.onerror = function (e) {
@@ -931,8 +1086,7 @@ function setupDB() {
         };
     };
 
-    postman.indexedDB.getAllRequestsInCollection = function (id) {
-        $('#collectionRequests-' + id).html("");
+    postman.indexedDB.getAllRequestsInCollection = function (id, callback) {
         var db = postman.indexedDB.db;
         var trans = db.transaction(["collection_requests"], IDBTransaction.READ_WRITE);
 
@@ -943,28 +1097,21 @@ function setupDB() {
         var index = store.index("collectionId");
         var cursorRequest = index.openCursor(keyRange);
 
+        var requests = [];
+
         cursorRequest.onsuccess = function (e) {
             var result = e.target.result;
 
             if (!!result == false) {
+                callback(requests);
                 return;
             }
 
             var request = result.value;
-            var targetElement = "#collectionRequests-" + request.collectionId;
-
-            postman.urlCache.addUrl(request.url);
-            addUrlAutoComplete();
-
-            request.url = limitStringLineWidth(request.url, 40);
-            $('#itemCollectionSidebarRequest').tmpl([request]).appendTo(targetElement);
-            postman.interface.sidebar.addRequestListeners(request);
-            postman.interface.refreshScrollPanes();
+            requests.push(request);
 
             //This wil call onsuccess again and again until no more request is left
-            result.
-            continue
-            ();
+            result.continue();
         };
         cursorRequest.onerror = postman.indexedDB.onerror;
     };
@@ -1002,7 +1149,7 @@ function setupDB() {
         cursorRequest.onerror = postman.indexedDB.onerror;
     };
 
-    postman.indexedDB.getCollectionRequest = function (id) {
+    postman.indexedDB.getCollectionRequest = function (id, callback) {
         var db = postman.indexedDB.db;
         var trans = db.transaction(["collection_requests"], IDBTransaction.READ_WRITE);
         var store = trans.objectStore("collection_requests");
@@ -1015,13 +1162,13 @@ function setupDB() {
             if (!!result == false)
                 return;
 
-            loadRequestInEditor(result);
+            callback(result);
             return result;
         };
         cursorRequest.onerror = postman.indexedDB.onerror;
     };
 
-    postman.indexedDB.getAllRequestItems = function () {
+    postman.indexedDB.getAllRequestItems = function (callback) {
         var db = postman.indexedDB.db;
         if (db == null) {
             return;
@@ -1040,23 +1187,7 @@ function setupDB() {
             var result = e.target.result;
 
             if (!!result == false) {
-                for (var i = 0; i < historyRequests.length; i++) {
-                    var r = historyRequests[i];
-                    postman.urlCache.addUrl(r.url);
-                    postman.interface.sidebar.addRequest(r.url, r.method, r.id, "top");
-                    postman.interface.sidebar.addRequestListeners(r);
-                }
-
-                addUrlAutoComplete();
-
-                $('#historyItems').fadeIn();
-
-                postman.history.requests = historyRequests;
-
-                if (postman.history.requests.length == 0) {
-                    $('#messageNoHistoryTmpl').tmpl([new Object()]).appendTo('#sidebarSection-history');
-                }
-
+                callback(historyRequests);
                 return;
             }
 
@@ -1064,9 +1195,7 @@ function setupDB() {
             historyRequests.push(request);
 
             //This wil call onsuccess again and again until no more request is left
-            result.
-            continue
-            ();
+            result.continue();
         };
 
         cursorRequest.onerror = postman.indexedDB.onerror;
@@ -1103,7 +1232,7 @@ function setupDB() {
         };
     }
 
-    postman.indexedDB.deleteCollectionRequest = function (id) {
+    postman.indexedDB.deleteCollectionRequest = function (id, callback) {
         var db = postman.indexedDB.db;
         var trans = db.transaction(["collection_requests"], IDBTransaction.READ_WRITE);
         var store = trans.objectStore(["collection_requests"]);
@@ -1111,7 +1240,7 @@ function setupDB() {
         var request = store.delete(id);
 
         request.onsuccess = function (e) {
-            postman.interface.sidebar.removeRequestFromHistory(id);
+            callback(id);
         };
 
         request.onerror = function (e) {
@@ -1119,6 +1248,7 @@ function setupDB() {
         };
     };
 
+    //@todo Why is this unused?
     postman.indexedDB.deleteAllCollectionRequests = function (id) {
         var db = postman.indexedDB.db;
         var trans = db.transaction(["collection_requests"], IDBTransaction.READ_WRITE);
@@ -1138,15 +1268,13 @@ function setupDB() {
             }
 
             var request = result.value;
-            postman.indexedDB.deleteCollectionRequest(request.id);
-            result.
-            continue
-            ();
+            postman.collections.deleteCollectionRequest(request.id);
+            result.continue();
         };
         cursorRequest.onerror = postman.indexedDB.onerror;
     };
 
-    postman.indexedDB.deleteCollection = function (id) {
+    postman.indexedDB.deleteCollection = function (id, callback) {
         var db = postman.indexedDB.db;
         var trans = db.transaction(["collections"], IDBTransaction.READ_WRITE);
         var store = trans.objectStore(["collections"]);
@@ -1154,12 +1282,7 @@ function setupDB() {
         var request = store.delete(id);
 
         request.onsuccess = function (e) {
-            postman.interface.sidebar.removeCollection(id);
-            removeCollectionFromSelector(id);
-            var numCollections = $('#collectionItems').children().length;
-            if (numCollections == 1) {
-                $('#messageNoCollectionTmpl').tmpl([new Object()]).appendTo('#sidebarSection-collections');
-            }
+            callback(id);
         };
 
         request.onerror = function (e) {
@@ -1176,10 +1299,6 @@ function initDB() {
 function removeCollectionFromSelector(id) {
     var target = '#selectCollection option[value="' + id + '"]';
     $(target).remove();
-}
-
-function loadCollectionRequest(id) {
-    postman.indexedDB.getCollectionRequest(id);
 }
 
 function loadRequestInEditor(request) {
@@ -1235,15 +1354,6 @@ function clearResponse() {
     $('#responseStatus').css("display", "none");
     $('#responseHeaders').css("display", "none");
     $('#codeData').css("display", "none");
-}
-
-
-function deleteCollectionRequest(id) {
-    postman.indexedDB.deleteCollectionRequest(id);
-}
-
-function deleteCollection(id) {
-    postman.indexedDB.deleteCollection(id);
 }
 
 //Sets the param strings for header and url params
@@ -1355,10 +1465,6 @@ function showParamsEditor(section) {
     addEditorListeners(section);
 }
 
-function deleteParam(section) {
-    alert("To delete " + section + " param");
-}
-
 function closeParamsEditor(section) {
     $('#' + section + '-ParamsFields div:last input').unbind('focus', sectionParamsLastInputFocusHandler);
     $('#' + section + '-ParamsFields input').unbind('blur', sectionParamsInputBlurHandler);
@@ -1397,19 +1503,6 @@ function addParamInEditor(section, data) {
 
     $('#itemParamsEditor').tmpl([rowData]).appendTo('#' + section + '-ParamsFields');
     addEditorListeners(section);
-}
-
-function toggleCollectionRequestList(id) {
-    var target = "#collectionRequests-" + id;
-    var label = "#collection-" + id + " .collection-head-actions .label";
-    if ($(target).css("display") == "none") {
-        $(label).html("Hide");
-        $(target).slideDown(100);
-    }
-    else {
-        $(label).html("Show");
-        $(target).slideUp(100);
-    }
 }
 
 var sectionParamsLastInputFocusHandler = function (evt) {
@@ -1580,10 +1673,7 @@ function addHeaderAutoComplete() {
 }
 
 function addUrlAutoComplete() {
-    $("#url").autocomplete({
-        source:postman.urlCache.urls,
-        delay:50
-    });
+
 }
 
 function changeResponseFormat(format) {
@@ -1664,91 +1754,6 @@ function initCollectionSelector() {
         var val = $('#collectionSelector').val();
     });
 }
-
-function submitAddToCollectionForm() {
-    var existingCollectionId = $('#selectCollection').val();
-    var newCollection = $('#newCollection').val();
-
-    var collection = new Collection();
-
-    var collectionRequest = new CollectionRequest();
-    collectionRequest.id = guid();
-
-    collectionRequest.headers = $("#headers").val();
-    collectionRequest.url = $("#url").val();
-    collectionRequest.method = postman.currentRequest.method;
-    collectionRequest.data = $('#body').val();
-    collectionRequest.dataMode = postman.currentRequest.dataMode;
-    collectionRequest.time = new Date().getTime();
-
-    if (newCollection) {
-        //Add the new collection and get guid
-        collection.id = guid();
-        collection.name = newCollection;
-        postman.indexedDB.addCollectionWithRequest(collection, collectionRequest);
-
-        $('#newCollection').val("");
-    }
-    else {
-        //Get guid of existing collection
-        collection.id = existingCollectionId;
-        collectionRequest.collectionId = collection.id;
-        postman.indexedDB.addCollectionRequest(collectionRequest, true);
-    }
-
-    //Have guid here
-    //Add the request to a collection
-    $('#formModalAddToCollection').modal('hide');
-}
-
-function submitNewCollectionForm() {
-    var newCollection = $('#newCollectionBlank').val();
-
-    var collection = new Collection();
-
-    if (newCollection) {
-        //Add the new collection and get guid
-        collection.id = guid();
-        collection.name = newCollection;
-        postman.indexedDB.addCollection(collection);
-
-        $('#newCollectionBlank').val("");
-    }
-
-    $('#formModalNewCollection').modal('hide');
-}
-postman.history.requestExists = function (request) {
-    var index = -1;
-    var method = request.method.toLowerCase();
-
-    if (method === 'post' || method === 'put') {
-        return -1;
-    }
-
-    var requests = postman.history.requests;
-
-    for (var i = 0; i < requests.length; i++) {
-        var r = requests[i];
-        if (r.url.length != request.url.length ||
-            r.headers.length != request.headers.length ||
-            r.method != request.method) {
-            index = -1;
-        }
-        else {
-            if (r.url === request.url) {
-                if (r.headers === request.headers) {
-                    index = i;
-                }
-            }
-        }
-
-        if (index >= 0) {
-            break;
-        }
-    }
-
-    return index;
-};
 
 function dropboxSync() {
     if (!dropbox.isLoggedin()) {
@@ -2115,7 +2120,7 @@ $(document).ready(function () {
 
     $('a[rel="tooltip"]').tooltip();
 
-    addUrlAutoComplete();
+    postman.urlCache.refreshAutoComplete();
     setupKeyboardShortcuts();
     initCollectionSelector();
     postman.interface.setLayout();
@@ -2123,12 +2128,23 @@ $(document).ready(function () {
     showParamsEditor("headers");
 
     $('#formAddToCollection').submit(function () {
-        submitAddToCollectionForm();
+        postman.collections.addRequestToCollection();
+        $('#formModalAddToCollection').modal('hide');
         return false;
     });
 
+    $('#formModalAddToCollection .btn-primary').click(function() {
+        postman.collections.addRequestToCollection();
+        $('#formModalAddToCollection').modal('hide');
+    });
+
     $('#formNewCollection').submit(function () {
-        submitNewCollectionForm();
+        postman.collections.addCollection();
+        return false;
+    });
+
+    $('#formModalNewCollection .btn-primary').click(function () {
+        postman.collections.addCollection();
         return false;
     });
 
