@@ -37,13 +37,13 @@ var IDBCursor = window.IDBCursor || window.webkitIDBCursor;
 
 
 postman.editor = {
-    mode: "html",
-    codeMirror: null
+    mode:"html",
+    codeMirror:null
 };
 
 postman.urlCache = {
-    urls: [],
-    addUrl: function(url) {
+    urls:[],
+    addUrl:function (url) {
         if ($.inArray(url, this.urls) == -1) {
             this.urls.push(url);
         }
@@ -68,8 +68,8 @@ postman.currentRequest = {
         time:0,
         headers:{},
         mime:"",
-        state: {
-            size: "normal"
+        state:{
+            size:"normal"
         },
         previewType:"parsed",
 
@@ -90,14 +90,13 @@ postman.currentRequest = {
 };
 
 postman.interface = {
-    currentSidebarSection: "history",
-    socialButtons: {
+    socialButtons:{
         "facebook":'<iframe src="http://www.facebook.com/plugins/like.php?href=https%3A%2F%2Fchrome.google.com%2Fwebstore%2Fdetail%2Ffdmmgilgnpjigdojojpjoooidkmcomcm&amp;send=false&amp;layout=button_count&amp;width=250&amp;show_faces=true&amp;action=like&amp;colorscheme=light&amp;font&amp;height=21&amp;appId=26438002524" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:250px; height:21px;" allowTransparency="true"></iframe>',
         "twitter":'<a href="https://twitter.com/share" class="twitter-share-button" data-url="https://chrome.google.com/webstore/detail/fdmmgilgnpjigdojojpjoooidkmcomcm" data-text="I am using Postman to kick some API ass!" data-count="horizontal" data-via="a85">Tweet</a><script type="text/javascript" src="http://platform.twitter.com/widgets.js"></script>',
         "plusOne":'<script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script><g:plusone size="medium" href="https://chrome.google.com/webstore/detail/fdmmgilgnpjigdojojpjoooidkmcomcm"></g:plusone>'
     },
 
-    attachSocialButtons: function() {
+    attachSocialButtons:function () {
         var currentContent = $('#aboutPostmanTwitterButton').html();
         if (currentContent === "" || !currentContent) {
             $('#aboutPostmanTwitterButton').html(this.socialButtons.twitter);
@@ -111,6 +110,30 @@ postman.interface = {
         currentContent = $('#aboutPostmanFacebookButton').html();
         if (currentContent === "" || !currentContent) {
             $('#aboutPostmanFacebookButton').html(this.socialButtons.facebook);
+        }
+    },
+
+    setLayout:function () {
+        this.refreshScrollPanes();
+    },
+
+    refreshScrollPanes:function () {
+        var newMainWidth = $('#container').width() - $('#sidebar').width();
+        $('#main').width(newMainWidth + "px");
+
+        $('#sidebar').jScrollPane({
+            mouseWheelSpeed:24
+        });
+    },
+
+    sidebar: {
+        currentSection: "history",
+        sections: [ "history", "collections" ],
+        select: function(section) {
+            $('#sidebarSection-' + this.currentSection).css("display", "none");
+            this.currentSection = section;
+            $('#sidebarSection-' + section).fadeIn();
+            return true;
         }
     }
 };
@@ -393,8 +416,7 @@ function readResponse() {
     else {
     }
 
-    setContainerHeights();
-    refreshScrollPanes();
+    postman.interface.setLayout();
 }
 
 //Manages showing/hiding the PUT/POST additional UI
@@ -430,6 +452,11 @@ function init() {
     $('#requestMethodSelector').change(function () {
         var val = $(this).val();
         showRequestMethodUi(val);
+    });
+
+    $('#sidebarSelectors li a').click(function() {
+        var id = $(this).attr('data-id');
+        postman.interface.sidebar.select(id);
     });
 }
 
@@ -535,7 +562,7 @@ function setupDB() {
             $('#itemCollectionSidebarHead').tmpl([collection]).appendTo('#collectionItems');
 
             addSidebarCollectionHeadListener(collection);
-            refreshScrollPanes();
+            postman.interface.refreshScrollPanes();
 
             postman.indexedDB.addCollectionRequest(collectionRequest, true);
         };
@@ -569,7 +596,7 @@ function setupDB() {
             req.url = limitStringLineWidth(req.url, 43);
             $('#itemCollectionSidebarRequest').tmpl([req]).appendTo(targetElement);
             addSidebarRequestListener(req);
-            refreshScrollPanes();
+            postman.interface.refreshScrollPanes();
             $('#messageNoCollection').remove();
         };
 
@@ -611,7 +638,7 @@ function setupDB() {
             numCollections++;
             $('#itemCollectionSelectorList').tmpl([collection]).appendTo('#selectCollection');
             $('#itemCollectionSidebarHead').tmpl([collection]).appendTo('#collectionItems');
-            refreshScrollPanes();
+            postman.interface.refreshScrollPanes();
 
             postman.indexedDB.getAllRequestsInCollection(collection.id);
             //This wil call onsuccess again and again until no more request is left
@@ -656,7 +683,7 @@ function setupDB() {
             request.url = limitStringLineWidth(request.url, 40);
             $('#itemCollectionSidebarRequest').tmpl([request]).appendTo(targetElement);
             addSidebarRequestListener(request);
-            refreshScrollPanes();
+            postman.interface.refreshScrollPanes();
 
             //This wil call onsuccess again and again until no more request is left
             result.
@@ -942,7 +969,7 @@ function renderRequestToSidebar(url, method, id, position) {
     }
 
     $('#messageNoHistory').remove();
-    refreshScrollPanes();
+    postman.interface.refreshScrollPanes();
 }
 
 function removeRequestFromSidebar(id, toAnimate) {
@@ -969,12 +996,12 @@ function removeRequestFromSidebar(id, toAnimate) {
         $('#sidebarRequest-' + id).remove();
     }
 
-    refreshScrollPanes();
+    postman.interface.refreshScrollPanes();
 }
 
 function removeCollectionFromSidebar(id) {
     $('#collection-' + id).slideUp(100);
-    refreshScrollPanes();
+    postman.interface.refreshScrollPanes();
 }
 
 function removeCollectionFromSelector(id) {
@@ -1213,19 +1240,6 @@ function changeParamInEditor(target) {
     if (target == "file") {
 
     }
-}
-
-function setContainerHeights() {
-    refreshScrollPanes();
-}
-
-function refreshScrollPanes() {
-    var newMainWidth = $('#container').width() - $('#sidebar').width();
-    $('#main').width(newMainWidth + "px");
-
-    $('#sidebar').jScrollPane({
-        mouseWheelSpeed:24
-    });
 }
 
 function initializeSettings() {
@@ -1565,21 +1579,6 @@ function setResponseFormat(mime, response, format, forceCreate) {
     $('#codeData').val(response);
 }
 
-function attachSidebarListeners() {
-    $('#sidebarContainer .nav-pills li').bind("click", function () {
-        $('#sidebarContainer .nav-pills li').removeClass("active");
-        $(this).addClass("active");
-        var section = jQuery('a', this).attr('data-id');
-        showSidebarSection(section, postman.interface.currentSidebarSection);
-    });
-}
-
-function showSidebarSection(section, previousSection) {
-    $('#sidebarSection-' + previousSection).css("display", "none");
-    postman.interface.currentSidebarSection = section;
-    $('#sidebarSection-' + section).fadeIn();
-}
-
 function initCollectionSelector() {
     $('#collectionSelector').change(function (event) {
         var val = $('#collectionSelector').val();
@@ -1671,46 +1670,8 @@ postman.history.requestExists = function (request) {
     return index;
 };
 
-function closeNewCollectionForm() {
-    $('#formModalNewCollection').modal('hide');
-}
-
-function closeAddToCollectionForm() {
-    $('#formModalAddToCollection').modal('hide');
-}
-
-function closeAboutPostman() {
-    $('#modalAboutPostman').modal('hide');
-}
-
-function closeModal(id) {
-    $('#' + id).modal('hide');
-}
-
-function showModal(id) {
-    $('#' + id).modal('show');
-}
-
-function closeSettings() {
-    $('#modalSettings').modal('hide');
-}
-
 function clearHistory() {
     postman.indexedDB.deleteHistory();
-}
-
-function toggleSidebarSection(section) {
-    console.log("Change section", section);
-    if (section === 'history') {
-        $('#historyOptions').css("display", "block");
-        $('#collectionsOptions').css("display", "none");
-    }
-    else if (section === 'collections') {
-        $('#historyOptions').css("display", "none");
-        $('#collectionsOptions').css("display", "block");
-    }
-
-    return true;
 }
 
 function dropboxSync() {
@@ -2020,14 +1981,16 @@ function setBodyParamString(url, params) {
 function setUrlParamString(url, params) {
     var paramArr = [];
     var urlParams = getUrlVars(url);
-    for (var i = 0; i < urlParams.length; i++) {
-        var p = urlParams[i];
+    var p;
+    var i;
+    for (i = 0; i < urlParams.length; i++) {
+        p = urlParams[i];
         if (p.key && p.key !== "") {
             paramArr.push(p.key + "=" + p.value);
         }
     }
-    for (var i = 0; i < params.length; i++) {
-        var p = params[i];
+    for (i = 0; i < params.length; i++) {
+        p = params[i];
         if (p.name && p.name !== "") {
             paramArr.push(p.name + "=" + p.value);
         }
@@ -2077,12 +2040,10 @@ $(document).ready(function () {
     $('a[rel="tooltip"]').tooltip();
 
     addUrlAutoComplete();
-    attachSidebarListeners();
     setupKeyboardShortcuts();
     initCollectionSelector();
-    setContainerHeights();
+    postman.interface.setLayout();
     setupRequestHelpers();
-    refreshScrollPanes();
     showParamsEditor("headers");
 
     $('#formAddToCollection').submit(function () {
@@ -2096,7 +2057,7 @@ $(document).ready(function () {
     });
 
     $(window).resize(function () {
-        setContainerHeights();
+        postman.interface.setLayout();
     });
 
     CodeMirror.defineMode("links", function (config, parserConfig) {

@@ -65,12 +65,9 @@
                 <img src="img/file-add.png" width="24px" height="24px"/>
             </a>
         </div>
-        <ul class="nav nav-pills">
-            <li class="active"><a href="javascript:void(0);" data-id="history"
-                                  onclick="toggleSidebarSection('history');">History</a></li>
-            <li>
-                <a href="javascript:void(0);" data-id="collections" onclick="toggleSidebarSection('collections');">Collections</a>
-            </li>
+        <ul id="sidebarSelectors" class="nav nav-pills">
+            <li class="active"><a href="javascript:void(0);" data-id="history" data-toggle="tab">History</a></li>
+            <li><a href="javascript:void(0);" data-id="collections" data-toggle="tab">Collections</a></li>
         </ul>
         <div id="sidebarSectionContainer">
             <div id="sidebarSection-history">
@@ -95,7 +92,7 @@
         <li data-id="oAuth1">OAuth 1.0</li>
     </ul>
     <div class="topSidebar">
-        <a href="javascript:void(0);" onclick="showModal('modalShortcuts');">
+        <a data-toggle="modal" href="#modalShortcuts">
             <img src="img/keyboard.png" width="24px" height="24px" style="vertical-align: middle;"/>
             Shortcuts
         </a>
@@ -376,7 +373,7 @@
     </div>
     <div class="modal-footer">
         <a href="javascript:void(0);" onclick="submitNewCollectionForm();" class="btn btn-primary">Create</a>
-        <a href="javascript:void(0);" onclick="closeNewCollectionForm();" class="btn btn-secondary">Cancel</a>
+        <a href="javascript:void(0);" data-dismiss="modal" class="btn btn-secondary">Cancel</a>
     </div>
 </div>
 <div id="formModalAddToCollection" class="modal fade">
@@ -408,7 +405,7 @@
     </div>
     <div class="modal-footer">
         <a href="javascript:void(0);" onclick="submitAddToCollectionForm();" class="btn primary">Done</a>
-        <a href="javascript:void(0);" onclick="closeAddToCollectionForm();" class="btn secondary">Cancel</a>
+        <a href="javascript:void(0);" data-dismiss="modal" class="btn secondary">Cancel</a>
     </div>
 </div>
 <div id="modalSettings" class="modal fade">
@@ -443,7 +440,7 @@
         </form>
     </div>
     <div class="modal-footer">
-        <a href="javascript:void(0);" onclick="closeSettings();" class="btn btn-primary">Close</a>
+        <a href="javascript:void(0);" data-dismiss="modal" class="btn btn-primary">Close</a>
     </div>
 </div>
 <div id="modalAboutPostman" class="modal fade">
@@ -474,7 +471,7 @@
         </div>
     </div>
     <div class="modal-footer">
-        <a href="javascript:void(0);" onclick="closeAboutPostman();" class="btn btn-primary">Close</a>
+        <a href="javascript:void(0);" data-dismiss="modal" class="btn btn-primary">Close</a>
     </div>
 </div>
 <div id="modalResponseError" class="modal fade">
