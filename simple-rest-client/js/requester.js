@@ -16,6 +16,7 @@
  specific language governing permissions and limitations
  under the License.
  */
+"use strict";
 function Collection() {
     this.id = "";
     this.name = "";
@@ -989,14 +990,17 @@ postman.collections = {
     deleteCollection:function (id) {
         postman.indexedDB.deleteCollection(id, function () {
             postman.layout.sidebar.removeCollection(id);
-            removeCollectionFromSelector(id);
+
+            var target = '#selectCollection option[value="' + id + '"]';
+            $(target).remove();
+
             var numCollections = $('#collectionItems').children().length;
             if (numCollections == 1) {
                 $('#messageNoCollectionTmpl').tmpl([new Object()]).appendTo('#sidebarSection-collections');
             }
         });
     }
-}
+};
 
 postman.layout = {
     socialButtons:{
@@ -1293,9 +1297,7 @@ function setupDB() {
 
             items.push(collection);
 
-            result.
-            continue
-            ();
+            result['continue']();
         };
 
         cursorRequest.onerror = function (e) {
@@ -1328,9 +1330,7 @@ function setupDB() {
             requests.push(request);
 
             //This wil call onsuccess again and again until no more request is left
-            result.
-            continue
-            ();
+            result['continue']();
         };
         cursorRequest.onerror = postman.indexedDB.onerror;
     };
@@ -1414,9 +1414,7 @@ function setupDB() {
             historyRequests.push(request);
 
             //This wil call onsuccess again and again until no more request is left
-            result.
-            continue
-            ();
+            result['continue']();
         };
 
         cursorRequest.onerror = postman.indexedDB.onerror;
@@ -1490,9 +1488,7 @@ function setupDB() {
 
             var request = result.value;
             postman.collections.deleteCollectionRequest(request.id);
-            result.
-            continue
-            ();
+            result['continue']();
         };
         cursorRequest.onerror = postman.indexedDB.onerror;
     };
@@ -1517,11 +1513,6 @@ function setupDB() {
 
 function initDB() {
     postman.indexedDB.open(); //Also displays the data previously saved
-}
-
-function removeCollectionFromSelector(id) {
-    var target = '#selectCollection option[value="' + id + '"]';
-    $(target).remove();
 }
 
 //Sets the param strings for header and url params
@@ -1926,7 +1917,7 @@ function setupKeyboardShortcuts() {
     });
 
     $(document).bind('keydown', 'shift+/', function () {
-        showModal('modalShortcuts');
+
     });
 
     $(document).bind('keydown', 'a', function () {
@@ -2142,6 +2133,7 @@ $(document).ready(function () {
                 }
 
                 //@todo Needs to be improved
+                var matches;
                 if (matches = stream.match(/https?:\/\/[^'"]*(?=[<"'\n\t\s])/, false)) {
                     //Eat all characters before http link
                     var m = stream.match(/.*(?=https?)/, true);
