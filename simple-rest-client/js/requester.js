@@ -20,7 +20,6 @@
 function Collection() {
     this.id = "";
     this.name = "";
-    this.customVars = {};
     this.requests = {};
 }
 
@@ -93,7 +92,7 @@ postman.urlCache = {
             delay:50
         });
     }
-}
+};
 
 postman.settings = {
     historyCount:50,
@@ -132,7 +131,7 @@ postman.settings = {
                 postman.settings.autoSaveRequest = false;
             }
 
-            localStorage['autoSaveRequest'] = this.autoSaveRequest;
+            localStorage['autoSaveRequest'] = postman.settings.autoSaveRequest;
         });
     }
 };
@@ -274,11 +273,9 @@ postman.currentRequest = {
 
                 var contentType = response.getResponseHeader("Content-Type");
 
-                var type = 'html';
                 var format = 'html';
 
-                if (contentType.search(/json/i) != -1) {
-                    type = 'json';
+                if (contentType.search(/json/i) !== -1) {
                     format = 'javascript';
                 }
 
@@ -291,7 +288,7 @@ postman.currentRequest = {
                 $('#responseHeaders').css("display", "block");
                 $('#codeData').css("display", "block");
 
-                if (contentType.search(/image/i) == -1) {
+                if (contentType.search(/image/i) === -1) {
                     $('#responseAsText').css("display", "block");
                     $('#responseAsImage').css("display", "none");
                     $('#langFormat').css("display", "block");
@@ -360,7 +357,7 @@ postman.currentRequest = {
         },
 
         toggleBodySize:function () {
-            if (this.state.size == "normal") {
+            if (this.state.size === "normal") {
                 this.state.size = "maximized";
                 $('#responseBodyToggle img').attr("src", "img/full-screen-exit-alt-2.png");
                 this.state.width = $('#respData').width();
@@ -426,12 +423,7 @@ postman.currentRequest = {
     },
 
     isMethodWithBody:function (method) {
-        if ($.inArray(method, this.methodsWithBody) >= 0) {
-            return true;
-        }
-        else {
-            return false;
-        }
+        return $.inArray(method, this.methodsWithBody) >= 0;
     },
 
     setHeadersParamString:function (headers) {
@@ -505,12 +497,12 @@ postman.currentRequest = {
 
             $('#data .nav-pills li').removeClass("active");
 
-            if (this.dataMode == 'params') {
+            if (this.dataMode === 'params') {
                 $('#selector-container-params').addClass("active");
                 $('#body').css("display", "none");
                 showParamsEditor("body");
             }
-            else if (this.dataMode == 'raw') {
+            else if (this.dataMode === 'raw') {
                 $('#selector-container-raw').addClass("active");
                 $('#body').css("display", "block");
                 closeParamsEditor("body");
@@ -680,9 +672,9 @@ postman.history = {
 
         for (var i = 0; i < len; i++) {
             var r = requests[i];
-            if (r.url.length != request.url.length ||
-                r.headers.length != request.headers.length ||
-                r.method != request.method) {
+            if (r.url.length !== request.url.length ||
+                r.headers.length !== request.headers.length ||
+                r.method !== request.method) {
                 index = -1;
             }
             else {
@@ -725,13 +717,15 @@ postman.history = {
                 outAr.push(request);
             }
 
+            outAr.reverse();
+
             $('#itemHistorySidebarRequest').tmpl(outAr).prependTo('#historyItems');
             $('#historyItems').fadeIn();
             postman.history.requests = historyRequests;
-            if (postman.history.requests.length == 0) {
-                $('#messageNoHistoryTmpl').tmpl([new Object()]).appendTo('#sidebarSection-history');
+            if (postman.history.requests.length === 0) {
+                $('#messageNoHistoryTmpl').tmpl([{}]).appendTo('#sidebarSection-history');
             }
-        })
+        });
 
     },
 
@@ -814,37 +808,37 @@ postman.collections = {
     },
 
     addCollectionListeners:function () {
-        $('#collectionItems').on("mouseenter", ".sidebarCollection .sidebar-collection-head", function (event) {
+        $('#collectionItems').on("mouseenter", ".sidebarCollection .sidebar-collection-head", function () {
             var actionsEl = jQuery('.collection-head-actions', this);
             actionsEl.css('display', 'block');
         });
 
-        $('#collectionItems').on("mouseleave", ".sidebarCollection .sidebar-collection-head", function (event) {
+        $('#collectionItems').on("mouseleave", ".sidebarCollection .sidebar-collection-head", function () {
             var actionsEl = jQuery('.collection-head-actions', this);
             actionsEl.css('display', 'none');
         });
 
-        $('#collectionItems').on("click", ".sidebar-collection-head-name", function (event) {
+        $('#collectionItems').on("click", ".sidebar-collection-head-name", function () {
             var id = $(this).attr('data-id');
             postman.collections.toggleRequestList(id);
         });
 
-        $('#collectionItems').on("click", ".collection-head-actions .label", function (event) {
+        $('#collectionItems').on("click", ".collection-head-actions .label", function () {
             var id = $(this).parent().parent().parent().attr('data-id');
             postman.collections.toggleRequestList(id);
         });
 
-        $('#collectionItems').on("click", ".request-actions-delete", function (event) {
+        $('#collectionItems').on("click", ".request-actions-delete", function () {
             var id = $(this).attr('data-id');
             postman.collections.deleteCollectionRequest(id);
         });
 
-        $('#collectionItems').on("click", ".request-actions-load", function (event) {
+        $('#collectionItems').on("click", ".request-actions-load", function () {
             var id = $(this).attr('data-id');
             postman.collections.getCollectionRequest(id);
         });
 
-        $('#collectionItems').on("click", ".collection-actions-delete", function (event) {
+        $('#collectionItems').on("click", ".collection-actions-delete", function () {
             var id = $(this).attr('data-id');
             postman.collections.deleteCollection(id);
         });
@@ -859,7 +853,7 @@ postman.collections = {
     toggleRequestList:function (id) {
         var target = "#collectionRequests-" + id;
         var label = "#collection-" + id + " .collection-head-actions .label";
-        if ($(target).css("display") == "none") {
+        if ($(target).css("display") === "none") {
             $(label).html("Hide");
             $(target).slideDown(100);
         }
@@ -995,8 +989,8 @@ postman.collections = {
             $(target).remove();
 
             var numCollections = $('#collectionItems').children().length;
-            if (numCollections == 1) {
-                $('#messageNoCollectionTmpl').tmpl([new Object()]).appendTo('#sidebarSection-collections');
+            if (numCollections === 1) {
+                $('#messageNoCollectionTmpl').tmpl([{}]).appendTo('#sidebarSection-collections');
             }
         });
     }
@@ -1056,12 +1050,12 @@ postman.layout = {
         currentSection:"history",
         sections:[ "history", "collections" ],
         initialize:function () {
-            $('#historyItems').on("click", ".request-actions-delete", function (event) {
+            $('#historyItems').on("click", ".request-actions-delete", function () {
                 var request_id = $(this).attr('data-request-id');
                 postman.history.deleteRequest(request_id);
             });
 
-            $('#historyItems').on("click", ".request", function (event) {
+            $('#historyItems').on("click", ".request", function () {
                 var request_id = $(this).attr('data-request-id');
                 postman.history.loadRequest(request_id);
             });
@@ -1124,7 +1118,7 @@ postman.layout = {
                 $('#sidebarRequest-' + id).remove();
             }
 
-            if (postman.history.requests.length == 0) {
+            if (postman.history.requests.length === 0) {
                 postman.history.showEmptyMessage();
             }
             else {
@@ -1181,7 +1175,7 @@ function setupDB() {
             var db = postman.indexedDB.db;
 
             //We can only create Object stores in a setVersion transaction
-            if (v != db.version) {
+            if (v !== db.version) {
                 console.log(v, "Version is not the same");
                 var setVrequest = db.setVersion(v);
 
@@ -1236,13 +1230,13 @@ function setupDB() {
             "timestamp":new Date().getTime()
         });
 
-        request.onsuccess = function (e) {
+        request.onsuccess = function () {
             callback(collection);
         };
 
         request.onerror = function (e) {
             console.log(e.value);
-        }
+        };
     };
 
     postman.indexedDB.addCollectionRequest = function (req, callback) {
@@ -1261,13 +1255,13 @@ function setupDB() {
             "timestamp":req.timestamp
         });
 
-        collectionRequest.onsuccess = function (e) {
+        collectionRequest.onsuccess = function () {
             callback(req);
         };
 
         collectionRequest.onerror = function (e) {
             console.log(e.value);
-        }
+        };
     };
 
     postman.indexedDB.getCollections = function (callback) {
@@ -1287,7 +1281,7 @@ function setupDB() {
         var items = [];
         cursorRequest.onsuccess = function (e) {
             var result = e.target.result;
-            if (!!result == false) {
+            if (!result) {
                 callback(items);
                 return;
             }
@@ -1321,7 +1315,7 @@ function setupDB() {
         cursorRequest.onsuccess = function (e) {
             var result = e.target.result;
 
-            if (!!result == false) {
+            if (!result) {
                 callback(requests);
                 return;
             }
@@ -1347,7 +1341,7 @@ function setupDB() {
 
         request.onerror = function (e) {
             console.log(e.value);
-        }
+        };
     };
 
     postman.indexedDB.getRequest = function (id, callback) {
@@ -1360,8 +1354,9 @@ function setupDB() {
 
         cursorRequest.onsuccess = function (e) {
             var result = e.target.result;
-            if (!!result == false)
+            if (!result) {
                 return;
+            }
 
             callback(result);
         };
@@ -1378,8 +1373,9 @@ function setupDB() {
 
         cursorRequest.onsuccess = function (e) {
             var result = e.target.result;
-            if (!!result == false)
+            if (!result) {
                 return;
+            }
 
             callback(result);
             return result;
@@ -1405,7 +1401,7 @@ function setupDB() {
         cursorRequest.onsuccess = function (e) {
             var result = e.target.result;
 
-            if (!!result == false) {
+            if (!result) {
                 callback(historyRequests);
                 return;
             }
@@ -1428,7 +1424,7 @@ function setupDB() {
 
             var request = store.delete(id);
 
-            request.onsuccess = function (e) {
+            request.onsuccess = function () {
                 callback(id);
             };
 
@@ -1449,7 +1445,7 @@ function setupDB() {
         clearRequest.onsuccess = function (event) {
             callback();
         };
-    }
+    };
 
     postman.indexedDB.deleteCollectionRequest = function (id, callback) {
         var db = postman.indexedDB.db;
@@ -1482,7 +1478,7 @@ function setupDB() {
         cursorRequest.onsuccess = function (e) {
             var result = e.target.result;
 
-            if (!!result == false) {
+            if (!result) {
                 return;
             }
 
@@ -1500,7 +1496,7 @@ function setupDB() {
 
         var request = store.delete(id);
 
-        request.onsuccess = function (e) {
+        request.onsuccess = function () {
             callback(id);
         };
 
@@ -1643,7 +1639,6 @@ function addParamInEditor(section, data) {
 
     var key = "";
     var value = "";
-    var send = "";
 
     if (data) {
         key = data.key;
@@ -1664,7 +1659,7 @@ function addParamInEditor(section, data) {
     addEditorListeners(section);
 }
 
-var sectionParamsLastInputFocusHandler = function (evt) {
+var sectionParamsLastInputFocusHandler = function () {
     //Select parent element
     var fieldsParent = $(this).parents(".editorFields");
     var id = fieldsParent.attr("id");
@@ -1684,19 +1679,19 @@ var sectionParamsLastInputFocusHandler = function (evt) {
     return true;
 };
 
-var sectionParamsInputBlurHandler = function (evt) {
+var sectionParamsInputBlurHandler = function () {
     var fieldsParent = $(this).parents(".editorFields");
     var id = fieldsParent.attr("id");
     var section = id.split("-")[0];
     setParamsFromEditor(section);
 };
 
-var sectionParamsSelectChangeHandler = function (evt) {
+var sectionParamsSelectChangeHandler = function () {
     //var paramType = $('#' + section + '-ParamsFields div select').val();
     var paramType = $(this).val();
 
-    placeHolderKey = "Key";
-    placeHolderValue = "Value";
+    var placeHolderKey = "Key";
+    var placeHolderValue = "Value";
 
     var key = "";
     var value = "";
@@ -1735,11 +1730,9 @@ var sectionParamsSelectChangeHandler = function (evt) {
         $('#itemParamsEditor').tmpl([rowData]).appendTo($(this).parent().empty());
         addEditorListeners(section);
     }
-    else {
-    }
 };
 
-var deleteParamHandler = function (evt) {
+var deleteParamHandler = function () {
     var fieldsParent = $(this).parents(".editorFields");
     var id = fieldsParent.attr("id");
     if (id) {
@@ -1747,7 +1740,7 @@ var deleteParamHandler = function (evt) {
         $(this).parent().remove();
         setParamsFromEditor(section);
     }
-}
+};
 
 function addEditorListeners(section) {
     $('#' + section + '-ParamsFields div:last input').bind("focus", sectionParamsLastInputFocusHandler);
@@ -1837,47 +1830,47 @@ var escInputHandler = function (evt) {
 
 function setupKeyboardShortcuts() {
 
-    var selectGetHandler = function (evt) {
+    var selectGetHandler = function () {
         postman.currentRequest.setMethod('get');
         return false;
     };
 
-    var selectPostHandler = function (evt) {
+    var selectPostHandler = function () {
         postman.currentRequest.setMethod('post');
         return false;
     };
 
-    var selectPutHandler = function (evt) {
+    var selectPutHandler = function () {
         postman.currentRequest.setMethod('put');
         return false;
     };
 
-    var selectDeleteHandler = function (evt) {
+    var selectDeleteHandler = function () {
         postman.currentRequest.setMethod('delete');
         return false;
     };
 
-    var selectHeadHandler = function (evt) {
+    var selectHeadHandler = function () {
         postman.currentRequest.setMethod('head');
         return false;
     };
 
-    var selectOptionsHandler = function (evt) {
+    var selectOptionsHandler = function () {
         postman.currentRequest.setMethod('options');
         return false;
     };
 
-    var clearHistoryHandler = function (evt) {
+    var clearHistoryHandler = function () {
         postman.history.clear();
         return false;
     };
 
-    var urlFocusHandler = function (evt) {
+    var urlFocusHandler = function () {
         $('#url').focus();
         return false;
     };
 
-    var newRequestHandler = function (evt) {
+    var newRequestHandler = function () {
         postman.currentRequest.startNew();
     };
 
@@ -1956,12 +1949,12 @@ function processBasicAuthRequestHelper() {
 
     if (pos >= 0) {
         headers[pos] = {
-            name:"Authorization",
+            name:authHeaderKey,
             value:encodedString
         };
     }
     else {
-        headers.push({name:"Authorization", value:encodedString});
+        headers.push({name:authHeaderKey, value:encodedString});
     }
 
     postman.currentRequest.headers = headers;
@@ -1984,7 +1977,7 @@ function hideRequestHelper(type) {
 function showRequestHelper(type) {
     $("#requestTypes ul li").removeClass("active");
     $('#requestTypes ul li[data-id=' + type + ']').addClass('active');
-    if (type != "normal") {
+    if (type !== "normal") {
         $('#requestHelpers').css("display", "block");
     }
     else {
@@ -2015,7 +2008,7 @@ function generateOAuth1RequestHelper() {
 }
 
 function generateSignature() {
-    if ($('#url').val() == '') {
+    if ($('#url').val() === '') {
         $('#requestHelpers').css("display", "block");
         alert('Please enter the URL first.');
         return null;
@@ -2071,7 +2064,6 @@ function processOAuth1RequestHelper() {
         postman.currentRequest.setUrlParamString(params);
         showParamsEditor("url");
     } else {
-        var body = postman.currentRequest.body;
         postman.currentRequest.setBodyParamString(params);
         showParamsEditor("body");
     }
@@ -2143,12 +2135,11 @@ $(document).ready(function () {
                         }
                     }
 
-                    var pos = stream.string.search(matches[0]);
                     var currentPos = stream.current().search(matches[0]);
 
                     while (currentPos < 0) {
                         var ch = stream.next();
-                        if (ch == "\"" || ch == "'") {
+                        if (ch === "\"" || ch === "'") {
                             stream.backUp(1);
                             break;
                         }
