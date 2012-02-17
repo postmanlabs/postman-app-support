@@ -318,20 +318,19 @@
 
             <div id="respData" style="display:none">
                 <div id="respDataActions" class="sectionOptions">
-                    <a href="javascript:void(0);" class="sectionOptions" onclick="toggleResponseBodySize();"
-                       id="responseBodyToggle">
+                    <a href="javascript:void(0);" class="sectionOptions" id="responseBodyToggle">
                         <img src="img/full-screen-alt-4.png" width="24px" height="24px"/>
                     </a>
                 </div>
                 <div id="langFormat">
                     <ul class="nav nav-pills">
                         <li id="langFormat-parsed" class="active">
-                            <a href="javascript:void(0);" onclick="changeResponseFormat('parsed')">
+                            <a href="javascript:void(0);" data-type="parsed">
                                 Parsed
                             </a>
                         </li>
                         <li id="langFormat-raw">
-                            <a href="javascript:void(0);" onclick="changeResponseFormat('raw')">
+                            <a href="javascript:void(0);" data-type="raw">
                                 Raw
                             </a>
                         </li>

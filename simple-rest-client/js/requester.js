@@ -34,7 +34,7 @@ postman.initialize = function () {
     this.history.initialize();
     this.collections.initialize();
     this.settings.initialize();
-    this.interface.initialize();
+    this.layout.initialize();
 };
 
 postman.editor = {
@@ -83,17 +83,17 @@ postman.settings = {
         $('#autoSaveRequest').val(this.autoSaveRequest);
 
         $('#historyCount').change(function () {
-            this.historyCount = $('#historyCount').val();
-            localStorage['historyCount'] = this.historyCount;
+            postman.settings.historyCount = $('#historyCount').val();
+            localStorage['historyCount'] = postman.settings.historyCount;
         });
 
         $('#autoSaveRequest').change(function () {
             var val = $('#autoSaveRequest').val();
             if (val == 'yes') {
-                this.autoSaveRequest = true;
+                postman.settings.autoSaveRequest = true;
             }
             else {
-                this.autoSaveRequest = false;
+                postman.settings.autoSaveRequest = false;
             }
 
             localStorage['autoSaveRequest'] = this.autoSaveRequest;
@@ -107,9 +107,21 @@ postman.currentRequest = {
     body:"",
     bodyParams:{},
     headers:[],
+    headersPacked: "",
     method:"get",
     dataMode:"params",
     methodsWithBody:["post", "put", "patch"],
+
+    init: function() {
+        this.url = "";
+        this.urlParams = {};
+        this.body = "";
+        this.bodyParams = {};
+        this.headers = [];
+        this.headersPacked = "";
+        this.method = "get";
+        this.dataMode = "params";
+    },
 
     response:{
         startTime:0,
@@ -119,6 +131,7 @@ postman.currentRequest = {
         time:0,
         headers:{},
         mime:"",
+        text: "",
         state:{
             size:"normal"
         },
@@ -127,7 +140,107 @@ postman.currentRequest = {
         getTotalTime:function () {
             this.totalTime = this.endTime - this.startTime;
             return this.totalTime;
+        },
+
+        changePreviewType: function(newType) {
+            this.previewType = newType;
+            $('#langFormat li').removeClass('active');
+            $('#langFormat-' + this.previewType).addClass('active');
+
+            if (newType === 'raw') {
+                postman.editor.codeMirror.toTextArea();
+                $('#codeData').val(this.text);
+                var codeDataWidth = $(document).width() - $('#sidebar').width() - 60;
+                $('#codeData').css("width", codeDataWidth + "px");
+                $('#codeData').css("height", "600px");
+            }
+            else {
+                $('#codeData').css("display", "none");
+                var mime = $('#codeData').attr('data-mime');
+                setResponseFormat(mime, this.text, "parsed", true);
+            }
+        },
+
+        clear: function() {
+            this.startTime = 0;
+            this.endTime = 0;
+            this.totalTime = 0;
+            this.status = "";
+            this.time = 0;
+            this.headers = {};
+            this.mime = "";
+            this.state.size = "normal";
+            this.previewType = "parsed";
+
+            $('#responseStatus').css("display", "none");
+            $('#responseHeaders').css("display", "none");
+            $('#codeData').css("display", "none");
+        },
+
+        toggleBodySize: function() {
+            if (this.state.size == "normal") {
+                this.state.size = "maximized";
+                $('#responseBodyToggle img').attr("src", "img/full-screen-exit-alt-2.png");
+                this.state.width = $('#respData').width();
+                this.state.height = $('#respData').height();
+                this.state.display = $('#respData').css("display");
+                this.state.position = $('#respData').css("position");
+
+                $('#respData').css("position", "absolute");
+                $('#respData').css("left", 0);
+                $('#respData').css("top", 0);
+                $('#respData').css("width", $(document).width() - 20);
+                $('#respData').css("height", $(document).height());
+                $('#respData').css("z-index", 100);
+                $('#respData').css("background-color", "white");
+                $('#respData').css("padding", "10px");
+            }
+            else {
+                this.state.size = "normal";
+                $('#responseBodyToggle img').attr("src", "img/full-screen-alt-4.png");
+                $('#respData').css("position", this.state.position);
+                $('#respData').css("left", 0);
+                $('#respData').css("top", 0);
+                $('#respData').css("width", this.state.width);
+                $('#respData').css("height", this.state.height);
+                $('#respData').css("z-index", 10);
+                $('#respData').css("background-color", "white");
+                $('#respData').css("padding", "0px");
+            }
         }
+    },
+
+    startNew: function() {
+        this.init();
+        this.refreshLayout();
+        showParamsEditor("headers");
+        $('#url').focus();
+        this.response.clear();
+    },
+
+    setMethod: function(method) {
+        this.method = method;
+        this.refreshLayout();
+    },
+
+    refreshLayout: function() {
+        $('#url').val(this.url);
+        $('#headers').val(this.headers);
+
+        if (this.isMethodWithBody(this.method)) {
+            $("#data").css("display", "block");
+            showBodyParamsEditor();
+        } else {
+            closeParamsEditor('body');
+            $("#data").css("display", "none");
+        }
+    },
+
+    loadRequestFromLink: function(link) {
+        this.init();
+        this.url = link;
+        this.method = "get";
+        this.refreshLayout();
     },
 
     isMethodWithBody:function (method) {
@@ -137,7 +250,183 @@ postman.currentRequest = {
         else {
             return false;
         }
-    }
+    },
+
+    setHeadersParamString: function(headers) {
+        this.headers = headers;
+        var paramString = this.packHeaders();
+        $('#headers').val(paramString);
+    },
+
+    packHeaders: function() {
+        var headersLength = this.headers.length;
+        var paramString = "";
+        for (var i = 0; i < headersLength; i++) {
+            var h = this.headers[i];
+            if (h.name && h.name !== "") {
+                paramString += h.name + ": " + h.value + "\n";
+            }
+        }
+
+        return paramString;
+    },
+
+    unpackHeaders: function(data) {
+        if (data === null || data === "") {
+            return [];
+        }
+        else {
+            var vars = [], hash;
+            var hashes = data.split('\n');
+            var header;
+
+            for (var i = 0; i < hashes.length; i++) {
+                hash = hashes[i].split(":");
+                header = {
+                    "name":$.trim(hash[0]),
+                    "value":$.trim(hash[1])
+                };
+
+                vars.push(header);
+            }
+
+            return vars;
+        }
+    },
+
+    loadRequestInEditor: function(request) {
+        showRequestHelper("normal");
+        this.url = request.url;
+        this.body = request.body;
+        this.method = request.method;
+        this.headers = this.unpackHeaders(request.headers);
+
+        //Initialize bodyParams
+        //Initialize urlParams
+
+        $('#url').val(request.url);
+        $('#headers').val(request.headers);
+
+        showParamsEditor('headers');
+
+        $('#urlParamsEditor').css("display", "none");
+        $('#response').css("display", "none");
+        $('#requestMethodSelector').val(this.method);
+
+        if (this.isMethodWithBody(this.method)) {
+            this.dataMode = request.dataMode;
+
+            $('#data').css("display", "block");
+            $('#body').val(request.data);
+            $('#body').css("display", "block");
+
+            $('#data .nav-pills li').removeClass("active");
+
+            if (this.dataMode == 'params') {
+                $('#selector-container-params').addClass("active");
+                $('#body').css("display", "none");
+                showParamsEditor("body");
+            }
+            else if (this.dataMode == 'raw') {
+                $('#selector-container-raw').addClass("active");
+                $('#body').css("display", "block");
+                closeParamsEditor("body");
+            }
+        }
+        else {
+            $('#body').val("")
+            $('#data').css("display", "none");
+            closeParamsEditor("body");
+        }
+
+        closeParamsEditor("url");
+        this.response.clear();
+
+        $('body').scrollTop(0);
+    },
+
+    setDataMode: function(mode) {
+        this.dataMode = mode;
+        $('#data ul li').removeClass('active');
+        $('#data-' + mode).parent().addClass('active');
+    },
+
+    //Send the current request
+    send: function() {
+        if ($("#url").val() != "") {
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = readResponse;
+
+            var headers = $("#headers").val();
+            var url = this.url;
+            url = ensureProperUrl(url);
+            var method = this.method;
+
+            var data = "";
+            var bodyData = "";
+
+            xhr.open(method, url, true);
+
+            headers = headers.split("\n");
+
+            for (var i = 0; i < headers.length; i++) {
+                var header = headers[i].split(": ");
+                if (header[1]) {
+                    xhr.setRequestHeader(header[0], header[1]);
+                }
+            }
+
+            if (this.isMethodWithBody(method)) {
+                if (this.dataMode === 'raw') {
+                    data = $("#body").val();
+                    bodyData = data;
+                }
+                else if (this.dataMode === 'params') {
+                    bodyData = new FormData();
+
+                    //Iterate through all key/values for files or params
+                    //Not sure if this has to be handled at run time
+                    $('input[data-section=body]').each(function () {
+                        var valueEl = $(this).next();
+                        var type = valueEl.attr('type');
+
+                        if ($(this).val() !== '') {
+                            if (type === 'file') {
+                                var domEl = $(this).next().get(0);
+                                var len = domEl.files.length;
+                                for (var i = 0; i < len; i++) {
+                                    bodyData.append($(this).val(), domEl.files[i]);
+                                }
+                            }
+                            else {
+                                bodyData.append($(this).val(), valueEl.val());
+                            }
+                        }
+                    });
+
+                    data = $('#body').val();
+                }
+
+                //Check if a file is being sent
+                xhr.send(bodyData);
+            } else {
+                xhr.send();
+            }
+
+            this.response.startTime = new Date().getTime();
+
+            if (postman.settings.autoSaveRequest) {
+                postman.history.addRequest(url, method, $("#headers").val(), data, postman.currentRequest.dataMode);
+            }
+
+            $('#submitRequest').button("loading");
+
+        } else {
+            //No idea what happens here
+        }
+
+        this.response.clear();
+    },
 };
 
 
@@ -228,7 +517,7 @@ postman.history = {
 
     loadRequest:function (id) {
         postman.indexedDB.getRequest(id, function (request) {
-            loadRequestInEditor(request);
+            postman.currentRequest.loadRequestInEditor(request);
         });
     },
 
@@ -263,7 +552,7 @@ postman.history = {
 
         postman.indexedDB.addRequest(historyRequest, function(request) {
             postman.urlCache.addUrl(request.url);
-            postman.interface.sidebar.addRequest(request.url, request.method, id, "top");
+            postman.layout.sidebar.addRequest(request.url, request.method, id, "top");
             postman.history.requests.push(request);
         });
     },
@@ -285,7 +574,7 @@ postman.history = {
                 historyRequests.splice(k, 1);
             }
 
-            postman.interface.sidebar.removeRequestFromHistory(request_id);
+            postman.layout.sidebar.removeRequestFromHistory(request_id);
         });
     },
 
@@ -343,7 +632,7 @@ postman.collections = {
 
     getCollectionRequest: function(id) {
         postman.indexedDB.getCollectionRequest(id, function(request) {
-            loadRequestInEditor(request);
+            postman.currentRequest.loadRequestInEditor(request);
         });
     },
 
@@ -404,14 +693,14 @@ postman.collections = {
                 collectionRequest.collectionId = collection.id;
                 $('#itemCollectionSelectorList').tmpl([collection]).appendTo('#selectCollection');
                 $('#itemCollectionSidebarHead').tmpl([collection]).appendTo('#collectionItems');
-                postman.interface.refreshScrollPanes();
+                postman.layout.refreshScrollPanes();
                 postman.indexedDB.addCollectionRequest(collectionRequest, function(req) {
                     var targetElement = "#collectionRequests-" + req.collectionId;
                     postman.urlCache.addUrl(req.url);
 
                     req.url = limitStringLineWidth(req.url, 43);
                     $('#itemCollectionSidebarRequest').tmpl([req]).appendTo(targetElement);
-                    postman.interface.refreshScrollPanes();
+                    postman.layout.refreshScrollPanes();
                     $('#messageNoCollection').remove();
                 });
             });
@@ -426,7 +715,7 @@ postman.collections = {
 
                 req.url = limitStringLineWidth(req.url, 43);
                 $('#itemCollectionSidebarRequest').tmpl([req]).appendTo(targetElement);
-                postman.interface.refreshScrollPanes();
+                postman.layout.refreshScrollPanes();
                 $('#messageNoCollection').remove();
             });
         }
@@ -450,7 +739,7 @@ postman.collections = {
                 postman.collections.getAllRequestsInCollection(items[i].id);
             }
 
-            postman.interface.refreshScrollPanes();
+            postman.layout.refreshScrollPanes();
         });
     },
 
@@ -466,19 +755,19 @@ postman.collections = {
             }
 
             $('#itemCollectionSidebarRequest').tmpl(requests).appendTo(targetElement);
-            postman.interface.refreshScrollPanes();
+            postman.layout.refreshScrollPanes();
         });
     },
 
     deleteCollectionRequest: function(id) {
         postman.indexedDB.deleteCollectionRequest(id, function() {
-            postman.interface.sidebar.removeRequestFromHistory(id);
+            postman.layout.sidebar.removeRequestFromHistory(id);
         });
     },
 
     deleteCollection: function(id) {
         postman.indexedDB.deleteCollection(id, function() {
-            postman.interface.sidebar.removeCollection(id);
+            postman.layout.sidebar.removeCollection(id);
             removeCollectionFromSelector(id);
             var numCollections = $('#collectionItems').children().length;
             if (numCollections == 1) {
@@ -488,7 +777,7 @@ postman.collections = {
     }
 }
 
-postman.interface = {
+postman.layout = {
     socialButtons:{
         "facebook":'<iframe src="http://www.facebook.com/plugins/like.php?href=https%3A%2F%2Fchrome.google.com%2Fwebstore%2Fdetail%2Ffdmmgilgnpjigdojojpjoooidkmcomcm&amp;send=false&amp;layout=button_count&amp;width=250&amp;show_faces=true&amp;action=like&amp;colorscheme=light&amp;font&amp;height=21&amp;appId=26438002524" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:250px; height:21px;" allowTransparency="true"></iframe>',
         "twitter":'<a href="https://twitter.com/share" class="twitter-share-button" data-url="https://chrome.google.com/webstore/detail/fdmmgilgnpjigdojojpjoooidkmcomcm" data-text="I am using Postman to kick some API ass!" data-count="horizontal" data-via="a85">Tweet</a><script type="text/javascript" src="http://platform.twitter.com/widgets.js"></script>',
@@ -496,6 +785,15 @@ postman.interface = {
     },
 
     initialize:function () {
+        $('#responseBodyToggle').on("click", function() {
+            postman.currentRequest.response.toggleBodySize();
+        });
+
+        $('#langFormat').on("click", "a", function() {
+            var previewType = $(this).attr('data-type');
+            postman.currentRequest.response.changePreviewType(previewType);
+        });
+
         this.sidebar.initialize();
     },
 
@@ -578,7 +876,7 @@ postman.interface = {
             }
 
             $('#messageNoHistory').remove();
-            postman.interface.refreshScrollPanes();
+            postman.layout.refreshScrollPanes();
         },
 
         addRequestListeners:function () {
@@ -608,12 +906,12 @@ postman.interface = {
                 postman.history.hideEmptyMessage();
             }
 
-            postman.interface.refreshScrollPanes();
+            postman.layout.refreshScrollPanes();
         },
 
         removeCollection:function (id) {
             $('#collection-' + id).slideUp(100);
-            postman.interface.refreshScrollPanes();
+            postman.layout.refreshScrollPanes();
         }
     }
 };
@@ -650,141 +948,6 @@ function Response() {
     this.id = "";
     this.headers = "";
     this.text = "";
-}
-
-function startNewRequest() {
-    $("#url").val("");
-    $('#headers').val("");
-    clearFields();
-
-    //clearHeaders
-    //close edit params
-    $('.method-selectors li').removeClass('active');
-    $('.method-selector-get').addClass('active');
-    showParamsEditor("headers");
-    showRequestMethodUi('get');
-    $('#url').focus();
-}
-
-function clearFields() {
-    $("#response").css("display", "");
-    $("#loader").css("display", "");
-    $("#responsePrint").css("display", "none");
-
-    $("#responseStatus").html("");
-    $("#responseHeaders").val("");
-    $("#codeData").text("");
-
-    $("#respHeaders").css("display", "none");
-    $("#respData").css("display", "none");
-
-    $('#codeData').attr('data-formatted', 'false');
-}
-
-postman.initializeHeadersFromString = function (data) {
-    if (data === null || data === "") {
-        postman.currentRequest.headers = [];
-    }
-    else {
-        var vars = [], hash;
-        var hashes = data.split('\n');
-        var header;
-
-        for (var i = 0; i < hashes.length; i++) {
-            hash = hashes[i].split(":");
-            header = {
-                "name":jQuery.trim(hash[0]),
-                "value":jQuery.trim(hash[1])
-            };
-
-            vars.push(header);
-        }
-
-        postman.currentRequest.headers = vars;
-    }
-}
-
-function sendRequest() {
-    if ($("#url").val() != "") {
-        var xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = readResponse;
-
-        var headers = $("#headers").val();
-        var url = $("#url").val();
-
-        url = ensureProperUrl(url);
-
-        var method = postman.currentRequest.method;
-
-        var data = "";
-        var bodyData = "";
-
-        xhr.open(method, url, true);
-
-        headers = headers.split("\n");
-        for (var i = 0; i < headers.length; i++) {
-            var header = headers[i].split(": ");
-            if (header[1]) {
-                xhr.setRequestHeader(header[0], header[1]);
-            }
-        }
-
-        if (postman.currentRequest.isMethodWithBody(method)) {
-            if (postman.currentRequest.dataMode === 'raw') {
-                data = $("#body").val();
-                bodyData = data;
-            }
-            else if (postman.currentRequest.dataMode === 'params') {
-                bodyData = new FormData();
-
-                //Iterate through all key/values
-
-                $('input[data-section=body]').each(function () {
-                    var valueEl = $(this).next();
-                    var type = valueEl.attr('type');
-
-                    if ($(this).val() !== '') {
-                        if (type === 'file') {
-                            var domEl = $(this).next().get(0);
-                            var len = domEl.files.length;
-                            for (var i = 0; i < len; i++) {
-                                bodyData.append($(this).val(), domEl.files[i]);
-                            }
-                        }
-                        else {
-                            bodyData.append($(this).val(), valueEl.val());
-                        }
-                    }
-                });
-
-                data = $('#body').val();
-            }
-
-            //Check if a file is being sent
-            xhr.send(bodyData);
-        } else {
-            xhr.send();
-        }
-
-        postman.currentRequest.response.startTime = new Date().getTime();
-
-        if (postman.settings.autoSaveRequest) {
-            postman.history.addRequest(url, method, $("#headers").val(), data, postman.currentRequest.dataMode);
-        }
-
-        $('#submitRequest').button("loading");
-
-    } else {
-        console.log("no uri");
-        $("#responseStatus").html("<span style=\"color:#FF0000\">" + chrome.i18n.getMessage("bad_request") + "</span>");
-        $("#respHeaders").css("display", "none");
-        $("#respData").css("display", "none");
-
-        $("#loader").css("display", "none");
-        $("#responsePrint").css("display", "");
-    }
-
-    clearFields();
 }
 
 function setResponseHeaders(headersString) {
@@ -899,21 +1062,7 @@ function readResponse() {
     else {
     }
 
-    postman.interface.setLayout();
-}
-
-//Manages showing/hiding the PUT/POST additional UI
-function showRequestMethodUi(type) {
-    var t = type.toLowerCase();
-    postman.currentRequest.method = t;
-
-    if (postman.currentRequest.isMethodWithBody(t)) {
-        $("#data").css("display", "block");
-        showBodyParamsEditor();
-    } else {
-        closeParamsEditor('body');
-        $("#data").css("display", "none");
-    }
+    postman.layout.setLayout();
 }
 
 function init() {
@@ -929,24 +1078,18 @@ function init() {
     $("#respData").css("display", "none");
 
     $("#submitRequest").click(function () {
-        sendRequest();
+        postman.currentRequest.send();
     });
 
     $('#requestMethodSelector').change(function () {
         var val = $(this).val();
-        showRequestMethodUi(val);
+        postman.currentRequest.setMethod(val);
     });
 
     $('#sidebarSelectors li a').click(function () {
         var id = $(this).attr('data-id');
-        postman.interface.sidebar.select(id);
+        postman.layout.sidebar.select(id);
     });
-}
-
-postman.loadNewRequestFromLink = function (link) {
-    console.log("Loading new request", link);
-    startNewRequest();
-    $('#url').val(link);
 }
 
 function setupDB() {
@@ -1301,61 +1444,6 @@ function removeCollectionFromSelector(id) {
     $(target).remove();
 }
 
-function loadRequestInEditor(request) {
-    showRequestHelper("normal");
-    var method = request.method.toLowerCase();
-    postman.currentRequest.method = method.toUpperCase();
-
-    $('#url').val(request.url);
-
-    //Set proper class for method and the variable
-
-    $('#headers').val(request.headers);
-    postman.initializeHeadersFromString(request.headers);
-    showParamsEditor('headers');
-
-    $('#urlParamsEditor').css("display", "none");
-    $('#response').css("display", "none");
-
-    $('#requestMethodSelector').val(method);
-
-    if (method === 'post' || method === 'put' || method === 'patch') {
-        var dataMode = request.dataMode.toLowerCase();
-
-        $('#data').css("display", "block");
-        $('#body').val(request.data);
-        $('#body').css("display", "block");
-
-        $('#data .pills li').removeClass("active");
-        if (dataMode == 'params') {
-            $('#selector-container-params').addClass("active");
-            showParamsEditor("body");
-        }
-        else if (dataMode == 'raw') {
-            $('#selector-container-raw').addClass("active");
-            closeParamsEditor("body");
-        }
-    }
-    else {
-        $('#body').val("")
-        $('#data').css("display", "none");
-        closeParamsEditor("body");
-    }
-
-    postman.currentRequest.method = method;
-
-    closeParamsEditor("url");
-    clearResponse();
-
-    $('body').scrollTop(0);
-}
-
-function clearResponse() {
-    $('#responseStatus').css("display", "none");
-    $('#responseHeaders').css("display", "none");
-    $('#codeData').css("display", "none");
-}
-
 //Sets the param strings for header and url params
 function setParamsFromEditor(section) {
     var paramString = "";
@@ -1605,25 +1693,19 @@ function addEditorListeners(section) {
     $('#' + section + '-ParamsFields div select').bind('keydown', 'esc', escInputHandler);
 }
 
-function setCurrentDataFormat(method) {
-    $('#data ul li').removeClass('active');
-    $('#data-' + method).parent().addClass('active');
-}
-
 function showBodyParamsEditor() {
     postman.currentRequest.dataMode = "params";
     showParamsEditor('body');
 
     $('#bodyDataContainer').css("display", "none");
-    setCurrentDataFormat('params');
+    postman.currentRequest.setDataMode('params');
 }
 
 function showRawEditor() {
     postman.currentRequest.dataMode = "raw";
     closeParamsEditor('body');
-
-    setCurrentDataFormat('raw');
     $('#bodyDataContainer').css("display", "block");
+    postman.currentRequest.setDataMode('raw');
 }
 
 //Headers list from Wikipedia http://en.wikipedia.org/wiki/List_of_HTTP_header_fields
@@ -1670,29 +1752,6 @@ function addHeaderAutoComplete() {
         source:availableHeaders,
         delay:50
     });
-}
-
-function addUrlAutoComplete() {
-
-}
-
-function changeResponseFormat(format) {
-    $('#langFormat li').removeClass('active');
-    $('#langFormat-' + format).addClass('active');
-
-    if (format === 'raw') {
-        postman.editor.codeMirror.toTextArea();
-        $('#codeData').val(postman.currentRequest.response.text);
-        var codeDataWidth = $(document).width() - $('#sidebar').width() - 60;
-        $('#codeData').css("width", codeDataWidth + "px");
-        $('#codeData').css("height", "600px");
-    }
-    else {
-        $('#codeData').css("display", "none");
-        var mime = $('#codeData').attr('data-mime');
-        setResponseFormat(mime, postman.currentRequest.response.text, "parsed", true);
-    }
-
 }
 
 function setResponseFormat(mime, response, format, forceCreate) {
@@ -1779,38 +1838,6 @@ function checkDropboxLogin() {
     }
 }
 
-function toggleResponseBodySize() {
-    if (postman.currentRequest.response.state.size == "normal") {
-        postman.currentRequest.response.state.size = "maximized";
-        $('#responseBodyToggle img').attr("src", "img/full-screen-exit-alt-2.png");
-        postman.currentRequest.response.state.width = $('#respData').width();
-        postman.currentRequest.response.state.height = $('#respData').height();
-        postman.currentRequest.response.state.display = $('#respData').css("display");
-        postman.currentRequest.response.state.position = $('#respData').css("position");
-
-        $('#respData').css("position", "absolute");
-        $('#respData').css("left", 0);
-        $('#respData').css("top", 0);
-        $('#respData').css("width", $(document).width() - 20);
-        $('#respData').css("height", $(document).height());
-        $('#respData').css("z-index", 100);
-        $('#respData').css("background-color", "white");
-        $('#respData').css("padding", "10px");
-    }
-    else {
-        postman.currentRequest.response.state.size = "normal";
-        $('#responseBodyToggle img').attr("src", "img/full-screen-alt-4.png");
-        $('#respData').css("position", postman.currentRequest.response.state.position);
-        $('#respData').css("left", 0);
-        $('#respData').css("top", 0);
-        $('#respData').css("width", postman.currentRequest.response.state.width);
-        $('#respData').css("height", postman.currentRequest.response.state.height);
-        $('#respData').css("z-index", 10);
-        $('#respData').css("background-color", "white");
-        $('#respData').css("padding", "0px");
-    }
-}
-
 function minimizeResponseBody() {
     $('#respData').css("padding", "0px");
 }
@@ -1822,32 +1849,32 @@ var escInputHandler = function (evt) {
 function setupKeyboardShortcuts() {
 
     var selectGetHandler = function (evt) {
-        showRequestMethodUi('get');
+        postman.currentRequest.setMethod('get');
         return false;
     };
 
     var selectPostHandler = function (evt) {
-        showRequestMethodUi('post');
+        postman.currentRequest.setMethod('post');
         return false;
     };
 
     var selectPutHandler = function (evt) {
-        showRequestMethodUi('put');
+        postman.currentRequest.setMethod('put');
         return false;
     };
 
     var selectDeleteHandler = function (evt) {
-        showRequestMethodUi('delete');
+        postman.currentRequest.setMethod('delete');
         return false;
     };
 
     var selectHeadHandler = function (evt) {
-        showRequestMethodUi('head');
+        postman.currentRequest.setMethod('head');
         return false;
     };
 
     var selectOptionsHandler = function (evt) {
-        showRequestMethodUi('options');
+        postman.currentRequest.setMethod('options');
         return false;
     };
 
@@ -1862,7 +1889,7 @@ function setupKeyboardShortcuts() {
     };
 
     var newRequestHandler = function (evt) {
-        startNewRequest();
+        postman.currentRequest.startNew();
     };
 
     $('input').bind('keydown', 'esc', escInputHandler);
@@ -1885,7 +1912,7 @@ function setupKeyboardShortcuts() {
     });
 
     $(document).bind('keydown', 'return', function () {
-        sendRequest();
+        postman.currentRequest.send();
         return false;
     });
 
@@ -1897,7 +1924,7 @@ function setupKeyboardShortcuts() {
     });
 
     $(document).bind('keydown', 'f', function () {
-        toggleResponseBodySize();
+        postman.currentRequest.response.toggleBodySize();
     });
 
     $(document).bind('keydown', 'shift+/', function () {
@@ -1915,18 +1942,6 @@ function setupKeyboardShortcuts() {
         //Focus on the form element
         return false;
     });
-}
-
-function setHeadersParamString(headers) {
-    var headersLength = headers.length;
-    var paramString = "";
-    for (var i = 0; i < headersLength; i++) {
-        var h = headers[i];
-        if (h.name && h.name !== "") {
-            paramString += h.name + ": " + h.value + "\n";
-        }
-    }
-    $('#headers').val(paramString);
 }
 
 function processBasicAuthRequestHelper() {
@@ -1961,7 +1976,7 @@ function processBasicAuthRequestHelper() {
     }
 
     postman.currentRequest.headers = headers;
-    setHeadersParamString(headers);
+    postman.currentRequest.setHeadersParamString(headers);
     showParamsEditor("headers");
 }
 
@@ -2022,7 +2037,6 @@ function generateSignature() {
         parameters:[]
     };
 
-    console.log(message);
     //all the fields defined by oauth
     $('input.signatureParam').each(function () {
         if ($(this).val() != '') {
@@ -2124,7 +2138,7 @@ $(document).ready(function () {
     postman.urlCache.refreshAutoComplete();
     setupKeyboardShortcuts();
     initCollectionSelector();
-    postman.interface.setLayout();
+    postman.layout.setLayout();
     setupRequestHelpers();
     showParamsEditor("headers");
 
@@ -2150,7 +2164,7 @@ $(document).ready(function () {
     });
 
     $(window).resize(function () {
-        postman.interface.setLayout();
+        postman.layout.setLayout();
     });
 
     CodeMirror.defineMode("links", function (config, parserConfig) {
@@ -2206,11 +2220,11 @@ $(document).ready(function () {
 
     $('#respData').on("click", ".cm-link", function () {
         var link = $(this).html();
-        postman.loadNewRequestFromLink(link);
+        postman.currentRequest.loadRequestFromLink(link);
     });
 
     $('#modalAboutPostman').click(function () {
-        postman.interface.attachSocialButtons();
+        postman.layout.attachSocialButtons();
         return false;
     });
 });
