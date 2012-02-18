@@ -63,12 +63,10 @@ var headerDetails = {
 };
 
 var requests;
-var bodyFileData;
 var dataMode = "params";
 var requestStartTime = 0;
 var requestEndTime = 0;
 var requestMethod = 'GET';
-var dataInputType = "text";
 var availableUrls = [];
 var currentSidebarSection = "history";
 var currentResponse;
@@ -1086,17 +1084,6 @@ function deleteCollection(id) {
     postman.indexedDB.deleteCollection(id);
 }
 
-function lang() {
-    $('._msg_').each(function () {
-        var val = $(this).html();
-        $(this).html(chrome.i18n.getMessage(val));
-    });
-    $('._msg_val_').each(function () {
-        var val = $(this).val();
-        $(this).val(chrome.i18n.getMessage(val));
-    });
-}
-
 function S4() {
     return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
 }
@@ -1214,10 +1201,6 @@ function showParamsEditor(section) {
     addEditorListeners(section);
 }
 
-function deleteParam(section) {
-    alert("To delete " + section + " param");
-}
-
 function closeParamsEditor(section) {
     $('#' + section + '-ParamsFields div:last input').unbind('focus', sectionParamsLastInputFocusHandler);
     $('#' + section + '-ParamsFields input').unbind('blur', sectionParamsInputBlurHandler);
@@ -1256,15 +1239,6 @@ function addParamInEditor(section, data) {
 
     $('#itemParamsEditor').tmpl([rowData]).appendTo('#' + section + '-ParamsFields');
     addEditorListeners(section);
-}
-
-function changeParamInEditor(target) {
-    if (target == "file") {
-
-    }
-}
-
-function addHeaderListeners() {
 }
 
 function addBodyListeners() {
@@ -1859,10 +1833,6 @@ function toggleResponseBodySize() {
     }
 }
 
-function minimizeResponseBody() {
-    $('#respData').css("padding", "0px");
-}
-
 var escInputHandler = function (evt) {
     $(evt.target).blur();
 };
@@ -2162,12 +2132,10 @@ $(document).ready(function () {
     setupDB();
     initDB();
     initializeSettings();
-    lang();
     init();
 
     $('a[rel="tooltip"]').tooltip();
 
-    addHeaderListeners();
     addUrlAutoComplete();
     attachSidebarListeners();
     setupKeyboardShortcuts();
