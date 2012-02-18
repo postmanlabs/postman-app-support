@@ -250,13 +250,6 @@
     </div>
 </div>
 
-<div id="pheaders" class="row clearfix">
-    <div class="span10 headersContainer">
-        <textarea name="headers" id="headers" tabindex="3" class="inputText"
-                  placeholder="Headers"></textarea>
-    </div>
-</div>
-
 <div class="row">
     <div id="headers-ParamsEditor" class="span10 paramsEditor">
         <div id="headers-ParamsFields" class="editorFields"></div>
@@ -264,12 +257,12 @@
 </div>
 
 <div id="data">
-    <ul class="nav nav-pills small" style="margin-bottom: 0px; height: 44px;">
-        <li id="selector-container-params" class="active">
-            <a href="javascript:void(0);" onclick="showBodyParamsEditor()" id="data-params">Params</a>
+    <ul id="dataModeSelector" class="nav nav-pills">
+        <li id="selector-container-params" class="active" data-mode="params">
+            <a href="#" data-mode="params" data-toggle="tab">Params</a>
         </li>
-        <li id="selector-container-raw">
-            <a href="javascript:void(0);" onclick="showRawEditor()" id="data-raw">Raw body</a>
+        <li id="selector-container-raw" data-mode="raw">
+            <a href="#" data-mode="raw" data-toggle="tab">Raw body</a>
         </li>
     </ul>
     <div id="bodyDataContainer">

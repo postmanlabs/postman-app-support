@@ -192,7 +192,7 @@ postman.currentRequest = {
     body:"",
     bodyParams:{},
     headers:[],
-    headersPacked:"",
+    packedHeaders: "",
     method:"get",
     dataMode:"params",
     methodsWithBody:["post", "put", "patch"],
@@ -205,8 +205,10 @@ postman.currentRequest = {
         this.urlParams = {};
         this.body = "";
         this.bodyParams = {};
+
         this.headers = [];
-        this.headersPacked = "";
+        this.packedHeaders = "";
+
         this.method = "get";
         this.dataMode = "params";
 
@@ -218,7 +220,25 @@ postman.currentRequest = {
     },
 
     addListeners:function () {
-        console.log("Adding the listeners");
+        $('#dataModeSelector').on("click", "li a", function() {
+            var mode = $(this).attr("data-mode");
+            postman.currentRequest.changeDataMode(mode);
+        })
+    },
+
+    changeDataMode: function(mode) {
+        this.dataMode = mode;
+        $('#dataModeSelector li').removeClass("active");
+        $('#dataModeSelector li[data-mode="' + mode + '"]').addClass("active");
+
+        if(mode === "params") {
+            showParamsEditor('body');
+            $('#bodyDataContainer').css("display", "none");
+        }
+        else if(mode === "raw") {
+            closeParamsEditor('body');
+            $('#bodyDataContainer').css("display", "block");
+        }
     },
 
     getTotalTime:function () {
@@ -277,9 +297,7 @@ postman.currentRequest = {
             this.state.size = "normal";
             this.previewType = "parsed";
 
-            $('#responseStatus').css("display", "none");
-            $('#responseHeaders').css("display", "none");
-            $('#codeData').css("display", "none");
+            $('#response').css("display", "none");
         },
 
         load:function (response) {
@@ -312,11 +330,10 @@ postman.currentRequest = {
 
                 this.loadHeaders(response.getAllResponseHeaders());
 
-                $("#respHeaders").css("display", "");
-                $("#respData").css("display", "");
+                $("#respHeaders").css("display", "block");
+                $("#respData").css("display", "block");
 
                 $("#loader").css("display", "none");
-                $("#responsePrint").css("display", "");
 
                 $('#ptime .data').html(diff + " ms");
                 $('#pbodysize .data').html(diff + " bytes");
@@ -333,9 +350,6 @@ postman.currentRequest = {
 
                 $('#response').css("display", "block");
                 $('#submitRequest').button("reset");
-
-                $('#responseStatus').css("display", "block");
-                $('#responseHeaders').css("display", "block");
                 $('#codeData').css("display", "block");
 
                 if (contentType.search(/image/i) === -1) {
@@ -454,11 +468,10 @@ postman.currentRequest = {
 
     refreshLayout:function () {
         $('#url').val(this.url);
-        $('#headers').val(this.headers);
 
         if (this.isMethodWithBody(this.method)) {
             $("#data").css("display", "block");
-            showBodyParamsEditor();
+            showParamsEditor('body');
         } else {
             closeParamsEditor('body');
             $("#data").css("display", "none");
@@ -479,14 +492,14 @@ postman.currentRequest = {
     setHeadersParamString:function (headers) {
         this.headers = headers;
         var paramString = this.packHeaders();
-        $('#headers').val(paramString);
+        this.packedHeaders = paramString;
     },
 
-    packHeaders:function () {
-        var headersLength = this.headers.length;
+    packHeaders:function (headers) {
+        var headersLength = headers.length;
         var paramString = "";
         for (var i = 0; i < headersLength; i++) {
-            var h = this.headers[i];
+            var h = headers[i];
             if (h.name && h.name !== "") {
                 paramString += h.name + ": " + h.value + "\n";
             }
@@ -512,6 +525,7 @@ postman.currentRequest = {
 
                 header = {
                     "name":$.trim(hash[0]),
+                    "key":$.trim(hash[0]),
                     "value":$.trim(hash[1]),
                     "description":headerDetails[$.trim(hash[0]).toLowerCase()]
                 };
@@ -534,33 +548,24 @@ postman.currentRequest = {
         //Initialize urlParams
 
         $('#url').val(request.url);
-        $('#headers').val(request.headers);
+
+        this.packedHeaders = request.headers;
 
         showParamsEditor('headers');
+        closeParamsEditor('url');
+        this.response.clear();
 
-        $('#urlParamsEditor').css("display", "none");
-        $('#response').css("display", "none");
         $('#requestMethodSelector').val(this.method);
 
         if (this.isMethodWithBody(this.method)) {
             this.dataMode = request.dataMode;
 
             $('#data').css("display", "block");
+            this.body = request.data;
+
+            //@todo Process bodyParams
             $('#body').val(request.data);
-            $('#body').css("display", "block");
-
-            $('#data .nav-pills li').removeClass("active");
-
-            if (this.dataMode === 'params') {
-                $('#selector-container-params').addClass("active");
-                $('#body').css("display", "none");
-                showParamsEditor("body");
-            }
-            else if (this.dataMode === 'raw') {
-                $('#selector-container-raw').addClass("active");
-                $('#body').css("display", "block");
-                closeParamsEditor("body");
-            }
+            this.changeDataMode(this.dataMode);
         }
         else {
             $('#body').val("");
@@ -568,16 +573,7 @@ postman.currentRequest = {
             closeParamsEditor("body");
         }
 
-        closeParamsEditor("url");
-        this.response.clear();
-
         $('body').scrollTop(0);
-    },
-
-    setDataMode:function (mode) {
-        this.dataMode = mode;
-        $('#data ul li').removeClass('active');
-        $('#data-' + mode).parent().addClass('active');
     },
 
     setBodyParamString:function (params) {
@@ -686,7 +682,7 @@ postman.currentRequest = {
         }
 
         if (postman.settings.autoSaveRequest) {
-            postman.history.addRequest(url, method, $("#headers").val(), data, this.dataMode);
+            postman.history.addRequest(url, method, this.packedHeaders, data, this.dataMode);
         }
 
         $('#submitRequest').button("loading");
@@ -947,7 +943,7 @@ postman.collections = {
 
         var collectionRequest = new CollectionRequest();
         collectionRequest.id = guid();
-        collectionRequest.headers = $("#headers").val();
+        collectionRequest.headers = this.packedHeaders;
         collectionRequest.url = $("#url").val();
         collectionRequest.method = postman.currentRequest.method;
         collectionRequest.data = $('#body').val();
@@ -1073,16 +1069,7 @@ postman.layout = {
 
         this.sidebar.initialize();
 
-        $("#response").css("display", "none");
-        $("#loader").css("display", "");
-        $("#responsePrint").css("display", "none");
-        $("#sep").css("display", "none");
-
-        $("#data").css("display", "none");
-
-        $("#responseStatus").html("");
-        $("#respHeaders").css("display", "none");
-        $("#respData").css("display", "none");
+        postman.currentRequest.response.clear();
 
         $("#submitRequest").click(function () {
             postman.currentRequest.send();
@@ -1607,7 +1594,10 @@ postman.indexedDB = {
 function setParamsFromEditor(section) {
     var paramString = "";
     var h = [];
+
     //Goes through each item in the param editor and generates a param string
+
+    //Will be replaced by a key value processor
     $('input[data-section="' + section + '"]').each(function () {
         var val = $(this).next().val();
         if (val !== "" && $(this).val() !== "") {
@@ -1644,7 +1634,7 @@ function setParamsFromEditor(section) {
     }
     else if (section === 'headers') {
         postman.currentRequest.headers = h;
-        $('#' + section).val(paramString);
+        postman.currentRequest.packedHeaders = postman.currentRequest.packHeaders(h);
     }
 }
 
@@ -1656,7 +1646,7 @@ function showParamsEditor(section) {
     var placeHolderValue = "Value";
 
     if (section === 'headers') {
-        params = getHeaderVars(data);
+        params = postman.currentRequest.headers;
         placeHolderKey = "Header";
         placeHolderValue = "Value";
     }
@@ -1672,6 +1662,7 @@ function showParamsEditor(section) {
     var paramsLength = params.length;
     var rowData = {};
     var rows = [];
+
     $('#' + section + '-ParamsFields').html("");
     for (var index = 0; i < paramsLength; index++) {
         var element = params[index];
@@ -1690,7 +1681,6 @@ function showParamsEditor(section) {
             };
             rows.push(rowData);
         }
-
 
         i++;
     }
@@ -1839,6 +1829,7 @@ function addEditorListeners(section) {
     $('#' + section + '-ParamsFields div input').bind("blur", sectionParamsInputBlurHandler);
     $('#' + section + '-ParamsFields div select').bind("change", sectionParamsSelectChangeHandler);
     $('.deleteParam').bind("click", deleteParamHandler);
+
     if (section === 'headers') {
         addHeaderAutoComplete();
     }
@@ -1849,63 +1840,10 @@ function addEditorListeners(section) {
     $('#' + section + '-ParamsFields div select').bind('keydown', 'esc', escInputHandler);
 }
 
-function showBodyParamsEditor() {
-    postman.currentRequest.dataMode = "params";
-    showParamsEditor('body');
-
-    $('#bodyDataContainer').css("display", "none");
-    postman.currentRequest.setDataMode('params');
-}
-
-function showRawEditor() {
-    postman.currentRequest.dataMode = "raw";
-    closeParamsEditor('body');
-    $('#bodyDataContainer').css("display", "block");
-    postman.currentRequest.setDataMode('raw');
-}
-
 //Headers list from Wikipedia http://en.wikipedia.org/wiki/List_of_HTTP_header_fields
 function addHeaderAutoComplete() {
-    var availableHeaders = [
-        //Standard headers
-        "Accept",
-        "Accept-Charset",
-        "Accept-Encoding",
-        "Accept-Language",
-        "Authorization",
-        "Cache-Control",
-        "Connection",
-        "Cookie",
-        "Content-Length",
-        "Content-MD5",
-        "Content-Type",
-        "Date",
-        "Expect",
-        "From",
-        "Host",
-        "If-Match",
-        "If-Modified-Since",
-        "If-None-Match",
-        "If-Range",
-        "If-Unmodified-Since",
-        "Max-Forwards",
-        "Pragma",
-        "Proxy-Authorization",
-        "Range",
-        "Referer",
-        "TE",
-        "Upgrade",
-        "User-Agent",
-        "Via",
-        "Warning",
-        //Non standard headers
-        "X-Requested-With",
-        "X-Do-Not-Track",
-        "DNT"
-    ];
-
     $("#headers-ParamsFields .key").autocomplete({
-        source:availableHeaders,
+        source:chromeHeaders,
         delay:50
     });
 }

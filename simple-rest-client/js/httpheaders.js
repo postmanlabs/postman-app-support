@@ -42,3 +42,41 @@ var headerDetails = {
     "x-forwarded-proto":"A de facto standard for identifying the originating protocol of an HTTP request, since a reverse proxy (load balancer) may communicate with a web server using HTTP even if the request to the reverse proxy is HTTPS",
     "x-powered-by":"Specifies the technology (ASP.NET, PHP, JBoss, e.g.) supporting the web application (version details are often in X-Runtime, X-Version, or X-AspNet-Version)"
 };
+
+var chromeHeaders = [
+    //Standard headers
+    "Accept",
+    "Accept-Charset",
+    "Accept-Encoding",
+    "Accept-Language",
+    "Authorization",
+    "Cache-Control",
+    "Connection",
+    "Cookie",
+    "Content-Length",
+    "Content-MD5",
+    "Content-Type",
+    "Date",
+    "Expect",
+    "From",
+    "Host",
+    "If-Match",
+    "If-Modified-Since",
+    "If-None-Match",
+    "If-Range",
+    "If-Unmodified-Since",
+    "Max-Forwards",
+    "Pragma",
+    "Proxy-Authorization",
+    "Range",
+    "Referer",
+    "TE",
+    "Upgrade",
+    "User-Agent",
+    "Via",
+    "Warning",
+    //Non standard headers
+    "X-Requested-With",
+    "X-Do-Not-Track",
+    "DNT"
+];
