@@ -1941,6 +1941,7 @@ function showParamsEditor(section) {
         i++;
     }
 
+    //For the empty line
     rowData = {
         section:section,
         placeHolderKey:placeHolderKey,
