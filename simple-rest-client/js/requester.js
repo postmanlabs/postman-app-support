@@ -69,12 +69,62 @@ postman.initialize = function () {
     this.collections.initialize();
     this.settings.initialize();
     this.layout.initialize();
+    this.editor.init();
     this.currentRequest.init();
+    this.urlCache.refreshAutoComplete();
+
+    postman.indexedDB.open();
 };
 
 postman.editor = {
     mode:"html",
-    codeMirror:null
+    codeMirror:null,
+
+    init:function () {
+        CodeMirror.defineMode("links", function (config, parserConfig) {
+            var linksOverlay = {
+                token:function (stream, state) {
+                    if (stream.eatSpace()) {
+                        return null;
+                    }
+
+                    //@todo Needs to be improved
+                    var matches;
+                    if (matches = stream.match(/https?:\/\/[^'"]*(?=[<"'\n\t\s])/, false)) {
+                        //Eat all characters before http link
+                        var m = stream.match(/.*(?=https?)/, true);
+                        if (m) {
+                            if (m[0].length > 0) {
+                                return null;
+                            }
+                        }
+
+                        var currentPos = stream.current().search(matches[0]);
+
+                        while (currentPos < 0) {
+                            var ch = stream.next();
+                            if (ch === "\"" || ch === "'") {
+                                stream.backUp(1);
+                                break;
+                            }
+
+                            if (ch == null) {
+                                break;
+                            }
+
+                            currentPos = stream.current().search(matches[0]);
+                        }
+
+                        return "link";
+                    }
+
+                    stream.skipToEnd();
+                }
+            };
+
+            return CodeMirror.overlayParser(CodeMirror.getMode(config, parserConfig.backdrop || postman.editor.mode), linksOverlay);
+        });
+    }
 };
 
 postman.urlCache = {
@@ -456,6 +506,10 @@ postman.currentRequest = {
 
             for (var i = 0; i < hashes.length; i++) {
                 hash = hashes[i].split(":");
+                if (!hash[0]) {
+                    continue;
+                }
+
                 header = {
                     "name":$.trim(hash[0]),
                     "value":$.trim(hash[1]),
@@ -526,7 +580,7 @@ postman.currentRequest = {
         $('#data-' + mode).parent().addClass('active');
     },
 
-    setBodyParamString: function(params) {
+    setBodyParamString:function (params) {
         var paramsLength = params.length;
         var paramArr = [];
         for (var i = 0; i < paramsLength; i++) {
@@ -538,7 +592,7 @@ postman.currentRequest = {
         $('#body').val(paramArr.join('&'));
     },
 
-    setUrlParamString: function(params) {
+    setUrlParamString:function (params) {
         this.url = $('#url').val();
         var url = this.url;
 
@@ -723,7 +777,9 @@ postman.history = {
             $('#historyItems').fadeIn();
             postman.history.requests = historyRequests;
             if (postman.history.requests.length === 0) {
-                $('#messageNoHistoryTmpl').tmpl([{}]).appendTo('#sidebarSection-history');
+                $('#messageNoHistoryTmpl').tmpl([
+                    {}
+                ]).appendTo('#sidebarSection-history');
             }
         });
 
@@ -990,7 +1046,9 @@ postman.collections = {
 
             var numCollections = $('#collectionItems').children().length;
             if (numCollections === 1) {
-                $('#messageNoCollectionTmpl').tmpl([{}]).appendTo('#sidebarSection-collections');
+                $('#messageNoCollectionTmpl').tmpl([
+                    {}
+                ]).appendTo('#sidebarSection-collections');
             }
         });
     }
@@ -1014,6 +1072,70 @@ postman.layout = {
         });
 
         this.sidebar.initialize();
+
+        $("#response").css("display", "none");
+        $("#loader").css("display", "");
+        $("#responsePrint").css("display", "none");
+        $("#sep").css("display", "none");
+
+        $("#data").css("display", "none");
+
+        $("#responseStatus").html("");
+        $("#respHeaders").css("display", "none");
+        $("#respData").css("display", "none");
+
+        $("#submitRequest").click(function () {
+            postman.currentRequest.send();
+        });
+
+        $('#requestMethodSelector').change(function () {
+            var val = $(this).val();
+            postman.currentRequest.setMethod(val);
+        });
+
+        $('#sidebarSelectors li a').click(function () {
+            var id = $(this).attr('data-id');
+            postman.layout.sidebar.select(id);
+        });
+
+        $('a[rel="tooltip"]').tooltip();
+
+        $('#formAddToCollection').submit(function () {
+            postman.collections.addRequestToCollection();
+            $('#formModalAddToCollection').modal('hide');
+            return false;
+        });
+
+        $('#formModalAddToCollection .btn-primary').click(function () {
+            postman.collections.addRequestToCollection();
+            $('#formModalAddToCollection').modal('hide');
+        });
+
+        $('#formNewCollection').submit(function () {
+            postman.collections.addCollection();
+            return false;
+        });
+
+        $('#formModalNewCollection .btn-primary').click(function () {
+            postman.collections.addCollection();
+            return false;
+        });
+
+        $(window).resize(function () {
+            postman.layout.setLayout();
+        });
+
+        $('#respData').on("click", ".cm-link", function () {
+            var link = $(this).html();
+            postman.currentRequest.loadRequestFromLink(link);
+        });
+
+        $('#modalAboutPostman').click(function () {
+            postman.layout.attachSocialButtons();
+            return false;
+        });
+
+        this.setLayout();
     },
 
     attachSocialButtons:function () {
@@ -1135,39 +1257,12 @@ postman.layout = {
     }
 };
 
-function init() {
-    $("#response").css("display", "none");
-    $("#loader").css("display", "");
-    $("#responsePrint").css("display", "none");
-    $("#sep").css("display", "none");
-
-    $("#data").css("display", "none");
-
-    $("#responseStatus").html("");
-    $("#respHeaders").css("display", "none");
-    $("#respData").css("display", "none");
-
-    $("#submitRequest").click(function () {
-        postman.currentRequest.send();
-    });
-
-    $('#requestMethodSelector').change(function () {
-        var val = $(this).val();
-        postman.currentRequest.setMethod(val);
-    });
-
-    $('#sidebarSelectors li a').click(function () {
-        var id = $(this).attr('data-id');
-        postman.layout.sidebar.select(id);
-    });
-}
-
-function setupDB() {
-    postman.indexedDB.onerror = function (event) {
+postman.indexedDB = {
+    onerror:function (event) {
         console.log(event);
-    };
+    },
 
-    postman.indexedDB.open = function () {
+    open:function () {
         var request = indexedDB.open("postman", "POSTman request history");
         request.onsuccess = function (e) {
             var v = "0.42";
@@ -1217,9 +1312,9 @@ function setupDB() {
         };
 
         request.onfailure = postman.indexedDB.onerror;
-    };
+    },
 
-    postman.indexedDB.addCollection = function (collection, callback) {
+    addCollection:function (collection, callback) {
         var db = postman.indexedDB.db;
         var trans = db.transaction(["collections"], IDBTransaction.READ_WRITE);
         var store = trans.objectStore("collections");
@@ -1237,9 +1332,9 @@ function setupDB() {
         request.onerror = function (e) {
             console.log(e.value);
         };
-    };
+    },
 
-    postman.indexedDB.addCollectionRequest = function (req, callback) {
+    addCollectionRequest:function (req, callback) {
         var db = postman.indexedDB.db;
         var trans = db.transaction(["collection_requests"], IDBTransaction.READ_WRITE);
         var store = trans.objectStore("collection_requests");
@@ -1262,9 +1357,9 @@ function setupDB() {
         collectionRequest.onerror = function (e) {
             console.log(e.value);
         };
-    };
+    },
 
-    postman.indexedDB.getCollections = function (callback) {
+    getCollections:function (callback) {
         var db = postman.indexedDB.db;
 
         if (db == null) {
@@ -1297,9 +1392,9 @@ function setupDB() {
         cursorRequest.onerror = function (e) {
             console.log(e);
         };
-    };
+    },
 
-    postman.indexedDB.getAllRequestsInCollection = function (id, callback) {
+    getAllRequestsInCollection:function (id, callback) {
         var db = postman.indexedDB.db;
         var trans = db.transaction(["collection_requests"], IDBTransaction.READ_WRITE);
 
@@ -1327,9 +1422,9 @@ function setupDB() {
             result['continue']();
         };
         cursorRequest.onerror = postman.indexedDB.onerror;
-    };
+    },
 
-    postman.indexedDB.addRequest = function (historyRequest, callback) {
+    addRequest:function (historyRequest, callback) {
         var db = postman.indexedDB.db;
         var trans = db.transaction(["requests"], IDBTransaction.READ_WRITE);
         var store = trans.objectStore("requests");
@@ -1342,9 +1437,9 @@ function setupDB() {
         request.onerror = function (e) {
             console.log(e.value);
         };
-    };
+    },
 
-    postman.indexedDB.getRequest = function (id, callback) {
+    getRequest:function (id, callback) {
         var db = postman.indexedDB.db;
         var trans = db.transaction(["requests"], IDBTransaction.READ_WRITE);
         var store = trans.objectStore("requests");
@@ -1361,9 +1456,9 @@ function setupDB() {
             callback(result);
         };
         cursorRequest.onerror = postman.indexedDB.onerror;
-    };
+    },
 
-    postman.indexedDB.getCollectionRequest = function (id, callback) {
+    getCollectionRequest:function (id, callback) {
         var db = postman.indexedDB.db;
         var trans = db.transaction(["collection_requests"], IDBTransaction.READ_WRITE);
         var store = trans.objectStore("collection_requests");
@@ -1381,9 +1476,10 @@ function setupDB() {
             return result;
         };
         cursorRequest.onerror = postman.indexedDB.onerror;
-    };
+    },
 
-    postman.indexedDB.getAllRequestItems = function (callback) {
+
+    getAllRequestItems:function (callback) {
         var db = postman.indexedDB.db;
         if (db == null) {
             return;
@@ -1414,9 +1510,9 @@ function setupDB() {
         };
 
         cursorRequest.onerror = postman.indexedDB.onerror;
-    };
+    },
 
-    postman.indexedDB.deleteRequest = function (id, callback) {
+    deleteRequest:function (id, callback) {
         try {
             var db = postman.indexedDB.db;
             var trans = db.transaction(["requests"], IDBTransaction.READ_WRITE);
@@ -1436,18 +1532,18 @@ function setupDB() {
             console.log(e);
         }
 
-    };
+    },
 
-    postman.indexedDB.deleteHistory = function (callback) {
+    deleteHistory:function (callback) {
         var db = postman.indexedDB.db;
         var clearTransaction = db.transaction(["requests"], IDBTransaction.READ_WRITE);
         var clearRequest = clearTransaction.objectStore(["requests"]).clear();
         clearRequest.onsuccess = function (event) {
             callback();
         };
-    };
+    },
 
-    postman.indexedDB.deleteCollectionRequest = function (id, callback) {
+    deleteCollectionRequest:function (id, callback) {
         var db = postman.indexedDB.db;
         var trans = db.transaction(["collection_requests"], IDBTransaction.READ_WRITE);
         var store = trans.objectStore(["collection_requests"]);
@@ -1461,10 +1557,10 @@ function setupDB() {
         request.onerror = function (e) {
             console.log(e);
         };
-    };
+    },
 
     //@todo Why is this unused?
-    postman.indexedDB.deleteAllCollectionRequests = function (id) {
+    deleteAllCollectionRequests:function (id) {
         var db = postman.indexedDB.db;
         var trans = db.transaction(["collection_requests"], IDBTransaction.READ_WRITE);
 
@@ -1487,9 +1583,9 @@ function setupDB() {
             result['continue']();
         };
         cursorRequest.onerror = postman.indexedDB.onerror;
-    };
+    },
 
-    postman.indexedDB.deleteCollection = function (id, callback) {
+    deleteCollection:function (id, callback) {
         var db = postman.indexedDB.db;
         var trans = db.transaction(["collections"], IDBTransaction.READ_WRITE);
         var store = trans.objectStore(["collections"]);
@@ -1503,13 +1599,9 @@ function setupDB() {
         request.onerror = function (e) {
             console.log(e);
         };
-    };
-}
+    }
+};
 
-
-function initDB() {
-    postman.indexedDB.open(); //Also displays the data previously saved
-}
 
 //Sets the param strings for header and url params
 function setParamsFromEditor(section) {
@@ -1818,12 +1910,6 @@ function addHeaderAutoComplete() {
     });
 }
 
-function initCollectionSelector() {
-    $('#collectionSelector').change(function (event) {
-        var val = $('#collectionSelector').val();
-    });
-}
-
 var escInputHandler = function (evt) {
     $(evt.target).blur();
 };
@@ -2071,103 +2157,9 @@ function processOAuth1RequestHelper() {
 }
 
 $(document).ready(function () {
-    setupDB();
-    initDB();
     postman.initialize();
-    init();
 
-    $('a[rel="tooltip"]').tooltip();
-
-    postman.urlCache.refreshAutoComplete();
     setupKeyboardShortcuts();
-    initCollectionSelector();
-    postman.layout.setLayout();
     setupRequestHelpers();
     showParamsEditor("headers");
-
-    $('#formAddToCollection').submit(function () {
-        postman.collections.addRequestToCollection();
-        $('#formModalAddToCollection').modal('hide');
-        return false;
-    });
-
-    $('#formModalAddToCollection .btn-primary').click(function () {
-        postman.collections.addRequestToCollection();
-        $('#formModalAddToCollection').modal('hide');
-    });
-
-    $('#formNewCollection').submit(function () {
-        postman.collections.addCollection();
-        return false;
-    });
-
-    $('#formModalNewCollection .btn-primary').click(function () {
-        postman.collections.addCollection();
-        return false;
-    });
-
-    $(window).resize(function () {
-        postman.layout.setLayout();
-    });
-
-    CodeMirror.defineMode("links", function (config, parserConfig) {
-        var linksOverlay = {
-            startState:function () {
-                return {
-                    link:"",
-                    pos:0
-                }
-            },
-
-            token:function (stream, state) {
-                if (stream.eatSpace()) {
-                    return null;
-                }
-
-                //@todo Needs to be improved
-                var matches;
-                if (matches = stream.match(/https?:\/\/[^'"]*(?=[<"'\n\t\s])/, false)) {
-                    //Eat all characters before http link
-                    var m = stream.match(/.*(?=https?)/, true);
-                    if (m) {
-                        if (m[0].length > 0) {
-                            return null;
-                        }
-                    }
-
-                    var currentPos = stream.current().search(matches[0]);
-
-                    while (currentPos < 0) {
-                        var ch = stream.next();
-                        if (ch === "\"" || ch === "'") {
-                            stream.backUp(1);
-                            break;
-                        }
-
-                        if (ch == null) {
-                            break;
-                        }
-
-                        currentPos = stream.current().search(matches[0]);
-                    }
-
-                    return "link";
-                }
-
-                stream.skipToEnd();
-            }
-        };
-
-        return CodeMirror.overlayParser(CodeMirror.getMode(config, parserConfig.backdrop || postman.editor.mode), linksOverlay);
-    });
-
-    $('#respData').on("click", ".cm-link", function () {
-        var link = $(this).html();
-        postman.currentRequest.loadRequestFromLink(link);
-    });
-
-    $('#modalAboutPostman').click(function () {
-        postman.layout.attachSocialButtons();
-        return false;
-    });
 });
