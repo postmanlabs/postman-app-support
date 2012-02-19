@@ -8,10 +8,19 @@
     border-radius: 0;
     outline: none !important;
     margin-right: 10px;
+    width: 200px;
 }
 
+.keyvalueeditor-value-file {
+    margin-right: 20px;
+}
 .keyvalueeditor-key:focus,
 .keyvalueeditor-value:focus {
     border-color: #999;
     outline: none !important;
+}
+
+.keyvalueeditor-valueTypeSelector {
+    width: 100px;
+    margin-right: 10px;
 }

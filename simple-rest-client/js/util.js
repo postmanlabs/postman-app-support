@@ -81,10 +81,10 @@ function getUrlVars(url, associative) {
             "key":hashes[i].slice(0, equalLocation),
             "value":hashes[i].slice(equalLocation + 1)
         };
-        (associative == true)?(varsAssoc[element.key] =element.value):(vars.push(element));
+        (associative)?(varsAssoc[element.key] =element.value):(vars.push(element));
     }
 
-    if (associative == true) {
+    if (associative) {
         return varsAssoc;
     } else {
         return vars;

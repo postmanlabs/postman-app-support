@@ -320,23 +320,24 @@ postman.currentRequest = {
             this.areListenersAdded = true;
             this.initializeHeaderEditor();
             this.initializeUrlEditor();
+            this.initializeBodyEditor();
             this.addListeners();
         }
     },
 
-    initializeHeaderEditor: function() {
+    initializeHeaderEditor:function () {
         var params = {
-            placeHolderKey : "Header",
-            placeHolderValue : "Value",
-            deleteButton : '<img class="deleteButton" src="img/delete.png">',
-            onDeleteRow: function() {
+            placeHolderKey:"Header",
+            placeHolderValue:"Value",
+            deleteButton:'<img class="deleteButton" src="img/delete.png">',
+            onDeleteRow:function () {
                 var hs = $('#headers-keyvaleditor').keyvalueeditor('getValues');
                 var newHeaders = [];
-                for(var i = 0; i < hs.length; i++) {
+                for (var i = 0; i < hs.length; i++) {
                     var header = {
-                        key: hs[i].key,
-                        value: hs[i].value,
-                        name: hs[i].key
+                        key:hs[i].key,
+                        value:hs[i].value,
+                        name:hs[i].key
                     };
 
                     newHeaders.push(header);
@@ -345,7 +346,7 @@ postman.currentRequest = {
                 postman.currentRequest.headers = newHeaders;
             },
 
-            onBlurElement: function() {
+            onBlurElement:function () {
                 $("#headers-keyvaleditor .keyvalueeditor-key").autocomplete({
                     source:chromeHeaders,
                     delay:50
@@ -353,11 +354,11 @@ postman.currentRequest = {
 
                 var hs = $('#headers-keyvaleditor').keyvalueeditor('getValues');
                 var newHeaders = [];
-                for(var i = 0; i < hs.length; i++) {
+                for (var i = 0; i < hs.length; i++) {
                     var header = {
-                        key: hs[i].key,
-                        value: hs[i].value,
-                        name: hs[i].key
+                        key:hs[i].key,
+                        value:hs[i].value,
+                        name:hs[i].key
                     };
 
                     newHeaders.push(header);
@@ -374,37 +375,35 @@ postman.currentRequest = {
         });
     },
 
-    initializeUrlEditor: function() {
+    initializeUrlEditor:function () {
         var editorId = "#url-keyvaleditor";
 
         var params = {
-            placeHolderKey : "Key",
-            placeHolderValue : "Value",
-            deleteButton : '<img class="deleteButton" src="img/delete.png">',
-            onDeleteRow: function() {
+            placeHolderKey:"Key",
+            placeHolderValue:"Value",
+            deleteButton:'<img class="deleteButton" src="img/delete.png">',
+            onDeleteRow:function () {
                 var params = $(editorId).keyvalueeditor('getValues');
                 var newParams = [];
-                for(var i = 0; i < params.length; i++) {
+                for (var i = 0; i < params.length; i++) {
                     var param = {
-                        key: params[i].key,
-                        value: params[i].value
+                        key:params[i].key,
+                        value:params[i].value
                     };
 
                     newParams.push(param);
                 }
 
-                console.log(newParams);
-
                 postman.currentRequest.setUrlParamString(newParams);
             },
 
-            onBlurElement: function() {
+            onBlurElement:function () {
                 var params = $(editorId).keyvalueeditor('getValues');
                 var newParams = [];
-                for(var i = 0; i < params.length; i++) {
+                for (var i = 0; i < params.length; i++) {
                     var param = {
-                        key: params[i].key,
-                        value: params[i].value
+                        key:params[i].key,
+                        value:params[i].value
                     };
 
                     newParams.push(param);
@@ -416,25 +415,78 @@ postman.currentRequest = {
 
         $(editorId).keyvalueeditor('init', params);
 
-        $('#url-keyvaleditor-actions-close').on("click", function() {
+        $('#url-keyvaleditor-actions-close').on("click", function () {
             postman.currentRequest.closeUrlEditor();
         });
 
-        $('#url-keyvaleditor-actions-open').on("click", function() {
+        $('#url-keyvaleditor-actions-open').on("click", function () {
             var newRows = getUrlVars($('#url').val(), false);
-            console.log(newRows);
             $(editorId).keyvalueeditor('reset', newRows);
             postman.currentRequest.openUrlEditor();
         });
     },
 
-    openUrlEditor: function() {
+    openUrlEditor:function () {
         var containerId = "#url-keyvaleditor-container";
         $(containerId).css("display", "block");
     },
 
-    closeUrlEditor: function() {
+    closeUrlEditor:function () {
         var containerId = "#url-keyvaleditor-container";
+        $(containerId).css("display", "none");
+    },
+
+    initializeBodyEditor:function () {
+        var editorId = "#body-keyvaleditor";
+
+        var params = {
+            placeHolderKey:"Key",
+            placeHolderValue:"Value",
+            valueTypes:["text", "file"],
+            deleteButton:'<img class="deleteButton" src="img/delete.png">',
+            onDeleteRow:function () {
+                var params = $(editorId).keyvalueeditor('getValues');
+                var newParams = [];
+                for (var i = 0; i < params.length; i++) {
+                    var param = {
+                        key:params[i].key,
+                        value:params[i].value
+                    };
+
+                    newParams.push(param);
+                }
+
+                console.log(newParams);
+
+                postman.currentRequest.setBodyParamString(newParams);
+            },
+
+            onBlurElement:function () {
+                var params = $(editorId).keyvalueeditor('getValues');
+                var newParams = [];
+                for (var i = 0; i < params.length; i++) {
+                    var param = {
+                        key:params[i].key,
+                        value:params[i].value
+                    };
+
+                    newParams.push(param);
+                }
+
+                postman.currentRequest.setBodyParamString(newParams);
+            }
+        };
+
+        $(editorId).keyvalueeditor('init', params);
+    },
+
+    openBodyEditor:function () {
+        var containerId = "#body-keyvaleditor-container";
+        $(containerId).css("display", "block");
+    },
+
+    closeBodyEditor:function () {
+        var containerId = "#body-keyvaleditor-container";
         $(containerId).css("display", "none");
     },
 
@@ -451,11 +503,11 @@ postman.currentRequest = {
         $('#dataModeSelector li[data-mode="' + mode + '"]').addClass("active");
 
         if (mode === "params") {
-            showParamsEditor('body');
+            postman.currentRequest.openBodyEditor();
             $('#bodyDataContainer').css("display", "none");
         }
         else if (mode === "raw") {
-            closeParamsEditor('body');
+            postman.currentRequest.closeBodyEditor();
             $('#bodyDataContainer').css("display", "block");
         }
     },
@@ -690,9 +742,9 @@ postman.currentRequest = {
 
         if (this.isMethodWithBody(this.method)) {
             $("#data").css("display", "block");
-            showParamsEditor('body');
+            postman.currentRequest.openBodyEditor();
         } else {
-            closeParamsEditor('body');
+            postman.currentRequest.closeBodyEditor();
             $("#data").css("display", "none");
         }
     },
@@ -765,15 +817,14 @@ postman.currentRequest = {
         this.method = request.method;
         this.headers = this.unpackHeaders(request.headers);
 
-        //Initialize bodyParams
-        //Initialize urlParams
+        $('#url').val(this.url);
 
-        $('#url').val(request.url);
+        var newUrlParams = getUrlVars(this.url, false);
 
         //@todoSet params using keyvalueeditor function
+        $('#url-keyvaleditor').keyvalueeditor('reset', newUrlParams);
         $('#headers-keyvaleditor').keyvalueeditor('reset', this.headers);
 
-        closeParamsEditor('url');
         this.response.clear();
 
         $('#requestMethodSelector').val(this.method);
@@ -784,14 +835,17 @@ postman.currentRequest = {
             $('#data').css("display", "block");
             this.body = request.data;
 
-            //@todo Process bodyParams
             $('#body').val(request.data);
+
+            var newBodyParams = getUrlVars(this.body, false);
+            $('#body-keyvaleditor').keyvalueeditor('reset', newBodyParams);
+
             this.changeDataMode(this.dataMode);
         }
         else {
             $('#body').val("");
             $('#data').css("display", "none");
-            closeParamsEditor("body");
+            postman.currentRequest.closeBodyEditor();
         }
 
         $('body').scrollTop(0);
@@ -853,8 +907,10 @@ postman.currentRequest = {
         url = ensureProperUrl(url);
 
         xhr.open(method, url, true);
+        var i = 0;
 
-        for (var i = 0; i < headers.length; i++) {
+
+        for (i = 0; i < headers.length; i++) {
             var header = headers[i];
             if (!_.isEmpty(header.value)) {
                 xhr.setRequestHeader(header.name, header.value);
@@ -868,26 +924,25 @@ postman.currentRequest = {
             else if (this.dataMode === 'params') {
                 finalBodyData = new FormData();
 
-                //Iterate through all key/values for files or params
-                //Not sure if this has to be handled at run time
-                $('input[data-section=body]').each(function () {
-                    var valueEl = $(this).next();
-                    var type = valueEl.attr('type');
-                    var val = $(this).val();
+                var rows = $('#body-keyvaleditor').keyvalueeditor('getElements');
 
-                    if (val !== '') {
-                        if (type === 'file') {
-                            var domEl = $(this).next().get(0);
-                            var len = domEl.files.length;
-                            for (var i = 0; i < len; i++) {
-                                finalBodyData.append(val, domEl.files[i]);
-                            }
-                        }
-                        else {
-                            finalBodyData.append(val, valueEl.val());
+                for (var j = 0; j < rows.length; j++) {
+                    var row = rows[j];
+                    var key = row.keyElement.val();
+                    var valueType = row.valueType;
+                    var valueElement = row.valueElement;
+
+                    if (valueType === "file") {
+                        var domEl = valueElement.get(0);
+                        var len = domEl.files.length;
+                        for (i = 0; i < len; i++) {
+                            finalBodyData.append(key, domEl.files[i]);
                         }
                     }
-                });
+                    else {
+                        finalBodyData.append(key, valueElement.val());
+                    }
+                }
             }
             xhr.send(finalBodyData);
         } else {
@@ -1043,7 +1098,7 @@ postman.helpers = {
                 postman.currentRequest.openUrlEditor();
             } else {
                 postman.currentRequest.setBodyParamString(params);
-                showParamsEditor("body");
+                postman.currentRequest.openBodyEditor();
             }
         }
     }
@@ -1953,260 +2008,6 @@ postman.indexedDB = {
         };
     }
 };
-
-
-//Sets the param strings for header and url params
-function setParamsFromEditor(section) {
-    var paramString = "";
-    var h = [];
-
-    //Goes through each item in the param editor and generates a param string
-
-    //Will be replaced by a key value processor
-    $('input[data-section="' + section + '"]').each(function () {
-        var val = $(this).next().val();
-        if (val !== "" && $(this).val() !== "") {
-            if (section !== 'headers') {
-                paramString += $(this).val() + "=" + val + "&";
-            }
-            else {
-                paramString += $(this).val() + ": " + val + "\n";
-            }
-
-            if (section == "headers") {
-                var header = {
-                    name:$(this).val(),
-                    value:val
-                };
-
-                h.push(header);
-            }
-        }
-    });
-
-
-    paramString = paramString.substr(0, paramString.length - 1);
-
-    if (section === 'url') {
-        var url = $('#url').val();
-        var baseUrl = url.split("?")[0];
-        $('#' + section).val(baseUrl + "?" + paramString);
-        postman.currentRequest.url = $('#url').val();
-    }
-    else if (section === 'body') {
-        $('#' + section).val(paramString);
-        postman.currentRequest.body = paramString;
-    }
-    else if (section === 'headers') {
-        postman.currentRequest.headers = h;
-    }
-}
-
-function showParamsEditor(section) {
-    var data = $('#' + section).val();
-
-    var params;
-    var placeHolderKey = "Key";
-    var placeHolderValue = "Value";
-
-    if (section === 'headers') {
-        params = postman.currentRequest.headers;
-        placeHolderKey = "Header";
-        placeHolderValue = "Value";
-    }
-    else if (section === 'body') {
-        //Should be obtained from currentRequest
-        params = getUrlVars(data);
-    }
-    else {
-        params = getUrlVars(data);
-    }
-
-    var editorHtml = "";
-    var i = 0;
-    var paramsLength = params.length;
-    var rowData = {};
-    var rows = [];
-
-    $('#' + section + '-ParamsFields').html("");
-    for (var index = 0; i < paramsLength; index++) {
-        var element = params[index];
-        var key = element.key;
-        var value = element.value;
-
-        if (key != "") {
-            rowData = {
-                section:section,
-                placeHolderKey:placeHolderKey,
-                placeHolderValue:placeHolderValue,
-                key:key,
-                value:value,
-                inputType:"text",
-                canBeClosed:true
-            };
-            rows.push(rowData);
-        }
-
-        i++;
-    }
-
-    //For the empty line
-    rowData = {
-        section:section,
-        placeHolderKey:placeHolderKey,
-        placeHolderValue:placeHolderValue,
-        key:"",
-        value:"",
-        inputType:"text",
-        canBeClosed:false
-    };
-
-    rows.push(rowData);
-
-    $('#itemParamsEditor').tmpl(rows).appendTo('#' + section + '-ParamsFields');
-    $('#' + section + '-ParamsEditor').fadeIn();
-    addEditorListeners(section);
-}
-
-function closeParamsEditor(section) {
-    //Replace with on events
-    $('#' + section + '-ParamsFields div:last input').unbind('focus', sectionParamsLastInputFocusHandler);
-    $('#' + section + '-ParamsFields input').unbind('blur', sectionParamsInputBlurHandler);
-    $('#' + section + '-ParamsEditor input.key').autocomplete("destroy");
-    $('#' + section + '-ParamsEditor').css("display", "none");
-}
-
-function addParamInEditor(section, data) {
-    var placeHolderKey = "Key";
-    var placeHolderValue = "Value";
-
-    if (section === 'headers') {
-        placeHolderKey = "Header";
-        placeHolderValue = "Value";
-    }
-
-
-    var key = "";
-    var value = "";
-
-    if (data) {
-        key = data.key;
-        value = data.value;
-    }
-
-    var rowData = {
-        section:section,
-        placeHolderKey:placeHolderKey,
-        placeHolderValue:placeHolderValue,
-        key:key,
-        value:value,
-        canBeClosed:false,
-        inputType:"text"
-    };
-
-    $('#itemParamsEditor').tmpl([rowData]).appendTo('#' + section + '-ParamsFields');
-    addEditorListeners(section);
-}
-
-var sectionParamsLastInputFocusHandler = function () {
-    //Select parent element
-    var fieldsParent = $(this).parents(".editorFields");
-    var id = fieldsParent.attr("id");
-    var section = id.split("-")[0];
-
-    $('#' + section + '-ParamsFields div:last input').unbind('focus', sectionParamsLastInputFocusHandler);
-
-    var parent = $(this).parent();
-
-    //Add a delete link
-    var deleteHtml = "<a href=\"javascript:void(0);\" class=\"deleteParam\">";
-    deleteHtml += "<img class=\"deleteButton\" src=\"img/delete.png\"/>";
-    deleteHtml += "</a>";
-    parent.append(deleteHtml);
-
-    addParamInEditor(section);
-    return true;
-};
-
-var sectionParamsInputBlurHandler = function () {
-    var fieldsParent = $(this).parents(".editorFields");
-    var id = fieldsParent.attr("id");
-    var section = id.split("-")[0];
-    setParamsFromEditor(section);
-};
-
-var sectionParamsSelectChangeHandler = function () {
-    //var paramType = $('#' + section + '-ParamsFields div select').val();
-    var paramType = $(this).val();
-
-    var placeHolderKey = "Key";
-    var placeHolderValue = "Value";
-
-    var key = "";
-    var value = "";
-    var send = "";
-
-    var fieldsParent = $(this).parents(".editorFields");
-    var id = fieldsParent.attr("id");
-    var section = id.split("-")[0];
-
-    if (paramType) {
-        var rowData = {
-            section:section,
-            placeHolderKey:placeHolderKey,
-            placeHolderValue:placeHolderValue,
-            key:key,
-            value:value,
-            inputType:"text",
-            canBeClosed:false
-        };
-
-        if ($(this).siblings().length > 2) {
-            rowData.canBeClosed = true;
-        }
-
-        if (paramType === "text") {
-            rowData.selectedText = "selected";
-            rowData.selectedFile = "";
-        }
-        else {
-            rowData.selectedText = "";
-            rowData.selectedFile = "selected";
-        }
-
-        rowData.inputType = paramType;
-
-        $('#itemParamsEditor').tmpl([rowData]).appendTo($(this).parent().empty());
-        addEditorListeners(section);
-    }
-};
-
-var deleteParamHandler = function () {
-    var fieldsParent = $(this).parents(".editorFields");
-    var id = fieldsParent.attr("id");
-    if (id) {
-        var section = id.split("-")[0];
-        $(this).parent().remove();
-        setParamsFromEditor(section);
-    }
-};
-
-function addEditorListeners(section) {
-    //Replace with on events
-    $('#' + section + '-ParamsFields div:last input').bind("focus", sectionParamsLastInputFocusHandler);
-    $('#' + section + '-ParamsFields div input').bind("blur", sectionParamsInputBlurHandler);
-    $('#' + section + '-ParamsFields div select').bind("change", sectionParamsSelectChangeHandler);
-    $('.deleteParam').bind("click", deleteParamHandler);
-
-    if (section === 'headers') {
-        postman.layout.addHeaderAutoComplete();
-    }
-
-    $('#' + section + '-ParamsFields div input').unbind('keydown', 'esc', postman.keymap.escInputHandler);
-    $('#' + section + '-ParamsFields div select').unbind('keydown', 'esc', postman.keymap.escInputHandler);
-    $('#' + section + '-ParamsFields div input').bind('keydown', 'esc', postman.keymap.escInputHandler);
-    $('#' + section + '-ParamsFields div select').bind('keydown', 'esc', postman.keymap.escInputHandler);
-}
 
 $(document).ready(function () {
     postman.initialize();
