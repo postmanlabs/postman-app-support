@@ -518,9 +518,6 @@ postman.currentRequest = {
     },
 
     response:{
-        startTime:0,
-        endTime:0,
-        totalTime:0,
         status:"",
         time:0,
         headers:[],
@@ -591,7 +588,7 @@ postman.currentRequest = {
                 };
 
                 this.text = response.responseText;
-                this.endTime = new Date().getTime();
+                postman.currentRequest.endTime = new Date().getTime();
 
                 var diff = postman.currentRequest.getTotalTime();
 
@@ -726,8 +723,8 @@ postman.currentRequest = {
 
     startNew:function () {
         this.refreshLayout();
-        console.log("Clearing the sample editor");
-        $('#headers-keyvaleditor').keyvalueeditor('clear');
+        $('#headers-keyvaleditor').keyvalueeditor('reset');
+        $('#body-keyvaleditor').keyvalueeditor('reset');
         $('#url').focus();
         this.response.clear();
     },
@@ -750,9 +747,10 @@ postman.currentRequest = {
     },
 
     loadRequestFromLink:function (link) {
-        this.init();
+        this.startNew();
         this.url = link;
         this.method = "get";
+
         this.refreshLayout();
     },
 
