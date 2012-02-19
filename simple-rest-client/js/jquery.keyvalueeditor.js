@@ -15,14 +15,12 @@
 
                 //Not already initialized
                 if(!data) {
-                    methods.settings.editor = $this;
-
                     data = {
                         settings: methods.settings,
                         editor: $this
                     };
 
-                    var h = methods.getLastRow();
+                    var h = methods.getLastRow(data);
                     $this.append(h);
 
                     $this.on("focus.keyvalueeditor", '.keyvalueeditor-last', data, methods.focusEventHandler);
@@ -34,9 +32,9 @@
             });
         },
 
-        getLastRow: function() {
-            var pKey = methods.settings.placeHolderKey;
-            var pValue = methods.settings.placeHolderValue;
+        getLastRow: function(state) {
+            var pKey = state.settings.placeHolderKey;
+            var pValue = state.settings.placeHolderValue;
 
             var key = "";
             var value = "";
@@ -53,9 +51,9 @@
             return h;
         },
 
-        getNewRow: function(key, value) {
-            var pKey = methods.settings.placeHolderKey;
-            var pValue = methods.settings.placeHolderValue;
+        getNewRow: function(key, value, state) {
+            var pKey = state.settings.placeHolderKey;
+            var pValue = state.settings.placeHolderValue;
 
             key = key ? key : "";
             value = value ? value : "";
@@ -70,13 +68,13 @@
                 + '" name="keyvalueeditor-' + value
                 + '" value="' + value
                 + '"/>';
-            h += methods.getDeleteLink();
+            h += methods.getDeleteLink(state);
             h += '</div>';
             return h;
         },
 
-        getDeleteLink: function() {
-            return '<a href="javascript:void(0);" tabindex="-1" class="keyvalueeditor-delete">' + methods.settings.deleteButton + '</a>';
+        getDeleteLink: function(state) {
+            return '<a href="javascript:void(0);" tabindex="-1" class="keyvalueeditor-delete">' + state.settings.deleteButton + '</a>';
         },
 
 
@@ -90,8 +88,8 @@
             var params = {key: "", value: ""};
             var editor = event.data.editor;
             $(this).removeClass('keyvalueeditor-last');
-            var row = methods.getLastRow();
-            $(this).find('.keyvalueeditor-value').after(methods.getDeleteLink());
+            var row = methods.getLastRow(event.data);
+            $(this).find('.keyvalueeditor-value').after(methods.getDeleteLink(event.data));
             $(this).after(row);
         },
 
@@ -100,16 +98,16 @@
         },
 
         //For external use
-        addParam: function(param) {
+        addParam: function(param, state) {
             //Add delete link to the last element
-            $(methods.settings.editor).find('.keyvalueeditor-last').before(methods.getNewRow(param.key, param.value));
+            $(state.editor).find('.keyvalueeditor-last').before(methods.getNewRow(param.key, param.value, state));
         },
 
-        addParams: function(params) {
+        addParams: function(params, state) {
             var count = params.length;
             for(var i = 0; i < count; i++) {
                 var param = params[i];
-                methods.addParam(param);
+                methods.addParam(param, state);
             }
         },
 
@@ -132,19 +130,20 @@
             return pairs;
         },
 
-        clear: function() {
-            $(methods.settings.editor).find('.keyvalueeditor-row').each(function() {
+        clear: function(state) {
+            $(state.editor).find('.keyvalueeditor-row').each(function() {
                 $(this).remove();
             });
 
-            var h = methods.getLastRow();
-            methods.settings.editor.append(h);
+            var h = methods.getLastRow(state);
+            $(state.editor).append(h);
         },
 
         reset: function(params) {
-            methods.clear();
+            var state = $(this).data('keyvalueeditor');
+            methods.clear(state);
             if(params) {
-                methods.addParams(params);
+                methods.addParams(params, state);
             }
         },
 

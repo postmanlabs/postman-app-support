@@ -233,32 +233,23 @@
     </div>
     <div class="span2">
         <span class="buttonLayout">
-            <button href="javascript:void(0);" class="btn btn-small"
-                    onclick="showParamsEditor('url')">Edit params
+            <button href="javascript:void(0);" class="btn btn-small" id="url-keyvaleditor-actions-open">Edit params
             </button>
         </span>
     </div>
 </div>
 
-<div id="url-ParamsEditor" class="paramsEditor">
-    <div id="url-ParamsFields" class="editorFields"></div>
-    <div id="url-ParamsEditorActions">
-        <input type="button" id="cancelUrlParamsButton"
+<div id="url-keyvaleditor-container" class="row" style="margin-left: 0px; display: none;">
+    <div id="url-keyvaleditor"></div>
+    <div id="url-keyvaleditor-actions">
+        <input type="button" id="url-keyvaleditor-actions-close"
                class="btn btn-small"
-               name="closeUrlParams"
-               value="Close"
-               placeholder="URL..."
-               onclick="closeParamsEditor('url')"/>
+               value="Close"/>
     </div>
 </div>
 
 <div class="row" style="margin-left: 0px;">
-    <div id="sample-editor"></div>
-</div>
-<div class="row">
-    <div id="headers-ParamsEditor" class="span10 paramsEditor">
-        <div id="headers-ParamsFields" class="editorFields"></div>
-    </div>
+    <div id="headers-keyvaleditor"></div>
 </div>
 
 <div id="data">
