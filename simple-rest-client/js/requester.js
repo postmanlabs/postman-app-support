@@ -321,6 +321,53 @@ postman.currentRequest = {
             this.addListeners();
         }
 
+        var params = {
+            placeHolderKey : "Header",
+            placeHolderValue : "Value",
+            deleteButton : '<img class="deleteButton" src="img/delete.png">',
+            onDeleteRow: function() {
+                var hs = $('#sample-editor').keyvalueeditor('getValues');
+                var newHeaders = [];
+                for(var i = 0; i < hs.length; i++) {
+                    var header = {
+                        key: hs[i].key,
+                        value: hs[i].value,
+                        name: hs[i].key
+                    };
+
+                    newHeaders.push(header);
+                }
+
+                postman.currentRequest.headers = newHeaders;
+            },
+
+            onBlurElement: function() {
+                $("#sample-editor .keyvalueeditor-key").autocomplete({
+                    source:chromeHeaders,
+                    delay:50
+                });
+
+                var hs = $('#sample-editor').keyvalueeditor('getValues');
+                var newHeaders = [];
+                for(var i = 0; i < hs.length; i++) {
+                    var header = {
+                        key: hs[i].key,
+                        value: hs[i].value,
+                        name: hs[i].key
+                    };
+
+                    newHeaders.push(header);
+                }
+
+                postman.currentRequest.headers = newHeaders;
+            }
+        };
+
+        $('#sample-editor').keyvalueeditor('init', params);
+        $("#sample-editor .keyvalueeditor-key").autocomplete({
+            source:chromeHeaders,
+            delay:50
+        });
     },
 
     addListeners:function () {
@@ -558,9 +605,9 @@ postman.currentRequest = {
     },
 
     startNew:function () {
-        this.init();
         this.refreshLayout();
-        showParamsEditor("headers");
+        console.log("Clearing the sample editor");
+        $('#sample-editor').keyvalueeditor('clear');
         $('#url').focus();
         this.response.clear();
     },
@@ -655,7 +702,9 @@ postman.currentRequest = {
 
         $('#url').val(request.url);
 
-        showParamsEditor('headers');
+        //@todoSet params using keyvalueeditor function
+        $('#sample-editor').keyvalueeditor('reset', this.headers);
+
         closeParamsEditor('url');
         this.response.clear();
 
@@ -865,7 +914,7 @@ postman.helpers = {
             }
 
             postman.currentRequest.headers = headers;
-            showParamsEditor("headers");
+            $('#sample-editor').keyvalueeditor('reset', headers);
         }
     },
 
@@ -2101,5 +2150,4 @@ function addEditorListeners(section) {
 
 $(document).ready(function () {
     postman.initialize();
-    showParamsEditor("headers");
 });
