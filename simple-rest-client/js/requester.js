@@ -383,34 +383,34 @@ postman.currentRequest = {
             deleteButton : '<img class="deleteButton" src="img/delete.png">',
             onDeleteRow: function() {
                 var params = $(editorId).keyvalueeditor('getValues');
-                var newParms = [];
+                var newParams = [];
                 for(var i = 0; i < params.length; i++) {
-                    var header = {
+                    var param = {
                         key: params[i].key,
                         value: params[i].value
                     };
 
-                    newParms.push(header);
+                    newParams.push(param);
                 }
 
-                //Modify the URL here
-                //postman.currentRequest.headers = newParms;
+                console.log(newParams);
+
+                postman.currentRequest.setUrlParamString(newParams);
             },
 
             onBlurElement: function() {
                 var params = $(editorId).keyvalueeditor('getValues');
-                var newParms = [];
+                var newParams = [];
                 for(var i = 0; i < params.length; i++) {
-                    var header = {
+                    var param = {
                         key: params[i].key,
                         value: params[i].value
                     };
 
-                    newParms.push(header);
+                    newParams.push(param);
                 }
 
-                //Modify the URL here
-                //postman.currentRequest.headers = newParms;
+                postman.currentRequest.setUrlParamString(newParams);
             }
         };
 
@@ -421,6 +421,9 @@ postman.currentRequest = {
         });
 
         $('#url-keyvaleditor-actions-open').on("click", function() {
+            var newRows = getUrlVars($('#url').val(), false);
+            console.log(newRows);
+            $(editorId).keyvalueeditor('reset', newRows);
             postman.currentRequest.openUrlEditor();
         });
     },
@@ -799,8 +802,8 @@ postman.currentRequest = {
         var paramArr = [];
         for (var i = 0; i < paramsLength; i++) {
             var p = params[i];
-            if (p.name && p.name !== "") {
-                paramArr.push(p.name + "=" + p.value);
+            if (p.key && p.key !== "") {
+                paramArr.push(p.key + "=" + p.value);
             }
         }
         $('#body').val(paramArr.join('&'));
@@ -811,19 +814,11 @@ postman.currentRequest = {
         var url = this.url;
 
         var paramArr = [];
-        var urlParams = getUrlVars(url);
-        var p;
-        var i;
-        for (i = 0; i < urlParams.length; i++) {
-            p = urlParams[i];
+
+        for (var i = 0; i < params.length; i++) {
+            var p = params[i];
             if (p.key && p.key !== "") {
                 paramArr.push(p.key + "=" + p.value);
-            }
-        }
-        for (i = 0; i < params.length; i++) {
-            p = params[i];
-            if (p.name && p.name !== "") {
-                paramArr.push(p.name + "=" + p.value);
             }
         }
 

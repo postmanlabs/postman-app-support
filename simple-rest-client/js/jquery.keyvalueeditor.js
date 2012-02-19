@@ -81,7 +81,9 @@
         deleteRowHandler: function(event) {
             var target = event.currentTarget;
             $(target).parent().remove();
-            methods.settings.onDeleteRow();
+            var data = event.data;
+            console.log("Delete row event");
+            data.settings.onDeleteRow();
         },
 
         focusEventHandler: function(event) {
@@ -94,7 +96,9 @@
         },
 
         blurEventHandler: function(event) {
-            methods.settings.onBlurElement();
+            var data = event.data;
+            console.log("Blur event called");
+            data.settings.onBlurElement();
         },
 
         //For external use
