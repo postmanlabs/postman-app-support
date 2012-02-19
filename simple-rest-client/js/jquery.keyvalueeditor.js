@@ -149,7 +149,12 @@
             $(state.editor).find('.keyvalueeditor-last').before(methods.getNewRow(param.key, param.value, state));
         },
 
+        //Check for duplicates here
         addParams: function(params, state) {
+            if(!state) {
+                state = $(this).data('keyvalueeditor');
+            }
+
             var count = params.length;
             for(var i = 0; i < count; i++) {
                 var param = params[i];

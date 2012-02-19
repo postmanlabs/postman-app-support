@@ -1056,12 +1056,26 @@ postman.helpers = {
                     message.parameters.push([$(this).attr('key'), $(this).val()]);
                 }
             });
-            //all the extra GET parameters
-            $('#body-ParamsFields input.key, #url-ParamsFields input.key').each(function () {
-                if ($(this).val() != '') {
-                    message.parameters.push([$(this).val(), $(this).next().val()]);
+
+            //Get parameters
+            var urlParams = $('#url-keyvaleditor').keyvalueeditor('getValues');
+            var bodyParams = $('#body-keyvaleditor').keyvalueeditor('getValues');
+
+            var params = urlParams.concat(bodyParams);
+
+            for(var i = 0; i < params.length; i++) {
+                var param = params[i];
+                if(param.key) {
+                    message.parameters.push([param.key, param.value]);
                 }
-            });
+            }
+
+//            //all the extra GET parameters
+//            $('#body-ParamsFields input.key, #url-ParamsFields input.key').each(function () {
+//                if ($(this).val() != '') {
+//                    message.parameters.push([$(this).val(), $(this).next().val()]);
+//                }
+//            });
 
             var accessor = {};
             if ($('input[key="oauth_consumer_secret"]').val() != '') {
@@ -1083,18 +1097,20 @@ postman.helpers = {
                 return;
             }
 
-            params.push({name:signatureKey, value:signature});
+            params.push({key:signatureKey, value:signature});
 
             $('input.signatureParam').each(function () {
                 if ($(this).val() != '') {
-                    params.push({name:$(this).attr('key'), value:$(this).val()});
+                    params.push({key:$(this).attr('key'), value:$(this).val()});
                 }
             });
 
             if (postman.currentRequest.method === "get") {
+                $('#url-keyvaleditor').keyvalueeditor('addParams', params);
                 postman.currentRequest.setUrlParamString(params);
                 postman.currentRequest.openUrlEditor();
             } else {
+                $('#body-keyvaleditor').keyvalueeditor('addParams', params);
                 postman.currentRequest.setBodyParamString(params);
                 postman.currentRequest.openBodyEditor();
             }
