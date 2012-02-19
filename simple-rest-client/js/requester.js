@@ -373,6 +373,24 @@ postman.currentRequest = {
             source:chromeHeaders,
             delay:50
         });
+
+        $('#headers-keyvaleditor-actions-close').on("click", function () {
+            postman.currentRequest.closeHeaderEditor();
+        });
+
+        $('#headers-keyvaleditor-actions-open').on("click", function () {
+            postman.currentRequest.openHeaderEditor();
+        });
+    },
+
+    openHeaderEditor:function () {
+        var containerId = "#headers-keyvaleditor-container";
+        $(containerId).css("display", "block");
+    },
+
+    closeHeaderEditor:function () {
+        var containerId = "#headers-keyvaleditor-container";
+        $(containerId).css("display", "none");
     },
 
     initializeUrlEditor:function () {
@@ -722,9 +740,20 @@ postman.currentRequest = {
     },
 
     startNew:function () {
+        this.url = "";
+        this.urlParams = {};
+        this.body = "";
+        this.bodyParams = {};
+
+        this.headers = [];
+
+        this.method = "get";
+        this.dataMode = "params";
+
         this.refreshLayout();
         $('#headers-keyvaleditor').keyvalueeditor('reset');
         $('#body-keyvaleditor').keyvalueeditor('reset');
+        $('#url').val();
         $('#url').focus();
         this.response.clear();
     },

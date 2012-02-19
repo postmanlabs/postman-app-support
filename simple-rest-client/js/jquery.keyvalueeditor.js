@@ -128,11 +128,11 @@
             var editor = event.data.editor;
             $(this).removeClass('keyvalueeditor-last');
             var row = methods.getLastRow(event.data);
-            if($(this).find('select')) {
-                $(this).find('select').after(methods.getDeleteLink(event.data));
+            if(event.data.settings.valueTypes.length > 1) {
+                $(this).find('select:last').after(methods.getDeleteLink(event.data));
             }
             else {
-                $(this).find('input').after(methods.getDeleteLink(event.data));
+                $(this).find('input:last').after(methods.getDeleteLink(event.data));
             }
 
             $(this).after(row);

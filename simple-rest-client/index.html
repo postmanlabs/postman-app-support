@@ -235,6 +235,8 @@
         <span class="buttonLayout">
             <button href="javascript:void(0);" class="btn btn-small" id="url-keyvaleditor-actions-open">Edit params
             </button>
+            <button href="javascript:void(0);" class="btn btn-small" id="headers-keyvaleditor-actions-open">Edit headers
+            </button>
         </span>
     </div>
 </div>
@@ -248,8 +250,13 @@
     </div>
 </div>
 
-<div class="row" style="margin-left: 0px;">
+<div id="headers-keyvaleditor-container" class="row" style="margin-left: 0px; display: none;">
     <div id="headers-keyvaleditor"></div>
+    <div id="headers-keyvaleditor-actions">
+        <input type="button" id="headers-keyvaleditor-actions-close"
+               class="btn btn-small"
+               value="Close"/>
+    </div>
 </div>
 
 <div id="data">
