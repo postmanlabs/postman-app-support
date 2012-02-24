@@ -5,7 +5,7 @@ html, body {
     height: 100%;
     width: 100%;
     padding: 0;
-    margin:  0;
+    margin: 0;
 }
 
 /*Bootstrap overrides*/
@@ -133,7 +133,6 @@ fieldset {
     padding: 5px;
 }
 
-
 .inputTextLight {
     border-style: none;
     border-bottom: 1px solid #CCC;
@@ -258,6 +257,7 @@ fieldset {
     list-style: none;
     margin-right: 3px;
 }
+
 #mainNavigation a {
     color: white;
     padding: 5px;
@@ -541,6 +541,7 @@ li .right {
     padding-top: 0;
     margin-top: 0;
 }
+
 #requestUrl {
     margin-top: 10px;
 }
@@ -783,6 +784,7 @@ li .right {
     padding-left: 20px;
     border-bottom: solid thin #ccc;
 }
+
 #url-ParamsEditor .key,
 #headers-ParamsEditor .key {
     width: 282px;
@@ -846,7 +848,6 @@ li .right {
     margin-left: 280px;
 }
 
-
 #collectionsOptions {
     display: none;
 }
@@ -882,6 +883,7 @@ li .right {
     margin: 0;
     padding: 0;
 }
+
 .helper-tabs li {
     float: left;
     font-size: 11px;
@@ -977,3 +979,32 @@ li .right {
     text-decoration: none;
 }
 
+#environment-selector-wrapper {
+    position: absolute;
+    margin-top: 8px;
+    margin-left: 300px;
+    font-size: 11px;
+}
+
+.environment-selector-label {
+    font-weight: bold;
+    color: #AAA;
+}
+
+.environment-selector-active {
+    color: #666;
+    font-weight: bold;
+}
+
+#environment-editor {
+    display: none;
+}
+
+#environment-editor-name {
+
+}
+
+
+#modalEnvironments .modal-footer {
+    display: none;
+}

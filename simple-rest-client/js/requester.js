@@ -74,6 +74,7 @@ postman.initialize = function () {
     this.urlCache.refreshAutoComplete();
     this.helpers.init();
     this.keymap.init();
+    this.envManager.init();
 
     postman.indexedDB.open();
 };
@@ -988,8 +989,8 @@ postman.currentRequest = {
 
 postman.helpers = {
     init:function () {
-        $("#requestTypes ul li").on("click", function () {
-            $("#requestTypes ul li").removeClass("active");
+        $("#requestTypes .helper-tabs li").on("click", function () {
+            $("#requestTypes .helper-tabs li").removeClass("active");
             $(this).addClass("active");
             var type = $(this).attr('data-id');
             postman.helpers.showRequestHelper(type);
@@ -1057,6 +1058,7 @@ postman.helpers = {
 
             postman.currentRequest.headers = headers;
             $('#headers-keyvaleditor').keyvalueeditor('reset', headers);
+            postman.currentRequest.openHeaderEditor();
         }
     },
 
@@ -1092,9 +1094,9 @@ postman.helpers = {
 
             var params = urlParams.concat(bodyParams);
 
-            for(var i = 0; i < params.length; i++) {
+            for (var i = 0; i < params.length; i++) {
                 var param = params[i];
-                if(param.key) {
+                if (param.key) {
                     message.parameters.push([param.key, param.value]);
                 }
             }
@@ -2049,6 +2051,59 @@ postman.indexedDB = {
         request.onerror = function (e) {
             console.log(e);
         };
+    }
+};
+
+postman.envManager = {
+    environments:[
+        {
+            id:1,
+            name:"Facebook-Production"
+        },
+        {
+            id:2,
+            name:"Facebook-Staging"
+        }
+    ],
+
+    init:function () {
+        $('#itemEnvironmentList').tmpl(this.environments).appendTo('#environments-list');
+
+        $('#environments-list').on("click", ".environment-action-delete", function () {
+            var id = $(this).attr('data-id');
+            console.log(id);
+        });
+
+        $('#environments-list').on("click", ".environment-action-edit", function () {
+            var id = $(this).attr('data-id');
+            postman.envManager.showEditor(id);
+        });
+
+        $('.environment-action-back').on("click", function () {
+            postman.envManager.showSelector();
+        });
+    },
+
+    showSelector:function () {
+        $('#environments-list-wrapper').css("display", "block");
+        $('#environment-editor').css("display", "none");
+        $('#modalEnvironments .modal-footer').css("display", "none");
+    },
+
+    showEditor:function (id) {
+        console.log(id);
+        $('#environments-list-wrapper').css("display", "none");
+        $('#environment-editor').css("display", "block");
+        $('#environment-editor-name').val("Something");
+
+        var params = {
+            placeHolderKey:"Key",
+            placeHolderValue:"Value",
+            deleteButton:'<img class="deleteButton" src="img/delete.png">'
+        };
+
+        $('#environment-keyvaleditor').keyvalueeditor('init', params);
+        $('#modalEnvironments .modal-footer').css("display", "block");
     }
 };
 
