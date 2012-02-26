@@ -55,6 +55,8 @@ var postman = {};
 postman.indexedDB = {};
 postman.indexedDB.db = null;
 
+postman.fs = {};
+
 // IndexedDB implementations still use API prefixes
 var indexedDB = window.indexedDB || // Use the standard DB API
     window.mozIndexedDB || // Or Firefox's early version of it
@@ -63,6 +65,8 @@ var indexedDB = window.indexedDB || // Use the standard DB API
 var IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction;
 var IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange;
 var IDBCursor = window.IDBCursor || window.webkitIDBCursor;
+
+window.requestFileSystem = window.requestFileSystem || window.webkitRequestFileSystem;
 
 postman.initialize = function () {
     this.history.initialize();
@@ -75,9 +79,97 @@ postman.initialize = function () {
     this.helpers.init();
     this.keymap.init();
     this.envManager.init();
-
+    this.filesystem.init();
     postman.indexedDB.open();
 };
+
+postman.filesystem = {
+    fs:{},
+
+    onInitFs:function (filesystem) {
+        postman.filesystem.fs = filesystem;
+    },
+
+    errorHandler:function (e) {
+        var msg = '';
+
+        switch (e.code) {
+            case FileError.QUOTA_EXCEEDED_ERR:
+                msg = 'QUOTA_EXCEEDED_ERR';
+                break;
+            case FileError.NOT_FOUND_ERR:
+                msg = 'NOT_FOUND_ERR';
+                break;
+            case FileError.SECURITY_ERR:
+                msg = 'SECURITY_ERR';
+                break;
+            case FileError.INVALID_MODIFICATION_ERR:
+                msg = 'INVALID_MODIFICATION_ERR';
+                break;
+            case FileError.INVALID_STATE_ERR:
+                msg = 'INVALID_STATE_ERR';
+                break;
+            default:
+                msg = 'Unknown Error';
+                break;
+        };
+
+        console.log('Error: ' + msg);
+    },
+
+    init:function () {
+        window.requestFileSystem(window.TEMPORARY, 5 * 1024 * 1024, this.onInitFs, this.errorHandler);
+    },
+
+    saveCollections:function () {
+        console.log("Save collections in file");
+        postman.indexedDB.getCollections(function (cs) {
+            var collections = cs;
+
+            var collectionCount = collections.length;
+
+            for (var i = 0; i < collectionCount; i++) {
+                var collection = collections[i].id;
+                postman.indexedDB.getAllRequestsInCollection(collections[i].id, function (requests) {
+                    var json = JSON.stringify(requests);
+                    console.log(requests);
+                    postman.filesystem.fs.root.getFile(requests[0].collectionId,
+                        {create:true},
+                        function (fileEntry) {
+                            fileEntry.createWriter(function(fileWriter) {
+
+                                fileWriter.onwriteend = function(e) {
+                                    console.log('Write completed.');
+                                    console.log(fileEntry);
+                                    var properties = {
+                                        url:fileEntry.toURL()
+                                    };
+
+                                    chrome.tabs.create(properties, function (tab) {
+                                    });
+                                };
+
+                                fileWriter.onerror = function(e) {
+                                    console.log('Write failed: ' + e.toString());
+                                };
+
+                                // Create a new Blob and write it to log.txt.
+                                var bb = new window.WebKitBlobBuilder(); // Note: window.WebKitBlobBuilder in Chrome 12.
+                                bb.append(json);
+                                fileWriter.write(bb.getBlob('application/json'));
+
+                            }, postman.filesystem.errorHandler);
+
+
+                        }, postman.filesystem.errorHandler);
+
+
+                });
+            }
+        });
+
+    }
+}
 
 postman.keymap = {
     escInputHandler:function (evt) {
@@ -1716,6 +1808,7 @@ postman.indexedDB = {
 
     open:function () {
         var request = indexedDB.open("postman", "POSTman request history");
+        console.log("Opening the indexedDB");
         request.onsuccess = function (e) {
             var v = "0.42";
             postman.indexedDB.db = e.target.result;
@@ -1757,6 +1850,8 @@ postman.indexedDB = {
                 };
             }
             else {
+
+                postman.filesystem.saveCollections();
                 postman.history.getAllRequests();
                 postman.collections.getAllCollections();
             }
