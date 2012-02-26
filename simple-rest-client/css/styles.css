@@ -735,7 +735,7 @@ li .right {
 
 .collection-head-actions {
     position: absolute;
-    margin-left: 260px;
+    margin-left: 236px;
     z-index: 10;
     display: none;
     padding-top: 4px;
@@ -743,6 +743,8 @@ li .right {
 
 .collection-head-actions img {
     opacity: 0.5;
+    width: 18px;
+    height: 18px;
 }
 
 .collection-head-actions img:hover {

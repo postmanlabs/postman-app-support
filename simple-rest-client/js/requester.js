@@ -112,7 +112,8 @@ postman.filesystem = {
             default:
                 msg = 'Unknown Error';
                 break;
-        };
+        }
+        ;
 
         console.log('Error: ' + msg);
     },
@@ -121,53 +122,38 @@ postman.filesystem = {
         window.requestFileSystem(window.TEMPORARY, 5 * 1024 * 1024, this.onInitFs, this.errorHandler);
     },
 
-    saveCollections:function () {
-        console.log("Save collections in file");
-        postman.indexedDB.getCollections(function (cs) {
-            var collections = cs;
+    saveAndOpenFile:function (name, data, type, callback) {
+        postman.filesystem.fs.root.getFile(name,
+            {create:true},
+            function (fileEntry) {
+                fileEntry.createWriter(function (fileWriter) {
 
-            var collectionCount = collections.length;
+                    fileWriter.onwriteend = function (e) {
+                        console.log('Write completed.');
+                        console.log(fileEntry);
+                        var properties = {
+                            url:fileEntry.toURL()
+                        };
 
-            for (var i = 0; i < collectionCount; i++) {
-                var collection = collections[i].id;
-                postman.indexedDB.getAllRequestsInCollection(collections[i].id, function (requests) {
-                    var json = JSON.stringify(requests);
-                    console.log(requests);
-                    postman.filesystem.fs.root.getFile(requests[0].collectionId,
-                        {create:true},
-                        function (fileEntry) {
-                            fileEntry.createWriter(function(fileWriter) {
+                        chrome.tabs.create(properties, function (tab) {});
+                        callback();
+                    };
 
-                                fileWriter.onwriteend = function(e) {
-                                    console.log('Write completed.');
-                                    console.log(fileEntry);
-                                    var properties = {
-                                        url:fileEntry.toURL()
-                                    };
+                    fileWriter.onerror = function (e) {
+                        console.log('Write failed: ' + e.toString());
+                        callback();
+                    };
 
-                                    chrome.tabs.create(properties, function (tab) {
-                                    });
-                                };
+                    // Create a new Blob and write it to log.txt.
+                    var bb = new window.WebKitBlobBuilder(); // Note: window.WebKitBlobBuilder in Chrome 12.
+                    bb.append(data);
+                    fileWriter.write(bb.getBlob('application/json'));
 
-                                fileWriter.onerror = function(e) {
-                                    console.log('Write failed: ' + e.toString());
-                                };
-
-                                // Create a new Blob and write it to log.txt.
-                                var bb = new window.WebKitBlobBuilder(); // Note: window.WebKitBlobBuilder in Chrome 12.
-                                bb.append(json);
-                                fileWriter.write(bb.getBlob('application/json'));
-
-                            }, postman.filesystem.errorHandler);
+                }, postman.filesystem.errorHandler);
 
 
-                        }, postman.filesystem.errorHandler);
-
-
-                });
-            }
-        });
-
+            }, postman.filesystem.errorHandler
+        );
     }
 }
 
@@ -1443,6 +1429,24 @@ postman.collections = {
             var id = $(this).attr('data-id');
             postman.collections.deleteCollection(id);
         });
+
+        $('#collectionItems').on("click", ".collection-actions-download", function () {
+            var id = $(this).attr('data-id');
+            postman.collections.saveCollection(id);
+        });
+    },
+
+    saveCollection:function (id) {
+        postman.indexedDB.getCollection(id, function (data) {
+            var collection = data;
+            postman.indexedDB.getAllRequestsInCollection(id, function (data) {
+                collection['requests'] = data;
+                var filedata = JSON.stringify(collection);
+                var name = collection['name'] + ".json";
+                var type = "application/json";
+                postman.filesystem.saveAndOpenFile(name, filedata, type, function() {});
+            });
+        });
     },
 
     getCollectionRequest:function (id) {
@@ -1476,7 +1480,8 @@ postman.collections = {
             postman.indexedDB.addCollection(collection, function (collection) {
                 $('#messageNoCollection').remove();
                 postman.collections.getAllCollections();
-                postman.indexedDB.getAllRequestsInCollection(collection.id);
+                postman.indexedDB.getAllRequestsInCollection(collection.id, function () {
+                });
             });
 
             $('#newCollectionBlank').val("");
@@ -1850,8 +1855,6 @@ postman.indexedDB = {
                 };
             }
             else {
-
-                postman.filesystem.saveCollections();
                 postman.history.getAllRequests();
                 postman.collections.getAllCollections();
             }
@@ -1904,6 +1907,25 @@ postman.indexedDB = {
         collectionRequest.onerror = function (e) {
             console.log(e.value);
         };
+    },
+
+    getCollection:function (id, callback) {
+        var db = postman.indexedDB.db;
+        var trans = db.transaction(["collections"], IDBTransaction.READ_WRITE);
+        var store = trans.objectStore("collections");
+
+        //Get everything in the store
+        var cursorRequest = store.get(id);
+
+        cursorRequest.onsuccess = function (e) {
+            var result = e.target.result;
+            if (!result) {
+                return;
+            }
+
+            callback(result);
+        };
+        cursorRequest.onerror = postman.indexedDB.onerror;
     },
 
     getCollections:function (callback) {

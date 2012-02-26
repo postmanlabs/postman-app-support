@@ -94,7 +94,7 @@
     <div id="environment-selector-wrapper">
         <div id="environment-selector">
             <div class="btn-group">
-                <a class="dropdown-toggle" data-toggle="dropdown" href="#">Facebook-Production
+                <a data-toggle="dropdown" href="#">Facebook-Production
                     <span class="caret" style="margin-top: 8px;"></span></a>
                 <ul class="dropdown-menu">
                     <li><a href="javascript:void(0);">Staging</a></li>
@@ -635,9 +635,10 @@
         <div class="sidebar-collection-head">
             <div class="collection-head-actions">
                 <span class="label">Show</span>
+                <a href="javascript:void(0);" class="collection-actions-download" data-id="${id}">
+                    <img src="img/glyphicons_181_download_alt.png" style="vertical-align: middle;"/></a>
                 <a href="javascript:void(0);" class="collection-actions-delete" data-id="${id}">
-                    <img src="img/delete.png" style="vertical-align: middle;"/>
-                </a>
+                    <img src="img/delete.png" style="vertical-align: middle;"/></a>
             </div>
             <div class="sidebar-collection-head-name" data-id="${id}">
                 ${name}
