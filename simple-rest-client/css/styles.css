@@ -295,6 +295,7 @@ fieldset {
     margin-top: 20px;
     max-width: 1000px;
     font-size: 11px;
+    display: none;
 }
 
 #respHeaders textarea {
@@ -438,7 +439,7 @@ fieldset {
 }
 
 #ptime, #pstatus {
-    margin-top: 10px;
+    margin-top: 8px;
 }
 
 #ptime label, #pstatus label {
@@ -451,7 +452,8 @@ fieldset {
     font-family: Helvetica, Arial, sans-serif;
 }
 
-#responsePrint .data {
+#ptime .data,
+#pstatus .data {
     font-size: 10px;
     font-weight: bold;
 }
@@ -525,12 +527,18 @@ li .right {
 }
 
 #langFormat {
+    margin-top: 15px;
+    float: left;
+}
+
+#langFormat .nav {
+    float: left;
 }
 
 #request,
 #response {
-    padding: 0 0px 20px 20px;
-    border-bottom: solid thin #EFEFEF;
+    padding: 0 0 20px 20px;
+    border-bottom: solid thin #ccc;
 }
 
 #response {
@@ -870,15 +878,12 @@ li .right {
 }
 
 #respDataActions {
-    position: absolute;
-    margin-left: -150px;
-    margin-top: 0;
-    width: 150px;
-    text-align: center;
+    float: left;
+    margin-top: 20px;
 }
 
 #respDataActions a {
-    width: 75px;
+
 }
 
 .helper-tabs {
@@ -1021,4 +1026,46 @@ li .right {
     text-align: center;
     font: 20pt bold "Helvetica";
     color: #BBB;
+}
+
+#responseTopBar {
+    border-bottom: solid thin #ccc;
+    height: 35px;
+    margin-left: -20px;
+}
+.response-tabs {
+    margin: 0;
+    padding: 0;
+    float: left;
+}
+
+.response-tabs li {
+    float: left;
+    font-size: 11px;
+    font-weight: bold;
+    list-style: none;
+    padding: 10px;
+    border-left: solid thin #ccc;
+    border-bottom: solid thin #fff;
+    color: #ccc;
+    cursor: pointer;
+    height: 14px;
+}
+
+.response-tabs li:hover {
+    color: #333;
+}
+
+.response-tabs li.active {
+    color: black;
+    height: 15px;
+    border-bottom-color: #fff;
+}
+
+.response-tabs li:last-child {
+    border-right: solid thin #ccc;
+}
+
+.response-tabs li:first-child {
+    border-left: none;
 }

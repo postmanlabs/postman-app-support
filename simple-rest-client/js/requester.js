@@ -113,7 +113,6 @@ postman.filesystem = {
                 msg = 'Unknown Error';
                 break;
         }
-        ;
 
         console.log('Error: ' + msg);
     },
@@ -126,7 +125,6 @@ postman.filesystem = {
         postman.filesystem.fs.root.getFile(name,
             {create:false}, function (fileEntry) {
                 fileEntry.remove(function () {
-                    console.log('File removed.');
                     callback();
                 }, function() {
                     callback();
@@ -150,8 +148,7 @@ postman.filesystem = {
                                 url:fileEntry.toURL()
                             };
 
-                            chrome.tabs.create(properties, function (tab) {
-                            });
+                            chrome.tabs.create(properties, function (tab) {});
                             callback();
                         };
 
@@ -713,7 +710,6 @@ postman.currentRequest = {
 
                 this.loadHeaders(response.getAllResponseHeaders());
 
-                $("#respHeaders").css("display", "block");
                 $("#respData").css("display", "block");
 
                 $("#loader").css("display", "none");
@@ -833,7 +829,18 @@ postman.currentRequest = {
                 $('#respData').css("background-color", "white");
                 $('#respData').css("padding", "0px");
             }
+        },
+
+        showHeaders: function() {
+            $('#responsePrint').css("display", "none");
+            $('#respHeaders').css("display", "block");
+        },
+
+        showBody: function() {
+            $('#responsePrint').css("display", "block");
+            $('#respHeaders').css("display", "none");
         }
+
     },
 
     startNew:function () {
@@ -1767,6 +1774,18 @@ postman.layout = {
         $('#modalAboutPostman').click(function () {
             postman.layout.attachSocialButtons();
             return false;
+        });
+
+        $('.response-tabs').on("click", "li", function() {
+            $('.response-tabs li').removeClass("active");
+            $(this).addClass("active");
+            var section = $(this).attr('data-section');
+            if(section === "body") {
+                postman.currentRequest.response.showBody();
+            }
+            else if(section === "headers") {
+                postman.currentRequest.response.showHeaders();
+            }
         });
 
         this.setLayout();

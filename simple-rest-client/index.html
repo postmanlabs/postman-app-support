@@ -316,29 +316,23 @@
 
 <section id="response">
     <fieldset>
+        <div id="responseTopBar">
+            <ul class="response-tabs clearfix">
+                <li class="active" data-section="body">Body</li>
+                <li data-section="headers">Headers</li>
+            </ul>
+            <div id="pstatus">
+            </div>
+
+            <div id="ptime" class="span2">
+                <span class="label">Time</span>
+                <span class="data">0 millisecs</span>
+            </div>
+        </div>
+
         <div id="responsePrint">
-            <div class="row">
-                <div id="pstatus">
-                </div>
-
-                <div id="ptime" class="span2">
-                    <span class="label">Time</span>
-                    <span class="data">0 millisecs</span>
-                </div>
-            </div>
-
-            <div id="respHeaders">
-                <div id="respHeadersContent">
-                    <div id="responseHeaders" tabindex="6"></div>
-                </div>
-            </div>
-
             <div id="respData" style="display:none">
-                <div id="respDataActions" class="sectionOptions">
-                    <a href="javascript:void(0);" class="sectionOptions" id="responseBodyToggle">
-                        <img src="img/full-screen-alt-4.png" width="24px" height="24px"/>
-                    </a>
-                </div>
+                <div id="respDataOptions" class="clearfix">
                 <div id="langFormat">
                     <ul class="nav nav-pills">
                         <li id="langFormat-parsed" class="active">
@@ -353,6 +347,12 @@
                         </li>
                     </ul>
                 </div>
+                <div id="respDataActions">
+                    <a href="javascript:void(0);" id="responseBodyToggle">
+                        <img src="img/full-screen-alt-4.png" width="24px" height="24px"/>
+                    </a>
+                </div>
+                </div>
                 <div name="responseData" id="responseData" contenteditable="true">
                     <div id="responseAsText">
                         <textarea name="codeData" id="codeData" class="chili-lang-html" data-formatted="false">
@@ -362,6 +362,11 @@
 
                     </div>
                 </div>
+            </div>
+        </div>
+        <div id="respHeaders">
+            <div id="respHeadersContent">
+                <div id="responseHeaders" tabindex="6"></div>
             </div>
         </div>
     </fieldset>
@@ -431,6 +436,7 @@
 
     <div class="modal-body">
         <p>Drag and drop a Postman collection file into the area below.</p>
+
         <div id="import-collection-dropzone">Drop file here</div>
     </div>
 
@@ -458,6 +464,7 @@
         </div>
         <div id="environment-editor">
             <input type="text" name="environment-editor-name" id="environment-editor-name" class="cleanInput"/>
+
             <div id="environment-keyvaleditor"></div>
         </div>
     </div>
