@@ -56,13 +56,17 @@
         <div id="historyOptions" class="sectionOptions">
             <a href="javascript:void(0);" class="history-actions-delete" rel="tooltip"
                data-original-title="Clear history">
-                <img src="img/trash-empty.png" width="24px" height="24px"/>
+                <img src="img/trash-empty.png" style="width:24px; height:24px; vertical-align: middle;"/>
             </a>
         </div>
         <div id="collectionsOptions" class="sectionOptions">
             <a href="#formModalNewCollection" rel="tooltip" data-original-title="Add new collection"
                data-toggle="modal" data-backdrop="static" data-keyboard="true">
-                <img src="img/file-add.png" width="24px" height="24px"/>
+                <img src="img/file-add.png" style="width:24px; height:24px; vertical-align: middle;"/>
+            </a>
+            <a href="#modalImportCollection" rel="tooltip" data-original-title="Import collection"
+               data-toggle="modal" data-backdrop="static" data-keyboard="true">
+                <img src="img/glyphicons_134_inbox_in.png" style="width:20px; height:20px; vertical-align: middle;"/>
             </a>
         </div>
         <ul id="sidebarSelectors" class="nav nav-pills">
@@ -416,6 +420,22 @@
     <div class="modal-footer">
         <a href="javascript:void(0);" class="btn btn-primary">Done</a>
         <a href="javascript:void(0);" data-dismiss="modal" class="btn btn-secondary">Cancel</a>
+    </div>
+</div>
+<div id="modalImportCollection" class="modal fade">
+    <div class="modal-header">
+        <a href="#" class="close" data-dismiss="modal">x</a>
+
+        <h3>Import a collection</h3>
+    </div>
+
+    <div class="modal-body">
+        <p>Drag and drop a Postman collection file into the area below.</p>
+        <div id="import-collection-dropzone">Drop file here</div>
+    </div>
+
+    <div class="modal-footer">
+        <a href="javascript:void(0);" data-dismiss="modal" class="btn btn-primary">Close</a>
     </div>
 </div>
 <div id="modalEnvironments" class="modal fade">

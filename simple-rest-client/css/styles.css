@@ -842,12 +842,13 @@ li .right {
     margin-top: 5px;
 }
 
+
 #historyOptions {
     margin-left: 280px;
 }
 
 #collectionsOptions {
-    margin-left: 280px;
+    margin-left: 260px;
 }
 
 #collectionsOptions {
@@ -1009,4 +1010,15 @@ li .right {
 
 #modalEnvironments .modal-footer {
     display: none;
+}
+
+#import-collection-dropzone {
+    border: 2px dashed #BBB;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+    padding: 25px;
+    text-align: center;
+    font: 20pt bold "Helvetica";
+    color: #BBB;
 }

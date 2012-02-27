@@ -122,38 +122,56 @@ postman.filesystem = {
         window.requestFileSystem(window.TEMPORARY, 5 * 1024 * 1024, this.onInitFs, this.errorHandler);
     },
 
-    saveAndOpenFile:function (name, data, type, callback) {
+    removeFileIfExists:function (name, callback) {
         postman.filesystem.fs.root.getFile(name,
-            {create:true},
-            function (fileEntry) {
-                fileEntry.createWriter(function (fileWriter) {
+            {create:false}, function (fileEntry) {
+                fileEntry.remove(function () {
+                    console.log('File removed.');
+                    callback();
+                }, function() {
+                    callback();
+                });
+            }, function() {
+                callback();
+            });
+    },
 
-                    fileWriter.onwriteend = function (e) {
-                        console.log('Write completed.');
-                        console.log(fileEntry);
-                        var properties = {
-                            url:fileEntry.toURL()
+    saveAndOpenFile:function (name, data, type, callback) {
+        postman.filesystem.removeFileIfExists(name, function() {
+            postman.filesystem.fs.root.getFile(name,
+                {create:true},
+                function (fileEntry) {
+                    fileEntry.createWriter(function (fileWriter) {
+
+                        fileWriter.onwriteend = function (e) {
+                            console.log('Write completed.');
+                            console.log(fileEntry);
+                            var properties = {
+                                url:fileEntry.toURL()
+                            };
+
+                            chrome.tabs.create(properties, function (tab) {
+                            });
+                            callback();
                         };
 
-                        chrome.tabs.create(properties, function (tab) {});
-                        callback();
-                    };
+                        fileWriter.onerror = function (e) {
+                            console.log('Write failed: ' + e.toString());
+                            callback();
+                        };
 
-                    fileWriter.onerror = function (e) {
-                        console.log('Write failed: ' + e.toString());
-                        callback();
-                    };
+                        // Create a new Blob and write it to log.txt.
+                        var bb = new window.WebKitBlobBuilder(); // Note: window.WebKitBlobBuilder in Chrome 12.
+                        bb.append(data);
+                        fileWriter.write(bb.getBlob('text/plain'));
 
-                    // Create a new Blob and write it to log.txt.
-                    var bb = new window.WebKitBlobBuilder(); // Note: window.WebKitBlobBuilder in Chrome 12.
-                    bb.append(data);
-                    fileWriter.write(bb.getBlob('application/json'));
-
-                }, postman.filesystem.errorHandler);
+                    }, postman.filesystem.errorHandler);
 
 
-            }, postman.filesystem.errorHandler
-        );
+                }, postman.filesystem.errorHandler
+            );
+        });
+
     }
 }
 
@@ -1434,6 +1452,24 @@ postman.collections = {
             var id = $(this).attr('data-id');
             postman.collections.saveCollection(id);
         });
+
+        var dropZone = document.getElementById('import-collection-dropzone');
+        dropZone.addEventListener('dragover', function (evt) {
+            console.log("Something happened here");
+            evt.stopPropagation();
+            evt.preventDefault();
+            evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
+        }, false);
+
+        dropZone.addEventListener('drop', function (evt) {
+            console.log("File dropped");
+            evt.stopPropagation();
+            evt.preventDefault();
+            var files = evt.dataTransfer.files; // FileList object.
+
+            postman.collections.importCollections(files);
+            $('#modalImportCollections').modal('hide');
+        }, false);
     },
 
     saveCollection:function (id) {
@@ -1441,12 +1477,76 @@ postman.collections = {
             var collection = data;
             postman.indexedDB.getAllRequestsInCollection(id, function (data) {
                 collection['requests'] = data;
-                var filedata = JSON.stringify(collection);
                 var name = collection['name'] + ".json";
                 var type = "application/json";
-                postman.filesystem.saveAndOpenFile(name, filedata, type, function() {});
+                var filedata = JSON.stringify(collection);
+                console.log(filedata, collection);
+                postman.filesystem.saveAndOpenFile(name, filedata, type, function () {
+                });
             });
         });
+    },
+
+    importCollections:function (files) {
+        // Loop through the FileList
+        var f;
+        for (var i = 0, f; f = files[i]; i++) {
+            var reader = new FileReader();
+
+            // Closure to capture the file information.
+            reader.onload = (function (theFile) {
+                return function (e) {
+                    // Render thumbnail.
+                    var data = e.currentTarget.result;
+                    console.log(data);
+                    var collection = JSON.parse(data);
+                    postman.indexedDB.getCollection(collection.id, function (data) {
+                        if (data) {
+                            //Clear away the HTML
+                            postman.layout.sidebar.emptyCollectionInSidebar(collection.id);
+                            postman.indexedDB.deleteCollection(collection.id, function (c) {
+                                postman.indexedDB.addCollection(collection, function (c) {
+                                    for (var i = 0; i < collection.requests.length; i++) {
+                                        var request = collection.requests[i];
+                                        postman.indexedDB.addCollectionRequest(request, function (req) {
+                                            var targetElement = "#collectionRequests-" + req.collectionId;
+                                            postman.urlCache.addUrl(req.url);
+
+                                            req.url = limitStringLineWidth(req.url, 43);
+                                            $('#itemCollectionSidebarRequest').tmpl([req]).appendTo(targetElement);
+                                            postman.layout.refreshScrollPanes();
+
+                                            console.log("Added request", req);
+                                        });
+                                    }
+                                });
+                            });
+                        }
+                        else {
+                            postman.indexedDB.addCollection(collection, function (c) {
+                                $('#itemCollectionSelectorList').tmpl([collection]).appendTo('#selectCollection');
+                                $('#itemCollectionSidebarHead').tmpl([collection]).appendTo('#collectionItems');
+
+                                for (var i = 0; i < collection.requests.length; i++) {
+                                    var request = collection.requests[i];
+                                    postman.indexedDB.addCollectionRequest(request, function (req) {
+                                        var targetElement = "#collectionRequests-" + req.collectionId;
+                                        postman.urlCache.addUrl(req.url);
+
+                                        req.url = limitStringLineWidth(req.url, 43);
+                                        $('#itemCollectionSidebarRequest').tmpl([req]).appendTo(targetElement);
+                                        postman.layout.refreshScrollPanes();
+                                    });
+                                }
+                            });
+                        }
+                    });
+                };
+            })(f);
+
+            // Read in the image file as a data URL.
+            reader.readAsText(f);
+        }
     },
 
     getCollectionRequest:function (id) {
@@ -1593,13 +1693,6 @@ postman.collections = {
 
             var target = '#selectCollection option[value="' + id + '"]';
             $(target).remove();
-
-            var numCollections = $('#collectionItems').children().length;
-            if (numCollections === 1) {
-                $('#messageNoCollectionTmpl').tmpl([
-                    {}
-                ]).appendTo('#sidebarSection-collections');
-            }
         });
     }
 };
@@ -1781,6 +1874,11 @@ postman.layout = {
             });
         },
 
+        emptyCollectionInSidebar:function (id) {
+            console.log('#collectionRequests-' + id);
+            $('#collectionRequests-' + id).html("");
+        },
+
         removeRequestFromHistory:function (id, toAnimate) {
             if (toAnimate) {
                 $('#sidebarRequest-' + id).slideUp(100);
@@ -1800,15 +1898,16 @@ postman.layout = {
         },
 
         removeCollection:function (id) {
-            $('#collection-' + id).slideUp(100);
+            $('#collection-' + id).remove();
             postman.layout.refreshScrollPanes();
         }
     }
 };
 
 postman.indexedDB = {
-    onerror:function (event) {
+    onerror:function (event, callback) {
         console.log(event);
+        callback();
     },
 
     open:function () {
@@ -1919,10 +2018,6 @@ postman.indexedDB = {
 
         cursorRequest.onsuccess = function (e) {
             var result = e.target.result;
-            if (!result) {
-                return;
-            }
-
             callback(result);
         };
         cursorRequest.onerror = postman.indexedDB.onerror;
@@ -2162,6 +2257,7 @@ postman.indexedDB = {
         var request = store.delete(id);
 
         request.onsuccess = function () {
+            postman.indexedDB.deleteAllCollectionRequests(id);
             callback(id);
         };
 
