@@ -438,6 +438,7 @@ postman.currentRequest = {
                 }
 
                 postman.currentRequest.headers = newHeaders;
+                $('#headers-keyvaleditor-actions-open .headers-count').html(newHeaders.length);
             },
 
             onBlurElement:function () {
@@ -459,6 +460,12 @@ postman.currentRequest = {
                 }
 
                 postman.currentRequest.headers = newHeaders;
+                $('#headers-keyvaleditor-actions-open .headers-count').html(newHeaders.length);
+            },
+
+            onReset: function() {
+                var hs = $('#headers-keyvaleditor').keyvalueeditor('getValues');
+                $('#headers-keyvaleditor-actions-open .headers-count').html(hs.length);
             }
         };
 
@@ -708,7 +715,12 @@ postman.currentRequest = {
                 $('#itemResponseCode').tmpl([responseCode]).appendTo('#pstatus');
                 $('.responseCode').popover();
 
+                //This sets loadHeders
                 this.loadHeaders(response.getAllResponseHeaders());
+
+
+                $('.response-tabs li[data-section="headers"]').html("Headers (" + this.headers.length + ")");
+
 
                 $("#respData").css("display", "block");
 

@@ -252,11 +252,11 @@
             <option value="options">OPTIONS</option>
         </select>
     </div>
-    <div class="span2">
+    <div class="span3">
         <span class="buttonLayout">
-            <button href="javascript:void(0);" class="btn btn-small" id="url-keyvaleditor-actions-open">Edit params
+            <button href="javascript:void(0);" class="btn btn-small" id="url-keyvaleditor-actions-open"><i class="icon-edit"></i> URL params
             </button>
-            <button href="javascript:void(0);" class="btn btn-small" id="headers-keyvaleditor-actions-open">Edit headers
+            <button href="javascript:void(0);" class="btn btn-small" id="headers-keyvaleditor-actions-open"><i class="icon-edit"></i> Headers (<span class="headers-count">0</span>)
             </button>
         </span>
     </div>
@@ -644,7 +644,7 @@
     <option value="${id}">${name}</option>
 </script>
 <script id="itemResponseCode" type="text/x-jquery-tmpl">
-    <div class="responseCode" data-placement="top" data-original-title="${code} ${name}" data-content="${detail}"
+    <div class="responseCode" data-placement="bottom" data-original-title="${code} ${name}" data-content="${detail}"
          rel="popover"><span class="label">Status</span>
 
         <div class="data">${code} ${name}</div>
