@@ -2066,6 +2066,8 @@ postman.envManager = {
         }
     ],
 
+    selectedEnvironmentId: "",
+
     init:function () {
         $('#itemEnvironmentList').tmpl(this.environments).appendTo('#environments-list');
 
@@ -2082,6 +2084,24 @@ postman.envManager = {
         $('.environment-action-back').on("click", function () {
             postman.envManager.showSelector();
         });
+
+        $('.environment-action-add').on("click", function () {
+            postman.envManager.addNewEnvironment();
+        });
+    },
+
+    addNewEnvironment:function () {
+        $('#environments-list-wrapper').css("display", "none");
+        $('#environment-editor').css("display", "block");
+
+        var params = {
+            placeHolderKey:"Key",
+            placeHolderValue:"Value",
+            deleteButton:'<img class="deleteButton" src="img/delete.png">'
+        };
+
+        $('#environment-keyvaleditor').keyvalueeditor('init', params);
+        $('#modalEnvironments .modal-footer').css("display", "block");
     },
 
     showSelector:function () {
