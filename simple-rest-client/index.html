@@ -56,13 +56,17 @@
         <div id="historyOptions" class="sectionOptions">
             <a href="javascript:void(0);" class="history-actions-delete" rel="tooltip"
                data-original-title="Clear history">
-                <img src="img/trash-empty.png" width="24px" height="24px"/>
+                <img src="img/trash-empty.png" style="width:24px; height:24px; vertical-align: middle;"/>
             </a>
         </div>
         <div id="collectionsOptions" class="sectionOptions">
             <a href="#formModalNewCollection" rel="tooltip" data-original-title="Add new collection"
                data-toggle="modal" data-backdrop="static" data-keyboard="true">
-                <img src="img/file-add.png" width="24px" height="24px"/>
+                <img src="img/file-add.png" style="width:24px; height:24px; vertical-align: middle;"/>
+            </a>
+            <a href="#modalImportCollection" rel="tooltip" data-original-title="Import collection"
+               data-toggle="modal" data-backdrop="static" data-keyboard="true">
+                <img src="img/glyphicons_134_inbox_in.png" style="width:20px; height:20px; vertical-align: middle;"/>
             </a>
         </div>
         <ul id="sidebarSelectors" class="nav nav-pills">
@@ -94,7 +98,7 @@
     <div id="environment-selector-wrapper">
         <div id="environment-selector">
             <div class="btn-group">
-                <a class="dropdown-toggle" data-toggle="dropdown" href="#">Facebook-Production
+                <a data-toggle="dropdown" href="#">Facebook-Production
                     <span class="caret" style="margin-top: 8px;"></span></a>
                 <ul class="dropdown-menu">
                     <li><a href="javascript:void(0);">Staging</a></li>
@@ -312,29 +316,23 @@
 
 <section id="response">
     <fieldset>
+        <div id="responseTopBar">
+            <ul class="response-tabs clearfix">
+                <li class="active" data-section="body">Body</li>
+                <li data-section="headers">Headers</li>
+            </ul>
+            <div id="pstatus">
+            </div>
+
+            <div id="ptime" class="span2">
+                <span class="label">Time</span>
+                <span class="data">0 millisecs</span>
+            </div>
+        </div>
+
         <div id="responsePrint">
-            <div class="row">
-                <div id="pstatus">
-                </div>
-
-                <div id="ptime" class="span2">
-                    <span class="label">Time</span>
-                    <span class="data">0 millisecs</span>
-                </div>
-            </div>
-
-            <div id="respHeaders">
-                <div id="respHeadersContent">
-                    <div id="responseHeaders" tabindex="6"></div>
-                </div>
-            </div>
-
             <div id="respData" style="display:none">
-                <div id="respDataActions" class="sectionOptions">
-                    <a href="javascript:void(0);" class="sectionOptions" id="responseBodyToggle">
-                        <img src="img/full-screen-alt-4.png" width="24px" height="24px"/>
-                    </a>
-                </div>
+                <div id="respDataOptions" class="clearfix">
                 <div id="langFormat">
                     <ul class="nav nav-pills">
                         <li id="langFormat-parsed" class="active">
@@ -349,6 +347,12 @@
                         </li>
                     </ul>
                 </div>
+                <div id="respDataActions">
+                    <a href="javascript:void(0);" id="responseBodyToggle">
+                        <img src="img/full-screen-alt-4.png" width="24px" height="24px"/>
+                    </a>
+                </div>
+                </div>
                 <div name="responseData" id="responseData" contenteditable="true">
                     <div id="responseAsText">
                         <textarea name="codeData" id="codeData" class="chili-lang-html" data-formatted="false">
@@ -358,6 +362,11 @@
 
                     </div>
                 </div>
+            </div>
+        </div>
+        <div id="respHeaders">
+            <div id="respHeadersContent">
+                <div id="responseHeaders" tabindex="6"></div>
             </div>
         </div>
     </fieldset>
@@ -418,6 +427,23 @@
         <a href="javascript:void(0);" data-dismiss="modal" class="btn btn-secondary">Cancel</a>
     </div>
 </div>
+<div id="modalImportCollection" class="modal fade">
+    <div class="modal-header">
+        <a href="#" class="close" data-dismiss="modal">x</a>
+
+        <h3>Import a collection</h3>
+    </div>
+
+    <div class="modal-body">
+        <p>Drag and drop a Postman collection file into the area below.</p>
+
+        <div id="import-collection-dropzone">Drop file here</div>
+    </div>
+
+    <div class="modal-footer">
+        <a href="javascript:void(0);" data-dismiss="modal" class="btn btn-primary">Close</a>
+    </div>
+</div>
 <div id="modalEnvironments" class="modal fade">
     <div class="modal-header">
         <a href="#" class="close" data-dismiss="modal">x</a>
@@ -438,6 +464,7 @@
         </div>
         <div id="environment-editor">
             <input type="text" name="environment-editor-name" id="environment-editor-name" class="cleanInput"/>
+
             <div id="environment-keyvaleditor"></div>
         </div>
     </div>
@@ -635,9 +662,10 @@
         <div class="sidebar-collection-head">
             <div class="collection-head-actions">
                 <span class="label">Show</span>
+                <a href="javascript:void(0);" class="collection-actions-download" data-id="${id}">
+                    <img src="img/glyphicons_181_download_alt.png" style="vertical-align: middle;"/></a>
                 <a href="javascript:void(0);" class="collection-actions-delete" data-id="${id}">
-                    <img src="img/delete.png" style="vertical-align: middle;"/>
-                </a>
+                    <img src="img/delete.png" style="vertical-align: middle;"/></a>
             </div>
             <div class="sidebar-collection-head-name" data-id="${id}">
                 ${name}
