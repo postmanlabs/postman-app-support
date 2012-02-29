@@ -347,6 +347,8 @@ postman.urlCache = {
 postman.settings = {
     historyCount:50,
     autoSaveRequest:true,
+    selectedEnvironmentId: "",
+
     initialize:function () {
         if (localStorage['historyCount']) {
             this.historyCount = localStorage['historyCount'];
@@ -362,6 +364,14 @@ postman.settings = {
         else {
             this.autoSaveRequest = true;
             localStorage['autoSaveRequest'] = this.autoSaveRequest;
+        }
+
+        if (localStorage['selectedEnvironmentId']) {
+            this.selectedEnvironmentId = localStorage['selectedEnvironmentId'];
+        }
+        else {
+            this.selectedEnvironmentId = true;
+            localStorage['selectedEnvironmentId'] = this.selectedEnvironmentId;
         }
 
         $('#historyCount').val(this.historyCount);
@@ -438,6 +448,7 @@ postman.currentRequest = {
                 }
 
                 postman.currentRequest.headers = newHeaders;
+                $('#headers-keyvaleditor-actions-open .headers-count').html(newHeaders.length);
             },
 
             onBlurElement:function () {
@@ -459,6 +470,12 @@ postman.currentRequest = {
                 }
 
                 postman.currentRequest.headers = newHeaders;
+                $('#headers-keyvaleditor-actions-open .headers-count').html(newHeaders.length);
+            },
+
+            onReset: function() {
+                var hs = $('#headers-keyvaleditor').keyvalueeditor('getValues');
+                $('#headers-keyvaleditor-actions-open .headers-count').html(hs.length);
             }
         };
 
@@ -708,7 +725,12 @@ postman.currentRequest = {
                 $('#itemResponseCode').tmpl([responseCode]).appendTo('#pstatus');
                 $('.responseCode').popover();
 
+                //This sets loadHeders
                 this.loadHeaders(response.getAllResponseHeaders());
+
+
+                $('.response-tabs li[data-section="headers"]').html("Headers (" + this.headers.length + ")");
+
 
                 $("#respData").css("display", "block");
 
@@ -1026,14 +1048,33 @@ postman.currentRequest = {
         var url = this.url;
         var method = this.method;
         var data = this.body;
+        var originalData = data;
         var finalBodyData;
         var headers = this.headers;
 
         postman.currentRequest.startTime = new Date().getTime();
 
+        var environment = postman.envManager.selectedEnv;
+
+        console.log(environment);
+
+        var envValues = [];
+        var isEnvironmentAvailable = false;
+
+        if(environment !== null) {
+            isEnvironmentAvailable = true;
+            envValues = environment.values;
+
+        }
+
         xhr.onreadystatechange = function (event) {
             postman.currentRequest.response.load(event.target);
         };
+
+        console.log(envValues);
+
+        var envManager = postman.envManager;
+        url = envManager.processString(url, envValues);
 
         url = ensureProperUrl(url);
 
@@ -1044,12 +1085,13 @@ postman.currentRequest = {
         for (i = 0; i < headers.length; i++) {
             var header = headers[i];
             if (!_.isEmpty(header.value)) {
-                xhr.setRequestHeader(header.name, header.value);
+                xhr.setRequestHeader(header.name, envManager.processString(header.value, envValues));
             }
         }
 
         if (this.isMethodWithBody(method)) {
             if (this.dataMode === 'raw') {
+                data = envManager.processString(data, envValues);
                 finalBodyData = data;
             }
             else if (this.dataMode === 'params') {
@@ -1071,7 +1113,10 @@ postman.currentRequest = {
                         }
                     }
                     else {
-                        finalBodyData.append(key, valueElement.val());
+                        var value = valueElement.val();
+                        value = envManager.processString(value, envValues);
+                        console.log(value);
+                        finalBodyData.append(key, value);
                     }
                 }
             }
@@ -1081,7 +1126,7 @@ postman.currentRequest = {
         }
 
         if (postman.settings.autoSaveRequest) {
-            postman.history.addRequest(url, method, postman.currentRequest.getPackedHeaders(), data, this.dataMode);
+            postman.history.addRequest($('#url').val(), method, postman.currentRequest.getPackedHeaders(), originalData, this.dataMode);
         }
 
         $('#submitRequest').button("loading");
@@ -1933,7 +1978,7 @@ postman.indexedDB = {
         var request = indexedDB.open("postman", "POSTman request history");
         console.log("Opening the indexedDB");
         request.onsuccess = function (e) {
-            var v = "0.42";
+            var v = "0.44";
             postman.indexedDB.db = e.target.result;
             var db = postman.indexedDB.db;
 
@@ -1948,33 +1993,43 @@ postman.indexedDB = {
 
                 setVrequest.onsuccess = function (e) {
                     console.log(e);
-                    if (db.objectStoreNames.contains("requests")) {
-                        db.deleteObjectStore("requests");
+
+                    //Only create if does not already exist
+
+                    if (!db.objectStoreNames.contains("requests")) {
+                        var requestStore = db.createObjectStore("requests", {keyPath:"id"});
+                        requestStore.createIndex("timestamp", "timestamp", { unique:false});
+
                     }
-                    if (db.objectStoreNames.contains("collections")) {
-                        db.deleteObjectStore("collections");
-                    }
-                    if (db.objectStoreNames.contains("collection_requests")) {
-                        db.deleteObjectStore("collection_requests");
+                    if (!db.objectStoreNames.contains("collections")) {
+                        var collectionsStore = db.createObjectStore("collections", {keyPath:"id"});
+                        collectionsStore.createIndex("timestamp", "timestamp", { unique:false});
                     }
 
-                    var requestStore = db.createObjectStore("requests", {keyPath:"id"});
-                    var collectionsStore = db.createObjectStore("collections", {keyPath:"id"});
-                    var collectionRequestsStore = db.createObjectStore("collection_requests", {keyPath:"id"});
+                    if (!db.objectStoreNames.contains("collection_requests")) {
+                        var collectionRequestsStore = db.createObjectStore("collection_requests", {keyPath:"id"});
+                        collectionRequestsStore.createIndex("timestamp", "timestamp", { unique:false});
+                        collectionRequestsStore.createIndex("collectionId", "collectionId", { unique:false});
+                    }
 
-                    requestStore.createIndex("timestamp", "timestamp", { unique:false});
-                    collectionsStore.createIndex("timestamp", "timestamp", { unique:false});
-
-                    collectionRequestsStore.createIndex("timestamp", "timestamp", { unique:false});
-                    collectionRequestsStore.createIndex("collectionId", "collectionId", { unique:false});
+                    if (!db.objectStoreNames.contains("environments")) {
+                        var environmentsStore = db.createObjectStore("environments", {keyPath:"id"});
+                        environmentsStore.createIndex("timestamp", "timestamp", { unique:false});
+                        environmentsStore.createIndex("id", "id", { unique:false});
+                    }
 
                     postman.history.getAllRequests();
                     postman.collections.getAllCollections();
+                    postman.envManager.getAllEnvironments();
+                };
+
+                setVrequest.onupgradeneeded = function(evt) {
                 };
             }
             else {
                 postman.history.getAllRequests();
                 postman.collections.getAllCollections();
+                postman.envManager.getAllEnvironments();
             }
 
         };
@@ -2242,7 +2297,6 @@ postman.indexedDB = {
         };
     },
 
-    //@todo Why is this unused?
     deleteAllCollectionRequests:function (id) {
         var db = postman.indexedDB.db;
         var trans = db.transaction(["collection_requests"], IDBTransaction.READ_WRITE);
@@ -2283,21 +2337,111 @@ postman.indexedDB = {
         request.onerror = function (e) {
             console.log(e);
         };
+    },
+
+    environments: {
+        addEnvironment:function (environment, callback) {
+            var db = postman.indexedDB.db;
+            var trans = db.transaction(["environments"], IDBTransaction.READ_WRITE);
+            var store = trans.objectStore("environments");
+            var request = store.put(environment);
+
+            request.onsuccess = function (e) {
+                callback(environment);
+            };
+
+            request.onerror = function (e) {
+                console.log(e);
+            };
+        },
+
+        getEnvironment: function(id, callback) {
+            var db = postman.indexedDB.db;
+            var trans = db.transaction(["environments"], IDBTransaction.READ_WRITE);
+            var store = trans.objectStore("environments");
+
+            //Get everything in the store
+            var cursorRequest = store.get(id);
+
+            cursorRequest.onsuccess = function (e) {
+                var result = e.target.result;
+                callback(result);
+            };
+            cursorRequest.onerror = postman.indexedDB.onerror;
+        },
+
+        deleteEnvironment: function(id, callback) {
+            var db = postman.indexedDB.db;
+            var trans = db.transaction(["environments"], IDBTransaction.READ_WRITE);
+            var store = trans.objectStore(["environments"]);
+
+            var request = store.delete(id);
+
+            request.onsuccess = function () {
+                callback(id);
+            };
+
+            request.onerror = function (e) {
+                console.log(e);
+            };
+        },
+
+        getAllEnvironments: function(callback) {
+            var db = postman.indexedDB.db;
+            if (db == null) {
+                return;
+            }
+
+            var trans = db.transaction(["environments"], IDBTransaction.READ_WRITE);
+            var store = trans.objectStore("environments");
+
+            //Get everything in the store
+            var keyRange = IDBKeyRange.lowerBound(0);
+            var index = store.index("timestamp");
+            var cursorRequest = index.openCursor(keyRange);
+            var environments = [];
+
+            cursorRequest.onsuccess = function (e) {
+                var result = e.target.result;
+
+                if (!result) {
+                    callback(environments);
+                    return;
+                }
+
+                var request = result.value;
+                environments.push(request);
+
+                //This wil call onsuccess again and again until no more request is left
+                result['continue']();
+            };
+
+            cursorRequest.onerror = postman.indexedDB.onerror;
+        },
+
+        updateEnvironment: function(environment, callback) {
+            var db = postman.indexedDB.db;
+            var trans = db.transaction(["environments"], IDBTransaction.READ_WRITE);
+            var store = trans.objectStore("environments");
+
+            var boundKeyRange = IDBKeyRange.only(environment.id);
+            var request = store.put(environment);
+
+            request.onsuccess = function (e) {
+                callback(environment);
+            };
+
+            request.onerror = function (e) {
+                console.log(e.value);
+            };
+        }
     }
 };
 
 postman.envManager = {
-    environments:[
-        {
-            id:1,
-            name:"Facebook-Production"
-        },
-        {
-            id:2,
-            name:"Facebook-Staging"
-        }
-    ],
+    environments:[],
 
+    selectedEnv: null,
     selectedEnvironmentId: "",
 
     init:function () {
@@ -2305,7 +2449,7 @@ postman.envManager = {
 
         $('#environments-list').on("click", ".environment-action-delete", function () {
             var id = $(this).attr('data-id');
-            console.log(id);
+            postman.envManager.deleteEnvironment(id);
         });
 
         $('#environments-list').on("click", ".environment-action-edit", function () {
@@ -2325,6 +2469,38 @@ postman.envManager = {
     addNewEnvironment:function () {
         $('#environments-list-wrapper').css("display", "none");
         $('#environment-editor').css("display", "block");
+        $('#environment-selector').on("click", ".environment-list-item", function() {
+            var id = $(this).attr('data-id');
+            var selectedEnv = postman.envManager.getEnvironmentFromId(id);
+            postman.envManager.selectedEnv = selectedEnv;
+            postman.settings.selectedEnvironmentId = selectedEnv.id;
+            localStorage['selectedEnvironmentId'] = selectedEnv.id;
+            $('#environment-selector .environment-list-item-selected').html(selectedEnv.name);
+        });
+
+        $('.environments-actions-add').on("click", function() {
+            postman.envManager.showEditor();
+        });
+
+        $('.environments-actions-add-submit').on("click", function() {
+            var id = $('#environment-editor-id').val();
+            if(id === "0") {
+                postman.envManager.addEnvironment();
+            }
+            else {
+                postman.envManager.updateEnvironment();
+            }
+
+            $('#environment-editor-name').val("");
+            $('#environment-keyvaleditor').keyvalueeditor('reset', []);
+
+        });
+
+        $('.environments-actions-add-back').on("click", function() {
+            postman.envManager.showSelector();
+            $('#environment-editor-name').val("");
+            $('#environment-keyvaleditor').keyvalueeditor('reset', []);
+        });
 
         var params = {
             placeHolderKey:"Key",
@@ -2334,6 +2510,56 @@ postman.envManager = {
 
         $('#environment-keyvaleditor').keyvalueeditor('init', params);
         $('#modalEnvironments .modal-footer').css("display", "block");
+    },
+
+    getEnvironmentFromId: function(id) {
+        var i = 0;
+        var environments = postman.envManager.environments;
+        var count = environments.length;
+        for(i = 0; i < count; i++) {
+            var env = environments[i];
+            if(id === env.id) {
+                return env;
+            }
+        }
+
+        return false;
+    },
+
+    processString: function(string, values) {
+        console.log(string);
+        var count = values.length;
+        var finalString = string;
+        for(var i = 0; i < count; i++) {
+            var patString = "${" + values[i].key + "}";
+            var pattern = new RegExp(patString, 'g');
+            finalString = finalString.replace(patString, values[i].value);
+        }
+
+        console.log(finalString);
+        return finalString;
+    },
+
+    getAllEnvironments: function() {
+        postman.indexedDB.environments.getAllEnvironments(function(environments) {
+            $('#environment-selector .dropdown-menu').html("");
+            $('#environments-list tbody').html("");
+            postman.envManager.environments = environments;
+            $('#itemEnvironmentSelector').tmpl(environments).appendTo('#environment-selector .dropdown-menu');
+            $('#itemEnvironmentList').tmpl(environments).appendTo('#environments-list tbody');
+            $('#environmentSelectorActions').tmpl([{}]).appendTo('#environment-selector .dropdown-menu');
+
+            var selectedEnvId = postman.settings.selectedEnvironmentId;
+            var selectedEnv = postman.envManager.getEnvironmentFromId(selectedEnvId);
+            if(selectedEnv) {
+                postman.envManager.selectedEnv = selectedEnv;
+                $('#environment-selector .environment-list-item-selected').html(selectedEnv.name);
+            }
+            else {
+                postman.envManager.selectedEnv = null;
+                $('#environment-selector .environment-list-item-selected').html("No environment");
+            }
+        })
     },
 
     showSelector:function () {
@@ -2343,20 +2569,63 @@ postman.envManager = {
     },
 
     showEditor:function (id) {
-        console.log(id);
+        if(id) {
+            var environment = postman.envManager.getEnvironmentFromId(id);
+            $('#environment-editor-name').val(environment.name);
+            $('#environment-editor-id').val(id);
+            $('#environment-keyvaleditor').keyvalueeditor('reset', environment.values);
+        }
+        else {
+            $('#environment-editor-id').val(0);
+        }
+
         $('#environments-list-wrapper').css("display", "none");
         $('#environment-editor').css("display", "block");
-        $('#environment-editor-name').val("Something");
 
-        var params = {
-            placeHolderKey:"Key",
-            placeHolderValue:"Value",
-            deleteButton:'<img class="deleteButton" src="img/delete.png">'
+
+        $('#modalEnvironments .modal-footer').css("display", "block");
+    },
+
+    addEnvironment: function(id) {
+        var name = $('#environment-editor-name').val();
+        var values = $('#environment-keyvaleditor').keyvalueeditor('getValues');
+        var environment = {
+            id: guid(),
+            name: name,
+            values: values,
+            timestamp:new Date().getTime()
         };
 
-        $('#environment-keyvaleditor').keyvalueeditor('init', params);
-        $('#modalEnvironments .modal-footer').css("display", "block");
+        postman.indexedDB.environments.addEnvironment(environment, function() {
+            postman.envManager.getAllEnvironments();
+            postman.envManager.showSelector();
+        });
+    },
+
+    updateEnvironment: function() {
+        var id = $('#environment-editor-id').val();
+        var name = $('#environment-editor-name').val();
+        var values = $('#environment-keyvaleditor').keyvalueeditor('getValues');
+        var environment = {
+            id: id,
+            name: name,
+            values: values,
+            timestamp:new Date().getTime()
+        };
+
+        postman.indexedDB.environments.updateEnvironment(environment, function() {
+            postman.envManager.getAllEnvironments();
+            postman.envManager.showSelector();
+        });
+    },
+
+    deleteEnvironment: function(id) {
+        postman.indexedDB.environments.deleteEnvironment(id, function() {
+            postman.envManager.getAllEnvironments();
+            postman.envManager.showSelector();
+        });
     }
+
 };
 
 $(document).ready(function () {

@@ -98,15 +98,10 @@
     <div id="environment-selector-wrapper">
         <div id="environment-selector">
             <div class="btn-group">
-                <a data-toggle="dropdown" href="#">Facebook-Production
+                <a data-toggle="dropdown" href="javascript:void(0);">
+                    <span class="environment-list-item-selected">No environment</span>
                     <span class="caret" style="margin-top: 8px;"></span></a>
                 <ul class="dropdown-menu">
-                    <li><a href="javascript:void(0);">Staging</a></li>
-                    <li><a href="javascript:void(0);">Debug</a></li>
-                    <li><a href="javascript:void(0);">TeliportMe</a></li>
-                    <li class="divider"></li>
-                    <li><a href="#modalEnvironments" data-toggle="modal"
-                           data-backdrop="static" data-keyboard="true">Manage environments</a></li>
                 </ul>
             </div>
         </div>
@@ -252,11 +247,13 @@
             <option value="options">OPTIONS</option>
         </select>
     </div>
-    <div class="span2">
+    <div class="span3">
         <span class="buttonLayout">
-            <button href="javascript:void(0);" class="btn btn-small" id="url-keyvaleditor-actions-open">Edit params
+            <button href="javascript:void(0);" class="btn btn-small" id="url-keyvaleditor-actions-open"><i
+                    class="icon-edit"></i> URL params
             </button>
-            <button href="javascript:void(0);" class="btn btn-small" id="headers-keyvaleditor-actions-open">Edit headers
+            <button href="javascript:void(0);" class="btn btn-small" id="headers-keyvaleditor-actions-open"><i
+                    class="icon-edit"></i> Headers (<span class="headers-count">0</span>)
             </button>
         </span>
     </div>
@@ -333,25 +330,25 @@
         <div id="responsePrint">
             <div id="respData" style="display:none">
                 <div id="respDataOptions" class="clearfix">
-                <div id="langFormat">
-                    <ul class="nav nav-pills">
-                        <li id="langFormat-parsed" class="active">
-                            <a href="javascript:void(0);" data-type="parsed">
-                                Parsed
-                            </a>
-                        </li>
-                        <li id="langFormat-raw">
-                            <a href="javascript:void(0);" data-type="raw">
-                                Raw
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-                <div id="respDataActions">
-                    <a href="javascript:void(0);" id="responseBodyToggle">
-                        <img src="img/full-screen-alt-4.png" width="24px" height="24px"/>
-                    </a>
-                </div>
+                    <div id="langFormat">
+                        <ul class="nav nav-pills">
+                            <li id="langFormat-parsed" class="active">
+                                <a href="javascript:void(0);" data-type="parsed">
+                                    Parsed
+                                </a>
+                            </li>
+                            <li id="langFormat-raw">
+                                <a href="javascript:void(0);" data-type="raw">
+                                    Raw
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div id="respDataActions">
+                        <a href="javascript:void(0);" id="responseBodyToggle">
+                            <img src="img/full-screen-alt-4.png" width="24px" height="24px"/>
+                        </a>
+                    </div>
                 </div>
                 <div name="responseData" id="responseData" contenteditable="true">
                     <div id="responseAsText">
@@ -453,7 +450,7 @@
 
     <div class="modal-body">
         <div id="environments-list-wrapper">
-            <button class="btn btn-small environment-action-add">
+            <button class="btn btn-small environments-actions-add">
                 Add new environment
             </button>
             <table id="environments-list" class="table table-striped table-bordered"
@@ -463,13 +460,14 @@
             </table>
         </div>
         <div id="environment-editor">
-            <input type="text" name="environment-editor-name" id="environment-editor-name" class="cleanInput"/>
-
+            <input type="text" name="environment-editor-name" id="environment-editor-name" class="cleanInput" placeholder="New environment"/>
+            <input type="hidden" name="environment-editor-id" id="environment-editor-id" value="0" class="cleanInput"/>
             <div id="environment-keyvaleditor"></div>
         </div>
     </div>
     <div class="modal-footer">
-        <a href="javascript:void(0);" class="btn btn-primary">Submit</a>
+        <a href="javascript:void(0);" class="btn environments-actions-add-back">Back to list</a>
+        <a href="javascript:void(0);" class="btn btn-primary environments-actions-add-submit">Submit</a>
     </div>
 </div>
 <div id="modalSettings" class="modal fade">
@@ -644,7 +642,7 @@
     <option value="${id}">${name}</option>
 </script>
 <script id="itemResponseCode" type="text/x-jquery-tmpl">
-    <div class="responseCode" data-placement="top" data-original-title="${code} ${name}" data-content="${detail}"
+    <div class="responseCode" data-placement="bottom" data-original-title="${code} ${name}" data-content="${detail}"
          rel="popover"><span class="label">Status</span>
 
         <div class="data">${code} ${name}</div>
@@ -741,6 +739,14 @@
         </a>
         {{/if}}
     </div>
+</script>
+<script id="itemEnvironmentSelector" type="text/x-jquery-tmpl">
+    <li><a href="javascript:void(0);" class="environment-list-item" data-id="${id}">${name}</a></li>
+</script>
+<script id="environmentSelectorActions" type="text/x-jquery-tmpl">
+    <li class="divider"></li>
+    <li><a href="#modalEnvironments" data-toggle="modal"
+           data-backdrop="static" data-keyboard="true">Manage environments</a></li>
 </script>
 <script type="text/javascript" src="js/jquery.min.js"></script>
 <script type="text/javascript" src="js/underscore-min.js"></script>
