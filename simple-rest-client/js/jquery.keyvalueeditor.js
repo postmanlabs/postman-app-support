@@ -214,6 +214,7 @@
                 }
             });
 
+            console.log(rows);
             return rows;
         },
 
@@ -232,8 +233,6 @@
             if(params) {
                 methods.addParams(params, state);
             }
-
-            state.settings.onReset();
         },
 
         add: function(params) {
@@ -242,8 +241,6 @@
             if(params) {
                 methods.addParams(params, state);
             }
-
-            state.settings.onParamAddition();
         },
 
         destroy: function() {
@@ -272,9 +269,7 @@
         placeHolderValue: "Value",
         valueTypes: ["text"],
         onBlurElement: function() {},
-        onDeleteRow: function() {},
-        onReset: function(values) {},
-        onParamAddition: function() {}
+        onDeleteRow: function() {}
     };
 
 })(jQuery);

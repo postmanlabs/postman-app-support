@@ -112,7 +112,7 @@ postman.filesystem = {
             default:
                 msg = 'Unknown Error';
                 break;
-        }
+        };
 
         console.log('Error: ' + msg);
     },
@@ -121,52 +121,51 @@ postman.filesystem = {
         window.requestFileSystem(window.TEMPORARY, 5 * 1024 * 1024, this.onInitFs, this.errorHandler);
     },
 
-    removeFileIfExists:function (name, callback) {
-        postman.filesystem.fs.root.getFile(name,
-            {create:false}, function (fileEntry) {
-                fileEntry.remove(function () {
-                    callback();
-                }, function() {
-                    callback();
+    saveCollections:function () {
+        console.log("Save collections in file");
+        postman.indexedDB.getCollections(function (cs) {
+            var collections = cs;
+
+            var collectionCount = collections.length;
+
+            for (var i = 0; i < collectionCount; i++) {
+                var collection = collections[i].id;
+                postman.indexedDB.getAllRequestsInCollection(collections[i].id, function (requests) {
+                    var json = JSON.stringify(requests);
+                    console.log(requests);
+                    postman.filesystem.fs.root.getFile(requests[0].collectionId,
+                        {create:true},
+                        function (fileEntry) {
+                            fileEntry.createWriter(function(fileWriter) {
+
+                                fileWriter.onwriteend = function(e) {
+                                    console.log('Write completed.');
+                                    console.log(fileEntry);
+                                    var properties = {
+                                        url:fileEntry.toURL()
+                                    };
+
+                                    chrome.tabs.create(properties, function (tab) {
+                                    });
+                                };
+
+                                fileWriter.onerror = function(e) {
+                                    console.log('Write failed: ' + e.toString());
+                                };
+
+                                // Create a new Blob and write it to log.txt.
+                                var bb = new window.WebKitBlobBuilder(); // Note: window.WebKitBlobBuilder in Chrome 12.
+                                bb.append(json);
+                                fileWriter.write(bb.getBlob('application/json'));
+
+                            }, postman.filesystem.errorHandler);
+
+
+                        }, postman.filesystem.errorHandler);
+
+
                 });
-            }, function() {
-                callback();
-            });
-    },
-
-    saveAndOpenFile:function (name, data, type, callback) {
-        postman.filesystem.removeFileIfExists(name, function() {
-            postman.filesystem.fs.root.getFile(name,
-                {create:true},
-                function (fileEntry) {
-                    fileEntry.createWriter(function (fileWriter) {
-
-                        fileWriter.onwriteend = function (e) {
-                            console.log('Write completed.');
-                            console.log(fileEntry);
-                            var properties = {
-                                url:fileEntry.toURL()
-                            };
-
-                            chrome.tabs.create(properties, function (tab) {});
-                            callback();
-                        };
-
-                        fileWriter.onerror = function (e) {
-                            console.log('Write failed: ' + e.toString());
-                            callback();
-                        };
-
-                        // Create a new Blob and write it to log.txt.
-                        var bb = new window.WebKitBlobBuilder(); // Note: window.WebKitBlobBuilder in Chrome 12.
-                        bb.append(data);
-                        fileWriter.write(bb.getBlob('text/plain'));
-
-                    }, postman.filesystem.errorHandler);
-
-
-                }, postman.filesystem.errorHandler
-            );
+            }
         });
 
     }
@@ -438,7 +437,6 @@ postman.currentRequest = {
                 }
 
                 postman.currentRequest.headers = newHeaders;
-                $('#headers-keyvaleditor-actions-open .headers-count').html(newHeaders.length);
             },
 
             onBlurElement:function () {
@@ -460,12 +458,6 @@ postman.currentRequest = {
                 }
 
                 postman.currentRequest.headers = newHeaders;
-                $('#headers-keyvaleditor-actions-open .headers-count').html(newHeaders.length);
-            },
-
-            onReset: function() {
-                var hs = $('#headers-keyvaleditor').keyvalueeditor('getValues');
-                $('#headers-keyvaleditor-actions-open .headers-count').html(hs.length);
             }
         };
 
@@ -715,13 +707,9 @@ postman.currentRequest = {
                 $('#itemResponseCode').tmpl([responseCode]).appendTo('#pstatus');
                 $('.responseCode').popover();
 
-                //This sets loadHeders
                 this.loadHeaders(response.getAllResponseHeaders());
 
-
-                $('.response-tabs li[data-section="headers"]').html("Headers (" + this.headers.length + ")");
-
-
+                $("#respHeaders").css("display", "block");
                 $("#respData").css("display", "block");
 
                 $("#loader").css("display", "none");
@@ -841,18 +829,7 @@ postman.currentRequest = {
                 $('#respData').css("background-color", "white");
                 $('#respData').css("padding", "0px");
             }
-        },
-
-        showHeaders: function() {
-            $('#responsePrint').css("display", "none");
-            $('#respHeaders').css("display", "block");
-        },
-
-        showBody: function() {
-            $('#responsePrint').css("display", "block");
-            $('#respHeaders').css("display", "none");
         }
-
     },
 
     startNew:function () {
@@ -1466,106 +1443,6 @@ postman.collections = {
             var id = $(this).attr('data-id');
             postman.collections.deleteCollection(id);
         });
-
-        $('#collectionItems').on("click", ".collection-actions-download", function () {
-            var id = $(this).attr('data-id');
-            postman.collections.saveCollection(id);
-        });
-
-        var dropZone = document.getElementById('import-collection-dropzone');
-        dropZone.addEventListener('dragover', function (evt) {
-            console.log("Something happened here");
-            evt.stopPropagation();
-            evt.preventDefault();
-            evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
-        }, false);
-
-        dropZone.addEventListener('drop', function (evt) {
-            console.log("File dropped");
-            evt.stopPropagation();
-            evt.preventDefault();
-            var files = evt.dataTransfer.files; // FileList object.
-
-            postman.collections.importCollections(files);
-            $('#modalImportCollections').modal('hide');
-        }, false);
-    },
-
-    saveCollection:function (id) {
-        postman.indexedDB.getCollection(id, function (data) {
-            var collection = data;
-            postman.indexedDB.getAllRequestsInCollection(id, function (data) {
-                collection['requests'] = data;
-                var name = collection['name'] + ".json";
-                var type = "application/json";
-                var filedata = JSON.stringify(collection);
-                console.log(filedata, collection);
-                postman.filesystem.saveAndOpenFile(name, filedata, type, function () {
-                });
-            });
-        });
-    },
-
-    importCollections:function (files) {
-        // Loop through the FileList
-        var f;
-        for (var i = 0, f; f = files[i]; i++) {
-            var reader = new FileReader();
-
-            // Closure to capture the file information.
-            reader.onload = (function (theFile) {
-                return function (e) {
-                    // Render thumbnail.
-                    var data = e.currentTarget.result;
-                    console.log(data);
-                    var collection = JSON.parse(data);
-                    postman.indexedDB.getCollection(collection.id, function (data) {
-                        if (data) {
-                            //Clear away the HTML
-                            postman.layout.sidebar.emptyCollectionInSidebar(collection.id);
-                            postman.indexedDB.deleteCollection(collection.id, function (c) {
-                                postman.indexedDB.addCollection(collection, function (c) {
-                                    for (var i = 0; i < collection.requests.length; i++) {
-                                        var request = collection.requests[i];
-                                        postman.indexedDB.addCollectionRequest(request, function (req) {
-                                            var targetElement = "#collectionRequests-" + req.collectionId;
-                                            postman.urlCache.addUrl(req.url);
-
-                                            req.url = limitStringLineWidth(req.url, 43);
-                                            $('#itemCollectionSidebarRequest').tmpl([req]).appendTo(targetElement);
-                                            postman.layout.refreshScrollPanes();
-
-                                            console.log("Added request", req);
-                                        });
-                                    }
-                                });
-                            });
-                        }
-                        else {
-                            postman.indexedDB.addCollection(collection, function (c) {
-                                $('#itemCollectionSelectorList').tmpl([collection]).appendTo('#selectCollection');
-                                $('#itemCollectionSidebarHead').tmpl([collection]).appendTo('#collectionItems');
-
-                                for (var i = 0; i < collection.requests.length; i++) {
-                                    var request = collection.requests[i];
-                                    postman.indexedDB.addCollectionRequest(request, function (req) {
-                                        var targetElement = "#collectionRequests-" + req.collectionId;
-                                        postman.urlCache.addUrl(req.url);
-
-                                        req.url = limitStringLineWidth(req.url, 43);
-                                        $('#itemCollectionSidebarRequest').tmpl([req]).appendTo(targetElement);
-                                        postman.layout.refreshScrollPanes();
-                                    });
-                                }
-                            });
-                        }
-                    });
-                };
-            })(f);
-
-            // Read in the image file as a data URL.
-            reader.readAsText(f);
-        }
     },
 
     getCollectionRequest:function (id) {
@@ -1599,8 +1476,7 @@ postman.collections = {
             postman.indexedDB.addCollection(collection, function (collection) {
                 $('#messageNoCollection').remove();
                 postman.collections.getAllCollections();
-                postman.indexedDB.getAllRequestsInCollection(collection.id, function () {
-                });
+                postman.indexedDB.getAllRequestsInCollection(collection.id);
             });
 
             $('#newCollectionBlank').val("");
@@ -1712,6 +1588,13 @@ postman.collections = {
 
             var target = '#selectCollection option[value="' + id + '"]';
             $(target).remove();
+
+            var numCollections = $('#collectionItems').children().length;
+            if (numCollections === 1) {
+                $('#messageNoCollectionTmpl').tmpl([
+                    {}
+                ]).appendTo('#sidebarSection-collections');
+            }
         });
     }
 };
@@ -1786,18 +1669,6 @@ postman.layout = {
         $('#modalAboutPostman').click(function () {
             postman.layout.attachSocialButtons();
             return false;
-        });
-
-        $('.response-tabs').on("click", "li", function() {
-            $('.response-tabs li').removeClass("active");
-            $(this).addClass("active");
-            var section = $(this).attr('data-section');
-            if(section === "body") {
-                postman.currentRequest.response.showBody();
-            }
-            else if(section === "headers") {
-                postman.currentRequest.response.showHeaders();
-            }
         });
 
         this.setLayout();
@@ -1905,11 +1776,6 @@ postman.layout = {
             });
         },
 
-        emptyCollectionInSidebar:function (id) {
-            console.log('#collectionRequests-' + id);
-            $('#collectionRequests-' + id).html("");
-        },
-
         removeRequestFromHistory:function (id, toAnimate) {
             if (toAnimate) {
                 $('#sidebarRequest-' + id).slideUp(100);
@@ -1929,23 +1795,22 @@ postman.layout = {
         },
 
         removeCollection:function (id) {
-            $('#collection-' + id).remove();
+            $('#collection-' + id).slideUp(100);
             postman.layout.refreshScrollPanes();
         }
     }
 };
 
 postman.indexedDB = {
-    onerror:function (event, callback) {
+    onerror:function (event) {
         console.log(event);
-        callback();
     },
 
     open:function () {
         var request = indexedDB.open("postman", "POSTman request history");
         console.log("Opening the indexedDB");
         request.onsuccess = function (e) {
-            var v = "0.43";
+            var v = "0.42";
             postman.indexedDB.db = e.target.result;
             var db = postman.indexedDB.db;
 
@@ -1960,9 +1825,6 @@ postman.indexedDB = {
 
                 setVrequest.onsuccess = function (e) {
                     console.log(e);
-
-                    //Only create if does not already exist
-
                     if (db.objectStoreNames.contains("requests")) {
                         db.deleteObjectStore("requests");
                     }
@@ -2040,21 +1902,6 @@ postman.indexedDB = {
         collectionRequest.onerror = function (e) {
             console.log(e.value);
         };
-    },
-
-    getCollection:function (id, callback) {
-        var db = postman.indexedDB.db;
-        var trans = db.transaction(["collections"], IDBTransaction.READ_WRITE);
-        var store = trans.objectStore("collections");
-
-        //Get everything in the store
-        var cursorRequest = store.get(id);
-
-        cursorRequest.onsuccess = function (e) {
-            var result = e.target.result;
-            callback(result);
-        };
-        cursorRequest.onerror = postman.indexedDB.onerror;
     },
 
     getCollections:function (callback) {
@@ -2257,6 +2104,7 @@ postman.indexedDB = {
         };
     },
 
+    //@todo Why is this unused?
     deleteAllCollectionRequests:function (id) {
         var db = postman.indexedDB.db;
         var trans = db.transaction(["collection_requests"], IDBTransaction.READ_WRITE);
@@ -2290,119 +2138,13 @@ postman.indexedDB = {
         var request = store.delete(id);
 
         request.onsuccess = function () {
-            postman.indexedDB.deleteAllCollectionRequests(id);
             callback(id);
         };
 
         request.onerror = function (e) {
             console.log(e);
         };
-    },
-
-    environments: {
-        addEnvironment:function (environment, callback) {
-            var db = postman.indexedDB.db;
-            var trans = db.transaction(["environments"], IDBTransaction.READ_WRITE);
-            var store = trans.objectStore("environments");
-            var request = store.put(environment);
-
-            request.onsuccess = function (e) {
-                callback(environment);
-            };
-
-            request.onerror = function (e) {
-                console.log(e.value);
-            };
-        },
-
-        getEnvironment: function(id, callback) {
-            var db = postman.indexedDB.db;
-            var trans = db.transaction(["environments"], IDBTransaction.READ_WRITE);
-            var store = trans.objectStore("environments");
-
-            //Get everything in the store
-            var cursorRequest = store.get(id);
-
-            cursorRequest.onsuccess = function (e) {
-                var result = e.target.result;
-                callback(result);
-            };
-            cursorRequest.onerror = postman.indexedDB.onerror;
-        },
-
-        deleteEnvironment: function(id, callback) {
-            var db = postman.indexedDB.db;
-            var trans = db.transaction(["environments"], IDBTransaction.READ_WRITE);
-            var store = trans.objectStore(["environments"]);
-
-            var request = store.delete(id);
-
-            request.onsuccess = function () {
-                callback(id);
-            };
-
-            request.onerror = function (e) {
-                console.log(e);
-            };
-        },
-
-        getAllEnvironments: function(callback) {
-            var db = postman.indexedDB.db;
-            if (db == null) {
-                return;
-            }
-
-            var trans = db.transaction(["environments"], IDBTransaction.READ_WRITE);
-            var store = trans.objectStore("environments");
-
-            //Get everything in the store
-            var keyRange = IDBKeyRange.lowerBound(0);
-            var index = store.index("timestamp");
-            var cursorRequest = index.openCursor(keyRange);
-            var environments = [];
-
-            cursorRequest.onsuccess = function (e) {
-                var result = e.target.result;
-
-                if (!result) {
-                    callback(environments);
-                    return;
-                }
-
-                var request = result.value;
-                environments.push(request);
-
-                //This wil call onsuccess again and again until no more request is left
-                result['continue']();
-            };
-
-            cursorRequest.onerror = postman.indexedDB.onerror;
-        },
-
-        updateEnvironment: function(environment, callback) {
-            var db = postman.indexedDB.db;
-            var trans = db.transaction(["environments"], IDBTransaction.READ_WRITE);
-            var store = trans.objectStore("environments");
-            var boundKeyRange = IDBKeyRange.only(environment.id);
-            var request = store.openCursor(boundKeyRange);
-
-            request.onsuccess = function (e) {
-                var cursor = e.target.result;
-                if(cursor) {
-                    cursor.update(environment);
-                    cursor['continue']();
-                }
-                else {
-                    callback(environment);
-                }
-            };
-
-            request.onerror = function (e) {
-                console.log(e.value);
-            };
-        }
     }
-
 };
 
 postman.envManager = {
@@ -2417,10 +2159,7 @@ postman.envManager = {
         }
     ],
 
-    selectedEnv: {},
-
     init:function () {
-        this.loadEnvironments();
         $('#itemEnvironmentList').tmpl(this.environments).appendTo('#environments-list');
 
         $('#environments-list').on("click", ".environment-action-delete", function () {
@@ -2436,31 +2175,6 @@ postman.envManager = {
         $('.environment-action-back').on("click", function () {
             postman.envManager.showSelector();
         });
-
-        $('#environment-selector').on("click", ".environment-list-item", function() {
-            var id = parseInt($(this).attr('data-id'), 10);
-            var selectedEnv = postman.envManager.getEnvironmentFromId(id);
-            $('#environment-selector .environment-list-item-selected').html(selectedEnv.name);
-        });
-    },
-
-    getEnvironmentFromId: function(id) {
-        var i = 0;
-        var environments = postman.envManager.environments;
-        var count = environments.length;
-        for(i = 0; i < count; i++) {
-            var env = environments[i];
-            if(id === env.id) {
-                return env;
-            }
-        }
-
-        return false;
-    },
-
-    loadEnvironments: function() {
-        $('#itemEnvironmentSelector').tmpl(this.environments).appendTo('#environment-selector .dropdown-menu');
-        $('#environmentSelectorActions').tmpl([{}]).appendTo('#environment-selector .dropdown-menu');
     },
 
     showSelector:function () {
