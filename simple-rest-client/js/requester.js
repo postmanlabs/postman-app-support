@@ -1945,7 +1945,7 @@ postman.indexedDB = {
         var request = indexedDB.open("postman", "POSTman request history");
         console.log("Opening the indexedDB");
         request.onsuccess = function (e) {
-            var v = "0.42";
+            var v = "0.43";
             postman.indexedDB.db = e.target.result;
             var db = postman.indexedDB.db;
 
@@ -1960,6 +1960,9 @@ postman.indexedDB = {
 
                 setVrequest.onsuccess = function (e) {
                     console.log(e);
+
+                    //Only create if does not already exist
+
                     if (db.objectStoreNames.contains("requests")) {
                         db.deleteObjectStore("requests");
                     }
@@ -2254,7 +2257,6 @@ postman.indexedDB = {
         };
     },
 
-    //@todo Why is this unused?
     deleteAllCollectionRequests:function (id) {
         var db = postman.indexedDB.db;
         var trans = db.transaction(["collection_requests"], IDBTransaction.READ_WRITE);
@@ -2295,7 +2297,112 @@ postman.indexedDB = {
         request.onerror = function (e) {
             console.log(e);
         };
+    },
+
+    environments: {
+        addEnvironment:function (environment, callback) {
+            var db = postman.indexedDB.db;
+            var trans = db.transaction(["environments"], IDBTransaction.READ_WRITE);
+            var store = trans.objectStore("environments");
+            var request = store.put(environment);
+
+            request.onsuccess = function (e) {
+                callback(environment);
+            };
+
+            request.onerror = function (e) {
+                console.log(e.value);
+            };
+        },
+
+        getEnvironment: function(id, callback) {
+            var db = postman.indexedDB.db;
+            var trans = db.transaction(["environments"], IDBTransaction.READ_WRITE);
+            var store = trans.objectStore("environments");
+
+            //Get everything in the store
+            var cursorRequest = store.get(id);
+
+            cursorRequest.onsuccess = function (e) {
+                var result = e.target.result;
+                callback(result);
+            };
+            cursorRequest.onerror = postman.indexedDB.onerror;
+        },
+
+        deleteEnvironment: function(id, callback) {
+            var db = postman.indexedDB.db;
+            var trans = db.transaction(["environments"], IDBTransaction.READ_WRITE);
+            var store = trans.objectStore(["environments"]);
+
+            var request = store.delete(id);
+
+            request.onsuccess = function () {
+                callback(id);
+            };
+
+            request.onerror = function (e) {
+                console.log(e);
+            };
+        },
+
+        getAllEnvironments: function(callback) {
+            var db = postman.indexedDB.db;
+            if (db == null) {
+                return;
+            }
+
+            var trans = db.transaction(["environments"], IDBTransaction.READ_WRITE);
+            var store = trans.objectStore("environments");
+
+            //Get everything in the store
+            var keyRange = IDBKeyRange.lowerBound(0);
+            var index = store.index("timestamp");
+            var cursorRequest = index.openCursor(keyRange);
+            var environments = [];
+
+            cursorRequest.onsuccess = function (e) {
+                var result = e.target.result;
+
+                if (!result) {
+                    callback(environments);
+                    return;
+                }
+
+                var request = result.value;
+                environments.push(request);
+
+                //This wil call onsuccess again and again until no more request is left
+                result['continue']();
+            };
+
+            cursorRequest.onerror = postman.indexedDB.onerror;
+        },
+
+        updateEnvironment: function(environment, callback) {
+            var db = postman.indexedDB.db;
+            var trans = db.transaction(["environments"], IDBTransaction.READ_WRITE);
+            var store = trans.objectStore("environments");
+            var boundKeyRange = IDBKeyRange.only(environment.id);
+            var request = store.openCursor(boundKeyRange);
+
+            request.onsuccess = function (e) {
+                var cursor = e.target.result;
+                if(cursor) {
+                    cursor.update(environment);
+                    cursor['continue']();
+                }
+                else {
+                    callback(environment);
+                }
+            };
+
+            request.onerror = function (e) {
+                console.log(e.value);
+            };
+        }
     }
+
 };
 
 postman.envManager = {
@@ -2310,7 +2417,10 @@ postman.envManager = {
         }
     ],
 
+    selectedEnv: {},
+
     init:function () {
+        this.loadEnvironments();
         $('#itemEnvironmentList').tmpl(this.environments).appendTo('#environments-list');
 
         $('#environments-list').on("click", ".environment-action-delete", function () {
@@ -2326,6 +2436,31 @@ postman.envManager = {
         $('.environment-action-back').on("click", function () {
             postman.envManager.showSelector();
         });
+
+        $('#environment-selector').on("click", ".environment-list-item", function() {
+            var id = parseInt($(this).attr('data-id'), 10);
+            var selectedEnv = postman.envManager.getEnvironmentFromId(id);
+            $('#environment-selector .environment-list-item-selected').html(selectedEnv.name);
+        });
+    },
+
+    getEnvironmentFromId: function(id) {
+        var i = 0;
+        var environments = postman.envManager.environments;
+        var count = environments.length;
+        for(i = 0; i < count; i++) {
+            var env = environments[i];
+            if(id === env.id) {
+                return env;
+            }
+        }
+
+        return false;
+    },
+
+    loadEnvironments: function() {
+        $('#itemEnvironmentSelector').tmpl(this.environments).appendTo('#environment-selector .dropdown-menu');
+        $('#environmentSelectorActions').tmpl([{}]).appendTo('#environment-selector .dropdown-menu');
     },
 
     showSelector:function () {
