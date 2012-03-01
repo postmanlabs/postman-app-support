@@ -445,7 +445,7 @@
 
     <div class="modal-body">
         <p>Drag and drop a Postman collection file into the area below.</p>
-
+        <div class="modal-import-alerts"></div>
         <div id="import-collection-dropzone">Drop file here</div>
     </div>
 
@@ -635,6 +635,13 @@
         Nothing in your history yet. You can automatically save and access your sent requests here.
     </div>
 </script>
+<script id="messageCollectionAdded" type="text/x-jquery-tmpl">
+    <div class="alert alert-block">
+      <a class="close" data-dismiss="alert">×</a>
+      <h4 class="alert-heading">It worked!</h4>
+        The collection ${name} has been ${action}.
+    </div>
+</script>
 <script id="itemEnvironmentList" type="text/x-jquery-tmpl">
     <tr>
         <td>
@@ -672,9 +679,13 @@
         <div class="sidebar-collection-head">
             <div class="collection-head-actions">
                 <span class="label">Show</span>
-                <a href="javascript:void(0);" class="collection-actions-download" data-id="${id}">
+                <a href="javascript:void(0);"
+                   rel="tooltip" data-original-title="Download collection"
+                   class="collection-actions-download" data-id="${id}">
                     <img src="img/glyphicons_181_download_alt.png" style="vertical-align: middle;"/></a>
-                <a href="javascript:void(0);" class="collection-actions-delete" data-id="${id}">
+                <a href="javascript:void(0);"
+                   rel="tooltip" data-original-title="Delete collection"
+                   class="collection-actions-delete" data-id="${id}">
                     <img src="img/delete.png" style="vertical-align: middle;"/></a>
             </div>
             <div class="sidebar-collection-head-name" data-id="${id}">

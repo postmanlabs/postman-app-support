@@ -632,18 +632,18 @@ postman.currentRequest = {
             postman.currentRequest.changeDataMode(mode);
         });
 
-        $('.request-help-actions-togglesize').on("click", function() {
-           var action = $(this).attr('data-action');
+        $('.request-help-actions-togglesize').on("click", function () {
+            var action = $(this).attr('data-action');
 
-            if(action === "minimize") {
+            if (action === "minimize") {
                 $(this).attr("data-action", "maximize");
                 $('.request-help-actions-togglesize img').attr('src', 'img/glyphicons_190_circle_plus.png');
-                $("#requestDescription").css("display", "none");
+                $("#requestDescription").slideUp(100);
             }
             else {
                 $('.request-help-actions-togglesize img').attr('src', 'img/glyphicons_191_circle_minus.png');
                 $(this).attr("data-action", "minimize");
-                $("#requestDescription").css("display", "block");
+                $("#requestDescription").slideDown(100);
             }
         });
     },
@@ -942,6 +942,9 @@ postman.currentRequest = {
             $('#requestName').css("display", "none");
             $('#requestDescription').css("display", "none");
         }
+
+        $('.request-help-actions-togglesize a').attr('data-action', 'minimize');
+        $('.request-help-actions-togglesize img').attr('src', 'img/glyphicons_191_circle_minus.png');
     },
 
     loadRequestFromLink:function (link) {
@@ -1032,6 +1035,9 @@ postman.currentRequest = {
         else {
             $('#requestDescription').css("display", "none");
         }
+
+        $('.request-help-actions-togglesize').attr('data-action', 'minimize');
+        $('.request-help-actions-togglesize img').attr('src', 'img/glyphicons_191_circle_minus.png');
 
         $('#headers-keyvaleditor-actions-open .headers-count').html(this.headers.length);
 
@@ -1613,7 +1619,6 @@ postman.collections = {
                 return function (e) {
                     // Render thumbnail.
                     var data = e.currentTarget.result;
-                    console.log(data);
                     var collection = JSON.parse(data);
                     postman.indexedDB.getCollection(collection.id, function (data) {
                         if (data) {
@@ -1621,6 +1626,12 @@ postman.collections = {
                             postman.layout.sidebar.emptyCollectionInSidebar(collection.id);
                             postman.indexedDB.deleteCollection(collection.id, function (c) {
                                 postman.indexedDB.addCollection(collection, function (c) {
+                                    var message = {
+                                        name:collection.name,
+                                        action:"replaced"
+                                    };
+
+                                    $('#messageCollectionAdded').tmpl([message]).appendTo('.modal-import-alerts');
                                     for (var i = 0; i < collection.requests.length; i++) {
                                         var request = collection.requests[i];
                                         postman.indexedDB.addCollectionRequest(request, function (req) {
@@ -1630,8 +1641,6 @@ postman.collections = {
                                             req.url = limitStringLineWidth(req.url, 43);
                                             $('#itemCollectionSidebarRequest').tmpl([req]).appendTo(targetElement);
                                             postman.layout.refreshScrollPanes();
-
-                                            console.log("Added request", req);
                                         });
                                     }
                                 });
@@ -1642,8 +1651,16 @@ postman.collections = {
                                 $('#itemCollectionSelectorList').tmpl([collection]).appendTo('#selectCollection');
                                 $('#itemCollectionSidebarHead').tmpl([collection]).appendTo('#collectionItems');
 
+                                $('a[rel="tooltip"]').tooltip();
+
                                 for (var i = 0; i < collection.requests.length; i++) {
                                     var request = collection.requests[i];
+                                    var message = {
+                                        name:collection.name,
+                                        action:"replaced"
+                                    };
+
+                                    $('#messageCollectionAdded').tmpl([message]).appendTo('.modal-import-alerts');
                                     postman.indexedDB.addCollectionRequest(request, function (req) {
                                         var targetElement = "#collectionRequests-" + req.collectionId;
                                         postman.urlCache.addUrl(req.url);
@@ -1733,6 +1750,7 @@ postman.collections = {
                 collectionRequest.collectionId = collection.id;
                 $('#itemCollectionSelectorList').tmpl([collection]).appendTo('#selectCollection');
                 $('#itemCollectionSidebarHead').tmpl([collection]).appendTo('#collectionItems');
+                $('a[rel="tooltip"]').tooltip();
                 postman.layout.refreshScrollPanes();
                 postman.indexedDB.addCollectionRequest(collectionRequest, function (req) {
                     var targetElement = "#collectionRequests-" + req.collectionId;
@@ -1783,6 +1801,7 @@ postman.collections = {
 
             $('#itemCollectionSelectorList').tmpl(items).appendTo('#selectCollection');
             $('#itemCollectionSidebarHead').tmpl(items).appendTo('#collectionItems');
+            $('a[rel="tooltip"]').tooltip();
 
             var itemsLength = items.length;
             for (var i = 0; i < itemsLength; i++) {
@@ -1911,11 +1930,11 @@ postman.layout = {
             }
         });
 
-        $('#requestHelp').on("mouseenter", function() {
+        $('#requestHelp').on("mouseenter", function () {
             $('.requestHelpActions').fadeIn();
         });
 
-        $('#requestHelp').on("mouseleave", function() {
+        $('#requestHelp').on("mouseleave", function () {
             $('.requestHelpActions').fadeOut();
         });
 
