@@ -178,42 +178,7 @@ postman.filesystem = {
 }
 
 postman.keymap = {
-    escInputHandler:function (evt) {
-        $(evt.target).blur();
-    },
-
     init:function () {
-
-        var selectGetHandler = function () {
-            postman.currentRequest.setMethod('get');
-            return false;
-        };
-
-        var selectPostHandler = function () {
-            postman.currentRequest.setMethod('post');
-            return false;
-        };
-
-        var selectPutHandler = function () {
-            postman.currentRequest.setMethod('put');
-            return false;
-        };
-
-        var selectDeleteHandler = function () {
-            postman.currentRequest.setMethod('delete');
-            return false;
-        };
-
-        var selectHeadHandler = function () {
-            postman.currentRequest.setMethod('head');
-            return false;
-        };
-
-        var selectOptionsHandler = function () {
-            postman.currentRequest.setMethod('options');
-            return false;
-        };
-
         var clearHistoryHandler = function () {
             postman.history.clear();
             return false;
@@ -228,22 +193,31 @@ postman.keymap = {
             postman.currentRequest.startNew();
         };
 
-        $('input').bind('keydown', 'esc', this.escInputHandler);
-        $('textarea').bind('keydown', 'esc', this.escInputHandler);
-        $('select').bind('keydown', 'esc', this.escInputHandler);
+        $('body').on('keydown', 'input', function (event) {
+            if (event.keyCode === 27) {
+                $(event.target).blur();
+            }
+        });
 
-        $(document).bind('keydown', 'alt+1', selectGetHandler);
-        $(document).bind('keydown', 'alt+2', selectPostHandler);
-        $(document).bind('keydown', 'alt+3', selectPutHandler);
-        $(document).bind('keydown', 'alt+4', selectDeleteHandler);
-        $(document).bind('keydown', 'alt+5', selectHeadHandler);
-        $(document).bind('keydown', 'alt+6', selectOptionsHandler);
+        $('body').on('keydown', 'textarea', function (event) {
+            if (event.keyCode === 27) {
+                $(event.target).blur();
+            }
+        });
+
+        $('body').on('keydown', 'select', function (event) {
+            if (event.keyCode === 27) {
+                $(event.target).blur();
+            }
+        });
+
         $(document).bind('keydown', 'alt+c', clearHistoryHandler);
         $(document).bind('keydown', 'backspace', urlFocusHandler);
         $(document).bind('keydown', 'alt+n', newRequestHandler);
 
         $(document).bind('keydown', 'h', function () {
-            $('#headers-ParamsFields div:first-child input:first-child').focus();
+            postman.currentRequest.openHeaderEditor();
+            $('#headers-keyvaleditor div:first-child input:first-child').focus();
             return false;
         });
 
@@ -254,7 +228,7 @@ postman.keymap = {
 
         $(document).bind('keydown', 'p', function () {
             if (postman.currentRequest.isMethodWithBody(postman.currentRequest.method)) {
-                $('#body-ParamsFields div:first-child input:first-child').focus();
+                $('#body-keyvaleditor div:first-child input:first-child').focus();
                 return false;
             }
         });
@@ -264,7 +238,7 @@ postman.keymap = {
         });
 
         $(document).bind('keydown', 'shift+/', function () {
-
+            $('#modalShortcuts').modal('show');
         });
 
         $(document).bind('keydown', 'a', function () {
@@ -273,64 +247,61 @@ postman.keymap = {
                 backdrop:"static"
             });
             $('#formModalAddToColllection').modal('show');
-            $('#selectCollectionContainer').focus();
-
-            //Focus on the form element
             return false;
         });
     }
-},
+};
 
-    postman.editor = {
-        mode:"html",
-        codeMirror:null,
+postman.editor = {
+    mode:"html",
+    codeMirror:null,
 
-        init:function () {
-            CodeMirror.defineMode("links", function (config, parserConfig) {
-                var linksOverlay = {
-                    token:function (stream, state) {
-                        if (stream.eatSpace()) {
-                            return null;
-                        }
-
-                        //@todo Needs to be improved
-                        var matches;
-                        if (matches = stream.match(/https?:\/\/[^'"]*(?=[<"'\n\t\s])/, false)) {
-                            //Eat all characters before http link
-                            var m = stream.match(/.*(?=https?)/, true);
-                            if (m) {
-                                if (m[0].length > 0) {
-                                    return null;
-                                }
-                            }
-
-                            var currentPos = stream.current().search(matches[0]);
-
-                            while (currentPos < 0) {
-                                var ch = stream.next();
-                                if (ch === "\"" || ch === "'") {
-                                    stream.backUp(1);
-                                    break;
-                                }
-
-                                if (ch == null) {
-                                    break;
-                                }
-
-                                currentPos = stream.current().search(matches[0]);
-                            }
-
-                            return "link";
-                        }
-
-                        stream.skipToEnd();
+    init:function () {
+        CodeMirror.defineMode("links", function (config, parserConfig) {
+            var linksOverlay = {
+                token:function (stream, state) {
+                    if (stream.eatSpace()) {
+                        return null;
                     }
-                };
 
-                return CodeMirror.overlayParser(CodeMirror.getMode(config, parserConfig.backdrop || postman.editor.mode), linksOverlay);
-            });
-        }
-    };
+                    //@todo Needs to be improved
+                    var matches;
+                    if (matches = stream.match(/https?:\/\/[^'"]*(?=[<"'\n\t\s])/, false)) {
+                        //Eat all characters before http link
+                        var m = stream.match(/.*(?=https?)/, true);
+                        if (m) {
+                            if (m[0].length > 0) {
+                                return null;
+                            }
+                        }
+
+                        var currentPos = stream.current().search(matches[0]);
+
+                        while (currentPos < 0) {
+                            var ch = stream.next();
+                            if (ch === "\"" || ch === "'") {
+                                stream.backUp(1);
+                                break;
+                            }
+
+                            if (ch == null) {
+                                break;
+                            }
+
+                            currentPos = stream.current().search(matches[0]);
+                        }
+
+                        return "link";
+                    }
+
+                    stream.skipToEnd();
+                }
+            };
+
+            return CodeMirror.overlayParser(CodeMirror.getMode(config, parserConfig.backdrop || postman.editor.mode), linksOverlay);
+        });
+    }
+};
 
 postman.urlCache = {
     urls:[],
@@ -441,14 +412,14 @@ postman.currentRequest = {
             placeHolderKey:"Header",
             placeHolderValue:"Value",
             deleteButton:'<img class="deleteButton" src="img/delete.png">',
-            onInit: function() {
+            onInit:function () {
             },
 
-            onAddedParam: function() {
+            onAddedParam:function () {
                 $("#headers-keyvaleditor .keyvalueeditor-key").autocomplete({
-                                    source:chromeHeaders,
-                                    delay:50
-                                });
+                    source:chromeHeaders,
+                    delay:50
+                });
             },
 
             onDeleteRow:function () {
@@ -470,9 +441,9 @@ postman.currentRequest = {
 
             onBlurElement:function () {
                 $("#headers-keyvaleditor .keyvalueeditor-key").autocomplete({
-                                                    source:chromeHeaders,
-                                                    delay:50
-                                                });
+                    source:chromeHeaders,
+                    delay:50
+                });
                 var hs = $('#headers-keyvaleditor').keyvalueeditor('getValues');
                 var newHeaders = [];
                 for (var i = 0; i < hs.length; i++) {
