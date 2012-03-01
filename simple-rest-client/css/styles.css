@@ -585,12 +585,13 @@ li .right {
 #sidebarFooter {
     background-color: #000;
     position: fixed;
-    bottom: 0px;
-    width: 340px;
+    bottom: 0;
+    width: 350px;
     height: 20px;
     opacity: 0.5;
     z-index: 10;
-    padding: 5px;
+    text-align: center;
+    padding: 5px 0 5px 0;
 }
 
 #sidebarFooter:hover {
