@@ -22,6 +22,7 @@
 
                     var h = methods.getLastRow(data);
                     $this.append(h);
+                    methods.settings.onAddedParam();
 
                     $this.on("focus.keyvalueeditor", '.keyvalueeditor-last', data, methods.focusEventHandler);
                     $this.on("blur.keyvalueeditor", '.keyvalueeditor-row input', data, methods.blurEventHandler);
@@ -233,6 +234,8 @@
             if(params) {
                 methods.addParams(params, state);
             }
+
+            state.settings.onReset();
         },
 
         add: function(params) {
@@ -268,8 +271,11 @@
         placeHolderKey: "Key",
         placeHolderValue: "Value",
         valueTypes: ["text"],
+        onInit: function() {},
+        onReset: function() {},
         onBlurElement: function() {},
-        onDeleteRow: function() {}
+        onDeleteRow: function() {},
+        onAddedParam: function() {}
     };
 
 })(jQuery);

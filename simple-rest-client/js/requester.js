@@ -441,6 +441,16 @@ postman.currentRequest = {
             placeHolderKey:"Header",
             placeHolderValue:"Value",
             deleteButton:'<img class="deleteButton" src="img/delete.png">',
+            onInit: function() {
+            },
+
+            onAddedParam: function() {
+                $("#headers-keyvaleditor .keyvalueeditor-key").autocomplete({
+                                    source:chromeHeaders,
+                                    delay:50
+                                });
+            },
+
             onDeleteRow:function () {
                 var hs = $('#headers-keyvaleditor').keyvalueeditor('getValues');
                 var newHeaders = [];
@@ -460,10 +470,9 @@ postman.currentRequest = {
 
             onBlurElement:function () {
                 $("#headers-keyvaleditor .keyvalueeditor-key").autocomplete({
-                    source:chromeHeaders,
-                    delay:50
-                });
-
+                                                    source:chromeHeaders,
+                                                    delay:50
+                                                });
                 var hs = $('#headers-keyvaleditor').keyvalueeditor('getValues');
                 var newHeaders = [];
                 for (var i = 0; i < hs.length; i++) {
@@ -487,10 +496,6 @@ postman.currentRequest = {
         };
 
         $('#headers-keyvaleditor').keyvalueeditor('init', params);
-        $("#headers-keyvaleditor .keyvalueeditor-key").autocomplete({
-            source:chromeHeaders,
-            delay:50
-        });
 
         $('#headers-keyvaleditor-actions-close').on("click", function () {
             postman.currentRequest.closeHeaderEditor();
