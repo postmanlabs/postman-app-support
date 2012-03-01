@@ -1,23 +1,24 @@
 .keyvalueeditor-key,
 .keyvalueeditor-value
 {
-    padding: 5px;
-    border: none;
-    box-shadow: none;
-    border-bottom: solid thin #CCC;
-    border-radius: 0;
+    padding: 5px !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-bottom: solid thin #CCC !important;
+    border-radius: 0 !important;
     outline: none !important;
-    margin-right: 10px;
-    width: 200px;
+    margin-right: 10px !important;
+    width: 200px !important;
 }
 
 .keyvalueeditor-value-file {
-    margin-right: 20px;
+    margin-right: 20px !important;
 }
 .keyvalueeditor-key:focus,
 .keyvalueeditor-value:focus {
-    border-color: #999;
-    outline: none !important;
+    border-color: #999 !important;
+    outline: 0 !important;
+    outline-width: 0 !important;
 }
 
 .keyvalueeditor-valueTypeSelector {
