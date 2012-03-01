@@ -1069,3 +1069,7 @@ li .right {
 .response-tabs li:first-child {
     border-left: none;
 }
+
+#dataModeSelector {
+    margin-bottom: 5px;
+}

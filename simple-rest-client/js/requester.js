@@ -26,6 +26,8 @@ function Collection() {
 function CollectionRequest() {
     this.collectionId = "";
     this.id = "";
+    this.name = "";
+    this.description = "";
     this.url = "";
     this.method = "";
     this.headers = "";
@@ -36,6 +38,8 @@ function CollectionRequest() {
 
 function Request() {
     this.id = "";
+    this.name = "";
+    this.description = "";
     this.url = "";
     this.method = "";
     this.headers = "";
@@ -1539,7 +1543,6 @@ postman.collections = {
                 var name = collection['name'] + ".json";
                 var type = "application/json";
                 var filedata = JSON.stringify(collection);
-                console.log(filedata, collection);
                 postman.filesystem.saveAndOpenFile(name, filedata, type, function () {
                 });
             });
@@ -1677,7 +1680,11 @@ postman.collections = {
                     var targetElement = "#collectionRequests-" + req.collectionId;
                     postman.urlCache.addUrl(req.url);
 
-                    req.url = limitStringLineWidth(req.url, 43);
+                    if(typeof req.name === "undefined") {
+                        req.name = req.url;
+                    }
+                    req.name = limitStringLineWidth(req.name, 43);
+
                     $('#itemCollectionSidebarRequest').tmpl([req]).appendTo(targetElement);
                     postman.layout.refreshScrollPanes();
                     $('#messageNoCollection').remove();
@@ -1692,7 +1699,11 @@ postman.collections = {
                 var targetElement = "#collectionRequests-" + req.collectionId;
                 postman.urlCache.addUrl(req.url);
 
-                req.url = limitStringLineWidth(req.url, 43);
+                if(typeof req.name === "undefined") {
+                    req.name = req.url;
+                }
+                req.name = limitStringLineWidth(req.name, 43);
+
                 $('#itemCollectionSidebarRequest').tmpl([req]).appendTo(targetElement);
                 postman.layout.refreshScrollPanes();
                 $('#messageNoCollection').remove();
@@ -1732,7 +1743,11 @@ postman.collections = {
 
             for (var i = 0; i < count; i++) {
                 postman.urlCache.addUrl(requests[i].url);
-                requests[i].url = limitStringLineWidth(requests[i].url, 40);
+                if(typeof requests[i].name === "undefined") {
+                    requests[i].name = requests[i].url;
+                }
+
+                requests[i].name = limitStringLineWidth(requests[i].name, 40);
             }
 
             $('#itemCollectionSidebarRequest').tmpl(requests).appendTo(targetElement);
@@ -2069,6 +2084,8 @@ postman.indexedDB = {
         var collectionRequest = store.put({
             "collectionId":req.collectionId,
             "id":req.id,
+            "name": req.name,
+            "description": req.description,
             "url":req.url.toString(),
             "method":req.method.toString(),
             "headers":req.headers.toString(),
