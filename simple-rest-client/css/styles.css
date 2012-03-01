@@ -421,7 +421,6 @@ fieldset {
 }
 
 #data {
-    margin-top: 10px;
     display: none;
 }
 
@@ -1071,5 +1070,27 @@ li .right {
 }
 
 #dataModeSelector {
+    margin-bottom: 5px;
+}
+
+#requestHelp {
+    margin-left: -20px;
+    padding-left: 20px;
+    border-bottom: solid thin #ccc;
+    display: none;
+}
+
+.requestHelpActions {
+    position: absolute;
+    margin-left: -17px;
+    margin-top: 2px;
+    display: none;
+}
+.requestHelpActions img {
+    width: 14px;
+    height: 14px;
+}
+
+#requestName {
     margin-bottom: 5px;
 }
