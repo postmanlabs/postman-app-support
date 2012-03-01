@@ -26,6 +26,11 @@
 </head>
 <body>
 <div id="container" class="clearfix">
+<div id="sidebarFooter">
+    <a data-toggle="modal" id="spreadTheWord" href="#modalSpreadTheWord">
+        Like Postman? Help make it better!
+    </a>
+</div>
 <div id="sidebar">
     <div id="header" class="clearfix">
         <div id="logo">
@@ -225,6 +230,7 @@
         </a>
     </div>
     <h5 id="requestName"></h5>
+
     <p id="requestDescription"></p>
 </div>
 
@@ -399,6 +405,7 @@
         <form class="form-horizontal" id="formAddToCollection">
             <div class="control-group" id="selectCollectionContainer">
                 <label for="selectCollection">Existing collection</label>
+
                 <div class="controls">
                     <select name="selectCollection" class="medium" id="selectCollection">
                         <option value="_select">Select</option>
@@ -407,6 +414,7 @@
             </div>
             <div class="control-group">
                 <label for="newCollection">or create a new one</label>
+
                 <div class="controls">
                     <div class="input">
                         <input type="text" class="medium cleanInput" id="newCollection"/>
@@ -415,6 +423,7 @@
             </div>
             <div class="control-group">
                 <label for="newCollection">Request name</label>
+
                 <div class="controls">
                     <div class="input">
                         <input type="text" class="medium cleanInput" id="newRequestName"/>
@@ -423,6 +432,7 @@
             </div>
             <div class="control-group">
                 <label for="newCollection">Request description</label>
+
                 <div class="controls">
                     <div class="input">
                         <textarea class="medium" id="newRequestDescription"></textarea>
@@ -445,6 +455,7 @@
 
     <div class="modal-body">
         <p>Drag and drop a Postman collection file into the area below.</p>
+
         <div class="modal-import-alerts"></div>
         <div id="import-collection-dropzone">Drop file here</div>
     </div>
@@ -472,8 +483,10 @@
             </table>
         </div>
         <div id="environment-editor">
-            <input type="text" name="environment-editor-name" id="environment-editor-name" class="cleanInput" placeholder="New environment"/>
+            <input type="text" name="environment-editor-name" id="environment-editor-name" class="cleanInput"
+                   placeholder="New environment"/>
             <input type="hidden" name="environment-editor-id" id="environment-editor-id" value="0" class="cleanInput"/>
+
             <div id="environment-keyvaleditor"></div>
         </div>
     </div>
@@ -537,12 +550,6 @@
             <a href="http://www.twitter.com/a85">@a85</a>
             <a href="http://www.twitter.com/sobtiankit">@sobtiankit</a>
         </p>
-
-        <div id="aboutPostmanSocialButtons" class="clearfix">
-            <div id="aboutPostmanTwitterButton"></div>
-            <div id="aboutPostmanPlusOneButton"></div>
-            <div id="aboutPostmanFacebookButton"></div>
-        </div>
     </div>
     <div class="modal-footer">
         <a href="javascript:void(0);" data-dismiss="modal" class="btn btn-primary">Close</a>
@@ -558,6 +565,58 @@
         <p>
             Something went wrong while fetching the response. Check your request again.
         </p>
+    </div>
+</div>
+<div id="modalSpreadTheWord" class="modal fade">
+    <div class="modal-header">
+        <a href="#" class="close" data-dismiss="modal">×</a>
+
+        <h3>Help make Postman better!</h3>
+    </div>
+    <div class="modal-body">
+        <p>
+            Hoping that you liked Postman. Here is what you can do to make it even better. However, if something
+            sucked, let us know.
+        </p>
+        <table class="table table-striped">
+            <tr>
+                <td>
+                    <a target="_blank" href="https://chrome.google.com/webstore/detail/fdmmgilgnpjigdojojpjoooidkmcomcm/reviews">Write a review</a>
+                    <p>
+                        We would love a good review. A bad review would hurt but make it as informative as possible!
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <a href="javascript:void(0);">Share Postman</a>
+                    <div class="spreadtheword-sharebuttons">
+                        <div id="aboutPostmanSocialButtons" class="clearfix">
+                            <div id="aboutPostmanTwitterButton"></div>
+                            <div id="aboutPostmanPlusOneButton"></div>
+                            <div id="aboutPostmanFacebookButton"></div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <a target="_blank" href="https://github.com/a85/POSTMan-Chrome-Extension/issues">Report a bug</a>
+                    <p>
+                        Sometimes we make mistakes. Help us correct them as fast as possible.
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <a target="_blank" href="https://github.com/a85/POSTMan-Chrome-Extension">Check out the source code</a>
+                    <p>
+                        Found a bug or want to add a feature? The code is on Github!
+                        Postman is licensed under the Apache Licence, Version 2.0.
+                    </p>
+                </td>
+            </tr>
+        </table>
     </div>
 </div>
 <div id="modalShortcuts" class="modal fade">
@@ -637,8 +696,8 @@
 </script>
 <script id="messageCollectionAdded" type="text/x-jquery-tmpl">
     <div class="alert alert-block">
-      <a class="close" data-dismiss="alert">×</a>
-      <h4 class="alert-heading">It worked!</h4>
+        <a class="close" data-dismiss="alert">×</a>
+        <h4 class="alert-heading">It worked!</h4>
         The collection ${name} has been ${action}.
     </div>
 </script>

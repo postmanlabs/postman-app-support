@@ -1915,9 +1915,8 @@ postman.layout = {
             postman.currentRequest.loadRequestFromLink(link);
         });
 
-        $('#modalAboutPostman').click(function () {
+        $('#spreadTheWord').click(function () {
             postman.layout.attachSocialButtons();
-            return false;
         });
 
         $('.response-tabs').on("click", "li", function () {
