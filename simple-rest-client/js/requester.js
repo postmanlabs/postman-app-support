@@ -710,6 +710,8 @@ postman.currentRequest = {
                     return false;
                 }
 
+                postman.currentRequest.response.showBody();
+
                 var responseCode = {
                     'code':response.status,
                     'name':httpStatusCodes[response.status]['name'],
@@ -832,7 +834,7 @@ postman.currentRequest = {
 
                 $('#respData').css("position", "absolute");
                 $('#respData').css("left", 0);
-                $('#respData').css("top", 0);
+                $('#respData').css("top", "-15px");
                 $('#respData').css("width", $(document).width() - 20);
                 $('#respData').css("height", $(document).height());
                 $('#respData').css("z-index", 100);
@@ -854,11 +856,17 @@ postman.currentRequest = {
         },
 
         showHeaders: function() {
+            $('.response-tabs li').removeClass("active");
+            $('.response-tabs li[data-section="headers"]').addClass("active");
+
             $('#responsePrint').css("display", "none");
             $('#respHeaders').css("display", "block");
         },
 
         showBody: function() {
+            $('.response-tabs li').removeClass("active");
+            $('.response-tabs li[data-section="body"]').addClass("active");
+
             $('#responsePrint').css("display", "block");
             $('#respHeaders').css("display", "none");
         }
@@ -892,6 +900,7 @@ postman.currentRequest = {
     refreshLayout:function () {
         $('#url').val(this.url);
 
+        $('#headers-keyvaleditor-actions-open .headers-count').html(this.headers.length);
         if (this.isMethodWithBody(this.method)) {
             $("#data").css("display", "block");
             postman.currentRequest.openBodyEditor();
@@ -969,6 +978,8 @@ postman.currentRequest = {
         this.body = request.body;
         this.method = request.method;
         this.headers = this.unpackHeaders(request.headers);
+
+        $('#headers-keyvaleditor-actions-open .headers-count').html(this.headers.length);
 
         $('#url').val(this.url);
 
@@ -1112,7 +1123,6 @@ postman.currentRequest = {
                     else {
                         var value = valueElement.val();
                         value = envManager.processString(value, envValues);
-                        console.log(value);
                         finalBodyData.append(key, value);
                     }
                 }
@@ -1819,8 +1829,6 @@ postman.layout = {
         });
 
         $('.response-tabs').on("click", "li", function() {
-            $('.response-tabs li').removeClass("active");
-            $(this).addClass("active");
             var section = $(this).attr('data-section');
             if(section === "body") {
                 postman.currentRequest.response.showBody();
@@ -1968,7 +1976,6 @@ postman.layout = {
 postman.indexedDB = {
     onerror:function (event, callback) {
         console.log(event);
-        callback();
     },
 
     open:function () {
