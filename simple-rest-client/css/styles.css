@@ -278,7 +278,7 @@ fieldset {
 }
 
 #responseData {
-    margin-top: 10px;
+    margin-top: -5px;
     z-index: 10;
     background: white;
 }
@@ -1068,4 +1068,8 @@ li .right {
 
 .response-tabs li:first-child {
     border-left: none;
+}
+
+#dataModeSelector {
+    margin-bottom: 5px;
 }

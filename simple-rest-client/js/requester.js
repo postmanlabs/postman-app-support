@@ -26,6 +26,8 @@ function Collection() {
 function CollectionRequest() {
     this.collectionId = "";
     this.id = "";
+    this.name = "";
+    this.description = "";
     this.url = "";
     this.method = "";
     this.headers = "";
@@ -36,6 +38,8 @@ function CollectionRequest() {
 
 function Request() {
     this.id = "";
+    this.name = "";
+    this.description = "";
     this.url = "";
     this.method = "";
     this.headers = "";
@@ -710,6 +714,8 @@ postman.currentRequest = {
                     return false;
                 }
 
+                postman.currentRequest.response.showBody();
+
                 var responseCode = {
                     'code':response.status,
                     'name':httpStatusCodes[response.status]['name'],
@@ -832,7 +838,7 @@ postman.currentRequest = {
 
                 $('#respData').css("position", "absolute");
                 $('#respData').css("left", 0);
-                $('#respData').css("top", 0);
+                $('#respData').css("top", "-15px");
                 $('#respData').css("width", $(document).width() - 20);
                 $('#respData').css("height", $(document).height());
                 $('#respData').css("z-index", 100);
@@ -854,11 +860,17 @@ postman.currentRequest = {
         },
 
         showHeaders: function() {
+            $('.response-tabs li').removeClass("active");
+            $('.response-tabs li[data-section="headers"]').addClass("active");
+
             $('#responsePrint').css("display", "none");
             $('#respHeaders').css("display", "block");
         },
 
         showBody: function() {
+            $('.response-tabs li').removeClass("active");
+            $('.response-tabs li[data-section="body"]').addClass("active");
+
             $('#responsePrint').css("display", "block");
             $('#respHeaders').css("display", "none");
         }
@@ -892,6 +904,7 @@ postman.currentRequest = {
     refreshLayout:function () {
         $('#url').val(this.url);
 
+        $('#headers-keyvaleditor-actions-open .headers-count').html(this.headers.length);
         if (this.isMethodWithBody(this.method)) {
             $("#data").css("display", "block");
             postman.currentRequest.openBodyEditor();
@@ -969,6 +982,8 @@ postman.currentRequest = {
         this.body = request.body;
         this.method = request.method;
         this.headers = this.unpackHeaders(request.headers);
+
+        $('#headers-keyvaleditor-actions-open .headers-count').html(this.headers.length);
 
         $('#url').val(this.url);
 
@@ -1115,7 +1130,6 @@ postman.currentRequest = {
                     else {
                         var value = valueElement.val();
                         value = envManager.processString(value, envValues);
-                        console.log(value);
                         finalBodyData.append(key, value);
                     }
                 }
@@ -1532,7 +1546,6 @@ postman.collections = {
                 var name = collection['name'] + ".json";
                 var type = "application/json";
                 var filedata = JSON.stringify(collection);
-                console.log(filedata, collection);
                 postman.filesystem.saveAndOpenFile(name, filedata, type, function () {
                 });
             });
@@ -1670,7 +1683,11 @@ postman.collections = {
                     var targetElement = "#collectionRequests-" + req.collectionId;
                     postman.urlCache.addUrl(req.url);
 
-                    req.url = limitStringLineWidth(req.url, 43);
+                    if(typeof req.name === "undefined") {
+                        req.name = req.url;
+                    }
+                    req.name = limitStringLineWidth(req.name, 43);
+
                     $('#itemCollectionSidebarRequest').tmpl([req]).appendTo(targetElement);
                     postman.layout.refreshScrollPanes();
                     $('#messageNoCollection').remove();
@@ -1685,7 +1702,11 @@ postman.collections = {
                 var targetElement = "#collectionRequests-" + req.collectionId;
                 postman.urlCache.addUrl(req.url);
 
-                req.url = limitStringLineWidth(req.url, 43);
+                if(typeof req.name === "undefined") {
+                    req.name = req.url;
+                }
+                req.name = limitStringLineWidth(req.name, 43);
+
                 $('#itemCollectionSidebarRequest').tmpl([req]).appendTo(targetElement);
                 postman.layout.refreshScrollPanes();
                 $('#messageNoCollection').remove();
@@ -1725,7 +1746,11 @@ postman.collections = {
 
             for (var i = 0; i < count; i++) {
                 postman.urlCache.addUrl(requests[i].url);
-                requests[i].url = limitStringLineWidth(requests[i].url, 40);
+                if(typeof requests[i].name === "undefined") {
+                    requests[i].name = requests[i].url;
+                }
+
+                requests[i].name = limitStringLineWidth(requests[i].name, 40);
             }
 
             $('#itemCollectionSidebarRequest').tmpl(requests).appendTo(targetElement);
@@ -1822,8 +1847,6 @@ postman.layout = {
         });
 
         $('.response-tabs').on("click", "li", function() {
-            $('.response-tabs li').removeClass("active");
-            $(this).addClass("active");
             var section = $(this).attr('data-section');
             if(section === "body") {
                 postman.currentRequest.response.showBody();
@@ -1971,7 +1994,6 @@ postman.layout = {
 postman.indexedDB = {
     onerror:function (event, callback) {
         console.log(event);
-        callback();
     },
 
     open:function () {
@@ -2065,6 +2087,8 @@ postman.indexedDB = {
         var collectionRequest = store.put({
             "collectionId":req.collectionId,
             "id":req.id,
+            "name": req.name,
+            "description": req.description,
             "url":req.url.toString(),
             "method":req.method.toString(),
             "headers":req.headers.toString(),
