@@ -2628,7 +2628,7 @@ postman.envManager = {
         var count = values.length;
         var finalString = string;
         for (var i = 0; i < count; i++) {
-            var patString = "${" + values[i].key + "}";
+            var patString = "{{" + values[i].key + "}}";
             var pattern = new RegExp(patString, 'g');
             finalString = finalString.replace(patString, values[i].value);
         }
