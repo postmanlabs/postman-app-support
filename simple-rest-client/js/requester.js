@@ -705,6 +705,8 @@ postman.currentRequest = {
                     });
 
                     $('#modalResponseError').modal('show');
+
+                    $('#submitRequest').button("reset");
                     return false;
                 }
 
@@ -1102,9 +1104,6 @@ postman.currentRequest = {
         postman.currentRequest.startTime = new Date().getTime();
 
         var environment = postman.envManager.selectedEnv;
-
-        console.log(environment);
-
         var envValues = [];
         var isEnvironmentAvailable = false;
 
@@ -1504,6 +1503,7 @@ postman.history = {
 };
 
 postman.collections = {
+    areLoaded: false,
     items:[],
 
     initialize:function () {
@@ -1532,6 +1532,7 @@ postman.collections = {
         });
 
         $('#collectionItems').on("click", ".request-actions-delete", function () {
+
             var id = $(this).attr('data-id');
             postman.collections.deleteCollectionRequest(id);
         });
@@ -1543,8 +1544,17 @@ postman.collections = {
 
         $('#collectionItems').on("click", ".collection-actions-delete", function () {
             var id = $(this).attr('data-id');
-            postman.collections.deleteCollection(id);
+            var name = $(this).attr('data-name');
+            console.log(id, name);
+
+            $('#modalDeleteCollectionYes').attr('data-id', id);
+            $('#modalDeleteCollectionName').html(name);
         });
+
+        $('#modalDeleteCollectionYes').on("click", function() {
+            var id = $(this).attr('data-id');
+            postman.collections.deleteCollection(id);
+        })
 
         $('#collectionItems').on("click", ".collection-actions-download", function () {
             var id = $(this).attr('data-id');
@@ -1784,6 +1794,7 @@ postman.collections = {
                 postman.collections.getAllRequestsInCollection(items[i].id);
             }
 
+            postman.collections.areCollectionsLoaded = true;
             postman.layout.refreshScrollPanes();
         });
     },
@@ -1972,6 +1983,9 @@ postman.layout = {
         },
 
         select:function (section) {
+            if(!postman.collections.areLoaded) {
+                postman.collections.getAllCollections();
+            }
             $('#sidebarSection-' + this.currentSection).css("display", "none");
             $('#' + this.currentSection + 'Options').css("display", "none");
 
@@ -2098,7 +2112,6 @@ postman.indexedDB = {
                     }
 
                     postman.history.getAllRequests();
-                    postman.collections.getAllCollections();
                     postman.envManager.getAllEnvironments();
                 };
 
@@ -2107,7 +2120,6 @@ postman.indexedDB = {
             }
             else {
                 postman.history.getAllRequests();
-                postman.collections.getAllCollections();
                 postman.envManager.getAllEnvironments();
             }
 

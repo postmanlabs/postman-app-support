@@ -552,6 +552,7 @@ li .right {
 
 #requestUrl {
     margin-top: 10px;
+    margin-bottom: 5px;
 }
 
 #methods {
@@ -1122,4 +1123,8 @@ li .right {
 
 #modalSpreadTheWord a {
     font-weight: bold;
+}
+
+#newRequestDescription {
+    height: 100px;
 }

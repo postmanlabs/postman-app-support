@@ -235,12 +235,12 @@
     <p id="requestDescription"></p>
 </div>
 
-<div id="requestUrl" class="row clearfix">
+<div id="requestUrl" class="row">
     <div class="span5">
         <input type="text" name="url" id="url" tabindex="1" class="inputTextLight"
                placeholder="Enter request URL here"/>
     </div>
-    <div class="span1">
+    <div class="span1" style="width: 90px;">
         <select id="requestMethodSelector">
             <option value="get" selected>GET</option>
             <option value="post">POST</option>
@@ -465,6 +465,28 @@
         <a href="javascript:void(0);" data-dismiss="modal" class="btn btn-primary">Close</a>
     </div>
 </div>
+<div id="modalDeleteCollection" class="modal fade">
+    <div class="modal-header">
+        <a href="#" class="close" data-dismiss="modal">x</a>
+
+        <h3>Are you sure?</h3>
+    </div>
+
+    <div class="modal-body">
+        <p>
+            Are you sure you want to delete <span id="modalDeleteCollectionName"></span>?
+        </p>
+    </div>
+
+    <div class="modal-footer">
+        <a href="javascript:void(0);" data-dismiss="modal" class="btn">No</a>
+        <a href="javascript:void(0);"
+           data-collection-id=""
+           id="modalDeleteCollectionYes"
+           data-dismiss="modal"
+           class="btn btn-danger">Yes</a>
+    </div>
+</div>
 <div id="modalEnvironments" class="modal fade">
     <div class="modal-header">
         <a href="#" class="close" data-dismiss="modal">x</a>
@@ -479,6 +501,7 @@
                 following form - {{variable}}. The string {{variable}} will be replaced with it's corresponding value.
                 For example, for an environment variable 'url' with the value 'http://localhost'
                 , you will have to use {{url}} in the request URL field. {{url}] will be replaced by http://localhost
+                when the request is sent.
             </p>
             <button class="btn btn-small environments-actions-add">
                 Add new environment
@@ -748,8 +771,9 @@
                    rel="tooltip" data-original-title="Download collection"
                    class="collection-actions-download" data-id="${id}">
                     <img src="img/glyphicons_181_download_alt.png" style="vertical-align: middle;"/></a>
-                <a href="javascript:void(0);"
-                   rel="tooltip" data-original-title="Delete collection"
+                <a rel="tooltip" data-original-title="Delete collection"
+                   data-name="${name}"
+                   href="#modalDeleteCollection" data-toggle="modal"
                    class="collection-actions-delete" data-id="${id}">
                     <img src="img/delete.png" style="vertical-align: middle;"/></a>
             </div>
