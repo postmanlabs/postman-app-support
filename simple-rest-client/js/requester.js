@@ -1503,7 +1503,7 @@ postman.history = {
 };
 
 postman.collections = {
-    areLoaded: false,
+    areLoaded:false,
     items:[],
 
     initialize:function () {
@@ -1551,7 +1551,7 @@ postman.collections = {
             $('#modalDeleteCollectionName').html(name);
         });
 
-        $('#modalDeleteCollectionYes').on("click", function() {
+        $('#modalDeleteCollectionYes').on("click", function () {
             var id = $(this).attr('data-id');
             postman.collections.deleteCollection(id);
         })
@@ -1983,7 +1983,7 @@ postman.layout = {
         },
 
         select:function (section) {
-            if(!postman.collections.areLoaded) {
+            if (!postman.collections.areLoaded) {
                 postman.collections.getAllCollections();
             }
             $('#sidebarSection-' + this.currentSection).css("display", "none");
@@ -2563,6 +2563,14 @@ postman.envManager = {
             $('#environment-selector .environment-list-item-selected').html(selectedEnv.name);
         });
 
+        $('#environment-selector').on("click", ".environment-list-item-noenvironment", function () {
+            postman.envManager.selectedEnv = null;
+            postman.settings.selectedEnvironmentId = "";
+            localStorage['selectedEnvironmentId'] = "";
+            $('#environment-selector .environment-list-item-selected').html("No environment");
+        });
+
+
         $('.environments-actions-add').on("click", function () {
             console.log("Show new environment");
             postman.envManager.showEditor();
@@ -2717,4 +2725,8 @@ postman.envManager = {
 
 $(document).ready(function () {
     postman.initialize();
+});
+
+$(window).on("unload", function() {
+    console.log("On unload window called");
 });
