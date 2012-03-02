@@ -48,12 +48,6 @@ function Request() {
     this.timestamp = 0;
 }
 
-function Response() {
-    this.id = "";
-    this.headers = "";
-    this.text = "";
-}
-
 var postman = {};
 
 postman.indexedDB = {};
@@ -72,6 +66,39 @@ var IDBCursor = window.IDBCursor || window.webkitIDBCursor;
 
 window.requestFileSystem = window.requestFileSystem || window.webkitRequestFileSystem;
 
+/*
+Components
+
+history - History of sent requests. Can be toggled on and off
+collections - Groups of requests. Can be saved to a file. Saved requests can have a name and description to document
+the request properly.
+settings - Settings Postman behavior
+layout - Manages quite a bit of the interface
+currentRequest - Everything to do with the current request loaded in Postman. Also manages sending, receiving requests
+and processing additional parameters
+urlCache - Needed for the autocomplete functionality
+helpers - Basic and OAuth helper management. More helpers will be added later.
+keymap - Keyboard shortcuts
+envManager - Environments to customize requests using variables.
+filesystem - Loading and saving files from the local filesystem.
+indexedDB - Backend database. Right now Postman uses indexedDB.
+
+Plugins
+
+keyvaleditor - Used for URL params, headers and POST params.
+
+Dependencies
+
+jQuery
+jQuery UI - AutoComplete plugin
+jQuery HotKeys
+jQuery jScrollPane
+jQuery MouseWheel
+Bootstrap
+CodeMirror
+Underscore
+
+ */
 postman.initialize = function () {
     this.history.initialize();
     this.collections.initialize();
