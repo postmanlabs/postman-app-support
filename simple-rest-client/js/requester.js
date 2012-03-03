@@ -269,11 +269,18 @@ postman.keymap = {
         });
 
         $(document).bind('keydown', 'a', function () {
+            if (!postman.collections.areLoaded) {
+                postman.collections.getAllCollections();
+            }
+
             $('#formModalAddToCollection').modal({
                 keyboard:true,
                 backdrop:"static"
             });
             $('#formModalAddToColllection').modal('show');
+
+            $('#newRequestName').val("");
+            $('#newRequestDescription').val("");
             return false;
         });
     }
@@ -2039,6 +2046,7 @@ postman.layout = {
             if (!postman.collections.areLoaded) {
                 postman.collections.getAllCollections();
             }
+
             $('#sidebarSection-' + this.currentSection).css("display", "none");
             $('#' + this.currentSection + 'Options').css("display", "none");
 
