@@ -2127,6 +2127,7 @@ postman.layout = {
 
             $('#sidebarSection-' + section).fadeIn();
             $('#' + section + 'Options').css("display", "block");
+            postman.layout.refreshScrollPanes();
             return true;
         },
 
