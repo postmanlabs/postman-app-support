@@ -173,19 +173,19 @@ postman.filesystem = {
                     fileEntry.createWriter(function (fileWriter) {
 
                         fileWriter.onwriteend = function (e) {
-                            console.log('Write completed.');
-                            console.log(fileEntry);
                             var properties = {
                                 url:fileEntry.toURL()
                             };
 
-                            chrome.tabs.create(properties, function (tab) {
-                            });
+                            if(typeof chrome !== "undefined") {
+                                chrome.tabs.create(properties, function (tab) {
+                                });
+                            }
+
                             callback();
                         };
 
                         fileWriter.onerror = function (e) {
-                            console.log('Write failed: ' + e.toString());
                             callback();
                         };
 
@@ -653,8 +653,6 @@ postman.currentRequest = {
                     newParams.push(param);
                 }
 
-                console.log(newParams);
-
                 postman.currentRequest.setBodyParamString(newParams);
             },
 
@@ -1093,7 +1091,6 @@ postman.currentRequest = {
         this.body = request.body;
         this.method = request.method;
 
-        console.log(request.headers);
         if (typeof request.headers !== "undefined") {
             this.headers = this.unpackHeaders(request.headers);
         }
@@ -1224,8 +1221,6 @@ postman.currentRequest = {
         xhr.onreadystatechange = function (event) {
             postman.currentRequest.response.load(event.target);
         };
-
-        console.log(envValues);
 
         var envManager = postman.envManager;
         url = envManager.processString(url, envValues);
@@ -1655,7 +1650,6 @@ postman.collections = {
         $('#collectionItems').on("click", ".collection-actions-delete", function () {
             var id = $(this).attr('data-id');
             var name = $(this).attr('data-name');
-            console.log(id, name);
 
             $('#modalDeleteCollectionYes').attr('data-id', id);
             $('#modalDeleteCollectionName').html(name);
@@ -1673,14 +1667,12 @@ postman.collections = {
 
         var dropZone = document.getElementById('import-collection-dropzone');
         dropZone.addEventListener('dragover', function (evt) {
-            console.log("Something happened here");
             evt.stopPropagation();
             evt.preventDefault();
             evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
         }, false);
 
         dropZone.addEventListener('drop', function (evt) {
-            console.log("File dropped");
             evt.stopPropagation();
             evt.preventDefault();
             var files = evt.dataTransfer.files; // FileList object.
@@ -1723,17 +1715,17 @@ postman.collections = {
 
                         $('a[rel="tooltip"]').tooltip();
 
+                        var message = {
+                            name:collection.name,
+                            action:"added"
+                        };
+
                         $('#messageCollectionAdded').tmpl([message]).appendTo('.modal-import-alerts');
 
                         for (var i = 0; i < collection.requests.length; i++) {
                             var request = collection.requests[i];
                             request.collectionId = collection.id;
                             request.id = guid();
-
-                            var message = {
-                                name:collection.name,
-                                action:"added"
-                            };
 
                             postman.indexedDB.addCollectionRequest(request, function (req) {
                                 var targetElement = "#collectionRequests-" + req.collectionId;
@@ -2168,7 +2160,6 @@ postman.layout = {
         },
 
         emptyCollectionInSidebar:function (id) {
-            console.log('#collectionRequests-' + id);
             $('#collectionRequests-' + id).html("");
         },
 
@@ -2204,7 +2195,6 @@ postman.indexedDB = {
 
     open:function () {
         var request = indexedDB.open("postman", "POSTman request history");
-        console.log("Opening the indexedDB");
         request.onsuccess = function (e) {
             var v = "0.44";
             postman.indexedDB.db = e.target.result;
@@ -2212,7 +2202,6 @@ postman.indexedDB = {
 
             //We can only create Object stores in a setVersion transaction
             if (v !== db.version) {
-                console.log(v, "Version is not the same");
                 var setVrequest = db.setVersion(v);
 
                 setVrequest.onfailure = function (e) {
@@ -2707,7 +2696,6 @@ postman.envManager = {
 
 
         $('.environments-actions-add').on("click", function () {
-            console.log("Show new environment");
             postman.envManager.showEditor();
         });
 
@@ -2755,7 +2743,6 @@ postman.envManager = {
     },
 
     processString:function (string, values) {
-        console.log(string);
         var count = values.length;
         var finalString = string;
         for (var i = 0; i < count; i++) {
@@ -2764,7 +2751,6 @@ postman.envManager = {
             finalString = finalString.replace(patString, values[i].value);
         }
 
-        console.log(finalString);
         return finalString;
     },
 
