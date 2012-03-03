@@ -332,7 +332,7 @@ postman.editor = {
     toggleLineWrapping:function () {
         var lineWrapping = postman.editor.codeMirror.getOption("lineWrapping");
         postman.editor.codeMirror.setOption("lineWrapping", !lineWrapping);
-    },
+    }
 };
 
 postman.urlCache = {
@@ -354,6 +354,7 @@ postman.urlCache = {
 
 postman.settings = {
     historyCount:50,
+    lastRequest:"",
     autoSaveRequest:true,
     selectedEnvironmentId:"",
 
@@ -380,6 +381,10 @@ postman.settings = {
         else {
             this.selectedEnvironmentId = true;
             localStorage['selectedEnvironmentId'] = this.selectedEnvironmentId;
+        }
+
+        if(localStorage["lastRequest"]) {
+            this.lastRequest = localStorage["lastRequest"];
         }
 
         $('#historyCount').val(this.historyCount);
@@ -440,6 +445,11 @@ postman.currentRequest = {
             this.initializeUrlEditor();
             this.initializeBodyEditor();
             this.addListeners();
+        }
+
+        if(postman.settings.lastRequest) {
+            var lastRequest = JSON.parse(postman.settings.lastRequest);
+            postman.currentRequest.loadRequestInEditor(lastRequest);
         }
     },
 
@@ -511,6 +521,22 @@ postman.currentRequest = {
         $('#headers-keyvaleditor-actions-open').on("click", function () {
             postman.currentRequest.openHeaderEditor();
         });
+    },
+
+    getAsJson:function () {
+        var request = {
+            url: $('#url').val(),
+            data: $('#body').val(),
+            headers: postman.currentRequest.getPackedHeaders(),
+            dataMode: postman.currentRequest.dataMode,
+            method: postman.currentRequest.method
+        };
+
+        return JSON.stringify(request);
+    },
+
+    saveCurrentToLocalStorage: function() {
+        localStorage["lastRequest"] = postman.currentRequest.getAsJson();
     },
 
     openHeaderEditor:function () {
@@ -823,6 +849,8 @@ postman.currentRequest = {
             var mode;
 
             if (mime === 'javascript') {
+                var temp = JSON.parse(response);
+                response = JSON.stringify(temp, null, '\t');
                 mode = 'javascript';
                 foldFunc = CodeMirror.newFoldFunction(CodeMirror.braceRangeFinder);
             }
@@ -1028,7 +1056,15 @@ postman.currentRequest = {
         this.url = request.url;
         this.body = request.body;
         this.method = request.method;
-        this.headers = this.unpackHeaders(request.headers);
+
+        console.log(request.headers);
+        if(typeof request.headers !== "undefined") {
+            this.headers = this.unpackHeaders(request.headers);
+        }
+        else {
+            this.headers = [];
+        }
+
 
         if (typeof request.name !== "undefined") {
             this.name = request.name;
@@ -2745,5 +2781,5 @@ $(document).ready(function () {
 });
 
 $(window).on("unload", function () {
-    console.log("On unload window called");
+    postman.currentRequest.saveCurrentToLocalStorage();
 });
