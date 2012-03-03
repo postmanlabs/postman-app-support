@@ -2027,7 +2027,42 @@ postman.layout = {
 
     sidebar:{
         currentSection:"history",
+        isSidebarMaximized: true,
         sections:[ "history", "collections" ],
+
+        minimizeSidebar: function() {
+            $('#sidebarToggle').animate({left: "5px"}, 500);
+            $('#sidebar').animate({width: "30px"}, 500);
+            $('#sidebarFooter').css("display", "none");
+            $('#sidebar div').animate({opacity: 0}, 500);
+            var newMainWidth = $(document).width() - 30;
+            $('#main').animate({width: newMainWidth + "px", "margin-left": "30px"}, 500);
+            $('#sidebarToggle img').attr('src', 'img/glyphicons_217_circle_arrow_right.png');
+        },
+
+        maximizeSidebar: function() {
+            $('#sidebarToggle').animate({left: "293px"}, 500);
+            $('#sidebar').animate({width: "340px"}, 500);
+            $('#sidebar div').animate({opacity: 1}, 500);
+            $('#sidebarFooter').css("display", "block");
+            $('#sidebarFooter').fadeIn();
+            $('#sidebarToggle img').attr('src', 'img/glyphicons_216_circle_arrow_left.png');
+            var newMainWidth = $(document).width() - 330;
+            $('#main').animate({width: newMainWidth + "px", "margin-left": "340px"}, 500);
+        },
+
+        toggleSidebar: function() {
+            var isSidebarMaximized = postman.layout.sidebar.isSidebarMaximized;
+            if(isSidebarMaximized) {
+                postman.layout.sidebar.minimizeSidebar();
+            }
+            else {
+                postman.layout.sidebar.maximizeSidebar();
+            }
+
+            postman.layout.sidebar.isSidebarMaximized = !isSidebarMaximized;
+        },
+
         initialize:function () {
             $('#historyItems').on("click", ".request-actions-delete", function () {
                 var request_id = $(this).attr('data-request-id');
@@ -2037,6 +2072,10 @@ postman.layout = {
             $('#historyItems').on("click", ".request", function () {
                 var request_id = $(this).attr('data-request-id');
                 postman.history.loadRequest(request_id);
+            });
+
+            $('#sidebarToggle').on("click", function() {
+                postman.layout.sidebar.toggleSidebar();
             });
 
             this.addRequestListeners();

@@ -986,7 +986,7 @@ li .right {
     float: left;
     color: #555;
     font-size: 11px;
-    width: 400px;
+    max-width: 200px;
 }
 
 .requestHelperFormDescription h4 {
@@ -1007,6 +1007,9 @@ li .right {
     text-decoration: none;
 }
 
+.topSidebar img {
+    height: 14px;
+}
 .topSidebar a:hover {
     text-decoration: none;
 }
@@ -1136,4 +1139,22 @@ li .right {
 
 #newRequestDescription {
     height: 100px;
+}
+
+#sidebarToggle {
+    position: absolute;
+    top: 15px;
+    left: 293px;
+    opacity: 0.5;
+    z-index: 10;
+    cursor: pointer;
+}
+
+#sidebarToggle:hover {
+    opacity: 1;
+}
+
+#sidebarToggle img {
+    width: 20px;
+    height: 20px;
 }
