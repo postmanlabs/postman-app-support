@@ -308,7 +308,11 @@ fieldset {
 }
 
 #respData pre {
-    font-family: Consolas, monospace;
+    font-family: Consolas, "Andale Mono", monospace;
+}
+
+.CodeMirror pre {
+    font-family: Consolas, "Andale Mono", monospace;
 }
 
 .CodeMirror-gutter-text {
@@ -345,7 +349,8 @@ fieldset {
     font-size: 12px;
 }
 
-#codeData {
+#body {
+    height: 200px;
 }
 
 #pstatus {
@@ -527,18 +532,20 @@ li .right {
 }
 
 #langFormat {
-    margin-top: 15px;
+    margin-top: 17px;
+    margin-bottom: 15px;
     float: left;
 }
 
-#langFormat .nav {
-    float: left;
-}
 
 #request,
 #response {
     padding: 0 0 20px 20px;
     border-bottom: solid thin #ccc;
+}
+
+#requestDescription {
+    max-width: 800px;
 }
 
 #response {
@@ -553,6 +560,10 @@ li .right {
 #requestUrl {
     margin-top: 10px;
     margin-bottom: 5px;
+}
+
+#requestUrl button {
+    margin-bottom: 9px;
 }
 
 #methods {
@@ -904,11 +915,8 @@ li .right {
 
 #respDataActions {
     float: left;
-    margin-top: 20px;
-}
-
-#respDataActions a {
-
+    margin-top: 17px;
+    margin-left: 10px;
 }
 
 .helper-tabs {

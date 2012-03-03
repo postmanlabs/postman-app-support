@@ -67,36 +67,36 @@ var IDBCursor = window.IDBCursor || window.webkitIDBCursor;
 window.requestFileSystem = window.requestFileSystem || window.webkitRequestFileSystem;
 
 /*
-Components
+ Components
 
-history - History of sent requests. Can be toggled on and off
-collections - Groups of requests. Can be saved to a file. Saved requests can have a name and description to document
-the request properly.
-settings - Settings Postman behavior
-layout - Manages quite a bit of the interface
-currentRequest - Everything to do with the current request loaded in Postman. Also manages sending, receiving requests
-and processing additional parameters
-urlCache - Needed for the autocomplete functionality
-helpers - Basic and OAuth helper management. More helpers will be added later.
-keymap - Keyboard shortcuts
-envManager - Environments to customize requests using variables.
-filesystem - Loading and saving files from the local filesystem.
-indexedDB - Backend database. Right now Postman uses indexedDB.
+ history - History of sent requests. Can be toggled on and off
+ collections - Groups of requests. Can be saved to a file. Saved requests can have a name and description to document
+ the request properly.
+ settings - Settings Postman behavior
+ layout - Manages quite a bit of the interface
+ currentRequest - Everything to do with the current request loaded in Postman. Also manages sending, receiving requests
+ and processing additional parameters
+ urlCache - Needed for the autocomplete functionality
+ helpers - Basic and OAuth helper management. More helpers will be added later.
+ keymap - Keyboard shortcuts
+ envManager - Environments to customize requests using variables.
+ filesystem - Loading and saving files from the local filesystem.
+ indexedDB - Backend database. Right now Postman uses indexedDB.
 
-Plugins
+ Plugins
 
-keyvaleditor - Used for URL params, headers and POST params.
+ keyvaleditor - Used for URL params, headers and POST params.
 
-Dependencies
+ Dependencies
 
-jQuery
-jQuery UI - AutoComplete plugin
-jQuery HotKeys
-jQuery jScrollPane
-jQuery MouseWheel
-Bootstrap
-CodeMirror
-Underscore
+ jQuery
+ jQuery UI - AutoComplete plugin
+ jQuery HotKeys
+ jQuery jScrollPane
+ jQuery MouseWheel
+ Bootstrap
+ CodeMirror
+ Underscore
 
  */
 postman.initialize = function () {
@@ -327,7 +327,12 @@ postman.editor = {
 
             return CodeMirror.overlayParser(CodeMirror.getMode(config, parserConfig.backdrop || postman.editor.mode), linksOverlay);
         });
-    }
+    },
+
+    toggleLineWrapping:function () {
+        var lineWrapping = postman.editor.codeMirror.getOption("lineWrapping");
+        postman.editor.codeMirror.setOption("lineWrapping", !lineWrapping);
+    },
 };
 
 postman.urlCache = {
@@ -413,6 +418,10 @@ postman.currentRequest = {
     areListenersAdded:false,
     startTime:0,
     endTime:0,
+
+    getUrl:function () {
+        return $('#url').val();
+    },
 
     init:function () {
         this.url = "";
@@ -684,8 +693,8 @@ postman.currentRequest = {
 
         changePreviewType:function (newType) {
             this.previewType = newType;
-            $('#langFormat li').removeClass('active');
-            $('#langFormat-' + this.previewType).addClass('active');
+            $('#langFormat a').removeClass('active');
+            $('#langFormat a[data-type="' + this.previewType + '"]').addClass('active');
 
             if (newType === 'raw') {
                 postman.editor.codeMirror.toTextArea();
@@ -803,8 +812,8 @@ postman.currentRequest = {
         },
 
         setFormat:function (mime, response, format, forceCreate) {
-            $('#langFormat li').removeClass('active');
-            $('#langFormat-' + format).addClass('active');
+            $('#langFormat a').removeClass('active');
+            $('#langFormat a[data-type="' + format + '"]').addClass('active');
             $('#codeData').css("display", "none");
 
             $('#codeData').attr("data-mime", mime);
@@ -1633,56 +1642,32 @@ postman.collections = {
                     // Render thumbnail.
                     var data = e.currentTarget.result;
                     var collection = JSON.parse(data);
-                    postman.indexedDB.getCollection(collection.id, function (data) {
-                        if (data) {
-                            //Clear away the HTML
-                            postman.layout.sidebar.emptyCollectionInSidebar(collection.id);
-                            postman.indexedDB.deleteCollection(collection.id, function (c) {
-                                postman.indexedDB.addCollection(collection, function (c) {
-                                    var message = {
-                                        name:collection.name,
-                                        action:"replaced"
-                                    };
+                    collection.id = guid();
+                    postman.indexedDB.addCollection(collection, function (c) {
+                        $('#itemCollectionSelectorList').tmpl([collection]).appendTo('#selectCollection');
+                        $('#itemCollectionSidebarHead').tmpl([collection]).appendTo('#collectionItems');
 
-                                    $('#messageCollectionAdded').tmpl([message]).appendTo('.modal-import-alerts');
-                                    for (var i = 0; i < collection.requests.length; i++) {
-                                        var request = collection.requests[i];
-                                        postman.indexedDB.addCollectionRequest(request, function (req) {
-                                            var targetElement = "#collectionRequests-" + req.collectionId;
-                                            postman.urlCache.addUrl(req.url);
+                        $('a[rel="tooltip"]').tooltip();
 
-                                            req.url = limitStringLineWidth(req.url, 43);
-                                            $('#itemCollectionSidebarRequest').tmpl([req]).appendTo(targetElement);
-                                            postman.layout.refreshScrollPanes();
-                                        });
-                                    }
-                                });
-                            });
-                        }
-                        else {
-                            postman.indexedDB.addCollection(collection, function (c) {
-                                $('#itemCollectionSelectorList').tmpl([collection]).appendTo('#selectCollection');
-                                $('#itemCollectionSidebarHead').tmpl([collection]).appendTo('#collectionItems');
+                        $('#messageCollectionAdded').tmpl([message]).appendTo('.modal-import-alerts');
 
-                                $('a[rel="tooltip"]').tooltip();
+                        for (var i = 0; i < collection.requests.length; i++) {
+                            var request = collection.requests[i];
+                            request.collectionId = collection.id;
+                            request.id = guid();
 
-                                for (var i = 0; i < collection.requests.length; i++) {
-                                    var request = collection.requests[i];
-                                    var message = {
-                                        name:collection.name,
-                                        action:"replaced"
-                                    };
+                            var message = {
+                                name:collection.name,
+                                action:"added"
+                            };
 
-                                    $('#messageCollectionAdded').tmpl([message]).appendTo('.modal-import-alerts');
-                                    postman.indexedDB.addCollectionRequest(request, function (req) {
-                                        var targetElement = "#collectionRequests-" + req.collectionId;
-                                        postman.urlCache.addUrl(req.url);
+                            postman.indexedDB.addCollectionRequest(request, function (req) {
+                                var targetElement = "#collectionRequests-" + req.collectionId;
+                                postman.urlCache.addUrl(req.url);
 
-                                        req.url = limitStringLineWidth(req.url, 43);
-                                        $('#itemCollectionSidebarRequest').tmpl([req]).appendTo(targetElement);
-                                        postman.layout.refreshScrollPanes();
-                                    });
-                                }
+                                req.url = limitStringLineWidth(req.url, 43);
+                                $('#itemCollectionSidebarRequest').tmpl([req]).appendTo(targetElement);
+                                postman.layout.refreshScrollPanes();
                             });
                         }
                     });
@@ -1874,6 +1859,11 @@ postman.layout = {
             postman.currentRequest.response.toggleBodySize();
         });
 
+        $('#responseBodyLineWrapping').on("click", function () {
+            postman.editor.toggleLineWrapping();
+        });
+
+
         $('#langFormat').on("click", "a", function () {
             var previewType = $(this).attr('data-type');
             postman.currentRequest.response.changePreviewType(previewType);
@@ -1944,11 +1934,11 @@ postman.layout = {
         });
 
         $('#requestHelp').on("mouseenter", function () {
-            $('.requestHelpActions').fadeIn();
+            $('.requestHelpActions').css("display", "block");
         });
 
         $('#requestHelp').on("mouseleave", function () {
-            $('.requestHelpActions').fadeOut();
+            $('.requestHelpActions').css("display", "none");
         });
 
         this.setLayout();
@@ -2754,6 +2744,6 @@ $(document).ready(function () {
     postman.initialize();
 });
 
-$(window).on("unload", function() {
+$(window).on("unload", function () {
     console.log("On unload window called");
 });

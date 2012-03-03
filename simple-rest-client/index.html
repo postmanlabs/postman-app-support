@@ -39,7 +39,6 @@
         <div id="mainNavigation">
             <ul>
                 <li><a href="#modalSettings" data-toggle="modal">Settings</a></li>
-                <li><a href="#modalAboutPostman" data-toggle="modal">About</a></li>
             </ul>
         </div>
     </div>
@@ -54,12 +53,13 @@
             <a href="#formModalNewCollection" rel="tooltip" data-original-title="Add new collection"
                data-toggle="modal"
                data-backdrop="static"
-               data-keyboard="true"><img src="img/file-add.png"
-                                         style="width:24px; height:24px; vertical-align: middle;"/></a>
+               data-keyboard="true"><img src="img/glyphicons_145_folder_plus.png"
+                                         style="width:20px; height:20px; vertical-align: middle;"/></a>
             <a href="#modalImportCollection" rel="tooltip" data-original-title="Import collection"
                data-toggle="modal"
                data-backdrop="static"
-               data-keyboard="true"><img src="img/glyphicons_134_inbox_in.png" style="width:20px; height:20px; vertical-align: middle;"/></a>
+               data-keyboard="true"><img src="img/glyphicons_134_inbox_in.png"
+                                         style="width:20px; height:20px; vertical-align: middle;"/></a>
         </div>
         <ul id="sidebarSelectors" class="nav nav-pills">
             <li class="active"><a href="javascript:void(0);" data-id="history" data-toggle="tab">History</a></li>
@@ -240,7 +240,7 @@
         <input type="text" name="url" id="url" tabindex="1" class="inputTextLight"
                placeholder="Enter request URL here"/>
     </div>
-    <div class="span1" style="width: 90px;">
+    <div class="span4">
         <select id="requestMethodSelector">
             <option value="get" selected>GET</option>
             <option value="post">POST</option>
@@ -250,16 +250,12 @@
             <option value="head">HEAD</option>
             <option value="options">OPTIONS</option>
         </select>
-    </div>
-    <div class="span3">
-        <span class="buttonLayout">
-            <button href="javascript:void(0);" class="btn btn-small" id="url-keyvaleditor-actions-open"><i
-                    class="icon-edit"></i> URL params
-            </button>
-            <button href="javascript:void(0);" class="btn btn-small" id="headers-keyvaleditor-actions-open"><i
-                    class="icon-edit"></i> Headers (<span class="headers-count">0</span>)
-            </button>
-        </span>
+        <button href="javascript:void(0);" class="btn btn-small" id="url-keyvaleditor-actions-open"><i
+                class="icon-edit"></i> URL params
+        </button>
+        <button href="javascript:void(0);" class="btn btn-small" id="headers-keyvaleditor-actions-open"><i
+                class="icon-edit"></i> Headers (<span class="headers-count">0</span>)
+        </button>
     </div>
 </div>
 
@@ -291,7 +287,8 @@
         </li>
     </ul>
     <div id="bodyDataContainer">
-        <textarea name="data" id="body" tabindex="4" class="inputText"></textarea>
+        <textarea name="data" id="body" tabindex="4" class="inputText">
+        </textarea>
     </div>
 
     <div id="body-keyvaleditor-container" class="row" style="margin-left: 0px;">
@@ -334,23 +331,30 @@
         <div id="responsePrint">
             <div id="respData" style="display:none">
                 <div id="respDataOptions" class="clearfix">
-                    <div id="langFormat">
-                        <ul class="nav nav-pills">
-                            <li id="langFormat-parsed" class="active">
-                                <a href="javascript:void(0);" data-type="parsed">
-                                    Parsed
-                                </a>
-                            </li>
-                            <li id="langFormat-raw">
-                                <a href="javascript:void(0);" data-type="raw">
-                                    Raw
-                                </a>
-                            </li>
-                        </ul>
+                    <div id="langFormat" class="btn-group clearfix" data-toggle="buttons-radio">
+                        <a href="javascript:void(0);" data-type="parsed" class="btn">
+                            Parsed
+                        </a>
+                        <a href="javascript:void(0);" data-type="raw" class="btn">
+                            Raw
+                        </a>
                     </div>
-                    <div id="respDataActions">
-                        <a href="javascript:void(0);" id="responseBodyToggle">
-                            <img src="img/full-screen-alt-4.png" width="24px" height="24px"/>
+                    <div id="respDataActions" class="btn-group clearfix">
+                        <a href="javascript:void(0);" class="btn"
+                           rel="tooltip"
+                           data-placement="right"
+                           data-original-title="Toggle size"
+                           id="responseBodyToggle">
+                            <img src="img/full-screen-alt-4.png"
+                                 style="width:16px; height:16px; vertical-align: middle;"/>
+                        </a>
+                        <a href="javascript:void(0);" class="btn"
+                           rel="tooltip"
+                           data-placement="right"
+                           data-original-title="Toggle wrapping"
+                           id="responseBodyLineWrapping">
+                            <img src="img/glyphicons_109_right_indent.png"
+                                 style="width:16px; height:16px; vertical-align: middle;"/>
                         </a>
                     </div>
                 </div>
@@ -560,31 +564,6 @@
         <a href="javascript:void(0);" data-dismiss="modal" class="btn btn-primary">Close</a>
     </div>
 </div>
-<div id="modalAboutPostman" class="modal fade">
-    <div class="modal-header">
-        <a href="#" class="close" data-dismiss="modal">×</a>
-
-        <h3>About Postman</h3>
-    </div>
-    <div class="modal-body">
-        <p>
-            Postman makes testing web services easier. By getting rid of repetitive tasks and an intuitive interface,
-            Postman helps you in
-            allowing complex requests to be formed quickly.
-        </p>
-
-        <p>
-            We are trying to make Postman better and faster all the time.
-            If you have a suggestion or found a bug? Let us know at
-            <a href="http://www.github.com/a85/POSTMan-Chrome-Extension">Github</a> or on Twitter
-            <a href="http://www.twitter.com/a85">@a85</a>
-            <a href="http://www.twitter.com/sobtiankit">@sobtiankit</a>
-        </p>
-    </div>
-    <div class="modal-footer">
-        <a href="javascript:void(0);" data-dismiss="modal" class="btn btn-primary">Close</a>
-    </div>
-</div>
 <div id="modalResponseError" class="modal fade">
     <div class="modal-header">
         <a href="#" class="close" data-dismiss="modal">×</a>
@@ -622,19 +601,6 @@
             </tr>
             <tr>
                 <td>
-                    <a href="javascript:void(0);">Share Postman</a>
-
-                    <div class="spreadtheword-sharebuttons">
-                        <div id="aboutPostmanSocialButtons" class="clearfix">
-                            <div id="aboutPostmanTwitterButton"></div>
-                            <div id="aboutPostmanPlusOneButton"></div>
-                            <div id="aboutPostmanFacebookButton"></div>
-                        </div>
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td>
                     <a target="_blank" href="https://github.com/a85/POSTMan-Chrome-Extension/issues">Report a bug</a>
 
                     <p>
@@ -651,6 +617,27 @@
                         Found a bug or want to add a feature? The code is on Github!
                         Postman is licensed under the Apache Licence, Version 2.0.
                     </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <strong>Shout at the developers</strong>
+                    <a target="_blank" href="http://www.twitter.com/a85">@a85</a>
+                    and <a target="_blank" href="http://www.twitter.com/a85">@sobtiankit</a>
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    <strong>Share Postman</strong>
+
+                    <div class="spreadtheword-sharebuttons">
+                        <div id="aboutPostmanSocialButtons" class="clearfix">
+                            <div id="aboutPostmanTwitterButton"></div>
+                            <div id="aboutPostmanPlusOneButton"></div>
+                            <div id="aboutPostmanFacebookButton"></div>
+                        </div>
+                    </div>
                 </td>
             </tr>
         </table>
