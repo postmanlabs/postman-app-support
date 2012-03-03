@@ -338,7 +338,15 @@ postman.editor = {
 
     toggleLineWrapping:function () {
         var lineWrapping = postman.editor.codeMirror.getOption("lineWrapping");
-        postman.editor.codeMirror.setOption("lineWrapping", !lineWrapping);
+        if (lineWrapping) {
+            $('#responseBodyLineWrapping').removeClass("active");
+        }
+        else {
+            $('#responseBodyLineWrapping').addClass("active");
+        }
+        lineWrapping = !lineWrapping;
+        localStorage["lineWrapping"] = lineWrapping;
+        postman.editor.codeMirror.setOption("lineWrapping", lineWrapping);
     }
 };
 
@@ -390,7 +398,15 @@ postman.settings = {
             localStorage['selectedEnvironmentId'] = this.selectedEnvironmentId;
         }
 
-        if(localStorage["lastRequest"]) {
+        if (localStorage['lineWrapping']) {
+            this.lineWrapping = localStorage['lineWrapping'];
+        }
+        else {
+            this.lineWrapping = true;
+            localStorage['lineWrapping'] = this.lineWrapping;
+        }
+
+        if (localStorage["lastRequest"]) {
             this.lastRequest = localStorage["lastRequest"];
         }
 
@@ -454,7 +470,7 @@ postman.currentRequest = {
             this.addListeners();
         }
 
-        if(postman.settings.lastRequest) {
+        if (postman.settings.lastRequest) {
             var lastRequest = JSON.parse(postman.settings.lastRequest);
             postman.currentRequest.loadRequestInEditor(lastRequest);
         }
@@ -532,17 +548,17 @@ postman.currentRequest = {
 
     getAsJson:function () {
         var request = {
-            url: $('#url').val(),
-            data: $('#body').val(),
-            headers: postman.currentRequest.getPackedHeaders(),
-            dataMode: postman.currentRequest.dataMode,
-            method: postman.currentRequest.method
+            url:$('#url').val(),
+            data:$('#body').val(),
+            headers:postman.currentRequest.getPackedHeaders(),
+            dataMode:postman.currentRequest.dataMode,
+            method:postman.currentRequest.method
         };
 
         return JSON.stringify(request);
     },
 
-    saveCurrentToLocalStorage: function() {
+    saveCurrentToLocalStorage:function () {
         localStorage["lastRequest"] = postman.currentRequest.getAsJson();
     },
 
@@ -866,6 +882,13 @@ postman.currentRequest = {
                 foldFunc = CodeMirror.newFoldFunction(CodeMirror.tagRangeFinder);
             }
 
+            if(postman.settings.lineWrapping) {
+                $('#responseBodyLineWrapping').addClass("active");
+            }
+            else {
+                $('#responseBodyLineWrapping').removeClass("active");
+            }
+
             postman.editor.mode = mode;
             if (!postman.editor.codeMirror || forceCreate) {
                 postman.editor.codeMirror = CodeMirror.fromTextArea(codeDataArea,
@@ -875,7 +898,7 @@ postman.currentRequest = {
                         fixedGutter:true,
                         onGutterClick:foldFunc,
                         theme:'eclipse',
-                        lineWrapping:true,
+                        lineWrapping:postman.settings.lineWrapping,
                         readOnly:true
                     });
 
@@ -886,7 +909,7 @@ postman.currentRequest = {
                 postman.editor.codeMirror.setValue(response);
                 postman.editor.codeMirror.setOption("onGutterClick", foldFunc);
                 postman.editor.codeMirror.setOption("mode", "links");
-                postman.editor.codeMirror.setOption("lineWrapping", true);
+                postman.editor.codeMirror.setOption("lineWrapping", postman.settings.lineWrapping);
                 postman.editor.codeMirror.setOption("theme", "eclipse");
                 postman.editor.codeMirror.setOption("readOnly", true);
             }
@@ -984,7 +1007,13 @@ postman.currentRequest = {
         if (this.name !== "") {
             $('#requestHelp').css("display", "block");
             $('#requestName').css("display", "block");
-            $('#requestDescription').css("display", "block");
+            if($('#requestDescription').css("display") === "block") {
+                $('#requestDescription').css("display", "block");
+            }
+            else {
+                $('#requestDescription').css("display", "none");
+            }
+
         }
         else {
             $('#requestHelp').css("display", "none");
@@ -1065,7 +1094,7 @@ postman.currentRequest = {
         this.method = request.method;
 
         console.log(request.headers);
-        if(typeof request.headers !== "undefined") {
+        if (typeof request.headers !== "undefined") {
             this.headers = this.unpackHeaders(request.headers);
         }
         else {
@@ -1506,6 +1535,8 @@ postman.history = {
                     {}
                 ]).appendTo('#sidebarSection-history');
             }
+
+            postman.layout.refreshScrollPanes();
         });
 
     },
@@ -1739,6 +1770,8 @@ postman.collections = {
             $(label).html("Show");
             $(target).slideUp(100);
         }
+
+        postman.layout.refreshScrollPanes();
     },
 
     addCollection:function () {
@@ -1849,7 +1882,7 @@ postman.collections = {
                 postman.collections.getAllRequestsInCollection(items[i].id);
             }
 
-            postman.collections.areCollectionsLoaded = true;
+            postman.collections.areLoaded = true;
             postman.layout.refreshScrollPanes();
         });
     },
@@ -1904,6 +1937,7 @@ postman.layout = {
 
         $('#responseBodyLineWrapping').on("click", function () {
             postman.editor.toggleLineWrapping();
+            return true;
         });
 
 
@@ -2027,33 +2061,33 @@ postman.layout = {
 
     sidebar:{
         currentSection:"history",
-        isSidebarMaximized: true,
+        isSidebarMaximized:true,
         sections:[ "history", "collections" ],
 
-        minimizeSidebar: function() {
-            $('#sidebarToggle').animate({left: "5px"}, 500);
-            $('#sidebar').animate({width: "30px"}, 500);
+        minimizeSidebar:function () {
+            $('#sidebarToggle').animate({left:"5px"}, 500);
+            $('#sidebar').animate({width:"30px"}, 500);
             $('#sidebarFooter').css("display", "none");
-            $('#sidebar div').animate({opacity: 0}, 500);
+            $('#sidebar div').animate({opacity:0}, 500);
             var newMainWidth = $(document).width() - 30;
-            $('#main').animate({width: newMainWidth + "px", "margin-left": "30px"}, 500);
+            $('#main').animate({width:newMainWidth + "px", "margin-left":"30px"}, 500);
             $('#sidebarToggle img').attr('src', 'img/glyphicons_217_circle_arrow_right.png');
         },
 
-        maximizeSidebar: function() {
-            $('#sidebarToggle').animate({left: "293px"}, 500);
-            $('#sidebar').animate({width: "340px"}, 500);
-            $('#sidebar div').animate({opacity: 1}, 500);
+        maximizeSidebar:function () {
+            $('#sidebarToggle').animate({left:"293px"}, 500);
+            $('#sidebar').animate({width:"340px"}, 500);
+            $('#sidebar div').animate({opacity:1}, 500);
             $('#sidebarFooter').css("display", "block");
             $('#sidebarFooter').fadeIn();
             $('#sidebarToggle img').attr('src', 'img/glyphicons_216_circle_arrow_left.png');
             var newMainWidth = $(document).width() - 330;
-            $('#main').animate({width: newMainWidth + "px", "margin-left": "340px"}, 500);
+            $('#main').animate({width:newMainWidth + "px", "margin-left":"340px"}, 500);
         },
 
-        toggleSidebar: function() {
+        toggleSidebar:function () {
             var isSidebarMaximized = postman.layout.sidebar.isSidebarMaximized;
-            if(isSidebarMaximized) {
+            if (isSidebarMaximized) {
                 postman.layout.sidebar.minimizeSidebar();
             }
             else {
@@ -2074,7 +2108,7 @@ postman.layout = {
                 postman.history.loadRequest(request_id);
             });
 
-            $('#sidebarToggle').on("click", function() {
+            $('#sidebarToggle').on("click", function () {
                 postman.layout.sidebar.toggleSidebar();
             });
 

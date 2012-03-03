@@ -537,7 +537,6 @@ li .right {
     float: left;
 }
 
-
 #request,
 #response {
     padding: 0 0 20px 20px;
@@ -615,10 +614,14 @@ li .right {
     color: white;
 }
 
+#sidebarFiller {
+    height: 50px;
+}
 
 #sidebarSectionContainer {
     margin-bottom: 50px;
 }
+
 #sidebarSectionContainer ul {
     margin-left: -10px;
 }
@@ -706,7 +709,7 @@ li .right {
     position: absolute;
     top: 50%;
     left: 50%;
-    margin-top: -150px;
+    margin-top: -250px;
     margin-left: -250px;
     display: none;
 }
@@ -725,6 +728,15 @@ li .right {
 }
 
 #modalShortcuts {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-top: -300px;
+    margin-left: -250px;
+    display: none;
+}
+
+#modalSpreadTheWord {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -886,13 +898,12 @@ li .right {
     margin-top: 5px;
 }
 
-
 #historyOptions {
-    margin-left: 280px;
+    margin-left: 295px;
 }
 
 #collectionsOptions {
-    margin-left: 260px;
+    margin-left: 270px;
 }
 
 #collectionsOptions {
@@ -997,19 +1008,22 @@ li .right {
 
 .topSidebar {
     float: right;
-    margin-right: 15px;
+    margin-right: 25px;
     margin-top: 5px;
+    width: 60px;
 }
 
 .topSidebar a {
     font-size: 11px;
     font-weight: bold;
     text-decoration: none;
+    margin-right: 5px;
 }
 
 .topSidebar img {
     height: 14px;
 }
+
 .topSidebar a:hover {
     text-decoration: none;
 }
@@ -1049,7 +1063,6 @@ li .right {
     font-weight: bold;
 }
 
-
 #modalEnvironments .modal-footer {
     display: none;
 }
@@ -1070,6 +1083,7 @@ li .right {
     height: 35px;
     margin-left: -20px;
 }
+
 .response-tabs {
     margin: 0;
     padding: 0;
@@ -1124,6 +1138,7 @@ li .right {
     margin-top: 2px;
     display: none;
 }
+
 .requestHelpActions img {
     width: 14px;
     height: 14px;

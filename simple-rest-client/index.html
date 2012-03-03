@@ -99,12 +99,13 @@
         </div>
     </div>
     <div class="topSidebar">
-        <a data-toggle="modal" href="#modalShortcuts">
-            <img src="img/glyphicons_268_keyboard_wireless.png" style="vertical-align: middle;"/>
-            Shortcuts</a>
-        <a href="#modalSettings" data-toggle="modal">
-            <img src="img/glyphicons_280_settings.png" style="vertical-align: middle;"/>
-            Settings</a>
+        <a data-toggle="modal" href="#modalShortcuts"
+                rel="tooltip" data-placement="bottom" data-original-title="Shortcuts">
+            <img src="img/glyphicons_268_keyboard_wireless.png" style="vertical-align: middle;"/></a>
+        <a href="#modalSettings" data-toggle="modal"
+           rel="tooltip"
+            data-placement="bottom" data-original-title="Settings">
+            <img src="img/glyphicons_280_settings.png" style="vertical-align: middle;"/></a>
     </div>
 </div>
 <div id="requestHelpers" class="clearfix">
@@ -341,7 +342,7 @@
                             Raw
                         </a>
                     </div>
-                    <div id="respDataActions" class="btn-group clearfix">
+                    <div id="respDataActions" class="clearfix">
                         <a href="javascript:void(0);" class="btn"
                            rel="tooltip"
                            data-placement="right"
@@ -350,7 +351,7 @@
                             <img src="img/full-screen-alt-4.png"
                                  style="width:16px; height:16px; vertical-align: middle;"/>
                         </a>
-                        <a href="javascript:void(0);" class="btn"
+                        <a class="btn"
                            rel="tooltip"
                            data-placement="right"
                            data-original-title="Toggle wrapping"
@@ -365,9 +366,7 @@
                         <textarea name="codeData" id="codeData" class="chili-lang-html" data-formatted="false">
                         </textarea>
                     </div>
-                    <div id="responseAsImage">
-
-                    </div>
+                    <div id="responseAsImage"></div>
                 </div>
             </div>
         </div>
