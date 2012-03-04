@@ -177,7 +177,7 @@ postman.filesystem = {
                                 url:fileEntry.toURL()
                             };
 
-                            if(typeof chrome !== "undefined") {
+                            if (typeof chrome !== "undefined") {
                                 chrome.tabs.create(properties, function (tab) {
                                 });
                             }
@@ -338,15 +338,18 @@ postman.editor = {
 
     toggleLineWrapping:function () {
         var lineWrapping = postman.editor.codeMirror.getOption("lineWrapping");
-        if (lineWrapping) {
+        if (lineWrapping === true) {
             $('#responseBodyLineWrapping').removeClass("active");
+            lineWrapping = false;
+            postman.editor.codeMirror.setOption("lineWrapping", false);
         }
         else {
             $('#responseBodyLineWrapping').addClass("active");
+            lineWrapping = true;
+            postman.editor.codeMirror.setOption("lineWrapping", true);
         }
-        lineWrapping = !lineWrapping;
+
         localStorage["lineWrapping"] = lineWrapping;
-        postman.editor.codeMirror.setOption("lineWrapping", lineWrapping);
     }
 };
 
@@ -506,6 +509,14 @@ postman.currentRequest = {
 
                 postman.currentRequest.headers = newHeaders;
                 $('#headers-keyvaleditor-actions-open .headers-count').html(newHeaders.length);
+            },
+
+            onFocusElement:function () {
+                console.log($("#headers-keyvaleditor .keyvalueeditor-key"));
+                $("#headers-keyvaleditor input").autocomplete({
+                    source:chromeHeaders,
+                    delay:50
+                });
             },
 
             onBlurElement:function () {
@@ -880,11 +891,14 @@ postman.currentRequest = {
                 foldFunc = CodeMirror.newFoldFunction(CodeMirror.tagRangeFinder);
             }
 
-            if(postman.settings.lineWrapping) {
+            var lineWrapping;
+            if (postman.settings.lineWrapping === "true") {
                 $('#responseBodyLineWrapping').addClass("active");
+                lineWrapping = true;
             }
             else {
                 $('#responseBodyLineWrapping').removeClass("active");
+                lineWrapping = false;
             }
 
             postman.editor.mode = mode;
@@ -896,7 +910,7 @@ postman.currentRequest = {
                         fixedGutter:true,
                         onGutterClick:foldFunc,
                         theme:'eclipse',
-                        lineWrapping:postman.settings.lineWrapping,
+                        lineWrapping:lineWrapping,
                         readOnly:true
                     });
 
@@ -907,10 +921,12 @@ postman.currentRequest = {
                 postman.editor.codeMirror.setValue(response);
                 postman.editor.codeMirror.setOption("onGutterClick", foldFunc);
                 postman.editor.codeMirror.setOption("mode", "links");
-                postman.editor.codeMirror.setOption("lineWrapping", postman.settings.lineWrapping);
+                postman.editor.codeMirror.setOption("lineWrapping", lineWrapping);
                 postman.editor.codeMirror.setOption("theme", "eclipse");
                 postman.editor.codeMirror.setOption("readOnly", true);
             }
+
+            console.log(postman.editor.codeMirror.getOption("lineWrapping"), " new line wrapping");
 
             $('#codeData').val(response);
         },
@@ -986,6 +1002,7 @@ postman.currentRequest = {
     },
 
     setMethod:function (method) {
+        this.url = $('#url').val();
         this.method = method;
         this.refreshLayout();
     },
@@ -996,7 +1013,15 @@ postman.currentRequest = {
         $('#headers-keyvaleditor-actions-open .headers-count').html(this.headers.length);
         if (this.isMethodWithBody(this.method)) {
             $("#data").css("display", "block");
-            postman.currentRequest.openBodyEditor();
+            var mode = this.dataMode;
+            if (mode === "params") {
+                postman.currentRequest.openBodyEditor();
+                $('#bodyDataContainer').css("display", "none");
+            }
+            else if (mode === "raw") {
+                postman.currentRequest.closeBodyEditor();
+                $('#bodyDataContainer').css("display", "block");
+            }
         } else {
             postman.currentRequest.closeBodyEditor();
             $("#data").css("display", "none");
@@ -1005,7 +1030,7 @@ postman.currentRequest = {
         if (this.name !== "") {
             $('#requestHelp').css("display", "block");
             $('#requestName').css("display", "block");
-            if($('#requestDescription').css("display") === "block") {
+            if ($('#requestDescription').css("display") === "block") {
                 $('#requestDescription').css("display", "block");
             }
             else {

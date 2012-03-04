@@ -12,7 +12,8 @@
 }
 
 .keyvalueeditor-value-file {
-    margin-right: 20px !important;
+    margin-right: 10px !important;
+    border-bottom: 0 !important;
 }
 .keyvalueeditor-key:focus,
 .keyvalueeditor-value:focus {

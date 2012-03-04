@@ -1,30 +1,30 @@
-(function($) {
+(function ($) {
 
     var methods = {
         //Not sure if this is needed
-        settings: function() {
+        settings:function () {
         },
 
         //Initialization
-        init: function(options) {
+        init:function (options) {
             methods.settings = $.extend({}, $.fn.keyvalueeditor.defaults, options);
 
-            return this.each(function() {
+            return this.each(function () {
                 var $this = $(this);
                 var data = $this.data('keyvalueeditor');
 
                 //Not already initialized
-                if(!data) {
+                if (!data) {
                     data = {
-                        settings: methods.settings,
-                        editor: $this
+                        settings:methods.settings,
+                        editor:$this
                     };
 
                     var h = methods.getLastRow(data);
                     $this.append(h);
-                    methods.settings.onAddedParam();
 
                     $this.on("focus.keyvalueeditor", '.keyvalueeditor-last', data, methods.focusEventHandler);
+                    $this.on("focus.keyvalueeditor", '.keyvalueeditor-row input', data, methods.rowFocusEventHandler);
                     $this.on("blur.keyvalueeditor", '.keyvalueeditor-row input', data, methods.blurEventHandler);
                     $this.on("change.keyvalueeditor", '.keyvalueeditor-valueTypeSelector ', data, methods.valueTypeSelectEventHandler);
                     $this.on("click.keyvalueeditor", '.keyvalueeditor-delete', data, methods.deleteRowHandler);
@@ -34,7 +34,7 @@
             });
         },
 
-        getLastRow: function(state) {
+        getLastRow:function (state) {
             var settings = state.settings;
             var pKey = settings.placeHolderKey;
             var pValue = settings.placeHolderValue;
@@ -52,7 +52,7 @@
                 + '" name="keyvalueeditor-value"'
                 + '"/>';
 
-            if($.inArray("file", valueTypes) >= 0) {
+            if ($.inArray("file", valueTypes) >= 0) {
                 h += '<input type="file" multiple class="keyvalueeditor-value keyvalueeditor-value-file" placeHolder="' + pValue
                     + '" name="keyvalueeditor-value'
                     + '" value="' + value
@@ -66,7 +66,7 @@
             return h;
         },
 
-        getNewRow: function(key, value, state) {
+        getNewRow:function (key, value, state) {
             var settings = state.settings;
             var pKey = settings.placeHolderKey;
             var pValue = settings.placeHolderValue;
@@ -87,14 +87,14 @@
                 + '" value="' + value
                 + '"/>';
 
-            if($.inArray("file", valueTypes) >= 0) {
+            if ($.inArray("file", valueTypes) >= 0) {
                 h += '<input type="file" multiple class="keyvalueeditor-value keyvalueeditor-value-file" placeHolder="' + pValue
                     + '" name="keyvalueeditor-' + value
                     + '" value="' + value
                     + '" style="display: none;"/>';
 
                 h += '<select class="keyvalueeditor-valueTypeSelector"><option value="text" selected>Text</option>' +
-                     '<option value="file">File</option></select>';
+                    '<option value="file">File</option></select>';
             }
 
             h += methods.getDeleteLink(state);
@@ -102,34 +102,34 @@
             return h;
         },
 
-        getDeleteLink: function(state) {
+        getDeleteLink:function (state) {
             return '<a href="javascript:void(0);" tabindex="-1" class="keyvalueeditor-delete">' + state.settings.deleteButton + '</a>';
         },
 
 
-        deleteRowHandler: function(event) {
+        deleteRowHandler:function (event) {
             var target = event.currentTarget;
             $(target).parent().remove();
             var data = event.data;
             data.settings.onDeleteRow();
         },
 
-        valueTypeSelectEventHandler: function(event) {
+        valueTypeSelectEventHandler:function (event) {
             var target = event.currentTarget;
             var valueType = $(target).val();
             var valueTypes = event.data.settings.valueTypes;
-            for(var i = 0; i < valueTypes.length; i++) {
+            for (var i = 0; i < valueTypes.length; i++) {
                 $(target).parent().find('.keyvalueeditor-value').css("display", "none");
             }
             $(target).parent().find('input[type="' + valueType + '"]').css("display", "inline-block");
         },
 
-        focusEventHandler: function(event) {
-            var params = {key: "", value: ""};
+        focusEventHandler:function (event) {
+            var params = {key:"", value:""};
             var editor = event.data.editor;
             $(this).removeClass('keyvalueeditor-last');
             var row = methods.getLastRow(event.data);
-            if(event.data.settings.valueTypes.length > 1) {
+            if (event.data.settings.valueTypes.length > 1) {
                 $(this).find('select:last').after(methods.getDeleteLink(event.data));
             }
             else {
@@ -139,40 +139,46 @@
             $(this).after(row);
         },
 
-        blurEventHandler: function(event) {
+        rowFocusEventHandler:function (event) {
+            var data = event.data;
+            console.log("FOcussed element");
+            data.settings.onFocusElement();
+        },
+
+        blurEventHandler:function (event) {
             var data = event.data;
             data.settings.onBlurElement();
         },
 
         //For external use
-        addParam: function(param, state) {
+        addParam:function (param, state) {
             //Add delete link to the last element
             $(state.editor).find('.keyvalueeditor-last').before(methods.getNewRow(param.key, param.value, state));
         },
 
         //Check for duplicates here
-        addParams: function(params, state) {
-            if(!state) {
+        addParams:function (params, state) {
+            if (!state) {
                 state = $(this).data('keyvalueeditor');
             }
 
             var count = params.length;
-            for(var i = 0; i < count; i++) {
+            for (var i = 0; i < count; i++) {
                 var param = params[i];
                 methods.addParam(param, state);
             }
         },
 
-        getValues: function() {
+        getValues:function () {
             var pairs = [];
-            $(this).find('.keyvalueeditor-row').each(function() {
+            $(this).find('.keyvalueeditor-row').each(function () {
                 var key = $(this).find('.keyvalueeditor-key').val();
                 var value = $(this).find('.keyvalueeditor-value').val();
 
-                if(key) {
+                if (key) {
                     var pair = {
-                        key: key,
-                        value: value
+                        key:key,
+                        value:value
                     };
 
                     pairs.push(pair);
@@ -182,17 +188,17 @@
             return pairs;
         },
 
-        getElements: function() {
+        getElements:function () {
             var rows = [];
             var state = $(this).data('keyvalueeditor');
             var valueTypes = state.settings.valueTypes;
-            $(this).find('.keyvalueeditor-row').each(function() {
+            $(this).find('.keyvalueeditor-row').each(function () {
                 var keyElement = $(this).find('.keyvalueeditor-key');
                 var valueElement;
                 var type = "text";
-                if($.inArray("file", valueTypes)) {
+                if ($.inArray("file", valueTypes)) {
                     type = $(this).find('.keyvalueeditor-valueTypeSelector').val();
-                    if(type === "file") {
+                    if (type === "file") {
                         valueElement = $(this).find('.keyvalueeditor-value-file');
                     }
                     else {
@@ -204,11 +210,11 @@
                 }
 
 
-                if(keyElement.val()) {
+                if (keyElement.val()) {
                     var row = {
-                        keyElement: keyElement,
-                        valueElement: valueElement,
-                        valueType: type
+                        keyElement:keyElement,
+                        valueElement:valueElement,
+                        valueType:type
                     };
 
                     rows.push(row);
@@ -219,8 +225,8 @@
             return rows;
         },
 
-        clear: function(state) {
-            $(state.editor).find('.keyvalueeditor-row').each(function() {
+        clear:function (state) {
+            $(state.editor).find('.keyvalueeditor-row').each(function () {
                 $(this).remove();
             });
 
@@ -228,36 +234,36 @@
             $(state.editor).append(h);
         },
 
-        reset: function(params) {
+        reset:function (params) {
             var state = $(this).data('keyvalueeditor');
             methods.clear(state);
-            if(params) {
+            if (params) {
                 methods.addParams(params, state);
             }
 
             state.settings.onReset();
         },
 
-        add: function(params) {
+        add:function (params) {
             var state = $(this).data('keyvalueeditor');
             methods.clear(state);
-            if(params) {
+            if (params) {
                 methods.addParams(params, state);
             }
         },
 
-        destroy: function() {
-            return this.each(function() {
+        destroy:function () {
+            return this.each(function () {
                 //unbind listeners if needed
             });
         }
     };
 
-    $.fn.keyvalueeditor = function(method) {
+    $.fn.keyvalueeditor = function (method) {
         //Method calling logic
-        if(methods[method]) {
+        if (methods[method]) {
             return methods[method].apply(this, Array.prototype.slice.call(arguments, 1));
-        } else if(typeof method === 'object' || !method) {
+        } else if (typeof method === 'object' || !method) {
             return methods.init.apply(this, arguments);
         } else {
             $.error('Method ' + method + ' does not exist on jQuery.keyvalueeditor');
@@ -265,17 +271,24 @@
     };
 
     $.fn.keyvalueeditor.defaults = {
-        type: "normal",
-        fields: 2,
-        deleteButton: "Delete",
-        placeHolderKey: "Key",
-        placeHolderValue: "Value",
-        valueTypes: ["text"],
-        onInit: function() {},
-        onReset: function() {},
-        onBlurElement: function() {},
-        onDeleteRow: function() {},
-        onAddedParam: function() {}
+        type:"normal",
+        fields:2,
+        deleteButton:"Delete",
+        placeHolderKey:"Key",
+        placeHolderValue:"Value",
+        valueTypes:["text"],
+        onInit:function () {
+        },
+        onReset:function () {
+        },
+        onFocusElement:function () {
+        },
+        onBlurElement:function () {
+        },
+        onDeleteRow:function () {
+        },
+        onAddedParam:function () {
+        }
     };
 
 })(jQuery);
