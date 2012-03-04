@@ -512,7 +512,6 @@ postman.currentRequest = {
             },
 
             onFocusElement:function () {
-                console.log($("#headers-keyvaleditor .keyvalueeditor-key"));
                 $("#headers-keyvaleditor input").autocomplete({
                     source:chromeHeaders,
                     delay:50
@@ -925,8 +924,6 @@ postman.currentRequest = {
                 postman.editor.codeMirror.setOption("theme", "eclipse");
                 postman.editor.codeMirror.setOption("readOnly", true);
             }
-
-            console.log(postman.editor.codeMirror.getOption("lineWrapping"), " new line wrapping");
 
             $('#codeData').val(response);
         },

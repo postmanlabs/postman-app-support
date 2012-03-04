@@ -141,7 +141,6 @@
 
         rowFocusEventHandler:function (event) {
             var data = event.data;
-            console.log("FOcussed element");
             data.settings.onFocusElement();
         },
 
@@ -220,8 +219,6 @@
                     rows.push(row);
                 }
             });
-
-            console.log(rows);
             return rows;
         },
 
