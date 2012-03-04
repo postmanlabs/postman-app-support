@@ -1,6 +1,7 @@
 .keyvalueeditor-key,
 .keyvalueeditor-value
 {
+    color: #333 !important;
     padding: 5px !important;
     border: none !important;
     box-shadow: none !important;

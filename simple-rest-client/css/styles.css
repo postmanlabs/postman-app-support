@@ -64,6 +64,7 @@ header {
 }
 
 .cleanInput {
+    color: #333 !important;
     padding: 5px !important;
     border: none !important;
     box-shadow: none !important;
@@ -159,6 +160,10 @@ fieldset {
 #purl {
     margin-left: 0px;
     margin-top: 5px;
+}
+
+#url {
+    color: #333;
 }
 
 #url-ParamsEditor,

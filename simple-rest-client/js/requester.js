@@ -1778,14 +1778,18 @@ postman.collections = {
         var label = "#collection-" + id + " .collection-head-actions .label";
         if ($(target).css("display") === "none") {
             $(label).html("Hide");
-            $(target).slideDown(100);
+            $(target).slideDown(100, function() {
+                postman.layout.refreshScrollPanes();
+            });
         }
         else {
             $(label).html("Show");
-            $(target).slideUp(100);
+            $(target).slideUp(100, function() {
+                postman.layout.refreshScrollPanes();
+            });
         }
 
-        postman.layout.refreshScrollPanes();
+
     },
 
     addCollection:function () {
