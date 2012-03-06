@@ -2499,7 +2499,7 @@ postman.indexedDB = {
             var trans = db.transaction(["requests"], IDBTransaction.READ_WRITE);
             var store = trans.objectStore(["requests"]);
 
-            var request = store.delete(id);
+            var request = store['delete'](id);
 
             request.onsuccess = function () {
                 callback(id);
@@ -2529,7 +2529,7 @@ postman.indexedDB = {
         var trans = db.transaction(["collection_requests"], IDBTransaction.READ_WRITE);
         var store = trans.objectStore(["collection_requests"]);
 
-        var request = store.delete(id);
+        var request = store['delete'](id);
 
         request.onsuccess = function (e) {
             callback(id);
@@ -2570,7 +2570,7 @@ postman.indexedDB = {
         var trans = db.transaction(["collections"], IDBTransaction.READ_WRITE);
         var store = trans.objectStore(["collections"]);
 
-        var request = store.delete(id);
+        var request = store['delete'](id);
 
         request.onsuccess = function () {
             postman.indexedDB.deleteAllCollectionRequests(id);
@@ -2618,7 +2618,7 @@ postman.indexedDB = {
             var trans = db.transaction(["environments"], IDBTransaction.READ_WRITE);
             var store = trans.objectStore(["environments"]);
 
-            var request = store.delete(id);
+            var request = store['delete'](id);
 
             request.onsuccess = function () {
                 callback(id);
