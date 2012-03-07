@@ -5,7 +5,7 @@ html, body {
     height: 100%;
     width: 100%;
     padding: 0;
-    margin:  0;
+    margin: 0;
 }
 
 /*Bootstrap overrides*/
@@ -64,17 +64,19 @@ header {
 }
 
 .cleanInput {
-    padding: 5px;
-    border: none;
-    box-shadow: none;
-    border-bottom: solid thin #ccc;
-    border-radius: 0;
-    outline: none;
+    color: #333 !important;
+    padding: 5px !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-bottom: solid thin #ccc !important;
+    border-radius: 0 !important;
+    outline: none !important;
 }
 
 .cleanInput:focus {
     outline: 0 !important;
-    border-bottom-color: #999;
+    outline-width: 0 !important;
+    border-bottom-color: #999 !important;
 }
 
 #main {
@@ -133,10 +135,9 @@ fieldset {
     padding: 5px;
 }
 
-
 .inputTextLight {
-    border-style: none;
-    border-bottom: 1px solid #CCC;
+    border-style: none !important;
+    border-bottom: 1px solid #CCC !important;
     box-shadow: none;
     border-radius: 0;
     min-height: 18px;
@@ -146,9 +147,9 @@ fieldset {
 }
 
 .inputTextLight:focus {
-    border-bottom-color: #999;
-    outline: none;
-    box-shadow: none;
+    border-bottom-color: #999 !important;
+    outline: none !important;
+    box-shadow: none !important;
 }
 
 .headerText {
@@ -159,6 +160,10 @@ fieldset {
 #purl {
     margin-left: 0px;
     margin-top: 5px;
+}
+
+#url {
+    color: #333;
 }
 
 #url-ParamsEditor,
@@ -258,6 +263,7 @@ fieldset {
     list-style: none;
     margin-right: 3px;
 }
+
 #mainNavigation a {
     color: white;
     padding: 5px;
@@ -278,7 +284,7 @@ fieldset {
 }
 
 #responseData {
-    margin-top: 10px;
+    margin-top: -5px;
     z-index: 10;
     background: white;
 }
@@ -295,6 +301,7 @@ fieldset {
     margin-top: 20px;
     max-width: 1000px;
     font-size: 11px;
+    display: none;
 }
 
 #respHeaders textarea {
@@ -306,7 +313,11 @@ fieldset {
 }
 
 #respData pre {
-    font-family: Consolas, monospace;
+    font-family: Consolas, "Andale Mono", monospace;
+}
+
+.CodeMirror pre {
+    font-family: Consolas, "Andale Mono", monospace;
 }
 
 .CodeMirror-gutter-text {
@@ -343,7 +354,8 @@ fieldset {
     font-size: 12px;
 }
 
-#codeData {
+#body {
+    height: 200px;
 }
 
 #pstatus {
@@ -420,7 +432,6 @@ fieldset {
 }
 
 #data {
-    margin-top: 10px;
     display: none;
 }
 
@@ -438,7 +449,7 @@ fieldset {
 }
 
 #ptime, #pstatus {
-    margin-top: 10px;
+    margin-top: 8px;
 }
 
 #ptime label, #pstatus label {
@@ -451,7 +462,8 @@ fieldset {
     font-family: Helvetica, Arial, sans-serif;
 }
 
-#responsePrint .data {
+#ptime .data,
+#pstatus .data {
     font-size: 10px;
     font-weight: bold;
 }
@@ -525,12 +537,19 @@ li .right {
 }
 
 #langFormat {
+    margin-top: 17px;
+    margin-bottom: 15px;
+    float: left;
 }
 
 #request,
 #response {
-    padding: 0 0px 20px 20px;
-    border-bottom: solid thin #EFEFEF;
+    padding: 0 0 20px 20px;
+    border-bottom: solid thin #ccc;
+}
+
+#requestDescription {
+    max-width: 800px;
 }
 
 #response {
@@ -541,8 +560,14 @@ li .right {
     padding-top: 0;
     margin-top: 0;
 }
+
 #requestUrl {
     margin-top: 10px;
+    margin-bottom: 5px;
+}
+
+#requestUrl button {
+    margin-bottom: 9px;
 }
 
 #methods {
@@ -572,6 +597,34 @@ li .right {
     list-style: none;
     margin: 0;
     padding: 0;
+}
+
+#sidebarFooter {
+    background-color: #000;
+    position: fixed;
+    bottom: 0;
+    width: 350px;
+    height: 20px;
+    opacity: 0.5;
+    z-index: 10;
+    text-align: center;
+    padding: 5px 0 5px 0;
+}
+
+#sidebarFooter:hover {
+    opacity: 1;
+}
+
+#sidebarFooter a {
+    color: white;
+}
+
+#sidebarFiller {
+    height: 50px;
+}
+
+#sidebarSectionContainer {
+    margin-bottom: 50px;
 }
 
 #sidebarSectionContainer ul {
@@ -661,7 +714,7 @@ li .right {
     position: absolute;
     top: 50%;
     left: 50%;
-    margin-top: -150px;
+    margin-top: -250px;
     margin-left: -250px;
     display: none;
 }
@@ -680,6 +733,15 @@ li .right {
 }
 
 #modalShortcuts {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-top: -300px;
+    margin-left: -250px;
+    display: none;
+}
+
+#modalSpreadTheWord {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -734,7 +796,7 @@ li .right {
 
 .collection-head-actions {
     position: absolute;
-    margin-left: 260px;
+    margin-left: 236px;
     z-index: 10;
     display: none;
     padding-top: 4px;
@@ -742,6 +804,8 @@ li .right {
 
 .collection-head-actions img {
     opacity: 0.5;
+    width: 18px;
+    height: 18px;
 }
 
 .collection-head-actions img:hover {
@@ -783,6 +847,7 @@ li .right {
     padding-left: 20px;
     border-bottom: solid thin #ccc;
 }
+
 #url-ParamsEditor .key,
 #headers-ParamsEditor .key {
     width: 282px;
@@ -818,11 +883,11 @@ li .right {
 
 #responseAsImage {
     display: none;
+    margin-top: 20px;
 }
 
 #aboutPostmanSocialButtons {
-    margin-top: 20px;
-    margin-bottom: 10px;
+    margin: 5px 0 5px 0;
 }
 
 #aboutPostmanTwitterButton,
@@ -839,13 +904,12 @@ li .right {
 }
 
 #historyOptions {
-    margin-left: 280px;
+    margin-left: 295px;
 }
 
 #collectionsOptions {
-    margin-left: 280px;
+    margin-left: 270px;
 }
-
 
 #collectionsOptions {
     display: none;
@@ -866,15 +930,9 @@ li .right {
 }
 
 #respDataActions {
-    position: absolute;
-    margin-left: -150px;
-    margin-top: 0;
-    width: 150px;
-    text-align: center;
-}
-
-#respDataActions a {
-    width: 75px;
+    float: left;
+    margin-top: 17px;
+    margin-left: 10px;
 }
 
 .helper-tabs {
@@ -882,6 +940,7 @@ li .right {
     margin: 0;
     padding: 0;
 }
+
 .helper-tabs li {
     float: left;
     font-size: 11px;
@@ -943,7 +1002,7 @@ li .right {
     float: left;
     color: #555;
     font-size: 11px;
-    width: 400px;
+    max-width: 200px;
 }
 
 .requestHelperFormDescription h4 {
@@ -954,14 +1013,20 @@ li .right {
 
 .topSidebar {
     float: right;
-    margin-right: 15px;
+    margin-right: 25px;
     margin-top: 5px;
+    width: 60px;
 }
 
 .topSidebar a {
     font-size: 11px;
     font-weight: bold;
     text-decoration: none;
+    margin-right: 5px;
+}
+
+.topSidebar img {
+    height: 14px;
 }
 
 .topSidebar a:hover {
@@ -977,3 +1042,139 @@ li .right {
     text-decoration: none;
 }
 
+#environment-selector-wrapper {
+    position: absolute;
+    margin-top: 8px;
+    margin-left: 230px;
+    font-size: 11px;
+}
+
+.environment-selector-label {
+    font-weight: bold;
+    color: #AAA;
+}
+
+.environment-selector-active {
+    color: #666;
+    font-weight: bold;
+}
+
+#environment-editor {
+    display: none;
+}
+
+#environment-editor-name {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+#modalEnvironments .modal-footer {
+    display: none;
+}
+
+#import-collection-dropzone {
+    border: 2px dashed #BBB;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+    padding: 25px;
+    text-align: center;
+    font: 20pt bold "Helvetica";
+    color: #BBB;
+}
+
+#responseTopBar {
+    border-bottom: solid thin #ccc;
+    height: 35px;
+    margin-left: -20px;
+}
+
+.response-tabs {
+    margin: 0;
+    padding: 0;
+    float: left;
+}
+
+.response-tabs li {
+    float: left;
+    font-size: 11px;
+    font-weight: bold;
+    list-style: none;
+    padding: 10px;
+    border-left: solid thin #ccc;
+    border-bottom: solid thin #fff;
+    color: #ccc;
+    cursor: pointer;
+    height: 14px;
+}
+
+.response-tabs li:hover {
+    color: #333;
+}
+
+.response-tabs li.active {
+    color: black;
+    height: 15px;
+    border-bottom-color: #fff;
+}
+
+.response-tabs li:last-child {
+    border-right: solid thin #ccc;
+}
+
+.response-tabs li:first-child {
+    border-left: none;
+}
+
+#dataModeSelector {
+    margin-bottom: 5px;
+}
+
+#requestHelp {
+    margin-left: -20px;
+    padding-left: 20px;
+    border-bottom: solid thin #ccc;
+    display: none;
+}
+
+.requestHelpActions {
+    position: absolute;
+    margin-left: -17px;
+    margin-top: 2px;
+    display: none;
+}
+
+.requestHelpActions img {
+    width: 14px;
+    height: 14px;
+}
+
+#requestName {
+    margin-bottom: 5px;
+}
+
+#modalSpreadTheWord a {
+    font-weight: bold;
+}
+
+#newRequestDescription {
+    height: 100px;
+}
+
+#sidebarToggle {
+    position: absolute;
+    top: 15px;
+    left: 293px;
+    opacity: 0.5;
+    z-index: 10;
+    cursor: pointer;
+}
+
+#sidebarToggle:hover {
+    opacity: 1;
+}
+
+#sidebarToggle img {
+    width: 20px;
+    height: 20px;
+}
