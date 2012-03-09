@@ -1,38 +1,31 @@
 Postman
 =======
-Postman is a tool to help developers work with APIs more efficiently and avoid repetitive steps.
+Postman helps you be more efficient while working with APIs. Postman is a scratch-your-own-itch project. The need for it arose while one of the developers was creating an API for his project. After looking around for a number of tools, nothing felt just right. The primary features added were a history of sent requests and collections.
+A number of other features have been added since the initial release. Here is a small list.
 
-0.5.5
-1. Clean up user interface
-2. Basic Auth and OAuth 1.0 request helpers - help you create the headers
-3. Keyboard shortcuts
+Features
+========
 
-0.5.4
-1. Bug fixes related to dialogs
+Create requests quickly.
 
-0.5.3
-1. Reorganized files
-2. Cleaner input fields to reduce clutter
-3. Added new collection button
-4. Added empty views for history and collections
-5. Added maximize request toggle
-6. Toggle for auto saving requests to history
+- Compact layout
+- HTTP requests with file upload support
+- Formatted API responses for JSON and XML
+- HATEOS support
+- Image previews
+- Request history
+- Basic Auth and OAuth 1.0 helpers
+- Autocomplete for URL and header values
+- Key/value editors for adding parameters or header values. Works for URL parameters too.
+- Use environment variables to easily shift between settings. Great for testing production, staging or local setups.
+- Keyboard shortcuts to maximize your productivity
 
-0.5.2
+Document and share APIs.
 
-1. Detailed help for HTTP status codes and headers
-2. Code folding for XML and JSON responses
-3. Clear history with one click
-4. Use 'http' as default before URLs
+- Use collections to organize requests.
+- Document requests inside collections. You can even store entire HTML notes. Postman uses Bootstrap so you can use it too to style your notes.
+- Download and share collections with your team of developers.
 
-Features:
-
-1. Collections to organize and save complete requests for later use.
-2. Smart history of sent requests - avoids duplicate requests.
-3. Key/value editor for quickly looking and changing URL or body parameters.
-4. Auto complete functionality for URLs and HTTP headers.
-5. Automatic formatting for XML and JSON responses.
-6. Single and multiple file uploads.
-7. Now works like a Chrome app. Can be opened in multiple tabs in the same browser window.
+Postman for Chrome can be downloaded from https://chrome.google.com/webstore/detail/fdmmgilgnpjigdojojpjoooidkmcomcm
 
 Postman for Google Chrome is licensed under the Apache Licence, Version 2.0 (http://www.apache.org/licenses/LICENSE-2.0.html).
