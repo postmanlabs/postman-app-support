@@ -835,34 +835,44 @@ postman.currentRequest = {
                 $('#pbodysize .data').html(diff + " bytes");
 
                 var contentType = response.getResponseHeader("Content-Type");
-
-                var format = 'html';
-
-                if (contentType.search(/json/i) !== -1) {
-                    format = 'javascript';
-                }
-
-                $('#language').val(format);
-
+                
                 $('#response').css("display", "block");
                 $('#submitRequest').button("reset");
                 $('#codeData').css("display", "block");
 
-                if (contentType.search(/image/i) === -1) {
+                var format = 'html';
+
+                if(!_.isUndefined(contentType) && !_.isNull(contentType)) {
+                    if (contentType.search(/json/i) !== -1) {
+                        format = 'javascript';
+                    }
+
+                    $('#language').val(format);
+
+                    if (contentType.search(/image/i) === -1) {
+                        $('#responseAsText').css("display", "block");
+                        $('#responseAsImage').css("display", "none");
+                        $('#langFormat').css("display", "block");
+                        $('#respDataActions').css("display", "block");
+                        this.setFormat(format, this.text, "parsed");
+                    }
+                    else {
+                        $('#responseAsText').css("display", "none");
+                        $('#responseAsImage').css("display", "block");
+                        var imgLink = $('#url').val();
+                        $('#langFormat').css("display", "none");
+                        $('#respDataActions').css("display", "none");
+                        $('#responseAsImage').html("<img src='" + imgLink + "'/>");
+                    }
+                }
+                else {
                     $('#responseAsText').css("display", "block");
                     $('#responseAsImage').css("display", "none");
                     $('#langFormat').css("display", "block");
                     $('#respDataActions').css("display", "block");
                     this.setFormat(format, this.text, "parsed");
                 }
-                else {
-                    $('#responseAsText').css("display", "none");
-                    $('#responseAsImage').css("display", "block");
-                    var imgLink = $('#url').val();
-                    $('#langFormat').css("display", "none");
-                    $('#respDataActions').css("display", "none");
-                    $('#responseAsImage').html("<img src='" + imgLink + "'/>");
-                }
+
             }
 
             postman.layout.setLayout();

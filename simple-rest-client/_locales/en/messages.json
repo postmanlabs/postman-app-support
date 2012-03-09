@@ -1,6 +1,6 @@
 {
   "name": {"message": "Postman - REST Client"},
-  "description": {"message": "Postman is a tool to help developers work with APIs more efficiently and avoid repetitive steps."},
+  "description": {"message": "Test, develop and document APIs with pleasure!"},
   "request": {"message": "Request"},
   "debuglink": {"message": "Debug link"},
   "url": {"message": "URL"},
