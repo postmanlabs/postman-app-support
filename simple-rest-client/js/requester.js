@@ -835,7 +835,7 @@ postman.currentRequest = {
                 $('#pbodysize .data').html(diff + " bytes");
 
                 var contentType = response.getResponseHeader("Content-Type");
-                
+
                 $('#response').css("display", "block");
                 $('#submitRequest').button("reset");
                 $('#codeData').css("display", "block");
