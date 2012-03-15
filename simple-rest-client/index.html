@@ -350,7 +350,7 @@
                 <div id="respDataOptions" class="clearfix">
                     <div id="langFormat" class="btn-group clearfix" data-toggle="buttons-radio">
                         <a href="javascript:void(0);" data-type="parsed" class="btn">
-                            Parsed
+                            Pretty
                         </a>
                         <a href="javascript:void(0);" data-type="raw" class="btn">
                             Raw
@@ -376,9 +376,12 @@
                     </div>
                 </div>
                 <div name="responseData" id="responseData" contenteditable="true">
-                    <div id="responseAsText">
-                        <textarea name="codeData" id="codeData" class="chili-lang-html" data-formatted="false">
+                    <div id="responseAsCode">
+                        <textarea name="codeData" id="codeData" data-formatted="false">
                         </textarea>
+                    </div>
+                    <div id="responseAsText">
+                        <textarea name="codeData" id="codeDataRaw"></textarea>
                     </div>
                     <div id="responseAsImage"></div>
                 </div>
