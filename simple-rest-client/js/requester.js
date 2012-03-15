@@ -224,6 +224,9 @@ postman.keymap = {
             if (event.keyCode === 27) {
                 $(event.target).blur();
             }
+            else if(event.keyCode == 13) {
+                postman.currentRequest.send();
+            }
         });
 
         $('body').on('keydown', 'textarea', function (event) {
@@ -919,7 +922,7 @@ postman.currentRequest = {
 
             postman.editor.mode = mode;
             var renderMode = "text";
-            if(mode === 'javascript' || mode === 'html') {
+            if(mode === 'javascript' || mode === 'html' || mode === 'xml') {
                 renderMode = "links";
             }
 
@@ -951,6 +954,7 @@ postman.currentRequest = {
         },
 
         toggleBodySize:function () {
+            $('a[rel="tooltip"]').tooltip('hide');
             if (this.state.size === "normal") {
                 this.state.size = "maximized";
                 $('#responseBodyToggle img').attr("src", "img/full-screen-exit-alt-2.png");

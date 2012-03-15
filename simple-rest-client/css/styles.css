@@ -285,8 +285,8 @@ fieldset {
 
 #responseData {
     margin-top: -5px;
-    z-index: 10;
     background: white;
+    min-height: 200px;
 }
 
 #respHeaders:focus,
@@ -815,7 +815,6 @@ li .right {
 .request-actions {
     position: absolute;
     margin-left: 300px;
-    z-index: 10;
     opacity: 0.5;
     display: none;
 }
@@ -1146,6 +1145,10 @@ li .right {
     margin-left: -17px;
     margin-top: 2px;
     display: none;
+}
+
+.ui-autocomplete {
+    z-index: 300 !important;
 }
 
 .requestHelpActions img {
