@@ -1280,9 +1280,7 @@ postman.currentRequest = {
 
         var envManager = postman.envManager;
         url = envManager.processString(url, envValues);
-
         url = ensureProperUrl(url);
-
         xhr.open(method, url, true);
         var i = 0;
 
