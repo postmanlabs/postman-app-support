@@ -300,7 +300,7 @@ postman.editor = {
 
                     //@todo Needs to be improved
                     var matches;
-                    if (matches = stream.match(/https?:\/\/[^'"]*(?=[<"'\n\t\s])/, false)) {
+                    if (matches = stream.match(/https?:\/\/[^\\'"]*(?=[<"'\n\t\s])/, false)) {
                         //Eat all characters before http link
                         var m = stream.match(/.*(?=https?)/, true);
                         if (m) {
@@ -309,8 +309,9 @@ postman.editor = {
                             }
                         }
 
+                        var match = matches[0];
+                        console.log(match);
                         var currentPos = stream.current().search(matches[0]);
-
                         while (currentPos < 0) {
                             var ch = stream.next();
                             if (ch === "\"" || ch === "'") {
@@ -321,11 +322,12 @@ postman.editor = {
                             if (ch == null) {
                                 break;
                             }
-
                             currentPos = stream.current().search(matches[0]);
                         }
 
                         return "link";
+
+
                     }
 
                     stream.skipToEnd();
@@ -754,16 +756,20 @@ postman.currentRequest = {
             $('#langFormat a[data-type="' + this.previewType + '"]').addClass('active');
 
             if (newType === 'raw') {
-                postman.editor.codeMirror.toTextArea();
-                $('#codeData').val(this.text);
+                //postman.editor.codeMirror.toTextArea();
+                $('#responseAsText').css("display", "block");
+                $('#responseAsCode').css("display", "none");
+                $('#codeDataRaw').val(this.text);
                 var codeDataWidth = $(document).width() - $('#sidebar').width() - 60;
-                $('#codeData').css("width", codeDataWidth + "px");
-                $('#codeData').css("height", "600px");
+                $('#codeDataRaw').css("width", codeDataWidth + "px");
+                $('#codeDataRaw').css("height", "600px");
             }
             else {
+                $('#responseAsText').css("display", "none");
+                $('#responseAsCode').css("display", "block");
                 $('#codeData').css("display", "none");
                 var mime = $('#codeData').attr('data-mime');
-                this.setFormat(mime, this.text, "parsed", true);
+                this.setFormat(mime, this.text, "parsed", false);
             }
         },
 
@@ -849,13 +855,15 @@ postman.currentRequest = {
                 $('#codeData').css("display", "block");
 
                 if (contentType.search(/image/i) === -1) {
-                    $('#responseAsText').css("display", "block");
+                    $('#responseAsCode').css("display", "block");
+                    $('#responseAsText').css("display", "none");
                     $('#responseAsImage').css("display", "none");
                     $('#langFormat').css("display", "block");
                     $('#respDataActions').css("display", "block");
                     this.setFormat(format, this.text, "parsed");
                 }
                 else {
+                    $('#responseAsCode').css("display", "none");
                     $('#responseAsText').css("display", "none");
                     $('#responseAsImage').css("display", "block");
                     var imgLink = $('#url').val();
@@ -880,14 +888,23 @@ postman.currentRequest = {
             var mode;
 
             if (mime === 'javascript') {
-                var temp = JSON.parse(response);
-                response = JSON.stringify(temp, null, '\t');
-                mode = 'javascript';
-                foldFunc = CodeMirror.newFoldFunction(CodeMirror.braceRangeFinder);
+                try {
+                    var temp = JSON.parse(response);
+                    response = JSON.stringify(temp, null, '\t');
+                    mode = 'javascript';
+                    foldFunc = CodeMirror.newFoldFunction(CodeMirror.braceRangeFinder);
+                }
+                catch (e) {
+                    mode = 'text';
+                }
+
             }
             else if (mime === 'html') {
                 mode = 'xml';
                 foldFunc = CodeMirror.newFoldFunction(CodeMirror.tagRangeFinder);
+            }
+            else {
+                mode = 'text';
             }
 
             var lineWrapping;
@@ -901,10 +918,15 @@ postman.currentRequest = {
             }
 
             postman.editor.mode = mode;
+            var renderMode = "text";
+            if(mode === 'javascript' || mode === 'html') {
+                renderMode = "links";
+            }
+
             if (!postman.editor.codeMirror || forceCreate) {
                 postman.editor.codeMirror = CodeMirror.fromTextArea(codeDataArea,
                     {
-                        mode:"links",
+                        mode:renderMode,
                         lineNumbers:true,
                         fixedGutter:true,
                         onGutterClick:foldFunc,
@@ -919,7 +941,7 @@ postman.currentRequest = {
             else {
                 postman.editor.codeMirror.setValue(response);
                 postman.editor.codeMirror.setOption("onGutterClick", foldFunc);
-                postman.editor.codeMirror.setOption("mode", "links");
+                postman.editor.codeMirror.setOption("mode", renderMode);
                 postman.editor.codeMirror.setOption("lineWrapping", lineWrapping);
                 postman.editor.codeMirror.setOption("theme", "eclipse");
                 postman.editor.codeMirror.setOption("readOnly", true);
@@ -1237,7 +1259,6 @@ postman.currentRequest = {
         if (environment !== null) {
             isEnvironmentAvailable = true;
             envValues = environment.values;
-
         }
 
         xhr.onreadystatechange = function (event) {
@@ -1778,13 +1799,13 @@ postman.collections = {
         var label = "#collection-" + id + " .collection-head-actions .label";
         if ($(target).css("display") === "none") {
             $(label).html("Hide");
-            $(target).slideDown(100, function() {
+            $(target).slideDown(100, function () {
                 postman.layout.refreshScrollPanes();
             });
         }
         else {
             $(label).html("Show");
-            $(target).slideUp(100, function() {
+            $(target).slideUp(100, function () {
                 postman.layout.refreshScrollPanes();
             });
         }

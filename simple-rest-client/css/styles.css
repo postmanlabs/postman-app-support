@@ -881,6 +881,10 @@ li .right {
     display: none;
 }
 
+#reponseAsText {
+    display: none;
+}
+
 #responseAsImage {
     display: none;
     margin-top: 20px;
