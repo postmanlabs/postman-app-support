@@ -313,7 +313,6 @@ postman.editor = {
                         }
 
                         var match = matches[0];
-                        console.log(match);
                         var currentPos = stream.current().search(matches[0]);
                         while (currentPos < 0) {
                             var ch = stream.next();
