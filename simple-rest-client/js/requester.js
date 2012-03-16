@@ -850,14 +850,14 @@ postman.currentRequest = {
                 $('#submitRequest').button("reset");
                 $('#codeData').css("display", "block");
 
-                var format = 'html';
+                var language = 'html';
 
                 if (!_.isUndefined(contentType) && !_.isNull(contentType)) {
                     if (contentType.search(/json/i) !== -1) {
-                        format = 'javascript';
+                        language = 'javascript';
                     }
 
-                    $('#language').val(format);
+                    $('#language').val(language);
 
                     if (contentType.search(/image/i) === -1) {
                         $('#responseAsCode').css("display", "block");
@@ -865,7 +865,7 @@ postman.currentRequest = {
                         $('#responseAsImage').css("display", "none");
                         $('#langFormat').css("display", "block");
                         $('#respDataActions').css("display", "block");
-                        this.setFormat(format, this.text, "parsed", true);
+                        this.setFormat(language, this.text, "parsed", true);
                     }
                     else {
                         $('#responseAsCode').css("display", "none");
@@ -883,24 +883,24 @@ postman.currentRequest = {
                     $('#responseAsImage').css("display", "none");
                     $('#langFormat').css("display", "block");
                     $('#respDataActions').css("display", "block");
-                    this.setFormat(format, this.text, "parsed", true);
+                    this.setFormat(language, this.text, "parsed", true);
                 }
             }
 
             postman.layout.setLayout();
         },
 
-        setFormat:function (mime, response, format, forceCreate) {
+        setFormat:function (language, response, format, forceCreate) {
             $('#langFormat a').removeClass('active');
             $('#langFormat a[data-type="' + format + '"]').addClass('active');
             $('#codeData').css("display", "none");
-            $('#codeData').attr("data-mime", mime);
+            $('#codeData').attr("data-mime", language);
 
             var codeDataArea = document.getElementById("codeData");
             var foldFunc;
             var mode;
 
-            if (mime === 'javascript') {
+            if (language === 'javascript') {
                 try {
                     var temp = JSON.parse(response);
                     response = JSON.stringify(temp, null, '\t');
@@ -912,7 +912,7 @@ postman.currentRequest = {
                 }
 
             }
-            else if (mime === 'html') {
+            else if (language === 'html') {
                 mode = 'xml';
                 foldFunc = CodeMirror.newFoldFunction(CodeMirror.tagRangeFinder);
             }
@@ -931,8 +931,8 @@ postman.currentRequest = {
             }
 
             postman.editor.mode = mode;
-            var renderMode = "text";
-            if (mode === 'javascript' || mode === 'html' || mode === 'xml') {
+            var renderMode = mode;
+            if ($.inArray(mode, ["javascript", "xml", "html"]) >= 0) {
                 renderMode = "links";
             }
 
@@ -946,10 +946,22 @@ postman.currentRequest = {
                         onGutterClick:foldFunc,
                         theme:'eclipse',
                         lineWrapping:lineWrapping,
-                        readOnly:true
+                        readOnly:true,
+                        autoClearEmptyLines: true
                     });
 
-                postman.editor.codeMirror.setValue(response);
+                var cm = postman.editor.codeMirror;
+                cm.setValue(response);
+
+                console.log("Set mode", mode);
+                if($.inArray(mode, ["xml", "html"]) >= 0) {
+                    cm.setOption("mode", mode);
+                    CodeMirror.commands["selectAll"](cm);
+                    cm.autoFormatRange(cm.getCursor(true), cm.getCursor(false));
+                }
+
+                $(document).scrollTop(0);
+
 
             }
             else {
