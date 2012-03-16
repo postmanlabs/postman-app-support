@@ -2100,6 +2100,8 @@ postman.layout = {
 
     setLayout:function () {
         this.refreshScrollPanes();
+        var codeDataWidth = $(window).width() - $('#sidebar').width() - 40;
+        $('.CodeMirror').css("max-width", codeDataWidth + "px");
     },
 
     refreshScrollPanes:function () {
