@@ -753,12 +753,15 @@ postman.currentRequest = {
         previewType:"parsed",
 
         changePreviewType:function (newType) {
+            if(this.previewType === newType) {
+                return;
+            }
+
             this.previewType = newType;
             $('#langFormat a').removeClass('active');
             $('#langFormat a[data-type="' + this.previewType + '"]').addClass('active');
 
             if (newType === 'raw') {
-                //postman.editor.codeMirror.toTextArea();
                 $('#responseAsText').css("display", "block");
                 $('#responseAsCode').css("display", "none");
                 $('#codeDataRaw').val(this.text);
@@ -770,8 +773,7 @@ postman.currentRequest = {
                 $('#responseAsText').css("display", "none");
                 $('#responseAsCode').css("display", "block");
                 $('#codeData').css("display", "none");
-                var mime = $('#codeData').attr('data-mime');
-                this.setFormat(mime, this.text, "parsed", false);
+                postman.editor.codeMirror.refresh();
             }
         },
 
@@ -863,7 +865,7 @@ postman.currentRequest = {
                         $('#responseAsImage').css("display", "none");
                         $('#langFormat').css("display", "block");
                         $('#respDataActions').css("display", "block");
-                        this.setFormat(format, this.text, "parsed");
+                        this.setFormat(format, this.text, "parsed", true);
                     }
                     else {
                         $('#responseAsCode').css("display", "none");
@@ -881,7 +883,7 @@ postman.currentRequest = {
                     $('#responseAsImage').css("display", "none");
                     $('#langFormat').css("display", "block");
                     $('#respDataActions').css("display", "block");
-                    this.setFormat(format, this.text, "parsed");
+                    this.setFormat(format, this.text, "parsed", true);
                 }
             }
 
@@ -892,7 +894,6 @@ postman.currentRequest = {
             $('#langFormat a').removeClass('active');
             $('#langFormat a[data-type="' + format + '"]').addClass('active');
             $('#codeData').css("display", "none");
-
             $('#codeData').attr("data-mime", mime);
 
             var codeDataArea = document.getElementById("codeData");
@@ -936,6 +937,7 @@ postman.currentRequest = {
             }
 
             if (!postman.editor.codeMirror || forceCreate) {
+                $('.CodeMirror').remove();
                 postman.editor.codeMirror = CodeMirror.fromTextArea(codeDataArea,
                     {
                         mode:renderMode,
@@ -951,15 +953,15 @@ postman.currentRequest = {
 
             }
             else {
-                postman.editor.codeMirror.setValue(response);
                 postman.editor.codeMirror.setOption("onGutterClick", foldFunc);
                 postman.editor.codeMirror.setOption("mode", renderMode);
                 postman.editor.codeMirror.setOption("lineWrapping", lineWrapping);
                 postman.editor.codeMirror.setOption("theme", "eclipse");
-                postman.editor.codeMirror.setOption("readOnly", true);
-            }
+                postman.editor.codeMirror.setOption("readOnly", false);
+                postman.editor.codeMirror.setValue(response);
+                postman.editor.codeMirror.refresh();
 
-            $('#codeData').val(response);
+            }
         },
 
         toggleBodySize:function () {
