@@ -953,7 +953,6 @@ postman.currentRequest = {
                 var cm = postman.editor.codeMirror;
                 cm.setValue(response);
 
-                console.log("Set mode", mode);
                 if($.inArray(mode, ["xml", "html"]) >= 0) {
                     cm.setOption("mode", mode);
                     CodeMirror.commands["selectAll"](cm);
