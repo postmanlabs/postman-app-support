@@ -303,7 +303,7 @@ postman.editor = {
 
                     //@todo Needs to be improved
                     var matches;
-                    if (matches = stream.match(/https?:\/\/[^\\'"]*(?=[<"'\n\t\s])/, false)) {
+                    if (matches = stream.match(/https?:\/\/[^\\'"\n\t\s]*(?=[<"'\n\t\s])/, false)) {
                         //Eat all characters before http link
                         var m = stream.match(/.*(?=https?)/, true);
                         if (m) {
@@ -313,23 +313,27 @@ postman.editor = {
                         }
 
                         var match = matches[0];
-                        var currentPos = stream.current().search(matches[0]);
-                        while (currentPos < 0) {
-                            var ch = stream.next();
-                            if (ch === "\"" || ch === "'") {
-                                stream.backUp(1);
-                                break;
+                        try {
+                            var currentPos = stream.current().search(match);
+                            while (currentPos < 0) {
+                                var ch = stream.next();
+                                if (ch === "\"" || ch === "'") {
+                                    stream.backUp(1);
+                                    break;
+                                }
+
+                                if (ch == null) {
+                                    break;
+                                }
+                                currentPos = stream.current().search(match);
                             }
 
-                            if (ch == null) {
-                                break;
-                            }
-                            currentPos = stream.current().search(matches[0]);
+                            return "link";
                         }
-
-                        return "link";
-
-
+                        catch(e) {
+                            stream.skipToEnd();
+                            return null;
+                        }
                     }
 
                     stream.skipToEnd();
@@ -1798,7 +1802,11 @@ postman.collections = {
                                 var targetElement = "#collectionRequests-" + req.collectionId;
                                 postman.urlCache.addUrl(req.url);
 
-                                req.url = limitStringLineWidth(req.url, 43);
+                                if (typeof req.name === "undefined") {
+                                    req.name = req.url;
+                                }
+
+                                req.name = limitStringLineWidth(req.name, 43);
                                 $('#itemCollectionSidebarRequest').tmpl([req]).appendTo(targetElement);
                                 postman.layout.refreshScrollPanes();
                             });
