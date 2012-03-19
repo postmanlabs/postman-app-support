@@ -950,8 +950,7 @@ postman.currentRequest = {
                         onGutterClick:foldFunc,
                         theme:'eclipse',
                         lineWrapping:lineWrapping,
-                        readOnly:true,
-                        autoClearEmptyLines: true
+                        readOnly:true
                     });
 
                 var cm = postman.editor.codeMirror;
@@ -961,9 +960,10 @@ postman.currentRequest = {
                     cm.setOption("mode", mode);
                     CodeMirror.commands["selectAll"](cm);
                     cm.autoFormatRange(cm.getCursor(true), cm.getCursor(false));
+                    CodeMirror.commands["goDocStart"](cm);
                 }
 
-                $(document).scrollTop(0);
+                //$(document).scrollTop(0);
 
 
             }

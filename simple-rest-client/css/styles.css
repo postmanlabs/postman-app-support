@@ -30,7 +30,7 @@ html, body {
     float: left;
     padding-left: 10px;
     background: -webkit-linear-gradient(rgba(234, 238, 243, 0.2), #EAEAEA), -webkit-linear-gradient(left, #EAEAEA, #EAEAEA 97%, #DDDDDD);
-    z-index: 1;
+    z-index: 20;
     width: 340px;
     height: 100%;
     position: fixed;
@@ -323,6 +323,11 @@ fieldset {
 .CodeMirror-gutter-text {
     cursor: pointer;
     padding-left: 1em !important;
+}
+
+.CodeMirror-scroll {
+    height: auto !important;
+    overflow: visible !important;
 }
 
 .responseHeader {
