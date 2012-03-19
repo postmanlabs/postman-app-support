@@ -611,7 +611,7 @@ li .right {
     width: 350px;
     height: 20px;
     opacity: 0.5;
-    z-index: 10;
+    z-index: 50;
     text-align: center;
     padding: 5px 0 5px 0;
 }
