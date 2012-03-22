@@ -1058,8 +1058,11 @@ postman.currentRequest = {
 
     refreshLayout:function () {
         $('#url').val(this.url);
-
+        $('#requestMethodSelector').val(this.method);
+        $('#body').val(this.body);
         $('#headers-keyvaleditor-actions-open .headers-count').html(this.headers.length);
+        $('#dataModeSelector li').removeClass("active");
+        $('#dataModeSelector li[data-mode="' + this.dataMode + '"]').addClass("active");
         if (this.isMethodWithBody(this.method)) {
             $("#data").css("display", "block");
             var mode = this.dataMode;
