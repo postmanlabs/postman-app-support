@@ -823,7 +823,6 @@ postman.currentRequest = {
                     });
 
                     $('#modalResponseError').modal('show');
-
                     $('#submitRequest').button("reset");
                     return false;
                 }
@@ -1078,6 +1077,7 @@ postman.currentRequest = {
         $('#requestMethodSelector').val(this.method);
         $('#body').val(this.body);
         $('#headers-keyvaleditor-actions-open .headers-count').html(this.headers.length);
+        $('#submitRequest').button("reset");
         $('#dataModeSelector li').removeClass("active");
         $('#dataModeSelector li[data-mode="' + this.dataMode + '"]').addClass("active");
         if (this.isMethodWithBody(this.method)) {
