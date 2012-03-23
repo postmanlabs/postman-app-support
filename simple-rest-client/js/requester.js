@@ -303,7 +303,7 @@ postman.editor = {
 
                     //@todo Needs to be improved
                     var matches;
-                    if (matches = stream.match(/https?:\/\/[^\\'"]*(?=[<"'\n\t\s])/, false)) {
+                    if (matches = stream.match(/https?:\/\/[^\\'"\n\t\s]*(?=[<"'\n\t\s])/, false)) {
                         //Eat all characters before http link
                         var m = stream.match(/.*(?=https?)/, true);
                         if (m) {
@@ -313,23 +313,27 @@ postman.editor = {
                         }
 
                         var match = matches[0];
-                        var currentPos = stream.current().search(matches[0]);
-                        while (currentPos < 0) {
-                            var ch = stream.next();
-                            if (ch === "\"" || ch === "'") {
-                                stream.backUp(1);
-                                break;
+                        try {
+                            var currentPos = stream.current().search(match);
+                            while (currentPos < 0) {
+                                var ch = stream.next();
+                                if (ch === "\"" || ch === "'") {
+                                    stream.backUp(1);
+                                    break;
+                                }
+
+                                if (ch == null) {
+                                    break;
+                                }
+                                currentPos = stream.current().search(match);
                             }
 
-                            if (ch == null) {
-                                break;
-                            }
-                            currentPos = stream.current().search(matches[0]);
+                            return "link";
                         }
-
-                        return "link";
-
-
+                        catch(e) {
+                            stream.skipToEnd();
+                            return null;
+                        }
                     }
 
                     stream.skipToEnd();
@@ -753,12 +757,15 @@ postman.currentRequest = {
         previewType:"parsed",
 
         changePreviewType:function (newType) {
+            if(this.previewType === newType) {
+                return;
+            }
+
             this.previewType = newType;
             $('#langFormat a').removeClass('active');
             $('#langFormat a[data-type="' + this.previewType + '"]').addClass('active');
 
             if (newType === 'raw') {
-                //postman.editor.codeMirror.toTextArea();
                 $('#responseAsText').css("display", "block");
                 $('#responseAsCode').css("display", "none");
                 $('#codeDataRaw').val(this.text);
@@ -770,8 +777,7 @@ postman.currentRequest = {
                 $('#responseAsText').css("display", "none");
                 $('#responseAsCode').css("display", "block");
                 $('#codeData').css("display", "none");
-                var mime = $('#codeData').attr('data-mime');
-                this.setFormat(mime, this.text, "parsed", false);
+                postman.editor.codeMirror.refresh();
             }
         },
 
@@ -848,14 +854,14 @@ postman.currentRequest = {
                 $('#submitRequest').button("reset");
                 $('#codeData').css("display", "block");
 
-                var format = 'html';
+                var language = 'html';
 
                 if (!_.isUndefined(contentType) && !_.isNull(contentType)) {
                     if (contentType.search(/json/i) !== -1) {
-                        format = 'javascript';
+                        language = 'javascript';
                     }
 
-                    $('#language').val(format);
+                    $('#language').val(language);
 
                     if (contentType.search(/image/i) === -1) {
                         $('#responseAsCode').css("display", "block");
@@ -863,7 +869,7 @@ postman.currentRequest = {
                         $('#responseAsImage').css("display", "none");
                         $('#langFormat').css("display", "block");
                         $('#respDataActions').css("display", "block");
-                        this.setFormat(format, this.text, "parsed");
+                        this.setFormat(language, this.text, "parsed", true);
                     }
                     else {
                         $('#responseAsCode').css("display", "none");
@@ -881,25 +887,24 @@ postman.currentRequest = {
                     $('#responseAsImage').css("display", "none");
                     $('#langFormat').css("display", "block");
                     $('#respDataActions').css("display", "block");
-                    this.setFormat(format, this.text, "parsed");
+                    this.setFormat(language, this.text, "parsed", true);
                 }
             }
 
             postman.layout.setLayout();
         },
 
-        setFormat:function (mime, response, format, forceCreate) {
+        setFormat:function (language, response, format, forceCreate) {
             $('#langFormat a').removeClass('active');
             $('#langFormat a[data-type="' + format + '"]').addClass('active');
             $('#codeData').css("display", "none");
-
-            $('#codeData').attr("data-mime", mime);
+            $('#codeData').attr("data-mime", language);
 
             var codeDataArea = document.getElementById("codeData");
             var foldFunc;
             var mode;
 
-            if (mime === 'javascript') {
+            if (language === 'javascript') {
                 try {
                     var temp = JSON.parse(response);
                     response = JSON.stringify(temp, null, '\t');
@@ -911,7 +916,7 @@ postman.currentRequest = {
                 }
 
             }
-            else if (mime === 'html') {
+            else if (language === 'html') {
                 mode = 'xml';
                 foldFunc = CodeMirror.newFoldFunction(CodeMirror.tagRangeFinder);
             }
@@ -930,12 +935,13 @@ postman.currentRequest = {
             }
 
             postman.editor.mode = mode;
-            var renderMode = "text";
-            if (mode === 'javascript' || mode === 'html' || mode === 'xml') {
+            var renderMode = mode;
+            if ($.inArray(mode, ["javascript", "xml", "html"]) >= 0) {
                 renderMode = "links";
             }
 
             if (!postman.editor.codeMirror || forceCreate) {
+                $('.CodeMirror').remove();
                 postman.editor.codeMirror = CodeMirror.fromTextArea(codeDataArea,
                     {
                         mode:renderMode,
@@ -947,19 +953,30 @@ postman.currentRequest = {
                         readOnly:true
                     });
 
-                postman.editor.codeMirror.setValue(response);
+                var cm = postman.editor.codeMirror;
+                cm.setValue(response);
+
+                if($.inArray(mode, ["xml", "html"]) >= 0) {
+                    cm.setOption("mode", mode);
+                    CodeMirror.commands["selectAll"](cm);
+                    cm.autoFormatRange(cm.getCursor(true), cm.getCursor(false));
+                    CodeMirror.commands["goDocStart"](cm);
+                }
+
+                //$(document).scrollTop(0);
+
 
             }
             else {
-                postman.editor.codeMirror.setValue(response);
                 postman.editor.codeMirror.setOption("onGutterClick", foldFunc);
                 postman.editor.codeMirror.setOption("mode", renderMode);
                 postman.editor.codeMirror.setOption("lineWrapping", lineWrapping);
                 postman.editor.codeMirror.setOption("theme", "eclipse");
-                postman.editor.codeMirror.setOption("readOnly", true);
-            }
+                postman.editor.codeMirror.setOption("readOnly", false);
+                postman.editor.codeMirror.setValue(response);
+                postman.editor.codeMirror.refresh();
 
-            $('#codeData').val(response);
+            }
         },
 
         toggleBodySize:function () {
@@ -1041,8 +1058,11 @@ postman.currentRequest = {
 
     refreshLayout:function () {
         $('#url').val(this.url);
-
+        $('#requestMethodSelector').val(this.method);
+        $('#body').val(this.body);
         $('#headers-keyvaleditor-actions-open .headers-count').html(this.headers.length);
+        $('#dataModeSelector li').removeClass("active");
+        $('#dataModeSelector li[data-mode="' + this.dataMode + '"]').addClass("active");
         if (this.isMethodWithBody(this.method)) {
             $("#data").css("display", "block");
             var mode = this.dataMode;
@@ -1280,9 +1300,7 @@ postman.currentRequest = {
 
         var envManager = postman.envManager;
         url = envManager.processString(url, envValues);
-
         url = ensureProperUrl(url);
-
         xhr.open(method, url, true);
         var i = 0;
 
@@ -1787,7 +1805,11 @@ postman.collections = {
                                 var targetElement = "#collectionRequests-" + req.collectionId;
                                 postman.urlCache.addUrl(req.url);
 
-                                req.url = limitStringLineWidth(req.url, 43);
+                                if (typeof req.name === "undefined") {
+                                    req.name = req.url;
+                                }
+
+                                req.name = limitStringLineWidth(req.name, 43);
                                 $('#itemCollectionSidebarRequest').tmpl([req]).appendTo(targetElement);
                                 postman.layout.refreshScrollPanes();
                             });
@@ -1978,7 +2000,7 @@ postman.collections = {
 postman.layout = {
     socialButtons:{
         "facebook":'<iframe src="http://www.facebook.com/plugins/like.php?href=https%3A%2F%2Fchrome.google.com%2Fwebstore%2Fdetail%2Ffdmmgilgnpjigdojojpjoooidkmcomcm&amp;send=false&amp;layout=button_count&amp;width=250&amp;show_faces=true&amp;action=like&amp;colorscheme=light&amp;font&amp;height=21&amp;appId=26438002524" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:250px; height:21px;" allowTransparency="true"></iframe>',
-        "twitter":'<a href="https://twitter.com/share" class="twitter-share-button" data-url="https://chrome.google.com/webstore/detail/fdmmgilgnpjigdojojpjoooidkmcomcm" data-text="I am using Postman to kick some API ass!" data-count="horizontal" data-via="a85">Tweet</a><script type="text/javascript" src="http://platform.twitter.com/widgets.js"></script>',
+        "twitter":'<a href="https://twitter.com/share" class="twitter-share-button" data-url="https://chrome.google.com/webstore/detail/fdmmgilgnpjigdojojpjoooidkmcomcm" data-text="I am using Postman to kick some API ass!" data-count="horizontal" data-via="postmanclient">Tweet</a><script type="text/javascript" src="http://platform.twitter.com/widgets.js"></script>',
         "plusOne":'<script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script><g:plusone size="medium" href="https://chrome.google.com/webstore/detail/fdmmgilgnpjigdojojpjoooidkmcomcm"></g:plusone>'
     },
 
@@ -2100,6 +2122,8 @@ postman.layout = {
 
     setLayout:function () {
         this.refreshScrollPanes();
+        var codeDataWidth = $(window).width() - $('#sidebar').width() - 40;
+        $('.CodeMirror').css("max-width", codeDataWidth + "px");
     },
 
     refreshScrollPanes:function () {
