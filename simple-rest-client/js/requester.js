@@ -330,7 +330,7 @@ postman.editor = {
 
                             return "link";
                         }
-                        catch(e) {
+                        catch (e) {
                             stream.skipToEnd();
                             return null;
                         }
@@ -415,6 +415,14 @@ postman.settings = {
         else {
             this.lineWrapping = true;
             localStorage['lineWrapping'] = this.lineWrapping;
+        }
+
+        if (localStorage['previewType']) {
+            this.previewType = localStorage['previewType'];
+        }
+        else {
+            this.previewType = "parsed";
+            localStorage['previewType'] = this.previewType;
         }
 
         if (localStorage["lastRequest"]) {
@@ -757,13 +765,16 @@ postman.currentRequest = {
         previewType:"parsed",
 
         changePreviewType:function (newType) {
-            if(this.previewType === newType) {
+            if (this.previewType === newType) {
                 return;
             }
 
             this.previewType = newType;
             $('#langFormat a').removeClass('active');
             $('#langFormat a[data-type="' + this.previewType + '"]').addClass('active');
+
+            postman.settings.previewType = newType;
+            localStorage['previewType'] = newType;
 
             if (newType === 'raw') {
                 $('#responseAsText').css("display", "block");
@@ -837,7 +848,6 @@ postman.currentRequest = {
                 //This sets loadHeders
                 this.loadHeaders(response.getAllResponseHeaders());
 
-
                 $('.response-tabs li[data-section="headers"]').html("Headers (" + this.headers.length + ")");
 
 
@@ -856,6 +866,8 @@ postman.currentRequest = {
 
                 var language = 'html';
 
+                postman.currentRequest.response.previewType = postman.settings.previewType;
+
                 if (!_.isUndefined(contentType) && !_.isNull(contentType)) {
                     if (contentType.search(/json/i) !== -1) {
                         language = 'javascript';
@@ -864,12 +876,7 @@ postman.currentRequest = {
                     $('#language').val(language);
 
                     if (contentType.search(/image/i) === -1) {
-                        $('#responseAsCode').css("display", "block");
-                        $('#responseAsText').css("display", "none");
-                        $('#responseAsImage').css("display", "none");
-                        $('#langFormat').css("display", "block");
-                        $('#respDataActions').css("display", "block");
-                        this.setFormat(language, this.text, "parsed", true);
+                        this.setFormat(language, this.text, postman.settings.previewType, true);
                     }
                     else {
                         $('#responseAsCode').css("display", "none");
@@ -882,12 +889,7 @@ postman.currentRequest = {
                     }
                 }
                 else {
-                    $('#responseAsCode').css("display", "block");
-                    $('#responseAsText').css("display", "none");
-                    $('#responseAsImage').css("display", "none");
-                    $('#langFormat').css("display", "block");
-                    $('#respDataActions').css("display", "block");
-                    this.setFormat(language, this.text, "parsed", true);
+                    this.setFormat(language, this.text, postman.settings.previewType, true);
                 }
             }
 
@@ -895,6 +897,24 @@ postman.currentRequest = {
         },
 
         setFormat:function (language, response, format, forceCreate) {
+            if (format === "parsed") {
+                $('#responseAsCode').css("display", "block");
+                $('#responseAsText').css("display", "none");
+            }
+            else {
+                $('#codeDataRaw').val(this.text);
+                var codeDataWidth = $(document).width() - $('#sidebar').width() - 60;
+                $('#codeDataRaw').css("width", codeDataWidth + "px");
+                $('#codeDataRaw').css("height", "600px");
+                $('#responseAsCode').css("display", "none");
+                $('#responseAsText').css("display", "block");
+            }
+
+
+            $('#responseAsImage').css("display", "none");
+            $('#langFormat').css("display", "block");
+            $('#respDataActions').css("display", "block");
+
             $('#langFormat a').removeClass('active');
             $('#langFormat a[data-type="' + format + '"]').addClass('active');
             $('#codeData').css("display", "none");
@@ -956,16 +976,13 @@ postman.currentRequest = {
                 var cm = postman.editor.codeMirror;
                 cm.setValue(response);
 
-                if($.inArray(mode, ["xml", "html"]) >= 0) {
+                if ($.inArray(mode, ["xml", "html"]) >= 0) {
                     cm.setOption("mode", mode);
                     CodeMirror.commands["selectAll"](cm);
                     cm.autoFormatRange(cm.getCursor(true), cm.getCursor(false));
-                    CodeMirror.commands["goDocStart"](cm);
                 }
 
-                //$(document).scrollTop(0);
-
-
+                CodeMirror.commands["goDocStart"](cm);
             }
             else {
                 postman.editor.codeMirror.setOption("onGutterClick", foldFunc);
@@ -975,7 +992,7 @@ postman.currentRequest = {
                 postman.editor.codeMirror.setOption("readOnly", false);
                 postman.editor.codeMirror.setValue(response);
                 postman.editor.codeMirror.refresh();
-
+                CodeMirror.commands["goDocStart"](postman.editor.codeMirror);
             }
         },
 

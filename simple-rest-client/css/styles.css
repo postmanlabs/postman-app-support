@@ -547,10 +547,13 @@ li .right {
     float: left;
 }
 
-#request,
-#response {
+#request {
     padding: 0 0 20px 20px;
     border-bottom: solid thin #ccc;
+}
+
+#response {
+    padding: 0 0 20px 20px;
 }
 
 #requestDescription {
