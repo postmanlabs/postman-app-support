@@ -715,7 +715,7 @@ postman.currentRequest = {
     },
 
     addListeners:function () {
-        $('#dataModeSelector').on("click", "li a", function () {
+        $('#dataModeSelector').on("click", "a", function () {
             var mode = $(this).attr("data-mode");
             postman.currentRequest.changeDataMode(mode);
         });
@@ -738,8 +738,8 @@ postman.currentRequest = {
 
     changeDataMode:function (mode) {
         this.dataMode = mode;
-        $('#dataModeSelector li').removeClass("active");
-        $('#dataModeSelector li[data-mode="' + mode + '"]').addClass("active");
+        $('#dataModeSelector a').removeClass("active");
+        $('#dataModeSelector a[data-mode="' + mode + '"]').addClass("active");
 
         if (mode === "params") {
             postman.currentRequest.openBodyEditor();
@@ -1084,8 +1084,8 @@ postman.currentRequest = {
         $('#body').val(this.body);
         $('#headers-keyvaleditor-actions-open .headers-count').html(this.headers.length);
         $('#submitRequest').button("reset");
-        $('#dataModeSelector li').removeClass("active");
-        $('#dataModeSelector li[data-mode="' + this.dataMode + '"]').addClass("active");
+        $('#dataModeSelector a').removeClass("active");
+        $('#dataModeSelector a[data-mode="' + this.dataMode + '"]').addClass("active");
         if (this.isMethodWithBody(this.method)) {
             $("#data").css("display", "block");
             var mode = this.dataMode;

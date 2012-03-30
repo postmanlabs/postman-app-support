@@ -294,14 +294,11 @@
 </div>
 
 <div id="data">
-    <ul id="dataModeSelector" class="nav nav-pills">
-        <li id="selector-container-params" class="active" data-mode="params">
-            <a href="#" data-mode="params" data-toggle="tab">Params</a>
-        </li>
-        <li id="selector-container-raw" data-mode="raw">
-            <a href="#" data-mode="raw" data-toggle="tab">Raw body</a>
-        </li>
-    </ul>
+	<div id="dataModeSelector" class="btn-group clearfix"
+	  data-toggle="buttons-radio">
+	  <a class="btn" data-mode="params" href="javascript:void(0);">Params</a>
+	  <a class="btn" data-mode="raw" href="javascript:void(0);">Raw body</a>
+	</div>
     <div id="bodyDataContainer">
         <textarea name="data" id="body" tabindex="4" class="inputText">
         </textarea>
