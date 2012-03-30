@@ -467,6 +467,7 @@ postman.currentRequest = {
     areListenersAdded:false,
     startTime:0,
     endTime:0,
+    xhr: null,
 
     getUrl:function () {
         return $('#url').val();
@@ -1048,6 +1049,10 @@ postman.currentRequest = {
     },
 
     startNew:function () {
+	if(postman.currentRequest.xhr !== null) {
+	    postman.currentRequest.xhr.abort();
+	}
+
         this.url = "";
         this.urlParams = {};
         this.body = "";
@@ -1282,6 +1287,9 @@ postman.currentRequest = {
         $('#url').val(baseUrl + "?" + paramArr.join('&'));
     },
 
+    reset: function() {
+    },
+
     //Send the current request
     send:function () {
         //Show error
@@ -1293,6 +1301,7 @@ postman.currentRequest = {
         }
 
         var xhr = new XMLHttpRequest();
+	postman.currentRequest.xhr = xhr;
 
         var url = this.url;
         var method = this.method;
@@ -2052,6 +2061,10 @@ postman.layout = {
         $("#submitRequest").click(function () {
             postman.currentRequest.send();
         });
+
+	$("#requestActionsReset").on("click", function() {
+	    postman.currentRequest.startNew();
+	});
 
         $('#requestMethodSelector').change(function () {
             var val = $(this).val();

@@ -709,6 +709,11 @@ li .right {
     float: left;
 }
 
+#requestActionsSecondary {
+    float: right;
+    margin-right: 120px;
+}
+
 #requestActionsOptions {
     float: right;
 }
