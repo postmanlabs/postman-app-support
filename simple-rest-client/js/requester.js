@@ -1774,6 +1774,11 @@ postman.collections = {
             postman.collections.importCollections(files);
             $('#modalImportCollections').modal('hide');
         }, false);
+
+	$('#collection-files-input').on('change', function(event) {
+	    var files = event.target.files;
+	    postman.collections.importCollections(files);
+	});
     },
 
     saveCollection:function (id) {
@@ -2111,6 +2116,10 @@ postman.layout = {
         $('#requestHelp').on("mouseleave", function () {
             $('.requestHelpActions').css("display", "none");
         });
+
+	$('#collection-file-selector-button').on("click", function() {
+	    
+	});
 
         this.setLayout();
     },

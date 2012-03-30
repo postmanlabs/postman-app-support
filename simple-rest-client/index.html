@@ -479,7 +479,11 @@
         <p>Drag and drop a Postman collection file into the area below.</p>
 
         <div class="modal-import-alerts"></div>
-        <div id="import-collection-dropzone">Drop file here</div>
+        <div id="import-collection-dropzone">
+	  <h3>Drop files here or</h3>
+	  <input type="file" id="collection-files-input"
+        name="files[]" multiple/>
+	</div>
     </div>
 
     <div class="modal-footer">

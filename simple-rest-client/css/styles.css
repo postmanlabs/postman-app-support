@@ -1089,6 +1089,9 @@ li .right {
     border-radius: 5px;
     padding: 25px;
     text-align: center;
+}
+
+#import-collection-dropzone h3 {
     font: 20pt bold "Helvetica";
     color: #BBB;
 }
