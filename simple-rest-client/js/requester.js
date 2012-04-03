@@ -228,7 +228,7 @@ postman.keymap = {
                 postman.currentRequest.send();
             }
 
-	    return true;
+            return true;
         });
 
         $('body').on('keydown', 'textarea', function (event) {
@@ -260,7 +260,7 @@ postman.keymap = {
 
         $(document).bind('keydown', 'p', function () {
             if (postman.currentRequest.isMethodWithBody(postman.currentRequest.method)) {
-                $('#body-keyvaleditor div:first-child input:first-child').focus();
+                $('#formdata-keyvaleditor div:first-child input:first-child').focus();
                 return false;
             }
         });
@@ -458,7 +458,6 @@ postman.currentRequest = {
     urlParams:{},
     name:"",
     description:"",
-    body:"",
     bodyParams:{},
     headers:[],
     method:"get",
@@ -467,7 +466,166 @@ postman.currentRequest = {
     areListenersAdded:false,
     startTime:0,
     endTime:0,
-    xhr: null,
+    xhr:null,
+
+    body: {
+        mode: "params",
+        data: "",
+
+        init: function() {
+            this.initFormDataEditor();
+            this.initUrlEncodedEditor();
+        },
+
+        hide: function() {
+            postman.currentRequest.body.closeFormDataEditor();
+            postman.currentRequest.body.closeUrlEncodedEditor();
+            $("#data").css("display", "none");
+        },
+
+        initFormDataEditor:function () {
+            var editorId = "#formdata-keyvaleditor";
+
+            var params = {
+                placeHolderKey:"Key",
+                placeHolderValue:"Value",
+                valueTypes:["text", "file"],
+                deleteButton:'<img class="deleteButton" src="img/delete.png">',
+                onDeleteRow:function () {
+                    var params = $(editorId).keyvalueeditor('getValues');
+                    var newParams = [];
+                    for (var i = 0; i < params.length; i++) {
+                        var param = {
+                            key:params[i].key,
+                            value:params[i].value
+                        };
+
+                        newParams.push(param);
+                    }
+
+                    postman.currentRequest.setBodyParamString(newParams);
+                },
+
+                onBlurElement:function () {
+                    var params = $(editorId).keyvalueeditor('getValues');
+                    var newParams = [];
+                    for (var i = 0; i < params.length; i++) {
+                        var param = {
+                            key:params[i].key,
+                            value:params[i].value
+                        };
+
+                        newParams.push(param);
+                    }
+
+                    postman.currentRequest.setBodyParamString(newParams);
+                }
+            };
+
+            $(editorId).keyvalueeditor('init', params);
+        },
+
+        initUrlEncodedEditor:function () {
+            var editorId = "#urlencoded-keyvaleditor";
+
+            var params = {
+                placeHolderKey:"Key",
+                placeHolderValue:"Value",
+                valueTypes:["text"],
+                deleteButton:'<img class="deleteButton" src="img/delete.png">',
+                onDeleteRow:function () {
+                    var params = $(editorId).keyvalueeditor('getValues');
+                    var newParams = [];
+                    for (var i = 0; i < params.length; i++) {
+                        var param = {
+                            key:params[i].key,
+                            value:params[i].value
+                        };
+
+                        newParams.push(param);
+                    }
+
+                    postman.currentRequest.setBodyParamString(newParams);
+                },
+
+                onBlurElement:function () {
+                    var params = $(editorId).keyvalueeditor('getValues');
+                    var newParams = [];
+                    for (var i = 0; i < params.length; i++) {
+                        var param = {
+                            key:params[i].key,
+                            value:params[i].value
+                        };
+
+                        newParams.push(param);
+                    }
+
+                    postman.currentRequest.setBodyParamString(newParams);
+                }
+            };
+
+            $(editorId).keyvalueeditor('init', params);
+        },
+
+        openFormDataEditor:function () {
+            var containerId = "#formdata-keyvaleditor-container";
+            $(containerId).css("display", "block");
+        },
+
+        closeFormDataEditor:function () {
+            var containerId = "#formdata-keyvaleditor-container";
+            $(containerId).css("display", "none");
+        },
+
+        openUrlEncodedEditor:function () {
+            var containerId = "#urlencoded-keyvaleditor-container";
+            $(containerId).css("display", "block");
+        },
+
+        closeUrlEncodedEditor:function () {
+            var containerId = "#urlencoded-keyvaleditor-container";
+            $(containerId).css("display", "none");
+        },
+
+        setDataMode: function(mode) {
+            postman.currentRequest.dataMode = mode;
+            postman.currentRequest.body.mode = mode;
+            $('#dataModeSelector a').removeClass("active");
+            $('#dataModeSelector a[data-mode="' + mode + '"]').addClass("active");
+
+            if (mode === "params") {
+                postman.currentRequest.body.openFormDataEditor();
+                postman.currentRequest.body.closeUrlEncodedEditor();
+                $('#bodyDataContainer').css("display", "none");
+            }
+            else if (mode === "raw") {
+                postman.currentRequest.body.closeUrlEncodedEditor();
+                postman.currentRequest.body.closeFormDataEditor();
+                $('#bodyDataContainer').css("display", "block");
+            }
+            else if (mode === "urlencoded") {
+                postman.currentRequest.body.closeFormDataEditor();
+                postman.currentRequest.body.openUrlEncodedEditor();
+                $('#bodyDataContainer').css("display", "none");
+            }
+        },
+
+        getDataMode: function() {
+            return postman.currentRequest.body.mode;
+        },
+
+        getData: function(mode) {
+
+        },
+
+        urlencode: function(data) {
+
+        },
+
+        loadData: function(data, mode) {
+
+        }
+    },
 
     getUrl:function () {
         return $('#url').val();
@@ -476,7 +634,7 @@ postman.currentRequest = {
     init:function () {
         this.url = "";
         this.urlParams = {};
-        this.body = "";
+        this.body.data = "";
         this.bodyParams = {};
 
         this.headers = [];
@@ -488,7 +646,7 @@ postman.currentRequest = {
             this.areListenersAdded = true;
             this.initializeHeaderEditor();
             this.initializeUrlEditor();
-            this.initializeBodyEditor();
+            this.body.init();
             this.addListeners();
         }
 
@@ -662,62 +820,10 @@ postman.currentRequest = {
         $(containerId).css("display", "none");
     },
 
-    initializeBodyEditor:function () {
-        var editorId = "#body-keyvaleditor";
-
-        var params = {
-            placeHolderKey:"Key",
-            placeHolderValue:"Value",
-            valueTypes:["text", "file"],
-            deleteButton:'<img class="deleteButton" src="img/delete.png">',
-            onDeleteRow:function () {
-                var params = $(editorId).keyvalueeditor('getValues');
-                var newParams = [];
-                for (var i = 0; i < params.length; i++) {
-                    var param = {
-                        key:params[i].key,
-                        value:params[i].value
-                    };
-
-                    newParams.push(param);
-                }
-
-                postman.currentRequest.setBodyParamString(newParams);
-            },
-
-            onBlurElement:function () {
-                var params = $(editorId).keyvalueeditor('getValues');
-                var newParams = [];
-                for (var i = 0; i < params.length; i++) {
-                    var param = {
-                        key:params[i].key,
-                        value:params[i].value
-                    };
-
-                    newParams.push(param);
-                }
-
-                postman.currentRequest.setBodyParamString(newParams);
-            }
-        };
-
-        $(editorId).keyvalueeditor('init', params);
-    },
-
-    openBodyEditor:function () {
-        var containerId = "#body-keyvaleditor-container";
-        $(containerId).css("display", "block");
-    },
-
-    closeBodyEditor:function () {
-        var containerId = "#body-keyvaleditor-container";
-        $(containerId).css("display", "none");
-    },
-
     addListeners:function () {
         $('#dataModeSelector').on("click", "a", function () {
             var mode = $(this).attr("data-mode");
-            postman.currentRequest.changeDataMode(mode);
+            postman.currentRequest.body.setDataMode(mode);
         });
 
         $('.request-help-actions-togglesize').on("click", function () {
@@ -734,21 +840,6 @@ postman.currentRequest = {
                 $("#requestDescription").slideDown(100);
             }
         });
-    },
-
-    changeDataMode:function (mode) {
-        this.dataMode = mode;
-        $('#dataModeSelector a').removeClass("active");
-        $('#dataModeSelector a[data-mode="' + mode + '"]').addClass("active");
-
-        if (mode === "params") {
-            postman.currentRequest.openBodyEditor();
-            $('#bodyDataContainer').css("display", "none");
-        }
-        else if (mode === "raw") {
-            postman.currentRequest.closeBodyEditor();
-            $('#bodyDataContainer').css("display", "block");
-        }
     },
 
     getTotalTime:function () {
@@ -796,7 +887,7 @@ postman.currentRequest = {
         },
 
         loadHeaders:function (data) {
-            this.headers = postman.currentRequest.unpackHeaders(data);
+            this.headers = postman.currentRequest.unpackResponseHeaders(data);
             $('#responseHeaders').html("");
             $("#itemResponseHeader").tmpl(this.headers).appendTo("#responseHeaders");
             $('.responseHeaderName').popover();
@@ -851,8 +942,6 @@ postman.currentRequest = {
                 this.loadHeaders(response.getAllResponseHeaders());
 
                 $('.response-tabs li[data-section="headers"]').html("Headers (" + this.headers.length + ")");
-
-
                 $("#respData").css("display", "block");
 
                 $("#loader").css("display", "none");
@@ -1049,13 +1138,13 @@ postman.currentRequest = {
     },
 
     startNew:function () {
-	if(postman.currentRequest.xhr !== null) {
-	    postman.currentRequest.xhr.abort();
-	}
+        if (postman.currentRequest.xhr !== null) {
+            postman.currentRequest.xhr.abort();
+        }
 
         this.url = "";
         this.urlParams = {};
-        this.body = "";
+        this.body.data = "";
         this.bodyParams = {};
         this.name = "";
         this.description = "";
@@ -1066,7 +1155,7 @@ postman.currentRequest = {
 
         this.refreshLayout();
         $('#headers-keyvaleditor').keyvalueeditor('reset');
-        $('#body-keyvaleditor').keyvalueeditor('reset');
+        $('#formdata-keyvaleditor').keyvalueeditor('reset');
         $('#url').val();
         $('#url').focus();
         this.response.clear();
@@ -1081,7 +1170,7 @@ postman.currentRequest = {
     refreshLayout:function () {
         $('#url').val(this.url);
         $('#requestMethodSelector').val(this.method);
-        $('#body').val(this.body);
+        $('#body').val(this.body.data);
         $('#headers-keyvaleditor-actions-open .headers-count').html(this.headers.length);
         $('#submitRequest').button("reset");
         $('#dataModeSelector a').removeClass("active");
@@ -1089,17 +1178,9 @@ postman.currentRequest = {
         if (this.isMethodWithBody(this.method)) {
             $("#data").css("display", "block");
             var mode = this.dataMode;
-            if (mode === "params") {
-                postman.currentRequest.openBodyEditor();
-                $('#bodyDataContainer').css("display", "none");
-            }
-            else if (mode === "raw") {
-                postman.currentRequest.closeBodyEditor();
-                $('#bodyDataContainer').css("display", "block");
-            }
+            postman.currentRequest.body.setDataMode(mode);
         } else {
-            postman.currentRequest.closeBodyEditor();
-            $("#data").css("display", "none");
+            postman.currentRequest.body.hide();
         }
 
         if (this.name !== "") {
@@ -1156,6 +1237,38 @@ postman.currentRequest = {
         return this.packHeaders(this.headers);
     },
 
+    unpackResponseHeaders: function(data) {
+        if (data === null || data === "") {
+            return [];
+        }
+        else {
+            var vars = [], hash;
+            var hashes = data.split('\n');
+            var header;
+
+            for (var i = 0; i < hashes.length; i++) {
+                hash = hashes[i];
+                var loc = hash.search(':');
+
+                if(loc !== -1) {
+                    var name = $.trim(hash.substr(0, loc));
+                    var value = $.trim(hash.substr(loc+1));
+
+                    header = {
+                        "name":name,
+                        "key":name,
+                        "value":value,
+                        "description":headerDetails[name.toLowerCase()]
+                    };
+
+                    vars.push(header);
+                }
+            }
+
+            return vars;
+        }
+    },
+
     unpackHeaders:function (data) {
         if (data === null || data === "") {
             return [];
@@ -1188,7 +1301,7 @@ postman.currentRequest = {
     loadRequestInEditor:function (request) {
         postman.helpers.showRequestHelper("normal");
         this.url = request.url;
-        this.body = request.body;
+        this.body.data = request.body;
         this.method = request.method;
 
         if (typeof request.headers !== "undefined") {
@@ -1240,19 +1353,20 @@ postman.currentRequest = {
             this.dataMode = request.dataMode;
 
             $('#data').css("display", "block");
-            this.body = request.data;
+            this.body.data = request.data;
 
             $('#body').val(request.data);
 
-            var newBodyParams = getUrlVars(this.body, false);
-            $('#body-keyvaleditor').keyvalueeditor('reset', newBodyParams);
+            var newBodyParams = getUrlVars(this.body.data, false);
+            $('#formdata-keyvaleditor').keyvalueeditor('reset', newBodyParams);
+            $('#urlencoded-keyvaleditor').keyvalueeditor('reset', newBodyParams);
 
-            this.changeDataMode(this.dataMode);
+            this.body.setDataMode(this.dataMode);
         }
         else {
             $('#body').val("");
             $('#data').css("display", "none");
-            postman.currentRequest.closeBodyEditor();
+            postman.currentRequest.body.closeFormDataEditor();
         }
 
         $('body').scrollTop(0);
@@ -1287,25 +1401,25 @@ postman.currentRequest = {
         $('#url').val(baseUrl + "?" + paramArr.join('&'));
     },
 
-    reset: function() {
+    reset:function () {
     },
 
     //Send the current request
     send:function () {
         //Show error
         this.url = $('#url').val();
-        this.body = $('#body').val();
+        this.body.data = $('#body').val();
 
         if (this.url === "") {
             return;
         }
 
         var xhr = new XMLHttpRequest();
-	postman.currentRequest.xhr = xhr;
+        postman.currentRequest.xhr = xhr;
 
         var url = this.url;
         var method = this.method;
-        var data = this.body;
+        var data = this.body.data;
         var originalData = data;
         var finalBodyData;
         var headers = this.headers;
@@ -1339,6 +1453,9 @@ postman.currentRequest = {
             }
         }
 
+        var rows, count, j;
+        var row, key, value;
+
         if (this.isMethodWithBody(method)) {
             if (this.dataMode === 'raw') {
                 data = envManager.processString(data, envValues);
@@ -1347,11 +1464,13 @@ postman.currentRequest = {
             else if (this.dataMode === 'params') {
                 finalBodyData = new FormData();
 
-                var rows = $('#body-keyvaleditor').keyvalueeditor('getElements');
+                rows = $('#formdata-keyvaleditor').keyvalueeditor('getElements');
 
-                for (var j = 0; j < rows.length; j++) {
-                    var row = rows[j];
-                    var key = row.keyElement.val();
+                count = rows.length;
+
+                for (j = 0; j < rows.length; j++) {
+                    row = rows[j];
+                    key = row.keyElement.val();
                     var valueType = row.valueType;
                     var valueElement = row.valueElement;
 
@@ -1363,12 +1482,28 @@ postman.currentRequest = {
                         }
                     }
                     else {
-                        var value = valueElement.val();
+                        value = valueElement.val();
                         value = envManager.processString(value, envValues);
                         finalBodyData.append(key, value);
                     }
                 }
             }
+            else if(this.dataMode === 'urlencoded') {
+                finalBodyData = "";
+                rows = $('#urlencoded-keyvaleditor').keyvalueeditor('getElements');
+                xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+                count = rows.length;
+                for (j = 0; j < count; j++) {
+                    row = rows[j];
+                    value = encodeURIComponent(row.valueElement.val());
+                    key = encodeURIComponent(row.keyElement.val());
+                    value = value.replace(/%20/g, '+');
+                    key = key.replace(/%20/g, '+');
+                    finalBodyData += key + "=" + value + "&";
+                }
+                finalBodyData = finalBodyData.substr(0, finalBodyData.length - 1);
+            }
+
             xhr.send(finalBodyData);
         } else {
             xhr.send();
@@ -1487,7 +1622,7 @@ postman.helpers = {
 
             //Get parameters
             var urlParams = $('#url-keyvaleditor').keyvalueeditor('getValues');
-            var bodyParams = $('#body-keyvaleditor').keyvalueeditor('getValues');
+            var bodyParams = $('#formdata-keyvaleditor').keyvalueeditor('getValues');
 
             var params = urlParams.concat(bodyParams);
 
@@ -1497,13 +1632,6 @@ postman.helpers = {
                     message.parameters.push([param.key, param.value]);
                 }
             }
-
-//            //all the extra GET parameters
-//            $('#body-ParamsFields input.key, #url-ParamsFields input.key').each(function () {
-//                if ($(this).val() != '') {
-//                    message.parameters.push([$(this).val(), $(this).next().val()]);
-//                }
-//            });
 
             var accessor = {};
             if ($('input[key="oauth_consumer_secret"]').val() != '') {
@@ -1538,9 +1666,9 @@ postman.helpers = {
                 postman.currentRequest.setUrlParamString(params);
                 postman.currentRequest.openUrlEditor();
             } else {
-                $('#body-keyvaleditor').keyvalueeditor('addParams', params);
+                $('#formdata-keyvaleditor').keyvalueeditor('addParams', params);
                 postman.currentRequest.setBodyParamString(params);
-                postman.currentRequest.openBodyEditor();
+                postman.currentRequest.body.openFormDataEditor();
             }
         }
     }
@@ -1603,7 +1731,9 @@ postman.history = {
             var count = historyRequests.length;
 
             if (count === 0) {
-                $('#messageNoHistoryTmpl').tmpl([{}]).appendTo('#sidebarSection-history');
+                $('#messageNoHistoryTmpl').tmpl([
+                    {}
+                ]).appendTo('#sidebarSection-history');
             }
             else {
                 for (var i = 0; i < count; i++) {
@@ -1675,7 +1805,6 @@ postman.history = {
         }
 
         postman.indexedDB.addRequest(historyRequest, function (request) {
-            console.log("Added request to the history");
             postman.urlCache.addUrl(request.url);
             postman.layout.sidebar.addRequest(request.url, request.method, id, "top");
             postman.history.requests.push(request);
@@ -1784,10 +1913,10 @@ postman.collections = {
             $('#modalImportCollections').modal('hide');
         }, false);
 
-	$('#collection-files-input').on('change', function(event) {
-	    var files = event.target.files;
-	    postman.collections.importCollections(files);
-	});
+        $('#collection-files-input').on('change', function (event) {
+            var files = event.target.files;
+            postman.collections.importCollections(files);
+        });
     },
 
     saveCollection:function (id) {
@@ -1976,9 +2105,10 @@ postman.collections = {
             $('#messageNoCollection').css("display", "none");
             postman.collections.items = items;
             if (items.length == 0) {
-                console.log("No collections present");
                 //Replace this with showEmptyMessage
-                $('#messageNoCollectionTmpl').tmpl([{}]).appendTo('#sidebarSection-collections');
+                $('#messageNoCollectionTmpl').tmpl([
+                    {}
+                ]).appendTo('#sidebarSection-collections');
             }
 
             $('#itemCollectionSelectorList').tmpl(items).appendTo('#selectCollection');
@@ -2062,9 +2192,9 @@ postman.layout = {
             postman.currentRequest.send();
         });
 
-	$("#requestActionsReset").on("click", function() {
-	    postman.currentRequest.startNew();
-	});
+        $("#requestActionsReset").on("click", function () {
+            postman.currentRequest.startNew();
+        });
 
         $('#requestMethodSelector').change(function () {
             var val = $(this).val();
@@ -2130,9 +2260,9 @@ postman.layout = {
             $('.requestHelpActions').css("display", "none");
         });
 
-	$('#collection-file-selector-button').on("click", function() {
-	    
-	});
+        $('#collection-file-selector-button').on("click", function () {
+
+        });
 
         this.setLayout();
     },

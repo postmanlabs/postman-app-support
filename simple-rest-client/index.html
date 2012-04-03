@@ -113,11 +113,11 @@
     </div>
     <div class="topSidebar">
         <a data-toggle="modal" href="#modalShortcuts"
-                rel="tooltip" data-placement="bottom" data-original-title="Shortcuts">
+           rel="tooltip" data-placement="bottom" data-original-title="Shortcuts">
             <img src="img/glyphicons_268_keyboard_wireless.png" style="vertical-align: middle;"/></a>
         <a href="#modalSettings" data-toggle="modal"
            rel="tooltip"
-            data-placement="bottom" data-original-title="Settings">
+           data-placement="bottom" data-original-title="Settings">
             <img src="img/glyphicons_280_settings.png" style="vertical-align: middle;"/></a>
     </div>
 </div>
@@ -294,18 +294,23 @@
 </div>
 
 <div id="data">
-	<div id="dataModeSelector" class="btn-group clearfix"
-	  data-toggle="buttons-radio">
-	  <a class="btn" data-mode="params" href="javascript:void(0);">Params</a>
-	  <a class="btn" data-mode="raw" href="javascript:void(0);">Raw body</a>
-	</div>
-    <div id="bodyDataContainer">
-        <textarea name="data" id="body" tabindex="4" class="inputText">
-        </textarea>
+    <div id="dataModeSelector" class="btn-group clearfix"
+         data-toggle="buttons-radio">
+        <a class="btn" data-mode="params" href="javascript:void(0);">form-data</a>
+        <a class="btn" data-mode="urlencoded" href="javascript:void(0);">x-www-form-urlencoded</a>
+        <a class="btn" data-mode="raw" href="javascript:void(0);">raw</a>
     </div>
-
-    <div id="body-keyvaleditor-container" class="row" style="margin-left: 0px;">
-        <div id="body-keyvaleditor"></div>
+    <div id="bodyDataContainers">
+        <div id="formdata-keyvaleditor-container" class="row" style="margin-left: 0;">
+            <div id="formdata-keyvaleditor"></div>
+        </div>
+        <div id="urlencoded-keyvaleditor-container" class="row" style="margin-left: 0;">
+            <div id="urlencoded-keyvaleditor"></div>
+        </div>
+        <div id="bodyDataContainer">
+            <textarea name="data" id="body" tabindex="4" class="inputText">
+            </textarea>
+        </div>
     </div>
 </div>
 
@@ -320,8 +325,8 @@
                 data-toggle="modal" data-backdrop="static"
                 data-keyboard="true">
             Add to collection
-      </button>
-      <button class="btn" id="requestActionsReset">Reset</button>
+        </button>
+        <button class="btn" id="requestActionsReset">Reset</button>
     </div>
 </div>
 </section>
@@ -478,10 +483,10 @@
 
         <div class="modal-import-alerts"></div>
         <div id="import-collection-dropzone">
-	  <h3>Drop files here or</h3>
-	  <input type="file" id="collection-files-input"
-        name="files[]" multiple/>
-	</div>
+            <h3>Drop files here or</h3>
+            <input type="file" id="collection-files-input"
+                   name="files[]" multiple/>
+        </div>
     </div>
 
     <div class="modal-footer">

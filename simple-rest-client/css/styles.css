@@ -439,6 +439,10 @@ fieldset {
     display: none;
 }
 
+#urlencoded-keyvaleditor-container {
+    display: none;
+}
+
 #bodyDataContainer {
     margin-top: 5px;
     margin-bottom: 10px;
