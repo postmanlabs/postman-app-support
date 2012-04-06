@@ -1495,9 +1495,11 @@ postman.currentRequest = {
                 count = rows.length;
                 for (j = 0; j < count; j++) {
                     row = rows[j];
-                    value = encodeURIComponent(row.valueElement.val());
-                    key = encodeURIComponent(row.keyElement.val());
+                    value = row.valueElement.val();
+                    value = envManager.processString(value, envValues);
+                    value = encodeURIComponent(value);
                     value = value.replace(/%20/g, '+');
+                    key = encodeURIComponent(row.keyElement.val());
                     key = key.replace(/%20/g, '+');
                     finalBodyData += key + "=" + value + "&";
                 }
