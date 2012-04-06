@@ -274,7 +274,7 @@ postman.keymap = {
         });
 
         $(document).bind('keydown', 'a', function () {
-            if (!postman.collections.areLoaded) {
+            if (postman.collections.areLoaded === false) {
                 postman.collections.getAllCollections();
             }
 
@@ -1595,7 +1595,6 @@ postman.helpers = {
     },
 
     oAuth1:{
-
         generateHelper:function () {
             $('#requestHelper-oauth1-timestamp').val(OAuth.timestamp());
             $('#requestHelper-oauth1-nonce').val(OAuth.nonce(6));
@@ -1666,9 +1665,15 @@ postman.helpers = {
                 postman.currentRequest.setUrlParamString(params);
                 postman.currentRequest.openUrlEditor();
             } else {
-                $('#formdata-keyvaleditor').keyvalueeditor('addParams', params);
+                var dataMode = postman.currentRequest.body.getDataMode();
+                if(dataMode === 'urlencoded') {
+                    $('#urlencoded-keyvaleditor').keyvalueeditor('addParams', params);
+                }
+                else if(dataMode === 'params') {
+                    $('#formdata-keyvaleditor').keyvalueeditor('addParams', params);
+                }
+
                 postman.currentRequest.setBodyParamString(params);
-                postman.currentRequest.body.openFormDataEditor();
             }
         }
     }
@@ -2040,12 +2045,17 @@ postman.collections = {
         var newRequestName = $('#newRequestName').val();
         var newRequestDescription = $('#newRequestDescription').val();
 
+        var url = $('#url').val();
+        if(newRequestName === "") {
+            newRequestName = url;
+        }
+
         var collection = new Collection();
 
         var collectionRequest = new CollectionRequest();
         collectionRequest.id = guid();
         collectionRequest.headers = postman.currentRequest.getPackedHeaders();
-        collectionRequest.url = $("#url").val();
+        collectionRequest.url = url;
         collectionRequest.method = postman.currentRequest.method;
         collectionRequest.data = $('#body').val();
         collectionRequest.dataMode = postman.currentRequest.dataMode;
@@ -2188,7 +2198,13 @@ postman.layout = {
 
         postman.currentRequest.response.clear();
 
-        $("#submitRequest").click(function () {
+        $('#addToCollection').on("click", function() {
+            if(postman.collections.areLoaded === false) {
+                postman.collections.getAllCollections();
+            }
+        });
+
+        $("#submitRequest").on("click", function () {
             postman.currentRequest.send();
         });
 
@@ -2364,7 +2380,7 @@ postman.layout = {
         },
 
         select:function (section) {
-            if (!postman.collections.areLoaded) {
+            if (postman.collections.areLoaded === false) {
                 postman.collections.getAllCollections();
             }
 
