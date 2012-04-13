@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>Postman for Google Chrome</title>
+    <link rel="stylesheet" type="text/css" href="css/ui-lightness/jquery-ui-1.8.16.custom.css"/>
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"/>
+    <link rel="stylesheet" type="text/css" href="css/jquery.jscrollpane.css"/>
+    <link rel="stylesheet" type="text/css" href="codemirror/lib/codemirror.css"/>
+    <link rel="stylesheet" type="text/css" href="codemirror/theme/eclipse.css"/>
+    <link rel="stylesheet" type="text/css" href="css/styles.css"/>
+    <link rel="stylesheet" type="text/css" href="css/keyvalueeditor.css"/>
+    <script>
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-26564585-1']);
+        _gaq.push(['_trackPageview']);
+
+        (function () {
+            var ga = document.createElement('script');
+            ga.type = 'text/javascript';
+            ga.async = true;
+            ga.src = 'https://ssl.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(ga, s);
+        })();
+    </script>
+    <script type="text/javascript">
+        //<![CDATA[
+        // Help IE style HTML5. This makes me sad.
+        // See http://remysharp.com/2009/01/07/html5-enabling-script/
+        (function () {
+            if (!/*@cc_on!@*/0)return;
+            var e = "abbr,article,aside,audio,bb,canvas,datagrid,datalist,details,dialog,eventsource,figure,footer,header,mark,menu,meter,nav,output,progress,section,time,video".split(','), i = e.length;
+            while (i--) {
+                document.createElement(e[i])
+            }
+        })()
+        //]]>
+    </script>
+</head>
+<body>
+<div id="container" class="clearfix">
+<div id="sidebarFooter">
+    <a data-toggle="modal" id="spreadTheWord" href="#modalSpreadTheWord">
+        Like Postman? Help make it better!
+    </a>
+</div>
+<div id="sidebar">
+    <div id="header" class="clearfix">
+        <div id="logo">
+            <img src="img/logo-grey.png" alt="POSTMAN" height="15px" width="100px"/>
+        </div>
+        <div id="mainNavigation">
+            <ul>
+
+            </ul>
+        </div>
+    </div>
+    <div id="sidebarContainer" class="clearfix">
+        <div id="historyOptions" class="sectionOptions">
+            <a href="javascript:void(0);" class="history-actions-delete" rel="tooltip"
+               data-original-title="Clear history">
+                <img src="img/trash-empty.png" style="width:24px; height:24px; vertical-align: middle;"/>
+            </a>
+        </div>
+        <div id="collectionsOptions" class="sectionOptions">
+            <a href="#formModalNewCollection" rel="tooltip" data-original-title="Add new collection"
+               data-toggle="modal"
+               data-backdrop="static"
+               data-keyboard="true"><img src="img/glyphicons_145_folder_plus.png"
+                                         style="width:20px; height:20px; vertical-align: middle;"/></a>
+            <a href="#modalImportCollection" rel="tooltip" data-original-title="Import collection"
+               data-toggle="modal"
+               data-backdrop="static"
+               data-keyboard="true"><img src="img/glyphicons_134_inbox_in.png"
+                                         style="width:20px; height:20px; vertical-align: middle;"/></a>
+        </div>
+        <ul id="sidebarSelectors" class="nav nav-pills">
+            <li class="active"><a href="javascript:void(0);" data-id="history" data-toggle="tab">History</a></li>
+            <li><a href="javascript:void(0);" data-id="collections" data-toggle="tab">Collections</a></li>
+        </ul>
+        <div id="sidebarSectionContainer">
+            <div id="sidebarSection-history">
+                <ul id="historyItems" class="clearfix">
+                </ul>
+            </div>
+            <div id="sidebarSection-collections">
+                <ul id="collectionItems" class="clearfix">
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div id="sidebarFiller"></div>
+</div>
+<div id="main" class="content">
+<section id="request">
+<div id="requestTypes" class="clearfix">
+    <ul class="helper-tabs">
+        <li class="active" data-id="normal">Normal</li>
+        <li data-id="basicAuth">Basic Auth</li>
+        <li data-id="oAuth1">OAuth 1.0</li>
+    </ul>
+    <div id="environment-selector-wrapper">
+        <div id="environment-selector">
+            <div class="btn-group">
+                <a data-toggle="dropdown" href="javascript:void(0);">
+                    <span class="environment-list-item-selected">No environment</span>
+                    <span class="caret" style="margin-top: 8px;"></span></a>
+                <ul class="dropdown-menu">
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="topSidebar">
+        <a data-toggle="modal" href="#modalShortcuts"
+           rel="tooltip" data-placement="bottom" data-original-title="Shortcuts">
+            <img src="img/glyphicons_268_keyboard_wireless.png" style="vertical-align: middle;"/></a>
+        <a href="#modalSettings" data-toggle="modal"
+           rel="tooltip"
+           data-placement="bottom" data-original-title="Settings">
+            <img src="img/glyphicons_280_settings.png" style="vertical-align: middle;"/></a>
+    </div>
+</div>
+<div id="requestHelpers" class="clearfix">
+    <div id="requestHelper-normal" class="requestHelpers"></div>
+    <div id="requestHelper-basicAuth" class="requestHelpers">
+        <div class="requestHelperFormContainer">
+            <form class="form form-horizontal">
+                <div class="control-group">
+                    <label class="control-label">Username</label>
+
+                    <div class="controls">
+                        <input type="text" id="requestHelper-basicAuth-username" class="cleanInput"/>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">Password</label>
+
+                    <div class="controls">
+                        <input type="password" id="requestHelper-basicAuth-password" class="cleanInput"/>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <div class="controls">
+                        <a href="javascript:void(0);"
+                           class="btn btn-small btn-secondary requestHelper-submit"
+                           data-type="basic">Refresh headers</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="requestHelperFormDescription">
+            <h4>Note</h4>
+            The authorization header will be generated and added as a custom header.
+        </div>
+    </div>
+    <div id="requestHelper-oAuth1" class="requestHelpers">
+        <div class="requestHelperFormContainer">
+            <form class="form-horizontal">
+                <div class="control-group">
+                    <label>Consumer Key</label>
+
+                    <div class="controls">
+                        <input type="text" id="requestHelper-oauth1-consumerKey" class="cleanInput signatureParam"
+                               key="oauth_consumer_key"/>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label>Consumer Secret</label>
+
+                    <div class="controls">
+                        <input type="text" id="requestHelper-oauth1-consumerSecret" class="cleanInput"
+                               key="oauth_consumer_secret"/>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label>Token</label>
+
+                    <div class="controls">
+                        <input type="text" id="requestHelper-oauth1-token" class="cleanInput signatureParam"
+                               key="oauth_token"/>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label>Token Secret</label>
+
+                    <div class="controls">
+                        <input type="text" id="requestHelper-oauth1-tokenSecret" class="cleanInput"
+                               key="oauth_token_secret"/>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label>Signature Method</label>
+
+                    <div class="controls">
+                        <input type="text" id="requestHelper-oauth1-signatureMethod" class="cleanInput signatureParam"
+                               value="HMAC-SHA1" key="oauth_signature_method"/>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label>Timestamp</label>
+
+                    <div class="controls">
+                        <input type="text" id="requestHelper-oauth1-timestamp" class="cleanInput signatureParam"
+                               key="oauth_timestamp"/>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label>Nonce</label>
+
+                    <div class="controls">
+                        <input type="text" id="requestHelper-oauth1-nonce" class="cleanInput signatureParam"
+                               key="oauth_nonce"/>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label>Version</label>
+
+                    <div class="controls">
+                        <input type="text" id="requestHelper-oauth1-version" class="cleanInput signatureParam"
+                               value="1.0"
+                               key="oauth_version"/>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <div class="controls">
+                        <a href="javascript:void(0);" class="btn btn-small btn-secondary requestHelper-submit"
+                           data-type="oAuth1">
+                            Refresh request
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="requestHelperFormDescription">
+            <h4>Note</h4>
+            The OAuth signature will be added to the header list. It'll be updated automatically
+            when you update the URL parameters.
+        </div>
+    </div>
+</div>
+
+<div id="requestHelp">
+    <div class="requestHelpActions">
+        <a href="javascript:void(0);" class="request-help-actions-togglesize" data-action="minimize">
+            <img src="img/glyphicons_191_circle_minus.png"/>
+        </a>
+    </div>
+    <h5 id="requestName"></h5>
+
+    <p id="requestDescription"></p>
+</div>
+
+<div id="requestUrl" class="row">
+    <div class="span5">
+        <input type="text" name="url" id="url" tabindex="1" class="inputTextLight"
+               placeholder="Enter request URL here"/>
+    </div>
+    <div class="span4">
+        <select id="requestMethodSelector">
+            <option value="get" selected>GET</option>
+            <option value="post">POST</option>
+            <option value="put">PUT</option>
+            <option value="patch">PATCH</option>
+            <option value="delete">DELETE</option>
+            <option value="head">HEAD</option>
+            <option value="options">OPTIONS</option>
+        </select>
+        <button href="javascript:void(0);" class="btn btn-small" id="url-keyvaleditor-actions-open"><i
+                class="icon-edit"></i> URL params
+        </button>
+        <button href="javascript:void(0);" class="btn btn-small" id="headers-keyvaleditor-actions-open"><i
+                class="icon-edit"></i> Headers (<span class="headers-count">0</span>)
+        </button>
+    </div>
+</div>
+
+<div id="url-keyvaleditor-container" class="row" style="margin-left: 0px; display: none;">
+    <div id="url-keyvaleditor"></div>
+    <div id="url-keyvaleditor-actions">
+        <input type="button" id="url-keyvaleditor-actions-close"
+               class="btn btn-small"
+               value="Close"/>
+    </div>
+</div>
+
+<div id="headers-keyvaleditor-container" class="row" style="margin-left: 0px; display: none;">
+    <div id="headers-keyvaleditor"></div>
+    <div id="headers-keyvaleditor-actions">
+        <input type="button" id="headers-keyvaleditor-actions-close"
+               class="btn btn-small"
+               value="Close"/>
+    </div>
+</div>
+
+<div id="data">
+    <div id="dataModeSelector" class="btn-group clearfix"
+         data-toggle="buttons-radio">
+        <a class="btn" data-mode="params" href="javascript:void(0);">form-data</a>
+        <a class="btn" data-mode="urlencoded" href="javascript:void(0);">x-www-form-urlencoded</a>
+        <a class="btn" data-mode="raw" href="javascript:void(0);">raw</a>
+    </div>
+    <div id="bodyDataContainers">
+        <div id="formdata-keyvaleditor-container" class="row" style="margin-left: 0;">
+            <div id="formdata-keyvaleditor"></div>
+        </div>
+        <div id="urlencoded-keyvaleditor-container" class="row" style="margin-left: 0;">
+            <div id="urlencoded-keyvaleditor"></div>
+        </div>
+        <div id="bodyDataContainer">
+            <textarea name="data" id="body" tabindex="4" class="inputText">
+            </textarea>
+        </div>
+    </div>
+</div>
+
+<div id="requestActions" class="clearfix">
+    <div id="requestActionsMain">
+        <button class="btn btn-primary" data-loading-text="Fetching data..." type="button"
+                data-complete-text="Send request" id="submitRequest" tabindex="5">
+            Send
+        </button>
+        <button class="btn"
+                id="addToCollection"
+                href="#formModalAddToCollection"
+                data-toggle="modal" data-backdrop="static"
+                data-keyboard="true">
+            Add to collection
+        </button>
+        <button class="btn" id="requestActionsReset">Reset</button>
+    </div>
+</div>
+</section>
+
+<section id="response">
+    <fieldset>
+        <div id="responseTopBar">
+            <ul class="response-tabs clearfix">
+                <li class="active" data-section="body">Body</li>
+                <li data-section="headers">Headers</li>
+            </ul>
+            <div id="pstatus">
+            </div>
+
+            <div id="ptime" class="span2">
+                <span class="label">Time</span>
+                <span class="data">0 millisecs</span>
+            </div>
+        </div>
+
+        <div id="responsePrint">
+            <div id="respData" style="display:none">
+                <div id="respDataOptions" class="clearfix">
+                    <div id="langFormat" class="btn-group clearfix" data-toggle="buttons-radio">
+                        <a href="javascript:void(0);" data-type="parsed" class="btn">
+                            Pretty
+                        </a>
+                        <a href="javascript:void(0);" data-type="raw" class="btn">
+                            Raw
+                        </a>
+                    </div>
+                    <div id="respDataActions" class="clearfix">
+                        <a href="javascript:void(0);" class="btn"
+                           rel="tooltip"
+                           data-placement="bottom"
+                           data-original-title="Toggle size"
+                           id="responseBodyToggle">
+                            <img src="img/full-screen-alt-4.png"
+                                 style="width:16px; height:16px; vertical-align: middle;"/>
+                        </a>
+                        <a class="btn"
+                           rel="tooltip"
+                           data-placement="bottom"
+                           data-original-title="Toggle wrapping"
+                           id="responseBodyLineWrapping">
+                            <img src="img/glyphicons_109_right_indent.png"
+                                 style="width:16px; height:16px; vertical-align: middle;"/>
+                        </a>
+                    </div>
+                </div>
+                <div name="responseData" id="responseData" contenteditable="true">
+                    <div id="responseAsCode">
+                        <textarea name="codeData" id="codeData" data-formatted="false">
+                        </textarea>
+                    </div>
+                    <div id="responseAsText">
+                        <textarea name="codeData" id="codeDataRaw"></textarea>
+                    </div>
+                    <div id="responseAsImage"></div>
+                </div>
+            </div>
+        </div>
+        <div id="respHeaders">
+            <div id="respHeadersContent">
+                <div id="responseHeaders" tabindex="6"></div>
+            </div>
+        </div>
+    </fieldset>
+</section>
+</div>
+</div>
+<div id="formModalNewCollection" class="modal fade">
+    <div class="modal-header">
+        <a href="#" class="close" data-dismiss="modal">×</a>
+
+        <h3>Create a new collection</h3>
+    </div>
+    <div class="modal-body">
+        <form class="form form-horizontal" id="formNewCollection">
+            <div class="control-group" id="newCollectionContainer">
+                <label class="control-label">Collection name</label>
+
+                <div class="controls">
+                    <input type="text" class="medium" name="newCollectionBlank" id="newCollectionBlank"/>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <a href="javascript:void(0);" class="btn btn-primary">Create</a>
+        <a href="javascript:void(0);" data-dismiss="modal" class="btn btn-secondary">Cancel</a>
+    </div>
+</div>
+<div id="formModalAddToCollection" class="modal fade">
+    <div class="modal-header">
+        <a href="#" class="close" data-dismiss="modal">×</a>
+
+        <h3>Add request to a collection</h3>
+    </div>
+    <div class="modal-body">
+        <form class="form-horizontal" id="formAddToCollection">
+            <div class="control-group" id="selectCollectionContainer">
+                <label for="selectCollection">Existing collection</label>
+
+                <div class="controls">
+                    <select name="selectCollection" class="medium" id="selectCollection">
+                        <option value="_select">Select</option>
+                    </select>
+                </div>
+            </div>
+            <div class="control-group">
+                <label for="newCollection">or create a new one</label>
+
+                <div class="controls">
+                    <div class="input">
+                        <input type="text" class="medium cleanInput" id="newCollection"/>
+                    </div>
+                </div>
+            </div>
+            <div class="control-group">
+                <label for="newCollection">Request name</label>
+
+                <div class="controls">
+                    <div class="input">
+                        <input type="text" class="medium cleanInput" id="newRequestName"/>
+                    </div>
+                </div>
+            </div>
+            <div class="control-group">
+                <label for="newCollection">Request description</label>
+
+                <div class="controls">
+                    <div class="input">
+                        <textarea class="medium" id="newRequestDescription"></textarea>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <a href="javascript:void(0);" class="btn btn-primary">Done</a>
+        <a href="javascript:void(0);" data-dismiss="modal" class="btn btn-secondary">Cancel</a>
+    </div>
+</div>
+<div id="modalImportCollection" class="modal fade">
+    <div class="modal-header">
+        <a href="#" class="close" data-dismiss="modal">x</a>
+
+        <h3>Import a collection</h3>
+    </div>
+
+    <div class="modal-body">
+        <p>Drag and drop Postman collections files here</p>
+
+        <div class="modal-import-alerts"></div>
+        <div id="import-collection-dropzone">
+            <h3>Drop files here or</h3>
+            <input type="file" id="collection-files-input"
+                   name="files[]" multiple/>
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <a href="javascript:void(0);" data-dismiss="modal" class="btn btn-primary">Close</a>
+    </div>
+</div>
+<div id="modalDeleteCollection" class="modal fade">
+    <div class="modal-header">
+        <a href="#" class="close" data-dismiss="modal">x</a>
+
+        <h3>Are you sure?</h3>
+    </div>
+
+    <div class="modal-body">
+        <p>
+            Are you sure you want to delete <span id="modalDeleteCollectionName"></span>?
+        </p>
+    </div>
+
+    <div class="modal-footer">
+        <a href="javascript:void(0);" data-dismiss="modal" class="btn">No</a>
+        <a href="javascript:void(0);"
+           data-collection-id=""
+           id="modalDeleteCollectionYes"
+           data-dismiss="modal"
+           class="btn btn-danger">Yes</a>
+    </div>
+</div>
+<div id="modalEnvironments" class="modal fade">
+    <div class="modal-header">
+        <a href="#" class="close" data-dismiss="modal">x</a>
+
+        <h3>Manage environments</h3>
+    </div>
+
+    <div class="modal-body">
+        <div id="environments-list-wrapper">
+            <p>
+                Environments help you customize requests according to variables. Variables can be used in the
+                following form - {{variable}}. The string {{variable}} will be replaced with it's corresponding value.
+                For example, for an environment variable 'url' with the value 'http://localhost'
+                , you will have to use {{url}} in the request URL field. {{url}] will be replaced by http://localhost
+                when the request is sent.
+            </p>
+            <button class="btn btn-small environments-actions-add">
+                Add new environment
+            </button>
+            <table id="environments-list" class="table table-striped table-bordered"
+                   style="margin-top: 10px;">
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+        <div id="environment-editor">
+            <input type="text" name="environment-editor-name" id="environment-editor-name" class="cleanInput"
+                   placeholder="New environment"/>
+            <input type="hidden" name="environment-editor-id" id="environment-editor-id" value="0" class="cleanInput"/>
+
+            <div id="environment-keyvaleditor"></div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <a href="javascript:void(0);" class="btn btn-primary environments-actions-add-submit">Submit</a>
+        <a href="javascript:void(0);" class="btn environments-actions-add-back">Back to list</a>
+    </div>
+</div>
+<div id="modalSettings" class="modal fade">
+    <div class="modal-header">
+        <a href="#" class="close" data-dismiss="modal">×</a>
+
+        <h3>Settings</h3>
+    </div>
+    <div class="modal-body">
+        <form class="form-horizontal">
+            <div class="control-group">
+                <label class="control-label" for="historyCount">Max history items</label>
+
+                <div class="controls">
+                    <select class="medium" name="historyCount" id="historyCount">
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                        <option value="200">200</option>
+                    </select>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="historyCount">Auto save request</label>
+
+                <div class="controls">
+                    <select class="medium" name="autoSaveRequest" id="autoSaveRequest">
+                        <option value="yes">Yes</option>
+                        <option value="no">No</option>
+                    </select>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <a href="javascript:void(0);" data-dismiss="modal" class="btn btn-primary">Close</a>
+    </div>
+</div>
+<div id="modalResponseError" class="modal fade">
+    <div class="modal-header">
+        <a href="#" class="close" data-dismiss="modal">×</a>
+
+        <h3>Could not get any response</h3>
+    </div>
+    <div class="modal-body">
+        <p>
+            Something went wrong while fetching the response. Check your request again.
+        </p>
+    </div>
+</div>
+<div id="modalSpreadTheWord" class="modal fade">
+    <div class="modal-header">
+        <a href="#" class="close" data-dismiss="modal">×</a>
+
+        <h3>Help make Postman better!</h3>
+    </div>
+    <div class="modal-body">
+        <p>
+            Hoping that you liked Postman. Here is what you can do to make it even better. However, if something
+            sucked, let us know.
+        </p>
+        <table class="table table-striped">
+            <tr>
+                <td>
+                    <a target="_blank"
+                       href="https://chrome.google.com/webstore/detail/fdmmgilgnpjigdojojpjoooidkmcomcm/reviews">Write a
+                        review</a>
+
+                    <p>
+                        We would love a good review. A bad review would hurt but make it as informative as possible!
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <a target="_blank" href="https://github.com/a85/POSTMan-Chrome-Extension/issues">Report a bug</a>
+
+                    <p>
+                        Sometimes we make mistakes. Help us correct them as fast as possible.
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <a target="_blank" href="https://github.com/a85/POSTMan-Chrome-Extension">Check out the source
+                        code</a>
+
+                    <p>
+                        Found a bug or want to add a feature? The code is on Github!
+                        Postman is licensed under the Apache Licence, Version 2.0.
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <strong>Share Postman</strong>
+
+                    <div class="spreadtheword-sharebuttons">
+                        <div id="aboutPostmanSocialButtons" class="clearfix">
+                            <div id="aboutPostmanTwitterButton"></div>
+                            <div id="aboutPostmanPlusOneButton"></div>
+                            <div id="aboutPostmanFacebookButton"></div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+<div id="modalShortcuts" class="modal fade">
+    <div class="modal-header">
+        <a href="#" class="close" data-dismiss="modal">×</a>
+
+        <h3>Shortcuts</h3>
+    </div>
+    <div class="modal-body">
+        <table class="table table-bordered table-striped">
+            <thead>
+            <tr>
+                <th>Action</th>
+                <th>Shortcut key</th>
+            </tr>
+            </thead>
+            <tr>
+                <td>New request</td>
+                <td><strong>Alt + n</strong></td>
+            </tr>
+            <tr>
+                <td>Edit URL</td>
+                <td><strong>Backspace</strong></td>
+            </tr>
+            <tr>
+                <td>Edit headers</td>
+                <td><strong>h</strong></td>
+            </tr>
+            <tr>
+                <td>Send request</td>
+                <td><strong>Enter/Return</strong></td>
+            </tr>
+            <tr>
+                <td>Maximize/minimze response</td>
+                <td><strong>f</strong></td>
+            </tr>
+            <tr>
+                <td>Add request to collection</td>
+                <td><strong>a</strong></td>
+            </tr>
+            <tr>
+                <td>Clear history</td>
+                <td><strong>Alt + c</strong></td>
+            </tr>
+            <tr>
+                <td>This window</td>
+                <td><strong>?</strong></td>
+            </tr>
+        </table>
+    </div>
+</div>
+<!--<div id="modalDropboxSync" class="modal fade">
+	<div class="modal-header">
+        <a href="#" class="close">×</a>
+        <h3>Dropbox Connect</h3>
+    </div>
+    <div class="modal-body">
+        <p>
+            Redirecting to Dropbox...
+        </p>
+    </div>
+</div>-->
+
+<!--- jQuery Templates -->
+<script id="messageNoHistoryTmpl" type="text/x-jquery-tmpl">
+    <div id="messageNoHistory">
+        Nothing in your history yet. You can automatically save and access your sent requests here.
+    </div>
+</script>
+<script id="messageCollectionAdded" type="text/x-jquery-tmpl">
+    <div class="alert alert-block">
+        <a class="close" data-dismiss="alert">×</a>
+        <h4 class="alert-heading">It worked!</h4>
+        The collection ${name} has been ${action}.
+    </div>
+</script>
+<script id="itemEnvironmentList" type="text/x-jquery-tmpl">
+    <tr>
+        <td>
+            <a href="javascript:void(0);" class="environment-action-edit" data-id="${id}">${name}</a>
+        </td>
+        <td>
+            <a href="javascript:void(0);" class="environment-action-delete" data-id="${id}">Delete</a>
+        </td>
+    </tr>
+</script>
+<script id="messageNoCollectionTmpl" type="text/x-jquery-tmpl">
+    <div id="messageNoCollection">
+        You haven't created any collections yet. Collections let you group requests together for quick access.
+    </div>
+</script>
+<script id="itemCollectionSelectorList" type="text/x-jquery-tmpl">
+    <option value="${id}">${name}</option>
+</script>
+<script id="itemResponseCode" type="text/x-jquery-tmpl">
+    <div class="responseCode" data-placement="bottom" data-original-title="${code} ${name}" data-content="${detail}"
+         rel="popover"><span class="label">Status</span>
+
+        <div class="data">${code} ${name}</div>
+    </div>
+</script>
+<script id="itemResponseHeader" type="text/x-jquery-tmpl">
+    <li class="responseHeader clearfix">
+        <div class="responseHeaderName" data-placement="top" data-original-title="${name}" data-content="${description}"
+             rel="popover">${name} &rarr;</div>
+        <div class="responseHeaderValue">${value}</div>
+    </li>
+</script>
+<script id="itemCollectionSidebarHead" type="text/x-jquery-tmpl">
+    <li id="collection-${id}" data-id="${id}" class="sidebarCollection">
+        <div class="sidebar-collection-head">
+            <div class="collection-head-actions">
+                <span class="label">Show</span>
+                <a href="javascript:void(0);"
+                   rel="tooltip" data-original-title="Download collection"
+                   class="collection-actions-download" data-id="${id}">
+                    <img src="img/glyphicons_181_download_alt.png" style="vertical-align: middle;"/></a>
+                <a rel="tooltip" data-original-title="Delete collection"
+                   data-name="${name}"
+                   href="#modalDeleteCollection" data-toggle="modal"
+                   class="collection-actions-delete" data-id="${id}">
+                    <img src="img/delete.png" style="vertical-align: middle;"/></a>
+            </div>
+            <div class="sidebar-collection-head-name" data-id="${id}">
+                ${name}
+            </div>
+        </div>
+        <ul id="collectionRequests-${id}" class="sidebar-collection-requests"></ul>
+    </li>
+</script>
+<script id="itemCollectionSidebarRequest" type="text/x-jquery-tmpl">
+    <li id="sidebarRequest-${id}" class="sidebarCollectionRequest sidebarRequest clearfix">
+        <div class="request-actions">
+            <a href="javascript:void(0);" data-id="${id}" class="request-actions-delete">
+                <img src="img/delete.png"/>
+            </a>
+        </div>
+        <div class="request request-actions-load" data-id="${id}">
+            <a href="javascript:void(0);"><span class="label">${method}</span> {{html name}}</a>
+        </div>
+    </li>
+</script>
+<script id="itemHistorySidebarRequest" type="text/x-jquery-tmpl">
+    <li id="sidebarRequest-${id}" class="sidebarHistoryRequest sidebarRequest clearfix">
+        <div class="request-actions">
+            <a href="javascript:void(0);" data-request-id="${id}" class="request-actions-delete">
+                <img src="img/delete.png"/>
+            </a>
+        </div>
+        <div class="request" data-request-id="${id}">
+            <a href="javascript:void(0);" data-request-id="${id}"><span class="label">${method}</span> {{html url}}</a>
+        </div>
+    </li>
+</script>
+<script id="itemEditorStandard" type="text/x-jquery-tmpl">
+</script>
+<script id="itemParamsEditor" type="text/x-jquery-tmpl">
+    <div>
+        <input type="text"
+               data-section="${section}"
+               name="${section}[key][]"
+               class="key ui-autocomplete-input"
+               placeholder="${placeHolderKey}"
+               role="textbox"
+               value="${key}"
+               aria-autocomplete="list"
+               aria-haspopup="true"/>
+        {{if inputType == "file" }}
+        <input type="file"
+               name="${section}[value][]"
+               class="file"
+               multiple
+               placeholder="${placeHolderValue}"/>
+        {{/if}}
+        {{if inputType == "text" }}
+        <input type="text"
+               name="${section}[value][]"
+               class="value"
+               value="${value}"
+               placeholder="${placeHolderValue}"/>
+        {{/if}}
+        {{if section == "body" }}
+        <select>
+            <option value="text"
+            ${selectedText}>Text</option>
+            <option value="file"
+            ${selectedFile}>File</option>
+        </select>
+        {{/if}}
+
+        {{if canBeClosed}}
+        <a href="javascript:void(0);" class="deleteParam">
+            <img class="deleteButton" src="img/delete.png">
+        </a>
+        {{/if}}
+    </div>
+</script>
+<script id="itemEnvironmentSelector" type="text/x-jquery-tmpl">
+    <li><a href="javascript:void(0);" class="environment-list-item" data-id="${id}">${name}</a></li>
+</script>
+<script id="environmentSelectorActions" type="text/x-jquery-tmpl">
+    <li>
+        <a class="environment-list-item-noenvironment" href="javascript:void(0);">No environment</a>
+    </li>
+    <li class="divider"></li>
+    <li><a href="#modalEnvironments" data-toggle="modal"
+           data-backdrop="static" data-keyboard="true">Manage environments</a></li>
+</script>
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/underscore-min.js"></script>
+<script type="text/javascript" src="js/backbone-min.js"></script>
+<script type="text/javascript" src="js/jquery-ui-1.8.16.custom.min.js"></script>
+<script type="text/javascript" src="js/dropbox/sha1.js"></script>
+<script type="text/javascript" src="js/dropbox/oauth.js"></script>
+<script type="text/javascript" src="js/util.js"></script>
+<script type="text/javascript" src="js/httpstatuscodes.js"></script>
+<script type="text/javascript" src="js/httpheaders.js"></script>
+<script type="text/javascript" src="codemirror/lib/codemirror.js"></script>
+<script type="text/javascript" src="codemirror/lib/util/formatting.js"></script>
+<script type="text/javascript" src="codemirror/lib/util/foldcode.js"></script>
+<script type="text/javascript" src="codemirror/mode/xmlpure/xmlpure.js"></script>
+<script type="text/javascript" src="codemirror/mode/javascript/javascript.js"></script>
+<script type="text/javascript" src="codemirror/mode/xml/xml.js"></script>
+<script type="text/javascript" src="codemirror/mode/htmlmixed/htmlmixed.js"></script>
+<script type="text/javascript" src="js/codemirror.overlayParser.js"></script>
+<script type="text/javascript" src="js/jquery.keyvalueeditor.js"></script>
+<script type="text/javascript" src="js/jquery.tmpl.min.js"></script>
+<script type="text/javascript" src="js/jquery.hotkeys.js"></script>
+<script type="text/javascript" src="js/jquery.mousewheel.js"></script>
+<script type="text/javascript" src="js/jquery.jscrollpane.js"></script>
+<script type="text/javascript" src="js/bootstrap.min.js"></script>
+<script type="text/javascript" src="js/requester.js"></script>
+<script text="text/javascript">
+    $(":input:first").focus();
+</script>
+</body>
+</html>
