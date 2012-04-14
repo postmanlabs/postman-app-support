@@ -1871,7 +1871,6 @@ postman.collections = {
         });
 
         $('#collectionItems').on("click", ".request-actions-delete", function () {
-
             var id = $(this).attr('data-id');
             postman.collections.deleteCollectionRequest(id);
         });
@@ -1879,6 +1878,25 @@ postman.collections = {
         $('#collectionItems').on("click", ".request-actions-load", function () {
             var id = $(this).attr('data-id');
             postman.collections.getCollectionRequest(id);
+        });
+
+        $('#collectionItems').on("click", ".request-actions-edit", function () {
+            var id = $(this).attr('data-id');
+            $('#formEditCollectionRequest .collection-request-id').val(id);
+
+            postman.indexedDB.getCollectionRequest(id, function(req) {
+                $('#formEditCollectionRequest .collection-request-name').val(req.name);
+                $('#formEditCollectionRequest .collection-request-description').val(req.description);
+                $('#formModalEditCollectionRequest').modal('show');
+            });
+        });
+
+        $('#collectionItems').on("click", ".collection-actions-edit", function () {
+            var id = $(this).attr('data-id');
+            var name = $(this).attr('data-name');
+            $('#formEditCollection .collection-id').val(id);
+            $('#formEditCollection .collection-name').val(name);
+            $('#formModalEditCollection').modal('show');
         });
 
         $('#collectionItems').on("click", ".collection-actions-delete", function () {
@@ -1999,13 +2017,11 @@ postman.collections = {
         var target = "#collectionRequests-" + id;
         var label = "#collection-" + id + " .collection-head-actions .label";
         if ($(target).css("display") === "none") {
-            $(label).html("Hide");
             $(target).slideDown(100, function () {
                 postman.layout.refreshScrollPanes();
             });
         }
         else {
-            $(label).html("Show");
             $(target).slideUp(100, function () {
                 postman.layout.refreshScrollPanes();
             });
@@ -2240,6 +2256,38 @@ postman.layout = {
         $('#formModalNewCollection .btn-primary').click(function () {
             postman.collections.addCollection();
             return false;
+        });
+
+        $('#formModalEditCollection .btn-primary').click(function () {
+            var id = $('#formEditCollection .collection-id').val();
+            var name = $('#formEditCollection .collection-name').val();
+
+            postman.indexedDB.getCollection(id, function(collection) {
+                collection.name = name;
+                postman.indexedDB.updateCollection(collection, function(collection) {
+                    postman.collections.getAllCollections();
+                });
+            });
+
+            $('#formModalEditCollection').modal('hide');
+        });
+
+        $('#formModalEditCollectionRequest .btn-primary').click(function () {
+            var id = $('#formEditCollectionRequest .collection-request-id').val();
+            var name = $('#formEditCollectionRequest .collection-request-name').val();
+            var description = $('#formEditCollectionRequest .collection-request-description').val();
+
+            postman.indexedDB.getCollectionRequest(id, function(req) {
+                req.name = name;
+                req.description = description;
+                postman.indexedDB.updateCollectionRequest(req, function(newRequest) {
+                    postman.collections.getAllRequestsInCollection(req.collectionId);
+                    $('#formModalEditCollectionRequest').modal('hide');
+                });
+
+            });
+
+
         });
 
         $(window).resize(function () {
@@ -2541,6 +2589,23 @@ postman.indexedDB = {
         };
     },
 
+    updateCollection:function (collection, callback) {
+        var db = postman.indexedDB.db;
+        var trans = db.transaction(["collections"], IDBTransaction.READ_WRITE);
+        var store = trans.objectStore("collections");
+
+        var boundKeyRange = IDBKeyRange.only(collection.id);
+        var request = store.put(collection);
+
+        request.onsuccess = function (e) {
+            callback(collection);
+        };
+
+        request.onerror = function (e) {
+            console.log(e.value);
+        };
+    },
+
     addCollectionRequest:function (req, callback) {
         var db = postman.indexedDB.db;
         var trans = db.transaction(["collection_requests"], IDBTransaction.READ_WRITE);
@@ -2564,6 +2629,23 @@ postman.indexedDB = {
         };
 
         collectionRequest.onerror = function (e) {
+            console.log(e.value);
+        };
+    },
+
+    updateCollectionRequest:function (req, callback) {
+        var db = postman.indexedDB.db;
+        var trans = db.transaction(["collection_requests"], IDBTransaction.READ_WRITE);
+        var store = trans.objectStore("collection_requests");
+
+        var boundKeyRange = IDBKeyRange.only(req.id);
+        var request = store.put(req);
+
+        request.onsuccess = function (e) {
+            callback(req);
+        };
+
+        request.onerror = function (e) {
             console.log(e.value);
         };
     },

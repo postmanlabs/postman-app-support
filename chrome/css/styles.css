@@ -813,7 +813,7 @@ li .right {
 
 .collection-head-actions {
     position: absolute;
-    margin-left: 236px;
+    margin-left: 258px;
     z-index: 10;
     display: none;
     padding-top: 4px;
@@ -832,11 +832,20 @@ li .right {
 .request-actions {
     position: absolute;
     margin-left: 300px;
-    opacity: 0.5;
+    opacity: 1;
     display: none;
 }
 
-.request-actions:hover {
+.request-actions img {
+    opacity: 0.5;
+}
+
+.request-actions img:hover {
+    opacity: 1;
+}
+
+#collectionItems .request-actions {
+    margin-left: 270px;
     opacity: 1;
 }
 
@@ -852,7 +861,7 @@ li .right {
 .collection-head-actions span {
     display: block;
     float: left;
-    width: 35px;
+    width: 25px;
     text-align: center;
     margin-right: 5px;
     cursor: pointer;

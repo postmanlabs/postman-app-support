@@ -422,6 +422,61 @@
         <a href="javascript:void(0);" data-dismiss="modal" class="btn btn-secondary">Cancel</a>
     </div>
 </div>
+<div id="formModalEditCollection" class="modal fade">
+    <div class="modal-header">
+        <a href="#" class="close" data-dismiss="modal">×</a>
+        <h3>Edit collection</h3>
+    </div>
+    <div class="modal-body">
+        <form class="form form-horizontal" id="formEditCollection">
+            <div class="control-group">
+                <label class="control-label">Collection name</label>
+                <div class="controls">
+                    <input type="hidden" name="collection-id" class="collection-id"/>
+                    <input type="text" name="collection-name" class="medium collection-name cleanInput"/>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <a href="javascript:void(0);" class="btn btn-primary">Edit</a>
+        <a href="javascript:void(0);" data-dismiss="modal" class="btn btn-secondary">Cancel</a>
+    </div>
+</div>
+<div id="formModalEditCollectionRequest" class="modal fade">
+    <div class="modal-header">
+        <a href="#" class="close" data-dismiss="modal">×</a>
+
+        <h3>Edit request</h3>
+    </div>
+    <div class="modal-body">
+        <form class="form-horizontal" id="formEditCollectionRequest">
+            <div class="control-group">
+                <label for="newCollection">Request name</label>
+
+                <div class="controls">
+                    <div class="input">
+                        <input type="hidden" class="collection-request-id"/>
+                        <input type="text" class="medium cleanInput collection-request-name"/>
+                    </div>
+                </div>
+            </div>
+            <div class="control-group">
+                <label for="newCollection">Request description</label>
+
+                <div class="controls">
+                    <div class="input">
+                        <textarea class="medium collection-request-description"></textarea>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <a href="javascript:void(0);" class="btn btn-primary">Edit</a>
+        <a href="javascript:void(0);" data-dismiss="modal" class="btn btn-secondary">Cancel</a>
+    </div>
+</div>
 <div id="formModalAddToCollection" class="modal fade">
     <div class="modal-header">
         <a href="#" class="close" data-dismiss="modal">×</a>
@@ -799,7 +854,10 @@
     <li id="collection-${id}" data-id="${id}" class="sidebarCollection">
         <div class="sidebar-collection-head">
             <div class="collection-head-actions">
-                <span class="label">Show</span>
+                <a href="javascript:void(0);"
+                   rel="tooltip" data-original-title="Edit collection"
+                   class="collection-actions-edit" data-id="${id}" data-name="${name}">
+                    <img src="img/glyphicons_151_edit.png" style="vertical-align: middle;"/></a>
                 <a href="javascript:void(0);"
                    rel="tooltip" data-original-title="Download collection"
                    class="collection-actions-download" data-id="${id}">
@@ -820,8 +878,11 @@
 <script id="itemCollectionSidebarRequest" type="text/x-jquery-tmpl">
     <li id="sidebarRequest-${id}" class="sidebarCollectionRequest sidebarRequest clearfix">
         <div class="request-actions">
+            <a href="javascript:void(0);" data-id="${id}" class="request-actions-edit">
+                <img src="img/glyphicons_151_edit.png" style="vertical-align: middle;"/>
+            </a>
             <a href="javascript:void(0);" data-id="${id}" class="request-actions-delete">
-                <img src="img/delete.png"/>
+                <img src="img/delete.png" style="vertical-align: middle;"/>
             </a>
         </div>
         <div class="request request-actions-load" data-id="${id}">
