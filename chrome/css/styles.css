@@ -255,28 +255,12 @@ fieldset {
 
 #mainNavigation {
     float: right;
-    margin-right: 7px;
 }
 
 #mainNavigation ul li {
     float: left;
     list-style: none;
     margin-right: 3px;
-}
-
-#mainNavigation a {
-    color: white;
-    padding: 5px;
-    font-size: 11px;
-    background: #BBB;
-    border-radius: 5px;
-    padding-left: 10px;
-    padding-right: 10px;
-}
-
-#mainNavigation a:hover {
-    background: #0069D6;
-    text-decoration: none;
 }
 
 #sidebarContainer {
