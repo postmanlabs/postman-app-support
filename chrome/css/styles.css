@@ -164,6 +164,7 @@ fieldset {
 
 #url {
     color: #333;
+    border-radius: 0;
 }
 
 #url-ParamsEditor,
@@ -1203,4 +1204,13 @@ li .right {
 #sidebarToggle img {
     width: 20px;
     height: 20px;
+}
+
+#url-keyvaleditor-container,
+#headers-keyvaleditor-container {
+    margin-bottom: 10px;
+}
+
+#environments-list-help-detail {
+    display: none;
 }

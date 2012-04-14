@@ -1072,6 +1072,7 @@ postman.currentRequest = {
                     CodeMirror.commands["selectAll"](cm);
                     cm.autoFormatRange(cm.getCursor(true), cm.getCursor(false));
                     CodeMirror.commands["goDocStart"](cm);
+                    $(window).scrollTop(0);
                 }
             }
             else {
@@ -1083,6 +1084,7 @@ postman.currentRequest = {
                 postman.editor.codeMirror.setValue(response);
                 postman.editor.codeMirror.refresh();
                 CodeMirror.commands["goDocStart"](postman.editor.codeMirror);
+                $(window).scrollTop(0);
             }
         },
 
@@ -2991,6 +2993,19 @@ postman.envManager = {
             postman.envManager.showSelector();
             $('#environment-editor-name').val("");
             $('#environment-keyvaleditor').keyvalueeditor('reset', []);
+        });
+
+        $('#environments-list-help-toggle').on("click", function() {
+            var d = $('#environments-list-help-detail').css("display");
+            console.log(d);
+            if(d === "none") {
+                $('#environments-list-help-detail').css("display", "inline");
+                $(this).html("Hide");
+            }
+            else {
+                $('#environments-list-help-detail').css("display", "none");
+                $(this).html("Tell me more");
+            }
         });
 
         var params = {
