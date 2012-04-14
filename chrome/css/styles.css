@@ -1069,6 +1069,10 @@ li .right {
     font-size: 11px;
 }
 
+#environment-importer {
+    display: none;
+}
+
 .environment-selector-label {
     font-weight: bold;
     color: #AAA;

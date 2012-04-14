@@ -462,7 +462,7 @@ postman.currentRequest = {
     headers:[],
     method:"get",
     dataMode:"params",
-    methodsWithBody:["post", "put", "patch"],
+    methodsWithBody:["post", "put", "patch", "delete"],
     areListenersAdded:false,
     startTime:0,
     endTime:0,
@@ -1015,10 +1015,10 @@ postman.currentRequest = {
             var foldFunc;
             var mode;
 
+            //Use prettyprint here instead of stringify
             if (language === 'javascript') {
                 try {
-                    var temp = JSON.parse(response);
-                    response = JSON.stringify(temp, null, '\t');
+                    response = vkbeautify.json(response);
                     mode = 'javascript';
                     foldFunc = CodeMirror.newFoldFunction(CodeMirror.braceRangeFinder);
                 }
@@ -1028,6 +1028,7 @@ postman.currentRequest = {
 
             }
             else if (language === 'html') {
+                response = vkbeautify.xml(response);
                 mode = 'xml';
                 foldFunc = CodeMirror.newFoldFunction(CodeMirror.tagRangeFinder);
             }
@@ -1066,14 +1067,6 @@ postman.currentRequest = {
 
                 var cm = postman.editor.codeMirror;
                 cm.setValue(response);
-
-                if ($.inArray(mode, ["xml", "html"]) >= 0) {
-                    cm.setOption("mode", mode);
-                    CodeMirror.commands["selectAll"](cm);
-                    cm.autoFormatRange(cm.getCursor(true), cm.getCursor(false));
-                    CodeMirror.commands["goDocStart"](cm);
-                    $(window).scrollTop(0);
-                }
             }
             else {
                 postman.editor.codeMirror.setOption("onGutterClick", foldFunc);
@@ -2950,6 +2943,11 @@ postman.envManager = {
             postman.envManager.showEditor(id);
         });
 
+        $('#environments-list').on("click", ".environment-action-download", function () {
+            var id = $(this).attr('data-id');
+            postman.envManager.downloadEnvironment(id);
+        });
+
         $('.environment-action-back').on("click", function () {
             postman.envManager.showSelector();
         });
@@ -2970,9 +2968,18 @@ postman.envManager = {
             $('#environment-selector .environment-list-item-selected').html("No environment");
         });
 
+        $('#environment-files-input').on('change', function (event) {
+            var files = event.target.files;
+            postman.envManager.importEnvironments(files);
+        });
+
 
         $('.environments-actions-add').on("click", function () {
             postman.envManager.showEditor();
+        });
+
+        $('.environments-actions-import').on('click', function () {
+            postman.envManager.showImporter();
         });
 
         $('.environments-actions-add-submit').on("click", function () {
@@ -3070,6 +3077,8 @@ postman.envManager = {
     showSelector:function () {
         $('#environments-list-wrapper').css("display", "block");
         $('#environment-editor').css("display", "none");
+        $('#environment-importer').css("display", "none");
+        $('.environments-actions-add-submit').css("display", "inline");
         $('#modalEnvironments .modal-footer').css("display", "none");
     },
 
@@ -3086,8 +3095,14 @@ postman.envManager = {
 
         $('#environments-list-wrapper').css("display", "none");
         $('#environment-editor').css("display", "block");
+        $('#modalEnvironments .modal-footer').css("display", "block");
+    },
 
-
+    showImporter: function() {
+        $('#environments-list-wrapper').css("display", "none");
+        $('#environment-editor').css("display", "none");
+        $('#environment-importer').css("display", "block");
+        $('.environments-actions-add-submit').css("display", "none");
         $('#modalEnvironments .modal-footer').css("display", "block");
     },
 
@@ -3129,6 +3144,46 @@ postman.envManager = {
             postman.envManager.getAllEnvironments();
             postman.envManager.showSelector();
         });
+    },
+
+    downloadEnvironment: function(id) {
+        var env = postman.envManager.getEnvironmentFromId(id);
+        var name = env.name + "-environment.json";
+        var type = "application/json";
+        var filedata = JSON.stringify(env);
+        postman.filesystem.saveAndOpenFile(name, filedata, type, function () {
+        });
+    },
+
+    importEnvironments: function(files) {
+        // Loop through the FileList
+        var f;
+        for (var i = 0, f; f = files[i]; i++) {
+            var reader = new FileReader();
+
+            // Closure to capture the file information.
+            reader.onload = (function (theFile) {
+                return function (e) {
+                    // Render thumbnail.
+                    var data = e.currentTarget.result;
+                    var environment = JSON.parse(data);
+
+                    postman.indexedDB.environments.addEnvironment(environment, function () {
+                        //Add confirmation
+                        var o = {
+                            name: environment.name,
+                            action: 'added'
+                        };
+
+                        $("#messageEnvironmentAdded").tmpl([o]).appendTo('#environment-importer-confirmations');
+                        postman.envManager.getAllEnvironments();
+                    });
+                };
+            })(f);
+
+            // Read in the image file as a data URL.
+            reader.readAsText(f);
+        }
     }
 
 };

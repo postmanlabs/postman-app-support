@@ -557,6 +557,12 @@
 
             <div id="environment-keyvaleditor"></div>
         </div>
+        <div id="environment-importer">
+            <p>Select environment files from your desktop</p>
+            <div id="environment-importer-confirmations"></div>
+            <input type="file" id="environment-files-input"
+                   name="files[]" multiple/>
+        </div>
     </div>
     <div class="modal-footer">
         <a href="javascript:void(0);" class="btn btn-primary environments-actions-add-submit">Submit</a>
@@ -743,6 +749,13 @@
         The collection ${name} has been ${action}.
     </div>
 </script>
+<script id="messageEnvironmentAdded" type="text/x-jquery-tmpl">
+    <div class="alert alert-block">
+        <a class="close" data-dismiss="alert">×</a>
+        <h4 class="alert-heading">It worked!</h4>
+        The environment ${name} has been ${action}.
+    </div>
+</script>
 <script id="itemEnvironmentList" type="text/x-jquery-tmpl">
     <tr>
         <td>
@@ -753,7 +766,7 @@
                rel="tooltip" data-original-title="Download environment"
                class="environment-action-download" data-id="${id}">
                 <img src="img/glyphicons_181_download_alt.png" style="vertical-align: middle; width: 20px; height: 20px;"/></a>
-            <a rel="tooltip" data-original-title="Delete environment"
+            <a href="javascript:void(0);"
                data-name="${name}"
                class="environment-action-delete" data-id="${id}">
                 <img src="img/delete.png" style="vertical-align: middle; width: 20px; height: 20px;"/></a>
@@ -899,6 +912,7 @@
 <script type="text/javascript" src="codemirror/mode/xml/xml.js"></script>
 <script type="text/javascript" src="codemirror/mode/htmlmixed/htmlmixed.js"></script>
 <script type="text/javascript" src="js/codemirror.overlayParser.js"></script>
+<script type="text/javascript" src="js/vkbeautify.js"></script>
 <script type="text/javascript" src="js/jquery.keyvalueeditor.js"></script>
 <script type="text/javascript" src="js/jquery.tmpl.min.js"></script>
 <script type="text/javascript" src="js/jquery.hotkeys.js"></script>
