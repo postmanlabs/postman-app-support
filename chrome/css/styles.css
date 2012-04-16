@@ -45,7 +45,7 @@ html, body {
 }
 
 #requestMethodSelector {
-    width: 90px;
+    width: 100px;
 }
 
 header {
@@ -260,7 +260,7 @@ fieldset {
 #mainNavigation ul li {
     float: left;
     list-style: none;
-    margin-right: 3px;
+    margin-right: 0;
 }
 
 #sidebarContainer {
@@ -605,6 +605,7 @@ li .right {
     z-index: 50;
     text-align: center;
     padding: 5px 0 5px 0;
+    cursor: pointer;
 }
 
 #sidebarFooter:hover {
@@ -613,6 +614,10 @@ li .right {
 
 #sidebarFooter a {
     color: white;
+}
+
+#sidebarFooter a:hover {
+    text-decoration: none;
 }
 
 #sidebarFiller {
@@ -822,6 +827,8 @@ li .right {
 
 .request-actions img {
     opacity: 0.5;
+    width: 18px;
+    height: 18px;
 }
 
 .request-actions img:hover {
@@ -914,6 +921,14 @@ li .right {
     position: absolute;
     margin-left: 200px;
     margin-top: 5px;
+}
+
+.sectionOptions img {
+    opacity: 0.5;
+}
+
+.sectionOptions img:hover {
+    opacity: 1;
 }
 
 #historyOptions {
