@@ -2191,6 +2191,11 @@ postman.layout = {
     },
 
     initialize:function () {
+	$('#sidebarFooter').on("click", function() {
+	    $('#modalSpreadTheWord').modal('show');
+            postman.layout.attachSocialButtons();
+	});
+
         $('#responseBodyToggle').on("click", function () {
             postman.currentRequest.response.toggleBodySize();
         });

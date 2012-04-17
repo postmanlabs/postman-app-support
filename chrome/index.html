@@ -49,12 +49,20 @@
 <div id="sidebar">
     <div id="header" class="clearfix">
         <div id="logo">
-            <img src="img/logo-grey.png" alt="POSTMAN" height="15px" width="100px"/>
+	  <a href="https://chrome.google.com/webstore/detail/fdmmgilgnpjigdojojpjoooidkmcomcm"
+	     target="_blank">
+            <img src="img/logo-grey.png" alt="POSTMAN" height="15px"
+            width="100px"/>
+	  </a>
         </div>
         <div id="mainNavigation">
             <ul>
                 <li>
-                    <a href="http://www.twitter.com/postmanclient">
+                    <a href="http://www.twitter.com/postmanclient"
+		       rel="tooltip" target="_blank"
+		       data-original-title="Get Postman updates and
+		       API tips"
+		       data-placement="bottom">
                         <img src="img/twitter-icon.png"/>
                     </a>
                 </li>
@@ -63,7 +71,9 @@
     </div>
     <div id="sidebarContainer" class="clearfix">
         <div id="historyOptions" class="sectionOptions">
-            <a href="javascript:void(0);" class="history-actions-delete" rel="tooltip"
+            <a href="javascript:void(0);"
+		       class="history-actions-delete" rel="tooltip"
+	       data-placement="bottom"
                data-original-title="Clear history">
                 <img src="img/trash-empty.png" style="width:24px; height:24px; vertical-align: middle;"/>
             </a>
@@ -72,11 +82,13 @@
             <a href="#formModalNewCollection" rel="tooltip" data-original-title="Add new collection"
                data-toggle="modal"
                data-backdrop="static"
+	       data-placement="bottom"
                data-keyboard="true"><img src="img/glyphicons_145_folder_plus.png"
                                          style="width:20px; height:20px; vertical-align: middle;"/></a>
             <a href="#modalImportCollection" rel="tooltip" data-original-title="Import collection"
                data-toggle="modal"
                data-backdrop="static"
+	       data-placement="bottom"
                data-keyboard="true"><img src="img/glyphicons_134_inbox_in.png"
                                          style="width:20px; height:20px; vertical-align: middle;"/></a>
         </div>
@@ -407,16 +419,14 @@
 <div id="formModalNewCollection" class="modal fade">
     <div class="modal-header">
         <a href="#" class="close" data-dismiss="modal">×</a>
-
         <h3>Create a new collection</h3>
     </div>
     <div class="modal-body">
         <form class="form form-horizontal" id="formNewCollection">
             <div class="control-group" id="newCollectionContainer">
                 <label class="control-label">Collection name</label>
-
                 <div class="controls">
-                    <input type="text" class="medium" name="newCollectionBlank" id="newCollectionBlank"/>
+                    <input type="text" class="medium cleanInput" name="newCollectionBlank" id="newCollectionBlank"/>
                 </div>
             </div>
         </form>
@@ -528,7 +538,7 @@
         </form>
     </div>
     <div class="modal-footer">
-        <a href="javascript:void(0);" class="btn btn-primary">Done</a>
+        <a href="javascript:void(0);" class="btn btn-primary"></a>
         <a href="javascript:void(0);" data-dismiss="modal" class="btn btn-secondary">Cancel</a>
     </div>
 </div>
@@ -548,10 +558,6 @@
             <input type="file" id="collection-files-input"
                    name="files[]" multiple/>
         </div>
-    </div>
-
-    <div class="modal-footer">
-        <a href="javascript:void(0);" data-dismiss="modal" class="btn btn-primary">Close</a>
     </div>
 </div>
 <div id="modalDeleteCollection" class="modal fade">
@@ -658,9 +664,6 @@
                 </div>
             </div>
         </form>
-    </div>
-    <div class="modal-footer">
-        <a href="javascript:void(0);" data-dismiss="modal" class="btn btn-primary">Close</a>
     </div>
 </div>
 <div id="modalResponseError" class="modal fade">
@@ -822,11 +825,14 @@
         </td>
         <td style="width: 50px;">
             <a href="javascript:void(0);"
-               rel="tooltip" data-original-title="Download environment"
+               rel="tooltip" data-original-title="Download
+						  environment"
+	       data-placement="bottom"
                class="environment-action-download" data-id="${id}">
                 <img src="img/glyphicons_181_download_alt.png" style="vertical-align: middle; width: 20px; height: 20px;"/></a>
             <a href="javascript:void(0);"
                data-name="${name}"
+	       rel="tooltip" data-original-title="Delete environment" data-placement="bottom"
                class="environment-action-delete" data-id="${id}">
                 <img src="img/delete.png" style="vertical-align: middle; width: 20px; height: 20px;"/></a>
         </td>
@@ -859,15 +865,18 @@
         <div class="sidebar-collection-head">
             <div class="collection-head-actions">
                 <a href="javascript:void(0);"
+		   data-placement="bottom"
                    rel="tooltip" data-original-title="Edit collection"
                    class="collection-actions-edit" data-id="${id}" data-name="${name}">
                     <img src="img/glyphicons_151_edit.png" style="vertical-align: middle;"/></a>
                 <a href="javascript:void(0);"
+		   data-placement="bottom"
                    rel="tooltip" data-original-title="Download collection"
                    class="collection-actions-download" data-id="${id}">
                     <img src="img/glyphicons_181_download_alt.png" style="vertical-align: middle;"/></a>
                 <a rel="tooltip" data-original-title="Delete collection"
                    data-name="${name}"
+		   data-placement="bottom"
                    href="#modalDeleteCollection" data-toggle="modal"
                    class="collection-actions-delete" data-id="${id}">
                     <img src="img/delete.png" style="vertical-align: middle;"/></a>
