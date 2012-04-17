@@ -597,11 +597,14 @@ li .right {
 
 #sidebarFooter {
     background-color: #000;
+    color: #fff;
+    font-size: 11px;
+    font-weight: bold;
     position: fixed;
     bottom: 0;
     width: 350px;
     height: 20px;
-    opacity: 0.5;
+    opacity: 0.8;
     z-index: 50;
     text-align: center;
     padding: 5px 0 5px 0;

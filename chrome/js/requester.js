@@ -3021,6 +3021,7 @@ postman.envManager = {
 
         $('#environments-list').on("click", ".environment-action-delete", function () {
             var id = $(this).attr('data-id');
+            $('a[rel="tooltip"]').tooltip('hide');
             postman.envManager.deleteEnvironment(id);
         });
 
