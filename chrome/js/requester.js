@@ -1511,7 +1511,6 @@ postman.currentRequest = {
         }
 
         $('#submitRequest').button("loading");
-
         this.response.clear();
     }
 };
