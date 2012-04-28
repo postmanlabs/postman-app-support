@@ -260,7 +260,14 @@ fieldset {
 #mainNavigation ul li {
     float: left;
     list-style: none;
+    margin-left: 5px;
     margin-right: 0;
+}
+
+#mainNavigation ul li img {
+    width: 20px;
+    height: 20px;
+    opacity: 0.3;
 }
 
 #sidebarContainer {
