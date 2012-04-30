@@ -3143,6 +3143,14 @@ postman.envManager = {
       finalString = finalString.replace(patString, values[i].value);
     }
 
+    var globals = postman.envManager.globals;
+    var count = globals.length;
+    for(i = 0; i < count; i++) {
+      var patString = "{{" + globals[i].key + "}}";
+      var pattern = new RegExp(patString, 'g');
+      finalString = finalString.replace(patString, globals[i].value);
+    }
+
     return finalString;
   },
 
