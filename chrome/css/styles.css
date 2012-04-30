@@ -1087,7 +1087,8 @@ li .right {
     font-size: 11px;
 }
 
-#environment-importer {
+#environment-importer,
+#globals-editor {
     display: none;
 }
 

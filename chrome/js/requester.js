@@ -3014,10 +3014,12 @@ postman.indexedDB = {
 postman.envManager = {
   environments:[],
 
+  globals: {},
   selectedEnv:null,
   selectedEnvironmentId:"",
 
   init:function () {
+    postman.envManager.initGlobals();
     $('#itemEnvironmentList').tmpl(this.environments).appendTo('#environments-list');
 
     $('#environments-list').on("click", ".environment-action-delete", function () {
@@ -3070,6 +3072,10 @@ postman.envManager = {
       postman.envManager.showImporter();
     });
 
+    $('.environments-actions-manage-globals').on('click', function () {
+      postman.envManager.showGlobals();
+    });
+
     $('.environments-actions-add-submit').on("click", function () {
       var id = $('#environment-editor-id').val();
       if (id === "0") {
@@ -3085,6 +3091,7 @@ postman.envManager = {
     });
 
     $('.environments-actions-add-back').on("click", function () {
+      postman.envManager.saveGlobals();
       postman.envManager.showSelector();
       $('#environment-editor-name').val("");
       $('#environment-keyvaleditor').keyvalueeditor('reset', []);
@@ -3109,6 +3116,8 @@ postman.envManager = {
     };
 
     $('#environment-keyvaleditor').keyvalueeditor('init', params);
+    $('#globals-keyvaleditor').keyvalueeditor('init', params);
+    $('#globals-keyvaleditor').keyvalueeditor('reset', postman.envManager.globals);
   },
 
   getEnvironmentFromId:function (id) {
@@ -3180,10 +3189,22 @@ postman.envManager = {
     })
   },
 
+  initGlobals: function() {
+    var globalsString = localStorage['globals'];
+    postman.envManager.globals = JSON.parse(globalsString);
+  },
+
+  saveGlobals: function() {
+    var globals = $('#globals-keyvaleditor').keyvalueeditor('getValues');   
+    postman.envManager.globals = globals;
+    localStorage['globals'] = JSON.stringify(globals);
+  },
+
   showSelector:function () {
     $('#environments-list-wrapper').css("display", "block");
     $('#environment-editor').css("display", "none");
     $('#environment-importer').css("display", "none");
+    $('#globals-editor').css("display", "none");
     $('.environments-actions-add-submit').css("display", "inline");
     $('#modalEnvironments .modal-footer').css("display", "none");
   },
@@ -3201,13 +3222,24 @@ postman.envManager = {
 
     $('#environments-list-wrapper').css("display", "none");
     $('#environment-editor').css("display", "block");
+    $('#globals-editor').css("display", "none");
     $('#modalEnvironments .modal-footer').css("display", "block");
   },
 
   showImporter: function() {
     $('#environments-list-wrapper').css("display", "none");
     $('#environment-editor').css("display", "none");
+    $('#globals-editor').css("display", "none");
     $('#environment-importer').css("display", "block");
+    $('.environments-actions-add-submit').css("display", "none");
+    $('#modalEnvironments .modal-footer').css("display", "block");
+  },
+
+  showGlobals: function() {
+    $('#environments-list-wrapper').css("display", "none");
+    $('#environment-editor').css("display", "none");
+    $('#globals-editor').css("display", "block");
+    $('#environment-importer').css("display", "none");
     $('.environments-actions-add-submit').css("display", "none");
     $('#modalEnvironments .modal-footer').css("display", "block");
   },
