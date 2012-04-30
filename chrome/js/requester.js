@@ -2300,10 +2300,7 @@ postman.layout = {
           postman.collections.getAllRequestsInCollection(req.collectionId);
           $('#formModalEditCollectionRequest').modal('hide');
         });
-
       });
-
-
     });
 
     $(window).resize(function () {
@@ -2342,14 +2339,6 @@ postman.layout = {
     });
 
     this.setLayout();
-  },
-
-  addHeaderAutoComplete:function () {
-    $("#headers-ParamsFields .key").autocomplete({
-      source:chromeHeaders,
-      delay:50
-    });
-
   },
 
   attachSocialButtons:function () {
