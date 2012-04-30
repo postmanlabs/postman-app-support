@@ -1527,7 +1527,7 @@ postman.helpers = {
     $('.requestHelper-submit').on("click", function () {
       var type = $(this).attr('data-type');
       $('#requestHelpers').css("display", "none");
-      postman.helpers.processRequestHelper();
+      postman.helpers.processRequestHelper(type);
     });
 
     
@@ -1571,6 +1571,10 @@ postman.helpers = {
 
       var username = $('#requestHelper-basicAuth-username').val();
       var password = $('#requestHelper-basicAuth-password').val();
+      
+      username = postman.envManager.convertString(username);
+      password = postman.envManager.convertString(password);     
+
       var rawString = username + ":" + password;
       var encodedString = "Basic " + btoa(rawString);
 
@@ -1612,7 +1616,9 @@ postman.helpers = {
       //all the fields defined by oauth
       $('input.signatureParam').each(function () {
         if ($(this).val() != '') {
-          message.parameters.push([$(this).attr('key'), $(this).val()]);
+          var val = $(this).val();
+          val = postman.envManager.convertString(val);
+          message.parameters.push([$(this).attr('key'), val]);
         }
       });
 
@@ -1625,6 +1631,7 @@ postman.helpers = {
       for (var i = 0; i < params.length; i++) {
         var param = params[i];
         if (param.key) {
+          param.value = postman.envManager.convertString(param.value);
           message.parameters.push([param.key, param.value]);
         }
       }
@@ -1632,9 +1639,11 @@ postman.helpers = {
       var accessor = {};
       if ($('input[key="oauth_consumer_secret"]').val() != '') {
         accessor.consumerSecret = $('input[key="oauth_consumer_secret"]').val();
+        accessor.consumerSecret = postman.envManager.convertString(accessor.consumerSecret);
       }
       if ($('input[key="oauth_token_secret"]').val() != '') {
         accessor.tokenSecret = $('input[key="oauth_token_secret"]').val();
+        accessor.tokenSecret = postman.envManager.convertString(accessor.tokenSecret);
       }
 
       return OAuth.SignatureMethod.sign(message, accessor);
@@ -1653,7 +1662,9 @@ postman.helpers = {
 
       $('input.signatureParam').each(function () {
         if ($(this).val() != '') {
-          params.push({key:$(this).attr('key'), value:$(this).val()});
+          var val = $(this).val();
+          val = postman.envManager.convertString(val);
+          params.push({key:$(this).attr('key'), value:val});
         }
       });
 
@@ -3092,7 +3103,6 @@ postman.envManager = {
 
     $('#environments-list-help-toggle').on("click", function() {
       var d = $('#environments-list-help-detail').css("display");
-      console.log(d);
       if(d === "none") {
         $('#environments-list-help-detail').css("display", "inline");
         $(this).html("Hide");
@@ -3136,6 +3146,25 @@ postman.envManager = {
     }
 
     return finalString;
+  },
+
+  convertString: function(string) {
+    var environment = postman.envManager.selectedEnv;
+    var envValues = [];
+    var isEnvironmentAvailable = false;
+
+    if (environment !== null) {
+      isEnvironmentAvailable = true;
+      envValues = environment.values;
+    }
+
+    if (isEnvironmentAvailable === true) {
+      return postman.envManager.processString(string, envValues);
+    }  
+    else {
+      return string;      
+    }
+
   },
 
   getAllEnvironments:function () {
