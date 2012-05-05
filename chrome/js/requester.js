@@ -2097,6 +2097,8 @@ postman.collections = {
     postman.indexedDB.getCollectionRequest(collectionRequest.id, function(req) {
       collectionRequest.name = req.name;
       collectionRequest.description = req.description;
+      collectionRequest.collectionId = req.collectionId;
+
       postman.indexedDB.updateCollectionRequest(collectionRequest, function(request) {
         postman.collections.getAllRequestsInCollection(collectionRequest.collectionId);
       });
@@ -3068,6 +3070,35 @@ postman.envManager = {
   selectedEnv:null,
   selectedEnvironmentId:"",
 
+  quicklook: {
+    init: function() {
+      postman.envManager.quicklook.refreshEnvironment(postman.envManager.selectedEnv);
+      postman.envManager.quicklook.refreshGlobals(postman.envManager.globals);
+    },
+
+    removeEnvironmentData: function() {
+      $('#environment-quicklook-environments h6').html("No environment");
+      $('#environment-quicklook-environments ul').html("");
+    },
+
+    refreshEnvironment: function(environment) {
+      if(!environment) {
+        return;
+      }
+      $('#environment-quicklook-environments h6').html(environment.name);
+      $('#environment-quicklook-environments ul').html("");
+      $('#environment-quicklook-item').tmpl(environment.values).appendTo('#environment-quicklook-environments ul');
+    },
+
+    refreshGlobals: function(globals) {
+      if(!globals) {
+        return;
+      }
+
+      $('#environment-quicklook-globals ul').html("");
+      $('#environment-quicklook-item').tmpl(globals).appendTo('#environment-quicklook-globals ul');
+    }
+  },
   init:function () {
     postman.envManager.initGlobals();
     $('#itemEnvironmentList').tmpl(this.environments).appendTo('#environments-list');
@@ -3098,6 +3129,7 @@ postman.envManager = {
       postman.envManager.selectedEnv = selectedEnv;
       postman.settings.selectedEnvironmentId = selectedEnv.id;
       localStorage['selectedEnvironmentId'] = selectedEnv.id;
+      postman.envManager.quicklook.refreshEnvironment(selectedEnv);
       $('#environment-selector .environment-list-item-selected').html(selectedEnv.name);
     });
 
@@ -3105,7 +3137,16 @@ postman.envManager = {
       postman.envManager.selectedEnv = null;
       postman.settings.selectedEnvironmentId = "";
       localStorage['selectedEnvironmentId'] = "";
+      postman.envManager.quicklook.removeEnvironmentData();
       $('#environment-selector .environment-list-item-selected').html("No environment");
+    });
+
+    $('#environment-quicklook').on("mouseenter", function() {
+      $('#environment-quicklook-content').css("display", "block");
+    });
+
+    $('#environment-quicklook').on("mouseleave", function() {
+      $('#environment-quicklook-content').css("display", "none");
     });
 
     $('#environment-files-input').on('change', function (event) {
@@ -3168,6 +3209,7 @@ postman.envManager = {
     $('#environment-keyvaleditor').keyvalueeditor('init', params);
     $('#globals-keyvaleditor').keyvalueeditor('init', params);
     $('#globals-keyvaleditor').keyvalueeditor('reset', postman.envManager.globals);
+    postman.envManager.quicklook.init();
   },
 
   getEnvironmentFromId:function (id) {
@@ -3238,6 +3280,7 @@ postman.envManager = {
       var selectedEnv = postman.envManager.getEnvironmentFromId(selectedEnvId);
       if (selectedEnv) {
         postman.envManager.selectedEnv = selectedEnv;
+        postman.envManager.quicklook.refreshEnvironment(selectedEnv);
         $('#environment-selector .environment-list-item-selected').html(selectedEnv.name);
       }
       else {
@@ -3255,6 +3298,7 @@ postman.envManager = {
   saveGlobals: function() {
     var globals = $('#globals-keyvaleditor').keyvalueeditor('getValues');   
     postman.envManager.globals = globals;
+    postman.envManager.quicklook.refreshGlobals(globals);
     localStorage['globals'] = JSON.stringify(globals);
   },
 

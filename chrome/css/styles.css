@@ -1083,11 +1083,69 @@ li .right {
     text-decoration: none;
 }
 
+#environment-quicklook-wrapper {
+    float: left;
+    margin-top: 2px;
+}
+
+#environment-quicklook-content {
+    background: white;
+    border: solid thin #ccc;
+    border-radius: 5px;
+    display: none;
+    position: absolute;
+    min-width: 350px;
+    min-height: 40px;
+    margin-top: 30px;
+    padding: 10px;
+    z-index: 10;
+}
+
+#environment-quicklook-environments {
+    float: left;
+    width: 150px;
+}
+
+#environment-quicklook-content ul {
+    margin: 0;
+    padding: 0;
+}
+
+#environment-quicklook-content .key {
+    font-weight: bold;
+}
+
+#environment-quicklook-content li {
+    list-style: none;
+}
+
+#environment-quicklook-globals {
+    float: left;
+    border-left: solid thin #ccc;
+    margin-left: 10px;
+    padding-left: 10px;
+    width: 150px;
+}
+
+#environment-quicklook img {
+    opacity: 0.5;
+    width: 20px;
+}
+
+#environment-quicklook img:hover {
+    opacity: 1;
+}
+
 #environment-selector-wrapper {
     position: absolute;
     margin-top: 8px;
     margin-left: 230px;
     font-size: 11px;
+}
+
+#environment-selector {
+    float: left;
+    margin-left: 10px;
 }
 
 #environment-importer,

@@ -125,6 +125,22 @@
               <li data-id="oAuth1">OAuth 1.0</li>
             </ul>
             <div id="environment-selector-wrapper">
+              <div id="environment-quicklook-wrapper">
+                <a href="javascript:void(0);"
+                   id="environment-quicklook">
+                  <img src="img/eye.png"/>
+                </a>
+              </div>
+              <div id="environment-quicklook-content" class="clearfix">
+                <div id="environment-quicklook-environments">
+                  <h6>No environment</h6>
+                  <ul></ul>
+                </div>
+                <div id="environment-quicklook-globals">
+                  <h6>Globals</h6>
+                  <ul></ul>
+                </div>
+              </div>
               <div id="environment-selector">
                 <div class="btn-group">
                   <a data-toggle="dropdown" href="javascript:void(0);">
@@ -808,6 +824,12 @@
       </div>
     </div>
     <!--- jQuery Templates -->
+    <script id="environment-quicklook-item" type="text/x-jquery-tmpl">
+      <li>
+        <span class="key">${key}</span> →
+        <span class="value">${value}</span>
+      </li>
+    </script>
     <script id="messageNoHistoryTmpl" type="text/x-jquery-tmpl">
       <div id="messageNoHistory">
         Nothing in your history yet. You can automatically save and access your sent requests here.
