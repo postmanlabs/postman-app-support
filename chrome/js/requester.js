@@ -1130,6 +1130,15 @@ postman.currentRequest = {
 
       $('#responsePrint').css("display", "block");
       $('#respHeaders').css("display", "none");
+    },
+
+    openInNewWindow: function(data) {
+      console.log("Open response in new window");
+      var name = "response.html";
+      var type = "text/html";
+      var filedata = data;
+      postman.filesystem.saveAndOpenFile(name, filedata, type, function () {
+      });
     }
 
   },
@@ -2247,6 +2256,11 @@ postman.layout = {
     $('#responseBodyLineWrapping').on("click", function () {
       postman.editor.toggleLineWrapping();
       return true;
+    });
+
+    $('#responseOpenInNewWindow').on("click", function() {
+      var data = postman.currentRequest.response.text;
+      postman.currentRequest.response.openInNewWindow(data);
     });
 
 
