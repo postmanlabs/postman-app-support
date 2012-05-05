@@ -462,6 +462,8 @@ postman.currentRequest = {
   headers:[],
   method:"get",
   dataMode:"params",
+  isFromCollection: false,
+  collectionRequestId: "",
   methodsWithBody:["post", "put", "patch", "delete"],
   areListenersAdded:false,
   startTime:0,
@@ -1149,8 +1151,10 @@ postman.currentRequest = {
     this.dataMode = "params";
 
     this.refreshLayout();
+    $('#url-keyvaleditor').keyvalueeditor('reset');
     $('#headers-keyvaleditor').keyvalueeditor('reset');
     $('#formdata-keyvaleditor').keyvalueeditor('reset');
+    $('#updateRequestInCollection').css("display", "none");
     $('#url').val();
     $('#url').focus();
     this.response.clear();
@@ -1170,6 +1174,7 @@ postman.currentRequest = {
     $('#submitRequest').button("reset");
     $('#dataModeSelector a').removeClass("active");
     $('#dataModeSelector a[data-mode="' + this.dataMode + '"]').addClass("active");
+
     if (this.isMethodWithBody(this.method)) {
       $("#data").css("display", "block");
       var mode = this.dataMode;
@@ -1293,12 +1298,18 @@ postman.currentRequest = {
     }
   },
 
-  loadRequestInEditor:function (request) {
+  loadRequestInEditor:function (request, isFromCollection) {
     postman.helpers.showRequestHelper("normal");
     this.url = request.url;
     this.body.data = request.body;
     this.method = request.method;
 
+    if(isFromCollection) {
+      $('#updateRequestInCollection').css("display", "block");
+    }
+    else {
+      $('#updateRequestInCollection').css("display", "none");
+    }
     if (typeof request.headers !== "undefined") {
       this.headers = this.unpackHeaders(request.headers);
     }
@@ -2020,7 +2031,9 @@ postman.collections = {
 
   getCollectionRequest:function (id) {
     postman.indexedDB.getCollectionRequest(id, function (request) {
-      postman.currentRequest.loadRequestInEditor(request);
+      postman.currentRequest.isFromCollection = true;
+      postman.currentRequest.collectionRequestId = id;
+      postman.currentRequest.loadRequestInEditor(request, true);
     });
   },
 
@@ -2037,8 +2050,6 @@ postman.collections = {
         postman.layout.refreshScrollPanes();
       });
     }
-
-
   },
 
   addCollection:function () {
@@ -2061,6 +2072,27 @@ postman.collections = {
     }
 
     $('#formModalNewCollection').modal('hide');
+  },
+
+  updateCollectionFromCurrentRequest: function() {
+    var url = $('#url').val();
+    var collectionRequest = new CollectionRequest();
+    collectionRequest.id = postman.currentRequest.collectionRequestId;
+    collectionRequest.headers = postman.currentRequest.getPackedHeaders();
+    collectionRequest.url = url;
+    collectionRequest.method = postman.currentRequest.method;
+    collectionRequest.data = $('#body').val();
+    collectionRequest.dataMode = postman.currentRequest.dataMode;
+    collectionRequest.time = new Date().getTime();
+
+    postman.indexedDB.getCollectionRequest(collectionRequest.id, function(req) {
+      collectionRequest.name = req.name;
+      collectionRequest.description = req.description;
+      postman.indexedDB.updateCollectionRequest(collectionRequest, function(request) {
+        postman.collections.getAllRequestsInCollection(collectionRequest.collectionId);
+      });
+    });
+
   },
 
   addRequestToCollection:function () {
@@ -2235,6 +2267,10 @@ postman.layout = {
 
     $("#submitRequest").on("click", function () {
       postman.currentRequest.send();
+    });
+
+    $("#updateRequestInCollection").on("click", function() {
+      postman.collections.updateCollectionFromCurrentRequest();
     });
 
     $("#requestActionsReset").on("click", function () {

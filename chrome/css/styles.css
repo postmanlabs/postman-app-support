@@ -706,7 +706,7 @@ li .right {
 }
 
 #requestActions {
-    width: 550px;
+    width: 480px;
 }
 
 #requestActionsMain {
@@ -715,7 +715,10 @@ li .right {
 
 #requestActionsSecondary {
     float: right;
-    margin-right: 120px;
+}
+
+#updateRequestInCollection {
+    display: none;
 }
 
 #requestActionsOptions {
