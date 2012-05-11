@@ -1,21 +1,21 @@
 /*
- Licensed to the Apache Software Foundation (ASF) under one
- or more contributor license agreements.  See the NOTICE file
- distributed with this work for additional information
- regarding copyright ownership.  The ASF licenses this file
- to you under the Apache License, Version 2.0 (the
- "License"); you may not use this file except in compliance
- with the License.  You may obtain a copy of the License at
+  Licensed to the Apache Software Foundation (ASF) under one
+  or more contributor license agreements.  See the NOTICE file
+  distributed with this work for additional information
+  regarding copyright ownership.  The ASF licenses this file
+  to you under the Apache License, Version 2.0 (the
+  "License"); you may not use this file except in compliance
+  with the License.  You may obtain a copy of the License at
 
- http://www.apache.org/licenses/LICENSE-2.0
+  http://www.apache.org/licenses/LICENSE-2.0
 
- Unless required by applicable law or agreed to in writing,
- software distributed under the License is distributed on an
- "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- KIND, either express or implied.  See the License for the
- specific language governing permissions and limitations
- under the License.
- */
+  Unless required by applicable law or agreed to in writing,
+  software distributed under the License is distributed on an
+  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  KIND, either express or implied.  See the License for the
+  specific language governing permissions and limitations
+  under the License.
+*/
 "use strict";
 function Collection() {
     this.id = "";
@@ -57,8 +57,8 @@ postman.fs = {};
 
 // IndexedDB implementations still use API prefixes
 var indexedDB = window.indexedDB || // Use the standard DB API
-    window.mozIndexedDB || // Or Firefox's early version of it
-    window.webkitIndexedDB;            // Or Chrome's early version
+window.mozIndexedDB || // Or Firefox's early version of it
+window.webkitIndexedDB;            // Or Chrome's early version
 // Firefox does not prefix these two:
 var IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction;
 var IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange;
@@ -67,38 +67,38 @@ var IDBCursor = window.IDBCursor || window.webkitIDBCursor;
 window.requestFileSystem = window.requestFileSystem || window.webkitRequestFileSystem;
 
 /*
- Components
+  Components
 
- history - History of sent requests. Can be toggled on and off
- collections - Groups of requests. Can be saved to a file. Saved requests can have a name and description to document
- the request properly.
- settings - Settings Postman behavior
- layout - Manages quite a bit of the interface
- currentRequest - Everything to do with the current request loaded in Postman. Also manages sending, receiving requests
- and processing additional parameters
- urlCache - Needed for the autocomplete functionality
- helpers - Basic and OAuth helper management. More helpers will be added later.
- keymap - Keyboard shortcuts
- envManager - Environments to customize requests using variables.
- filesystem - Loading and saving files from the local filesystem.
- indexedDB - Backend database. Right now Postman uses indexedDB.
+  history - History of sent requests. Can be toggled on and off
+  collections - Groups of requests. Can be saved to a file. Saved requests can have a name and description to document
+  the request properly.
+  settings - Settings Postman behavior
+  layout - Manages quite a bit of the interface
+  currentRequest - Everything to do with the current request loaded in Postman. Also manages sending, receiving requests
+  and processing additional parameters
+  urlCache - Needed for the autocomplete functionality
+  helpers - Basic and OAuth helper management. More helpers will be added later.
+  keymap - Keyboard shortcuts
+  envManager - Environments to customize requests using variables.
+  filesystem - Loading and saving files from the local filesystem.
+  indexedDB - Backend database. Right now Postman uses indexedDB.
 
- Plugins
+  Plugins
 
- keyvaleditor - Used for URL params, headers and POST params.
+  keyvaleditor - Used for URL params, headers and POST params.
 
- Dependencies
+  Dependencies
 
- jQuery
- jQuery UI - AutoComplete plugin
- jQuery HotKeys
- jQuery jScrollPane
- jQuery MouseWheel
- Bootstrap
- CodeMirror
- Underscore
+  jQuery
+  jQuery UI - AutoComplete plugin
+  jQuery HotKeys
+  jQuery jScrollPane
+  jQuery MouseWheel
+  Bootstrap
+  CodeMirror
+  Underscore
 
- */
+*/
 postman.initialize = function () {
     this.history.initialize();
     this.collections.initialize();
@@ -125,24 +125,24 @@ postman.filesystem = {
         var msg = '';
 
         switch (e.code) {
-            case FileError.QUOTA_EXCEEDED_ERR:
-                msg = 'QUOTA_EXCEEDED_ERR';
-                break;
-            case FileError.NOT_FOUND_ERR:
-                msg = 'NOT_FOUND_ERR';
-                break;
-            case FileError.SECURITY_ERR:
-                msg = 'SECURITY_ERR';
-                break;
-            case FileError.INVALID_MODIFICATION_ERR:
-                msg = 'INVALID_MODIFICATION_ERR';
-                break;
-            case FileError.INVALID_STATE_ERR:
-                msg = 'INVALID_STATE_ERR';
-                break;
-            default:
-                msg = 'Unknown Error';
-                break;
+        case FileError.QUOTA_EXCEEDED_ERR:
+            msg = 'QUOTA_EXCEEDED_ERR';
+            break;
+        case FileError.NOT_FOUND_ERR:
+            msg = 'NOT_FOUND_ERR';
+            break;
+        case FileError.SECURITY_ERR:
+            msg = 'SECURITY_ERR';
+            break;
+        case FileError.INVALID_MODIFICATION_ERR:
+            msg = 'INVALID_MODIFICATION_ERR';
+            break;
+        case FileError.INVALID_STATE_ERR:
+            msg = 'INVALID_STATE_ERR';
+            break;
+        default:
+            msg = 'Unknown Error';
+            break;
         }
 
         console.log('Error: ' + msg);
@@ -154,51 +154,51 @@ postman.filesystem = {
 
     removeFileIfExists:function (name, callback) {
         postman.filesystem.fs.root.getFile(name,
-            {create:false}, function (fileEntry) {
-                fileEntry.remove(function () {
-                    callback();
-                }, function () {
-                    callback();
-                });
-            }, function () {
-                callback();
-            });
+                                           {create:false}, function (fileEntry) {
+                                               fileEntry.remove(function () {
+                                                   callback();
+                                               }, function () {
+                                                   callback();
+                                               });
+                                           }, function () {
+                                               callback();
+                                           });
     },
 
     saveAndOpenFile:function (name, data, type, callback) {
         postman.filesystem.removeFileIfExists(name, function () {
             postman.filesystem.fs.root.getFile(name,
-                {create:true},
-                function (fileEntry) {
-                    fileEntry.createWriter(function (fileWriter) {
+                                               {create:true},
+                                               function (fileEntry) {
+                                                   fileEntry.createWriter(function (fileWriter) {
 
-                        fileWriter.onwriteend = function (e) {
-                            var properties = {
-                                url:fileEntry.toURL()
-                            };
+                                                       fileWriter.onwriteend = function (e) {
+                                                           var properties = {
+                                                               url:fileEntry.toURL()
+                                                           };
 
-                            if (typeof chrome !== "undefined") {
-                                chrome.tabs.create(properties, function (tab) {
-                                });
-                            }
+                                                           if (typeof chrome !== "undefined") {
+                                                               chrome.tabs.create(properties, function (tab) {
+                                                               });
+                                                           }
 
-                            callback();
-                        };
+                                                           callback();
+                                                       };
 
-                        fileWriter.onerror = function (e) {
-                            callback();
-                        };
+                                                       fileWriter.onerror = function (e) {
+                                                           callback();
+                                                       };
 
-                        // Create a new Blob and write it to log.txt.
-                        var bb = new window.WebKitBlobBuilder(); // Note: window.WebKitBlobBuilder in Chrome 12.
-                        bb.append(data);
-                        fileWriter.write(bb.getBlob('text/plain'));
+                                                       // Create a new Blob and write it to log.txt.
+                                                       var bb = new window.WebKitBlobBuilder(); // Note: window.WebKitBlobBuilder in Chrome 12.
+                                                       bb.append(data);
+                                                       fileWriter.write(bb.getBlob('text/plain'));
 
-                    }, postman.filesystem.errorHandler);
+                                                   }, postman.filesystem.errorHandler);
 
 
-                }, postman.filesystem.errorHandler
-            );
+                                               }, postman.filesystem.errorHandler
+                                              );
         });
 
     }
@@ -462,6 +462,8 @@ postman.currentRequest = {
     headers:[],
     method:"get",
     dataMode:"params",
+    isFromCollection: false,
+    collectionRequestId: "",
     methodsWithBody:["post", "put", "patch", "delete"],
     areListenersAdded:false,
     startTime:0,
@@ -1055,15 +1057,15 @@ postman.currentRequest = {
             if (!postman.editor.codeMirror || forceCreate) {
                 $('.CodeMirror').remove();
                 postman.editor.codeMirror = CodeMirror.fromTextArea(codeDataArea,
-                    {
-                        mode:renderMode,
-                        lineNumbers:true,
-                        fixedGutter:true,
-                        onGutterClick:foldFunc,
-                        theme:'eclipse',
-                        lineWrapping:lineWrapping,
-                        readOnly:true
-                    });
+                                                                    {
+                                                                        mode:renderMode,
+                                                                        lineNumbers:true,
+                                                                        fixedGutter:true,
+                                                                        onGutterClick:foldFunc,
+                                                                        theme:'eclipse',
+                                                                        lineWrapping:lineWrapping,
+                                                                        readOnly:true
+                                                                    });
 
                 var cm = postman.editor.codeMirror;
                 cm.setValue(response);
@@ -1128,6 +1130,15 @@ postman.currentRequest = {
 
             $('#responsePrint').css("display", "block");
             $('#respHeaders').css("display", "none");
+        },
+
+        openInNewWindow: function(data) {
+            console.log("Open response in new window");
+            var name = "response.html";
+            var type = "text/html";
+            var filedata = data;
+            postman.filesystem.saveAndOpenFile(name, filedata, type, function () {
+            });
         }
 
     },
@@ -1149,8 +1160,10 @@ postman.currentRequest = {
         this.dataMode = "params";
 
         this.refreshLayout();
+        $('#url-keyvaleditor').keyvalueeditor('reset');
         $('#headers-keyvaleditor').keyvalueeditor('reset');
         $('#formdata-keyvaleditor').keyvalueeditor('reset');
+        $('#updateRequestInCollection').css("display", "none");
         $('#url').val();
         $('#url').focus();
         this.response.clear();
@@ -1170,6 +1183,7 @@ postman.currentRequest = {
         $('#submitRequest').button("reset");
         $('#dataModeSelector a').removeClass("active");
         $('#dataModeSelector a[data-mode="' + this.dataMode + '"]').addClass("active");
+
         if (this.isMethodWithBody(this.method)) {
             $("#data").css("display", "block");
             var mode = this.dataMode;
@@ -1229,6 +1243,7 @@ postman.currentRequest = {
     },
 
     getPackedHeaders:function () {
+        console.log (this.headers);
         return this.packHeaders(this.headers);
     },
 
@@ -1274,31 +1289,43 @@ postman.currentRequest = {
             var header;
 
             for (var i = 0; i < hashes.length; i++) {
-                hash = hashes[i].split(":");
-                if (!hash[0]) {
+                hash = hashes[i];
+                if (!hash) {
                     continue;
                 }
+                
+                var loc = hash.search(':');
+                
+                if (loc !== -1) {                    
+                    var name = $.trim (hash.substr (0, loc));
+                    var value = $.trim (hash.substr (loc+1));
+                    header = {
+                        "name":$.trim(name),
+                        "key":$.trim(name),
+                        "value":$.trim(value),
+                        "description":headerDetails[$.trim(name).toLowerCase()]
+                    };
 
-                header = {
-                    "name":$.trim(hash[0]),
-                    "key":$.trim(hash[0]),
-                    "value":$.trim(hash[1]),
-                    "description":headerDetails[$.trim(hash[0]).toLowerCase()]
-                };
-
-                vars.push(header);
+                    vars.push(header);
+                }
             }
 
             return vars;
         }
     },
 
-    loadRequestInEditor:function (request) {
+    loadRequestInEditor:function (request, isFromCollection) {
         postman.helpers.showRequestHelper("normal");
         this.url = request.url;
         this.body.data = request.body;
         this.method = request.method;
 
+        if(isFromCollection) {
+            $('#updateRequestInCollection').css("display", "block");
+        }
+        else {
+            $('#updateRequestInCollection').css("display", "none");
+        }
         if (typeof request.headers !== "undefined") {
             this.headers = this.unpackHeaders(request.headers);
         }
@@ -1529,8 +1556,9 @@ postman.helpers = {
             $('#requestHelpers').css("display", "none");
             postman.helpers.processRequestHelper(type);
         });
-    },
 
+        
+    },
 
     processRequestHelper:function (type) {
         if (type === 'basic') {
@@ -1570,6 +1598,10 @@ postman.helpers = {
 
             var username = $('#requestHelper-basicAuth-username').val();
             var password = $('#requestHelper-basicAuth-password').val();
+            
+            username = postman.envManager.convertString(username);
+            password = postman.envManager.convertString(password);     
+
             var rawString = username + ":" + password;
             var encodedString = "Basic " + btoa(rawString);
 
@@ -1611,7 +1643,9 @@ postman.helpers = {
             //all the fields defined by oauth
             $('input.signatureParam').each(function () {
                 if ($(this).val() != '') {
-                    message.parameters.push([$(this).attr('key'), $(this).val()]);
+                    var val = $(this).val();
+                    val = postman.envManager.convertString(val);
+                    message.parameters.push([$(this).attr('key'), val]);
                 }
             });
 
@@ -1624,6 +1658,7 @@ postman.helpers = {
             for (var i = 0; i < params.length; i++) {
                 var param = params[i];
                 if (param.key) {
+                    param.value = postman.envManager.convertString(param.value);
                     message.parameters.push([param.key, param.value]);
                 }
             }
@@ -1631,9 +1666,11 @@ postman.helpers = {
             var accessor = {};
             if ($('input[key="oauth_consumer_secret"]').val() != '') {
                 accessor.consumerSecret = $('input[key="oauth_consumer_secret"]').val();
+                accessor.consumerSecret = postman.envManager.convertString(accessor.consumerSecret);
             }
             if ($('input[key="oauth_token_secret"]').val() != '') {
                 accessor.tokenSecret = $('input[key="oauth_token_secret"]').val();
+                accessor.tokenSecret = postman.envManager.convertString(accessor.tokenSecret);
             }
 
             return OAuth.SignatureMethod.sign(message, accessor);
@@ -1652,7 +1689,9 @@ postman.helpers = {
 
             $('input.signatureParam').each(function () {
                 if ($(this).val() != '') {
-                    params.push({key:$(this).attr('key'), value:$(this).val()});
+                    var val = $(this).val();
+                    val = postman.envManager.convertString(val);
+                    params.push({key:$(this).attr('key'), value:val});
                 }
             });
 
@@ -2008,7 +2047,9 @@ postman.collections = {
 
     getCollectionRequest:function (id) {
         postman.indexedDB.getCollectionRequest(id, function (request) {
-            postman.currentRequest.loadRequestInEditor(request);
+            postman.currentRequest.isFromCollection = true;
+            postman.currentRequest.collectionRequestId = id;
+            postman.currentRequest.loadRequestInEditor(request, true);
         });
     },
 
@@ -2025,8 +2066,6 @@ postman.collections = {
                 postman.layout.refreshScrollPanes();
             });
         }
-
-
     },
 
     addCollection:function () {
@@ -2049,6 +2088,29 @@ postman.collections = {
         }
 
         $('#formModalNewCollection').modal('hide');
+    },
+
+    updateCollectionFromCurrentRequest: function() {
+        var url = $('#url').val();
+        var collectionRequest = new CollectionRequest();
+        collectionRequest.id = postman.currentRequest.collectionRequestId;
+        collectionRequest.headers = postman.currentRequest.getPackedHeaders();
+        collectionRequest.url = url;
+        collectionRequest.method = postman.currentRequest.method;
+        collectionRequest.data = $('#body').val();
+        collectionRequest.dataMode = postman.currentRequest.dataMode;
+        collectionRequest.time = new Date().getTime();
+
+        postman.indexedDB.getCollectionRequest(collectionRequest.id, function(req) {
+            collectionRequest.name = req.name;
+            collectionRequest.description = req.description;
+            collectionRequest.collectionId = req.collectionId;
+
+            postman.indexedDB.updateCollectionRequest(collectionRequest, function(request) {
+                postman.collections.getAllRequestsInCollection(collectionRequest.collectionId);
+            });
+        });
+
     },
 
     addRequestToCollection:function () {
@@ -2191,10 +2253,10 @@ postman.layout = {
     },
 
     initialize:function () {
-	$('#sidebarFooter').on("click", function() {
-	    $('#modalSpreadTheWord').modal('show');
+        $('#sidebarFooter').on("click", function() {
+            $('#modalSpreadTheWord').modal('show');
             postman.layout.attachSocialButtons();
-	});
+        });
 
         $('#responseBodyToggle').on("click", function () {
             postman.currentRequest.response.toggleBodySize();
@@ -2203,6 +2265,11 @@ postman.layout = {
         $('#responseBodyLineWrapping').on("click", function () {
             postman.editor.toggleLineWrapping();
             return true;
+        });
+
+        $('#responseOpenInNewWindow').on("click", function() {
+            var data = postman.currentRequest.response.text;
+            postman.currentRequest.response.openInNewWindow(data);
         });
 
 
@@ -2223,6 +2290,10 @@ postman.layout = {
 
         $("#submitRequest").on("click", function () {
             postman.currentRequest.send();
+        });
+
+        $("#updateRequestInCollection").on("click", function() {
+            postman.collections.updateCollectionFromCurrentRequest();
         });
 
         $("#requestActionsReset").on("click", function () {
@@ -2288,10 +2359,7 @@ postman.layout = {
                     postman.collections.getAllRequestsInCollection(req.collectionId);
                     $('#formModalEditCollectionRequest').modal('hide');
                 });
-
             });
-
-
         });
 
         $(window).resize(function () {
@@ -2330,14 +2398,6 @@ postman.layout = {
         });
 
         this.setLayout();
-    },
-
-    addHeaderAutoComplete:function () {
-        $("#headers-ParamsFields .key").autocomplete({
-            source:chromeHeaders,
-            delay:50
-        });
-
     },
 
     attachSocialButtons:function () {
@@ -3013,10 +3073,41 @@ postman.indexedDB = {
 postman.envManager = {
     environments:[],
 
+    globals: {},
     selectedEnv:null,
     selectedEnvironmentId:"",
 
+    quicklook: {
+        init: function() {
+            postman.envManager.quicklook.refreshEnvironment(postman.envManager.selectedEnv);
+            postman.envManager.quicklook.refreshGlobals(postman.envManager.globals);
+        },
+
+        removeEnvironmentData: function() {
+            $('#environment-quicklook-environments h6').html("No environment");
+            $('#environment-quicklook-environments ul').html("");
+        },
+
+        refreshEnvironment: function(environment) {
+            if(!environment) {
+                return;
+            }
+            $('#environment-quicklook-environments h6').html(environment.name);
+            $('#environment-quicklook-environments ul').html("");
+            $('#environment-quicklook-item').tmpl(environment.values).appendTo('#environment-quicklook-environments ul');
+        },
+
+        refreshGlobals: function(globals) {
+            if(!globals) {
+                return;
+            }
+
+            $('#environment-quicklook-globals ul').html("");
+            $('#environment-quicklook-item').tmpl(globals).appendTo('#environment-quicklook-globals ul');
+        }
+    },
     init:function () {
+        postman.envManager.initGlobals();
         $('#itemEnvironmentList').tmpl(this.environments).appendTo('#environments-list');
 
         $('#environments-list').on("click", ".environment-action-delete", function () {
@@ -3045,6 +3136,7 @@ postman.envManager = {
             postman.envManager.selectedEnv = selectedEnv;
             postman.settings.selectedEnvironmentId = selectedEnv.id;
             localStorage['selectedEnvironmentId'] = selectedEnv.id;
+            postman.envManager.quicklook.refreshEnvironment(selectedEnv);
             $('#environment-selector .environment-list-item-selected').html(selectedEnv.name);
         });
 
@@ -3052,7 +3144,16 @@ postman.envManager = {
             postman.envManager.selectedEnv = null;
             postman.settings.selectedEnvironmentId = "";
             localStorage['selectedEnvironmentId'] = "";
+            postman.envManager.quicklook.removeEnvironmentData();
             $('#environment-selector .environment-list-item-selected').html("No environment");
+        });
+
+        $('#environment-quicklook').on("mouseenter", function() {
+            $('#environment-quicklook-content').css("display", "block");
+        });
+
+        $('#environment-quicklook').on("mouseleave", function() {
+            $('#environment-quicklook-content').css("display", "none");
         });
 
         $('#environment-files-input').on('change', function (event) {
@@ -3067,6 +3168,10 @@ postman.envManager = {
 
         $('.environments-actions-import').on('click', function () {
             postman.envManager.showImporter();
+        });
+
+        $('.environments-actions-manage-globals').on('click', function () {
+            postman.envManager.showGlobals();
         });
 
         $('.environments-actions-add-submit').on("click", function () {
@@ -3084,6 +3189,7 @@ postman.envManager = {
         });
 
         $('.environments-actions-add-back').on("click", function () {
+            postman.envManager.saveGlobals();
             postman.envManager.showSelector();
             $('#environment-editor-name').val("");
             $('#environment-keyvaleditor').keyvalueeditor('reset', []);
@@ -3091,7 +3197,6 @@ postman.envManager = {
 
         $('#environments-list-help-toggle').on("click", function() {
             var d = $('#environments-list-help-detail').css("display");
-            console.log(d);
             if(d === "none") {
                 $('#environments-list-help-detail').css("display", "inline");
                 $(this).html("Hide");
@@ -3109,6 +3214,9 @@ postman.envManager = {
         };
 
         $('#environment-keyvaleditor').keyvalueeditor('init', params);
+        $('#globals-keyvaleditor').keyvalueeditor('init', params);
+        $('#globals-keyvaleditor').keyvalueeditor('reset', postman.envManager.globals);
+        postman.envManager.quicklook.init();
     },
 
     getEnvironmentFromId:function (id) {
@@ -3134,7 +3242,34 @@ postman.envManager = {
             finalString = finalString.replace(patString, values[i].value);
         }
 
+        var globals = postman.envManager.globals;
+        var count = globals.length;
+        for(i = 0; i < count; i++) {
+            var patString = "{{" + globals[i].key + "}}";
+            var pattern = new RegExp(patString, 'g');
+            finalString = finalString.replace(patString, globals[i].value);
+        }
+
         return finalString;
+    },
+
+    convertString: function(string) {
+        var environment = postman.envManager.selectedEnv;
+        var envValues = [];
+        var isEnvironmentAvailable = false;
+
+        if (environment !== null) {
+            isEnvironmentAvailable = true;
+            envValues = environment.values;
+        }
+
+        if (isEnvironmentAvailable === true) {
+            return postman.envManager.processString(string, envValues);
+        }  
+        else {
+            return string;      
+        }
+
     },
 
     getAllEnvironments:function () {
@@ -3152,6 +3287,7 @@ postman.envManager = {
             var selectedEnv = postman.envManager.getEnvironmentFromId(selectedEnvId);
             if (selectedEnv) {
                 postman.envManager.selectedEnv = selectedEnv;
+                postman.envManager.quicklook.refreshEnvironment(selectedEnv);
                 $('#environment-selector .environment-list-item-selected').html(selectedEnv.name);
             }
             else {
@@ -3161,10 +3297,29 @@ postman.envManager = {
         })
     },
 
+    initGlobals: function() {
+        if('globals' in localStorage) {
+            var globalsString = localStorage['globals'];
+            postman.envManager.globals = JSON.parse(globalsString);
+        }
+        else {
+            postman.envManager.globals = [];
+        }
+
+    },
+
+    saveGlobals: function() {
+        var globals = $('#globals-keyvaleditor').keyvalueeditor('getValues');   
+        postman.envManager.globals = globals;
+        postman.envManager.quicklook.refreshGlobals(globals);
+        localStorage['globals'] = JSON.stringify(globals);
+    },
+
     showSelector:function () {
         $('#environments-list-wrapper').css("display", "block");
         $('#environment-editor').css("display", "none");
         $('#environment-importer').css("display", "none");
+        $('#globals-editor').css("display", "none");
         $('.environments-actions-add-submit').css("display", "inline");
         $('#modalEnvironments .modal-footer').css("display", "none");
     },
@@ -3182,13 +3337,24 @@ postman.envManager = {
 
         $('#environments-list-wrapper').css("display", "none");
         $('#environment-editor').css("display", "block");
+        $('#globals-editor').css("display", "none");
         $('#modalEnvironments .modal-footer').css("display", "block");
     },
 
     showImporter: function() {
         $('#environments-list-wrapper').css("display", "none");
         $('#environment-editor').css("display", "none");
+        $('#globals-editor').css("display", "none");
         $('#environment-importer').css("display", "block");
+        $('.environments-actions-add-submit').css("display", "none");
+        $('#modalEnvironments .modal-footer').css("display", "block");
+    },
+
+    showGlobals: function() {
+        $('#environments-list-wrapper').css("display", "none");
+        $('#environment-editor').css("display", "none");
+        $('#globals-editor').css("display", "block");
+        $('#environment-importer').css("display", "none");
         $('.environments-actions-add-submit').css("display", "none");
         $('#modalEnvironments .modal-footer').css("display", "block");
     },

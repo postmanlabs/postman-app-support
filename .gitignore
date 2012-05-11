@@ -4,3 +4,6 @@ screenshots/
 *.crx
 *.pem
 *.zip
+#*
+.#*
+
