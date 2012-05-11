@@ -1243,6 +1243,7 @@ postman.currentRequest = {
     },
 
     getPackedHeaders:function () {
+        console.log (this.headers);
         return this.packHeaders(this.headers);
     },
 
