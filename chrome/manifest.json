@@ -23,6 +23,5 @@
       "matches": ["http://*/*", "https://*/*"],
       "js": ["js/listener.js"] 
     }
-  ]
-  
+  ]  
 }
