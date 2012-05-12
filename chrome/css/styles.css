@@ -1102,8 +1102,7 @@ li .right {
 }
 
 #environment-quicklook-environments {
-    float: left;
-    width: 150px;
+    width: 100%;
 }
 
 #environment-quicklook-content ul {
@@ -1120,11 +1119,10 @@ li .right {
 }
 
 #environment-quicklook-globals {
-    float: left;
-    border-left: solid thin #ccc;
-    margin-left: 10px;
-    padding-left: 10px;
-    width: 150px;
+    border-top: solid thin #ccc;
+    margin-top: 5px;
+    padding-top: 5px;
+    width: 100%;
 }
 
 #environment-quicklook img {
