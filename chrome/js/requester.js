@@ -572,6 +572,20 @@ postman.currentRequest = {
         openFormDataEditor:function () {
             var containerId = "#formdata-keyvaleditor-container";
             $(containerId).css("display", "block");
+
+            var editorId = "#formdata-keyvaleditor";
+            var params = $(editorId).keyvalueeditor('getValues');
+            var newParams = [];
+            for (var i = 0; i < params.length; i++) {
+                var param = {
+                    key:params[i].key,
+                    value:params[i].value
+                };
+
+                newParams.push(param);
+            }
+
+            postman.currentRequest.setBodyParamString(newParams);
         },
 
         closeFormDataEditor:function () {
@@ -582,6 +596,20 @@ postman.currentRequest = {
         openUrlEncodedEditor:function () {
             var containerId = "#urlencoded-keyvaleditor-container";
             $(containerId).css("display", "block");
+
+            var editorId = "#urlencoded-keyvaleditor";
+            var params = $(editorId).keyvalueeditor('getValues');
+            var newParams = [];
+            for (var i = 0; i < params.length; i++) {
+                var param = {
+                    key:params[i].key,
+                    value:params[i].value
+                };
+
+                newParams.push(param);
+            }
+
+            postman.currentRequest.setBodyParamString(newParams);
         },
 
         closeUrlEncodedEditor:function () {
@@ -1332,7 +1360,6 @@ postman.currentRequest = {
         else {
             this.headers = [];
         }
-
 
         if (typeof request.name !== "undefined") {
             this.name = request.name;
