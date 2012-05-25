@@ -5,7 +5,8 @@ import sys
 log.startLogging(sys.stdout)
  
 class ProxyFactory(http.HTTPFactory):
-    protocol = proxy.Proxy
+    def buildProtocol(self, addr):
+        return proxy.Proxy()
  
 reactor.listenTCP(8080, ProxyFactory())
 reactor.run()
