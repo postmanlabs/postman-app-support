@@ -464,7 +464,7 @@ postman.currentRequest = {
     dataMode:"params",
     isFromCollection: false,
     collectionRequestId: "",
-    methodsWithBody:["post", "put", "patch", "delete"],
+    methodsWithBody:["POST", "PUT", "PATCH", "DELETE"],
     areListenersAdded:false,
     startTime:0,
     endTime:0,
@@ -1467,7 +1467,7 @@ postman.currentRequest = {
         postman.currentRequest.xhr = xhr;
 
         var url = this.url;
-        var method = this.method;
+        var method = this.method.toUpperCase();
         var data = this.body.data;
         var originalData = data;
         var finalBodyData;
