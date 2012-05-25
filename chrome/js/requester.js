@@ -1550,7 +1550,9 @@ postman.helpers = {
       postman.helpers.processRequestHelper(type);
     });
 
-    
+    $('#startoauth2').on("click", function() {
+      postman.helpers.oauth2.process();
+    });
   },
 
   processRequestHelper:function (type) {
@@ -1703,6 +1705,23 @@ postman.helpers = {
 
         postman.currentRequest.setBodyParamString(params);
       }
+    }
+  },
+
+  oauth2: {
+    init: function() {
+      console.log("Initialized OAuth2");
+    },
+    
+    process: function() {
+      var fb_app_id;
+      var fb_app_secret;
+      var redirect_uri = "http://www.teliportme.com/";
+      var authorize_url = 'https://www.facebook.com/dialog/oauth?client_id=';
+      authorize_url += fb_app_id + '&redirect_uri=';
+      authorize_url += redirect_uri + '&scope=email&response_type=token';
+      console.log("Authorize URL", authorize_url);
+      window.open(authorize_url);
     }
   }
 };

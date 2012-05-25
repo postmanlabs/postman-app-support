@@ -123,6 +123,7 @@
               <li class="active" data-id="normal">Normal</li>
               <li data-id="basicAuth">Basic Auth</li>
               <li data-id="oAuth1">OAuth 1.0</li>
+              <li data-id="oAuth2">OAuth 2</li>
             </ul>
             <div id="environment-selector-wrapper">
               <div id="environment-quicklook-wrapper">
@@ -278,6 +279,9 @@
                 when you update the URL parameters.
               </div>
             </div>
+            <div id="requestHelper-oAuth2" class="requestHelpers">
+              <a href="javascript:void(0);" id="startoauth2">Start OAuth2</a>
+            </div>
           </div>
 
           <div id="requestHelp">
@@ -369,7 +373,7 @@
             </div>
             <div id="requestActionsSecondary">
               <button class="btn btn-info"
-                      id="updateRequestInCollection">Update saved request</button>
+                      id="updateRequestInCollection">Update</button>
             </div>
           </div>
         </section>
@@ -673,6 +677,7 @@
           <a href="javascript:void(0);" class="btn environments-actions-add-back">Back</a>
         </div>
       </div>
+    </div>
       <div id="modalSettings" class="modal fade">
         <div class="modal-header">
           <a href="#" class="close" data-dismiss="modal">×</a>
