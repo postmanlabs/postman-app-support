@@ -23,5 +23,6 @@
       "matches": ["http://*/*", "https://*/*"],
       "js": ["js/listener.js"] 
     }
-  ]  
+  ],
+  "offline_enabled": true
 }
