@@ -1346,7 +1346,7 @@ postman.currentRequest = {
         postman.helpers.showRequestHelper("normal");
         this.url = request.url;
         this.body.data = request.body;
-        this.method = request.method;
+        this.method = request.method.toUpperCase();
 
         if(isFromCollection) {
             $('#updateRequestInCollection').css("display", "block");
