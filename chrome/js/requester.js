@@ -460,7 +460,7 @@ postman.currentRequest = {
     description:"",
     bodyParams:{},
     headers:[],
-    method:"get",
+    method:"GET",
     dataMode:"params",
     isFromCollection: false,
     collectionRequestId: "",
@@ -669,7 +669,7 @@ postman.currentRequest = {
 
         this.headers = [];
 
-        this.method = "get";
+        this.method = "GET";
         this.dataMode = "params";
 
         if (!this.areListenersAdded) {
@@ -1184,7 +1184,7 @@ postman.currentRequest = {
         this.description = "";
         this.headers = [];
 
-        this.method = "get";
+        this.method = "GET";
         this.dataMode = "params";
 
         this.refreshLayout();
@@ -1244,7 +1244,7 @@ postman.currentRequest = {
     loadRequestFromLink:function (link) {
         this.startNew();
         this.url = link;
-        this.method = "get";
+        this.method = "GET";
 
         this.refreshLayout();
     },
@@ -1722,7 +1722,7 @@ postman.helpers = {
                 }
             });
 
-            if (postman.currentRequest.method === "get") {
+            if (postman.currentRequest.method === "GET") {
                 $('#url-keyvaleditor').keyvalueeditor('addParams', params);
                 postman.currentRequest.setUrlParamString(params);
                 postman.currentRequest.openUrlEditor();
