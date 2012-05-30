@@ -2250,6 +2250,28 @@ postman.collections = {
 
                 requests[i].name = limitStringLineWidth(requests[i].name, 40);
             }
+            
+            //Sort requesta as A-Z order
+            requests.sort(sortfunction);
+
+            function sortfunction(a,b){
+                var counter;
+                if(a.name.length > b.name.legnth)
+                  counter=b.name.length;
+                else
+                  counter=a.name.length;
+
+                for(var i=0; i < counter; i++){
+                 if(a.name[i] == b.name[i] ){
+                    continue;   
+                 } else if(a.name[i] > b.name[i]){
+                    return 1;                 
+                 } else {
+                   return -1;
+                 }
+                }
+                return 1;
+            }
 
             $('#itemCollectionSidebarRequest').tmpl(requests).appendTo(targetElement);
             postman.layout.refreshScrollPanes();
