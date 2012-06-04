@@ -1,21 +1,21 @@
 /*
-  Licensed to the Apache Software Foundation (ASF) under one
-  or more contributor license agreements.  See the NOTICE file
-  distributed with this work for additional information
-  regarding copyright ownership.  The ASF licenses this file
-  to you under the Apache License, Version 2.0 (the
-  "License"); you may not use this file except in compliance
-  with the License.  You may obtain a copy of the License at
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
 
-  http://www.apache.org/licenses/LICENSE-2.0
+ http://www.apache.org/licenses/LICENSE-2.0
 
-  Unless required by applicable law or agreed to in writing,
-  software distributed under the License is distributed on an
-  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-  KIND, either express or implied.  See the License for the
-  specific language governing permissions and limitations
-  under the License.
-*/
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.
+ */
 "use strict";
 function Collection() {
     this.id = "";
@@ -57,8 +57,8 @@ postman.fs = {};
 
 // IndexedDB implementations still use API prefixes
 var indexedDB = window.indexedDB || // Use the standard DB API
-window.mozIndexedDB || // Or Firefox's early version of it
-window.webkitIndexedDB;            // Or Chrome's early version
+    window.mozIndexedDB || // Or Firefox's early version of it
+    window.webkitIndexedDB;            // Or Chrome's early version
 // Firefox does not prefix these two:
 var IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction;
 var IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange;
@@ -67,38 +67,38 @@ var IDBCursor = window.IDBCursor || window.webkitIDBCursor;
 window.requestFileSystem = window.requestFileSystem || window.webkitRequestFileSystem;
 
 /*
-  Components
+ Components
 
-  history - History of sent requests. Can be toggled on and off
-  collections - Groups of requests. Can be saved to a file. Saved requests can have a name and description to document
-  the request properly.
-  settings - Settings Postman behavior
-  layout - Manages quite a bit of the interface
-  currentRequest - Everything to do with the current request loaded in Postman. Also manages sending, receiving requests
-  and processing additional parameters
-  urlCache - Needed for the autocomplete functionality
-  helpers - Basic and OAuth helper management. More helpers will be added later.
-  keymap - Keyboard shortcuts
-  envManager - Environments to customize requests using variables.
-  filesystem - Loading and saving files from the local filesystem.
-  indexedDB - Backend database. Right now Postman uses indexedDB.
+ history - History of sent requests. Can be toggled on and off
+ collections - Groups of requests. Can be saved to a file. Saved requests can have a name and description to document
+ the request properly.
+ settings - Settings Postman behavior
+ layout - Manages quite a bit of the interface
+ currentRequest - Everything to do with the current request loaded in Postman. Also manages sending, receiving requests
+ and processing additional parameters
+ urlCache - Needed for the autocomplete functionality
+ helpers - Basic and OAuth helper management. More helpers will be added later.
+ keymap - Keyboard shortcuts
+ envManager - Environments to customize requests using variables.
+ filesystem - Loading and saving files from the local filesystem.
+ indexedDB - Backend database. Right now Postman uses indexedDB.
 
-  Plugins
+ Plugins
 
-  keyvaleditor - Used for URL params, headers and POST params.
+ keyvaleditor - Used for URL params, headers and POST params.
 
-  Dependencies
+ Dependencies
 
-  jQuery
-  jQuery UI - AutoComplete plugin
-  jQuery HotKeys
-  jQuery jScrollPane
-  jQuery MouseWheel
-  Bootstrap
-  CodeMirror
-  Underscore
+ jQuery
+ jQuery UI - AutoComplete plugin
+ jQuery HotKeys
+ jQuery jScrollPane
+ jQuery MouseWheel
+ Bootstrap
+ CodeMirror
+ Underscore
 
-*/
+ */
 postman.initialize = function () {
     this.history.initialize();
     this.collections.initialize();
@@ -125,24 +125,24 @@ postman.filesystem = {
         var msg = '';
 
         switch (e.code) {
-        case FileError.QUOTA_EXCEEDED_ERR:
-            msg = 'QUOTA_EXCEEDED_ERR';
-            break;
-        case FileError.NOT_FOUND_ERR:
-            msg = 'NOT_FOUND_ERR';
-            break;
-        case FileError.SECURITY_ERR:
-            msg = 'SECURITY_ERR';
-            break;
-        case FileError.INVALID_MODIFICATION_ERR:
-            msg = 'INVALID_MODIFICATION_ERR';
-            break;
-        case FileError.INVALID_STATE_ERR:
-            msg = 'INVALID_STATE_ERR';
-            break;
-        default:
-            msg = 'Unknown Error';
-            break;
+            case FileError.QUOTA_EXCEEDED_ERR:
+                msg = 'QUOTA_EXCEEDED_ERR';
+                break;
+            case FileError.NOT_FOUND_ERR:
+                msg = 'NOT_FOUND_ERR';
+                break;
+            case FileError.SECURITY_ERR:
+                msg = 'SECURITY_ERR';
+                break;
+            case FileError.INVALID_MODIFICATION_ERR:
+                msg = 'INVALID_MODIFICATION_ERR';
+                break;
+            case FileError.INVALID_STATE_ERR:
+                msg = 'INVALID_STATE_ERR';
+                break;
+            default:
+                msg = 'Unknown Error';
+                break;
         }
 
         console.log('Error: ' + msg);
@@ -154,51 +154,51 @@ postman.filesystem = {
 
     removeFileIfExists:function (name, callback) {
         postman.filesystem.fs.root.getFile(name,
-                                           {create:false}, function (fileEntry) {
-                                               fileEntry.remove(function () {
-                                                   callback();
-                                               }, function () {
-                                                   callback();
-                                               });
-                                           }, function () {
-                                               callback();
-                                           });
+            {create:false}, function (fileEntry) {
+                fileEntry.remove(function () {
+                    callback();
+                }, function () {
+                    callback();
+                });
+            }, function () {
+                callback();
+            });
     },
 
     saveAndOpenFile:function (name, data, type, callback) {
         postman.filesystem.removeFileIfExists(name, function () {
             postman.filesystem.fs.root.getFile(name,
-                                               {create:true},
-                                               function (fileEntry) {
-                                                   fileEntry.createWriter(function (fileWriter) {
+                {create:true},
+                function (fileEntry) {
+                    fileEntry.createWriter(function (fileWriter) {
 
-                                                       fileWriter.onwriteend = function (e) {
-                                                           var properties = {
-                                                               url:fileEntry.toURL()
-                                                           };
+                        fileWriter.onwriteend = function (e) {
+                            var properties = {
+                                url:fileEntry.toURL()
+                            };
 
-                                                           if (typeof chrome !== "undefined") {
-                                                               chrome.tabs.create(properties, function (tab) {
-                                                               });
-                                                           }
+                            if (typeof chrome !== "undefined") {
+                                chrome.tabs.create(properties, function (tab) {
+                                });
+                            }
 
-                                                           callback();
-                                                       };
+                            callback();
+                        };
 
-                                                       fileWriter.onerror = function (e) {
-                                                           callback();
-                                                       };
+                        fileWriter.onerror = function (e) {
+                            callback();
+                        };
 
-                                                       // Create a new Blob and write it to log.txt.
-                                                       var bb = new window.WebKitBlobBuilder(); // Note: window.WebKitBlobBuilder in Chrome 12.
-                                                       bb.append(data);
-                                                       fileWriter.write(bb.getBlob('text/plain'));
+                        // Create a new Blob and write it to log.txt.
+                        var bb = new window.WebKitBlobBuilder(); // Note: window.WebKitBlobBuilder in Chrome 12.
+                        bb.append(data);
+                        fileWriter.write(bb.getBlob('text/plain'));
 
-                                                   }, postman.filesystem.errorHandler);
+                    }, postman.filesystem.errorHandler);
 
 
-                                               }, postman.filesystem.errorHandler
-                                              );
+                }, postman.filesystem.errorHandler
+            );
         });
 
     }
@@ -462,24 +462,24 @@ postman.currentRequest = {
     headers:[],
     method:"GET",
     dataMode:"params",
-    isFromCollection: false,
-    collectionRequestId: "",
+    isFromCollection:false,
+    collectionRequestId:"",
     methodsWithBody:["POST", "PUT", "PATCH", "DELETE"],
     areListenersAdded:false,
     startTime:0,
     endTime:0,
     xhr:null,
 
-    body: {
-        mode: "params",
-        data: "",
+    body:{
+        mode:"params",
+        data:"",
 
-        init: function() {
+        init:function () {
             this.initFormDataEditor();
             this.initUrlEncodedEditor();
         },
 
-        hide: function() {
+        hide:function () {
             postman.currentRequest.body.closeFormDataEditor();
             postman.currentRequest.body.closeUrlEncodedEditor();
             $("#data").css("display", "none");
@@ -617,7 +617,7 @@ postman.currentRequest = {
             $(containerId).css("display", "none");
         },
 
-        setDataMode: function(mode) {
+        setDataMode:function (mode) {
             postman.currentRequest.dataMode = mode;
             postman.currentRequest.body.mode = mode;
             $('#dataModeSelector a').removeClass("active");
@@ -640,19 +640,19 @@ postman.currentRequest = {
             }
         },
 
-        getDataMode: function() {
+        getDataMode:function () {
             return postman.currentRequest.body.mode;
         },
 
-        getData: function(mode) {
+        getData:function (mode) {
 
         },
 
-        urlencode: function(data) {
+        urlencode:function (data) {
 
         },
 
-        loadData: function(data, mode) {
+        loadData:function (data, mode) {
 
         }
     },
@@ -1087,15 +1087,15 @@ postman.currentRequest = {
             if (!postman.editor.codeMirror || forceCreate) {
                 $('.CodeMirror').remove();
                 postman.editor.codeMirror = CodeMirror.fromTextArea(codeDataArea,
-                                                                    {
-                                                                        mode:renderMode,
-                                                                        lineNumbers:true,
-                                                                        fixedGutter:true,
-                                                                        onGutterClick:foldFunc,
-                                                                        theme:'eclipse',
-                                                                        lineWrapping:lineWrapping,
-                                                                        readOnly:true
-                                                                    });
+                    {
+                        mode:renderMode,
+                        lineNumbers:true,
+                        fixedGutter:true,
+                        onGutterClick:foldFunc,
+                        theme:'eclipse',
+                        lineWrapping:lineWrapping,
+                        readOnly:true
+                    });
 
                 var cm = postman.editor.codeMirror;
                 cm.setValue(response);
@@ -1162,8 +1162,7 @@ postman.currentRequest = {
             $('#respHeaders').css("display", "none");
         },
 
-        openInNewWindow: function(data) {
-            console.log("Open response in new window");
+        openInNewWindow:function (data) {
             var name = "response.html";
             var type = "text/html";
             var filedata = data;
@@ -1273,11 +1272,11 @@ postman.currentRequest = {
     },
 
     getPackedHeaders:function () {
-        console.log (this.headers);
+        console.log(this.headers);
         return this.packHeaders(this.headers);
     },
 
-    unpackResponseHeaders: function(data) {
+    unpackResponseHeaders:function (data) {
         if (data === null || data === "") {
             return [];
         }
@@ -1290,9 +1289,9 @@ postman.currentRequest = {
                 hash = hashes[i];
                 var loc = hash.search(':');
 
-                if(loc !== -1) {
+                if (loc !== -1) {
                     var name = $.trim(hash.substr(0, loc));
-                    var value = $.trim(hash.substr(loc+1));
+                    var value = $.trim(hash.substr(loc + 1));
 
                     header = {
                         "name":name,
@@ -1323,12 +1322,12 @@ postman.currentRequest = {
                 if (!hash) {
                     continue;
                 }
-                
+
                 var loc = hash.search(':');
-                
-                if (loc !== -1) {                    
-                    var name = $.trim (hash.substr (0, loc));
-                    var value = $.trim (hash.substr (loc+1));
+
+                if (loc !== -1) {
+                    var name = $.trim(hash.substr(0, loc));
+                    var value = $.trim(hash.substr(loc + 1));
                     header = {
                         "name":$.trim(name),
                         "key":$.trim(name),
@@ -1350,7 +1349,7 @@ postman.currentRequest = {
         this.body.data = request.body;
         this.method = request.method.toUpperCase();
 
-        if(isFromCollection) {
+        if (isFromCollection) {
             $('#updateRequestInCollection').css("display", "block");
         }
         else {
@@ -1539,7 +1538,7 @@ postman.currentRequest = {
                     }
                 }
             }
-            else if(this.dataMode === 'urlencoded') {
+            else if (this.dataMode === 'urlencoded') {
                 finalBodyData = "";
                 rows = $('#urlencoded-keyvaleditor').keyvalueeditor('getElements');
                 xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
@@ -1586,7 +1585,7 @@ postman.helpers = {
             postman.helpers.processRequestHelper(type);
         });
 
-        
+
     },
 
     processRequestHelper:function (type) {
@@ -1627,9 +1626,9 @@ postman.helpers = {
 
             var username = $('#requestHelper-basicAuth-username').val();
             var password = $('#requestHelper-basicAuth-password').val();
-            
+
             username = postman.envManager.convertString(username);
-            password = postman.envManager.convertString(password);     
+            password = postman.envManager.convertString(password);
 
             var rawString = username + ":" + password;
             var encodedString = "Basic " + btoa(rawString);
@@ -1730,10 +1729,10 @@ postman.helpers = {
                 postman.currentRequest.openUrlEditor();
             } else {
                 var dataMode = postman.currentRequest.body.getDataMode();
-                if(dataMode === 'urlencoded') {
+                if (dataMode === 'urlencoded') {
                     $('#urlencoded-keyvaleditor').keyvalueeditor('addParams', params);
                 }
-                else if(dataMode === 'params') {
+                else if (dataMode === 'params') {
                     $('#formdata-keyvaleditor').keyvalueeditor('addParams', params);
                 }
 
@@ -1951,7 +1950,7 @@ postman.collections = {
             var id = $(this).attr('data-id');
             $('#formEditCollectionRequest .collection-request-id').val(id);
 
-            postman.indexedDB.getCollectionRequest(id, function(req) {
+            postman.indexedDB.getCollectionRequest(id, function (req) {
                 $('#formEditCollectionRequest .collection-request-name').val(req.name);
                 $('#formEditCollectionRequest .collection-request-description').val(req.description);
                 $('#formModalEditCollectionRequest').modal('show');
@@ -2119,7 +2118,7 @@ postman.collections = {
         $('#formModalNewCollection').modal('hide');
     },
 
-    updateCollectionFromCurrentRequest: function() {
+    updateCollectionFromCurrentRequest:function () {
         var url = $('#url').val();
         var collectionRequest = new CollectionRequest();
         collectionRequest.id = postman.currentRequest.collectionRequestId;
@@ -2130,12 +2129,12 @@ postman.collections = {
         collectionRequest.dataMode = postman.currentRequest.dataMode;
         collectionRequest.time = new Date().getTime();
 
-        postman.indexedDB.getCollectionRequest(collectionRequest.id, function(req) {
+        postman.indexedDB.getCollectionRequest(collectionRequest.id, function (req) {
             collectionRequest.name = req.name;
             collectionRequest.description = req.description;
             collectionRequest.collectionId = req.collectionId;
 
-            postman.indexedDB.updateCollectionRequest(collectionRequest, function(request) {
+            postman.indexedDB.updateCollectionRequest(collectionRequest, function (request) {
                 postman.collections.getAllRequestsInCollection(collectionRequest.collectionId);
             });
         });
@@ -2149,7 +2148,7 @@ postman.collections = {
         var newRequestDescription = $('#newRequestDescription').val();
 
         var url = $('#url').val();
-        if(newRequestName === "") {
+        if (newRequestName === "") {
             newRequestName = url;
         }
 
@@ -2252,25 +2251,25 @@ postman.collections = {
 
                 requests[i].name = limitStringLineWidth(requests[i].name, 40);
             }
-            
+
             //Sort requesta as A-Z order
             requests.sort(sortfunction);
 
-            function sortfunction(a,b){
+            function sortfunction(a, b) {
                 var counter;
-                if(a.name.length > b.name.legnth)
-                  counter=b.name.length;
+                if (a.name.length > b.name.legnth)
+                    counter = b.name.length;
                 else
-                  counter=a.name.length;
+                    counter = a.name.length;
 
-                for(var i=0; i < counter; i++){
-                 if(a.name[i] == b.name[i] ){
-                    continue;   
-                 } else if(a.name[i] > b.name[i]){
-                    return 1;                 
-                 } else {
-                   return -1;
-                 }
+                for (var i = 0; i < counter; i++) {
+                    if (a.name[i] == b.name[i]) {
+                        continue;
+                    } else if (a.name[i] > b.name[i]) {
+                        return 1;
+                    } else {
+                        return -1;
+                    }
                 }
                 return 1;
             }
@@ -2304,7 +2303,7 @@ postman.layout = {
     },
 
     initialize:function () {
-        $('#sidebarFooter').on("click", function() {
+        $('#sidebarFooter').on("click", function () {
             $('#modalSpreadTheWord').modal('show');
             postman.layout.attachSocialButtons();
         });
@@ -2318,7 +2317,7 @@ postman.layout = {
             return true;
         });
 
-        $('#responseOpenInNewWindow').on("click", function() {
+        $('#responseOpenInNewWindow').on("click", function () {
             var data = postman.currentRequest.response.text;
             postman.currentRequest.response.openInNewWindow(data);
         });
@@ -2333,8 +2332,8 @@ postman.layout = {
 
         postman.currentRequest.response.clear();
 
-        $('#addToCollection').on("click", function() {
-            if(postman.collections.areLoaded === false) {
+        $('#addToCollection').on("click", function () {
+            if (postman.collections.areLoaded === false) {
                 postman.collections.getAllCollections();
             }
         });
@@ -2343,7 +2342,7 @@ postman.layout = {
             postman.currentRequest.send();
         });
 
-        $("#updateRequestInCollection").on("click", function() {
+        $("#updateRequestInCollection").on("click", function () {
             postman.collections.updateCollectionFromCurrentRequest();
         });
 
@@ -2388,9 +2387,9 @@ postman.layout = {
             var id = $('#formEditCollection .collection-id').val();
             var name = $('#formEditCollection .collection-name').val();
 
-            postman.indexedDB.getCollection(id, function(collection) {
+            postman.indexedDB.getCollection(id, function (collection) {
                 collection.name = name;
-                postman.indexedDB.updateCollection(collection, function(collection) {
+                postman.indexedDB.updateCollection(collection, function (collection) {
                     postman.collections.getAllCollections();
                 });
             });
@@ -2403,10 +2402,10 @@ postman.layout = {
             var name = $('#formEditCollectionRequest .collection-request-name').val();
             var description = $('#formEditCollectionRequest .collection-request-description').val();
 
-            postman.indexedDB.getCollectionRequest(id, function(req) {
+            postman.indexedDB.getCollectionRequest(id, function (req) {
                 req.name = name;
                 req.description = description;
-                postman.indexedDB.updateCollectionRequest(req, function(newRequest) {
+                postman.indexedDB.updateCollectionRequest(req, function (newRequest) {
                     postman.collections.getAllRequestsInCollection(req.collectionId);
                     $('#formModalEditCollectionRequest').modal('hide');
                 });
@@ -2478,15 +2477,19 @@ postman.layout = {
         var newMainWidth = $('#container').width() - $('#sidebar').width();
         $('#main').width(newMainWidth + "px");
 
-        $('#sidebar').jScrollPane({
-            mouseWheelSpeed:24
-        });
+        if ($('#sidebar').width() > 100) {
+            $('#sidebar').jScrollPane({
+                mouseWheelSpeed:24
+            });
+        }
+
     },
 
     sidebar:{
         currentSection:"history",
         isSidebarMaximized:true,
         sections:[ "history", "collections" ],
+        width:0,
 
         minimizeSidebar:function () {
             $('#sidebarToggle').animate({left:"5px"}, 500);
@@ -2499,14 +2502,15 @@ postman.layout = {
         },
 
         maximizeSidebar:function () {
-            $('#sidebarToggle').animate({left:"293px"}, 500);
-            $('#sidebar').animate({width:"340px"}, 500);
+            $('#sidebarToggle').animate({left:"355px"}, 500);
+            $('#sidebar').animate({width:postman.layout.sidebar.width + "px"}, 500);
             $('#sidebar div').animate({opacity:1}, 500);
             $('#sidebarFooter').css("display", "block");
             $('#sidebarFooter').fadeIn();
             $('#sidebarToggle img').attr('src', 'img/glyphicons_216_circle_arrow_left.png');
-            var newMainWidth = $(document).width() - 330;
-            $('#main').animate({width:newMainWidth + "px", "margin-left":"340px"}, 500);
+            var newMainWidth = $(document).width() - postman.layout.sidebar.width;
+            $('#main').animate({width:newMainWidth + "px", "margin-left":postman.layout.sidebar.width + "px"}, 500);
+            postman.layout.refreshScrollPanes();
         },
 
         toggleSidebar:function () {
@@ -2535,6 +2539,8 @@ postman.layout = {
             $('#sidebarToggle').on("click", function () {
                 postman.layout.sidebar.toggleSidebar();
             });
+
+            postman.layout.sidebar.width = $('#sidebar').width() + 10;
 
             this.addRequestListeners();
         },
@@ -3124,23 +3130,23 @@ postman.indexedDB = {
 postman.envManager = {
     environments:[],
 
-    globals: {},
+    globals:{},
     selectedEnv:null,
     selectedEnvironmentId:"",
 
-    quicklook: {
-        init: function() {
+    quicklook:{
+        init:function () {
             postman.envManager.quicklook.refreshEnvironment(postman.envManager.selectedEnv);
             postman.envManager.quicklook.refreshGlobals(postman.envManager.globals);
         },
 
-        removeEnvironmentData: function() {
+        removeEnvironmentData:function () {
             $('#environment-quicklook-environments h6').html("No environment");
             $('#environment-quicklook-environments ul').html("");
         },
 
-        refreshEnvironment: function(environment) {
-            if(!environment) {
+        refreshEnvironment:function (environment) {
+            if (!environment) {
                 return;
             }
             $('#environment-quicklook-environments h6').html(environment.name);
@@ -3148,8 +3154,8 @@ postman.envManager = {
             $('#environment-quicklook-item').tmpl(environment.values).appendTo('#environment-quicklook-environments ul');
         },
 
-        refreshGlobals: function(globals) {
-            if(!globals) {
+        refreshGlobals:function (globals) {
+            if (!globals) {
                 return;
             }
 
@@ -3199,11 +3205,11 @@ postman.envManager = {
             $('#environment-selector .environment-list-item-selected').html("No environment");
         });
 
-        $('#environment-quicklook').on("mouseenter", function() {
+        $('#environment-quicklook').on("mouseenter", function () {
             $('#environment-quicklook-content').css("display", "block");
         });
 
-        $('#environment-quicklook').on("mouseleave", function() {
+        $('#environment-quicklook').on("mouseleave", function () {
             $('#environment-quicklook-content').css("display", "none");
         });
 
@@ -3246,9 +3252,9 @@ postman.envManager = {
             $('#environment-keyvaleditor').keyvalueeditor('reset', []);
         });
 
-        $('#environments-list-help-toggle').on("click", function() {
+        $('#environments-list-help-toggle').on("click", function () {
             var d = $('#environments-list-help-detail').css("display");
-            if(d === "none") {
+            if (d === "none") {
                 $('#environments-list-help-detail').css("display", "inline");
                 $(this).html("Hide");
             }
@@ -3295,7 +3301,7 @@ postman.envManager = {
 
         var globals = postman.envManager.globals;
         var count = globals.length;
-        for(i = 0; i < count; i++) {
+        for (i = 0; i < count; i++) {
             var patString = "{{" + globals[i].key + "}}";
             var pattern = new RegExp(patString, 'g');
             finalString = finalString.replace(patString, globals[i].value);
@@ -3304,7 +3310,7 @@ postman.envManager = {
         return finalString;
     },
 
-    convertString: function(string) {
+    convertString:function (string) {
         var environment = postman.envManager.selectedEnv;
         var envValues = [];
         var isEnvironmentAvailable = false;
@@ -3316,9 +3322,9 @@ postman.envManager = {
 
         if (isEnvironmentAvailable === true) {
             return postman.envManager.processString(string, envValues);
-        }  
+        }
         else {
-            return string;      
+            return string;
         }
 
     },
@@ -3348,8 +3354,8 @@ postman.envManager = {
         })
     },
 
-    initGlobals: function() {
-        if('globals' in localStorage) {
+    initGlobals:function () {
+        if ('globals' in localStorage) {
             var globalsString = localStorage['globals'];
             postman.envManager.globals = JSON.parse(globalsString);
         }
@@ -3359,8 +3365,8 @@ postman.envManager = {
 
     },
 
-    saveGlobals: function() {
-        var globals = $('#globals-keyvaleditor').keyvalueeditor('getValues');   
+    saveGlobals:function () {
+        var globals = $('#globals-keyvaleditor').keyvalueeditor('getValues');
         postman.envManager.globals = globals;
         postman.envManager.quicklook.refreshGlobals(globals);
         localStorage['globals'] = JSON.stringify(globals);
@@ -3392,7 +3398,7 @@ postman.envManager = {
         $('#modalEnvironments .modal-footer').css("display", "block");
     },
 
-    showImporter: function() {
+    showImporter:function () {
         $('#environments-list-wrapper').css("display", "none");
         $('#environment-editor').css("display", "none");
         $('#globals-editor').css("display", "none");
@@ -3401,7 +3407,7 @@ postman.envManager = {
         $('#modalEnvironments .modal-footer').css("display", "block");
     },
 
-    showGlobals: function() {
+    showGlobals:function () {
         $('#environments-list-wrapper').css("display", "none");
         $('#environment-editor').css("display", "none");
         $('#globals-editor').css("display", "block");
@@ -3450,7 +3456,7 @@ postman.envManager = {
         });
     },
 
-    downloadEnvironment: function(id) {
+    downloadEnvironment:function (id) {
         var env = postman.envManager.getEnvironmentFromId(id);
         var name = env.name + "-environment.json";
         var type = "application/json";
@@ -3459,7 +3465,7 @@ postman.envManager = {
         });
     },
 
-    importEnvironments: function(files) {
+    importEnvironments:function (files) {
         // Loop through the FileList
         var f;
         for (var i = 0, f; f = files[i]; i++) {
@@ -3475,8 +3481,8 @@ postman.envManager = {
                     postman.indexedDB.environments.addEnvironment(environment, function () {
                         //Add confirmation
                         var o = {
-                            name: environment.name,
-                            action: 'added'
+                            name:environment.name,
+                            action:'added'
                         };
 
                         $("#messageEnvironmentAdded").tmpl([o]).appendTo('#environment-importer-confirmations');

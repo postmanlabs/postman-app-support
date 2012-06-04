@@ -1272,10 +1272,10 @@ li .right {
 
 #sidebarToggle {
     position: absolute;
-    top: 15px;
-    left: 293px;
+    bottom: 5px;
+    left: 352px;
     opacity: 0.5;
-    z-index: 10;
+    z-index: 100;
     cursor: pointer;
 }
 
