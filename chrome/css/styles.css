@@ -1271,21 +1271,20 @@ li .right {
 }
 
 #sidebarToggle {
-    position: absolute;
-    bottom: 5px;
-    left: 352px;
+    position: fixed;
+    bottom: 0;
+    left: 350px;
     opacity: 0.5;
     z-index: 100;
     cursor: pointer;
+    height: 20px;
+    background: #ccc;
+    border-top-right-radius: 5px;
+    padding: 5px;
 }
 
 #sidebarToggle:hover {
     opacity: 1;
-}
-
-#sidebarToggle img {
-    width: 20px;
-    height: 20px;
 }
 
 #url-keyvaleditor-container,

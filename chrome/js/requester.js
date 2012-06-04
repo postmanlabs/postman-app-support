@@ -1272,7 +1272,6 @@ postman.currentRequest = {
     },
 
     getPackedHeaders:function () {
-        console.log(this.headers);
         return this.packHeaders(this.headers);
     },
 
@@ -2492,22 +2491,22 @@ postman.layout = {
         width:0,
 
         minimizeSidebar:function () {
-            $('#sidebarToggle').animate({left:"5px"}, 500);
+            $('#sidebarToggle').animate({left:"0"}, 500);
             $('#sidebar').animate({width:"30px"}, 500);
             $('#sidebarFooter').css("display", "none");
             $('#sidebar div').animate({opacity:0}, 500);
             var newMainWidth = $(document).width() - 30;
             $('#main').animate({width:newMainWidth + "px", "margin-left":"30px"}, 500);
-            $('#sidebarToggle img').attr('src', 'img/glyphicons_217_circle_arrow_right.png');
+            $('#sidebarToggle img').attr('src', 'img/tri_arrow_right.png');
         },
 
         maximizeSidebar:function () {
-            $('#sidebarToggle').animate({left:"355px"}, 500);
+            $('#sidebarToggle').animate({left:"350px"}, 500);
             $('#sidebar').animate({width:postman.layout.sidebar.width + "px"}, 500);
             $('#sidebar div').animate({opacity:1}, 500);
             $('#sidebarFooter').css("display", "block");
             $('#sidebarFooter').fadeIn();
-            $('#sidebarToggle img').attr('src', 'img/glyphicons_216_circle_arrow_left.png');
+            $('#sidebarToggle img').attr('src', 'img/tri_arrow_left.png');
             var newMainWidth = $(document).width() - postman.layout.sidebar.width;
             $('#main').animate({width:newMainWidth + "px", "margin-left":postman.layout.sidebar.width + "px"}, 500);
             postman.layout.refreshScrollPanes();
