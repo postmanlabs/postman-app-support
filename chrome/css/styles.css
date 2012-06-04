@@ -1300,3 +1300,23 @@ li .right {
 #connection-error-url {
     font-weight: bold;
 }
+
+.label-method-GET,
+.label-method-get {
+    background-color: #009000;
+}
+
+.label-method-POST,
+.label-method-post {
+    background-color: #CC9900;
+}
+
+.label-method-DELETE,
+.label-method-delete {
+    background-color: #C30;
+}
+
+.label-method-PUT,
+.label-method-put {
+    background-color: #36F;
+}
