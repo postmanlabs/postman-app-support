@@ -941,6 +941,8 @@ postman.currentRequest = {
             if (response.readyState == 4) {
                 //Something went wrong
                 if (response.status == 0) {
+
+                    $('#connection-error-url').html(postman.currentRequest.url);
                     $('#modalResponseError').modal({
                         keyboard:true,
                         backdrop:"static"

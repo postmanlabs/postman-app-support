@@ -1296,3 +1296,7 @@ li .right {
 #environments-list-help-detail {
     display: none;
 }
+
+#connection-error-url {
+    font-weight: bold;
+}
