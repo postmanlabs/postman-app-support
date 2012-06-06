@@ -438,7 +438,7 @@ fieldset {
 #bodyDataContainer {
     margin-top: 5px;
     margin-bottom: 10px;
-    width: 580px;
+    width: 470px;
     display: none;
 }
 
@@ -571,6 +571,22 @@ li .right {
 
 #requestUrl button {
     margin-bottom: 9px;
+}
+
+#requestUrlContainer {
+    float: left;
+    min-width: 470px;
+    max-width: 1000px;
+    margin-right: 20px;
+}
+
+#requestMethodContainer {
+    float: left;
+    margin-right: 10px;
+}
+
+#requestUrlButtonsContainer {
+    float: left;
 }
 
 #methods {
@@ -1277,10 +1293,17 @@ li .right {
     opacity: 0.5;
     z-index: 100;
     cursor: pointer;
-    height: 20px;
+    height: 24px;
+    width: 16px;
     background: #ccc;
     border-top-right-radius: 5px;
-    padding: 5px;
+    padding-top: 6px;
+    padding-left: 3px;
+}
+
+#sidebarToggle img {
+    width: 10px;
+    height: 10px;
 }
 
 #sidebarToggle:hover {
@@ -1302,7 +1325,7 @@ li .right {
 
 .label-method-GET,
 .label-method-get {
-    background-color: #009000;
+    background-color: #4DAB58;
 }
 
 .label-method-POST,

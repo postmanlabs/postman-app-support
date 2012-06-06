@@ -247,6 +247,19 @@ postman.keymap = {
         $(document).bind('keydown', 'backspace', urlFocusHandler);
         $(document).bind('keydown', 'alt+n', newRequestHandler);
 
+        $(document).bind('keydown', 'q', function () {
+            postman.envManager.quicklook.toggleDisplay();
+            return false;
+        });
+
+        $(document).bind('keydown', 'e', function () {
+            $('#modalEnvironments').modal({
+                keyboard:true,
+                backdrop:"static"
+            });
+        });
+
+
         $(document).bind('keydown', 'h', function () {
             postman.currentRequest.openHeaderEditor();
             $('#headers-keyvaleditor div:first-child input:first-child').focus();
@@ -2297,7 +2310,7 @@ postman.collections = {
 postman.layout = {
     socialButtons:{
         "facebook":'<iframe src="http://www.facebook.com/plugins/like.php?href=https%3A%2F%2Fchrome.google.com%2Fwebstore%2Fdetail%2Ffdmmgilgnpjigdojojpjoooidkmcomcm&amp;send=false&amp;layout=button_count&amp;width=250&amp;show_faces=true&amp;action=like&amp;colorscheme=light&amp;font&amp;height=21&amp;appId=26438002524" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:250px; height:21px;" allowTransparency="true"></iframe>',
-        "twitter":'<a href="https://twitter.com/share" class="twitter-share-button" data-url="https://chrome.google.com/webstore/detail/fdmmgilgnpjigdojojpjoooidkmcomcm" data-text="I am using Postman to kick some API ass!" data-count="horizontal" data-via="postmanclient">Tweet</a><script type="text/javascript" src="http://platform.twitter.com/widgets.js"></script>',
+        "twitter":'<a href="https://twitter.com/share" class="twitter-share-button" data-url="https://chrome.google.com/webstore/detail/fdmmgilgnpjigdojojpjoooidkmcomcm" data-text="I am using Postman to super-charge REST API testing and development!" data-count="horizontal" data-via="postmanclient">Tweet</a><script type="text/javascript" src="http://platform.twitter.com/widgets.js"></script>',
         "plusOne":'<script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script><g:plusone size="medium" href="https://chrome.google.com/webstore/detail/fdmmgilgnpjigdojojpjoooidkmcomcm"></g:plusone>'
     },
 
@@ -2489,26 +2502,29 @@ postman.layout = {
         isSidebarMaximized:true,
         sections:[ "history", "collections" ],
         width:0,
+        animationDuration:250,
 
         minimizeSidebar:function () {
-            $('#sidebarToggle').animate({left:"0"}, 500);
-            $('#sidebar').animate({width:"30px"}, 500);
+            var animationDuration = postman.layout.sidebar.animationDuration;
+            $('#sidebarToggle').animate({left:"0"}, animationDuration);
+            $('#sidebar').animate({width:"5px"}, animationDuration);
             $('#sidebarFooter').css("display", "none");
-            $('#sidebar div').animate({opacity:0}, 500);
-            var newMainWidth = $(document).width() - 30;
-            $('#main').animate({width:newMainWidth + "px", "margin-left":"30px"}, 500);
+            $('#sidebar div').animate({opacity:0}, animationDuration);
+            var newMainWidth = $(document).width() - 5;
+            $('#main').animate({width:newMainWidth + "px", "margin-left":"5px"}, animationDuration);
             $('#sidebarToggle img').attr('src', 'img/tri_arrow_right.png');
         },
 
         maximizeSidebar:function () {
-            $('#sidebarToggle').animate({left:"350px"}, 500);
-            $('#sidebar').animate({width:postman.layout.sidebar.width + "px"}, 500);
-            $('#sidebar div').animate({opacity:1}, 500);
-            $('#sidebarFooter').css("display", "block");
-            $('#sidebarFooter').fadeIn();
+            var animationDuration = postman.layout.sidebar.animationDuration;
+            $('#sidebarToggle').animate({left:"350px"}, animationDuration, function () {
+                $('#sidebarFooter').fadeIn();
+            });
+            $('#sidebar').animate({width:postman.layout.sidebar.width + "px"}, animationDuration);
+            $('#sidebar div').animate({opacity:1}, animationDuration);
             $('#sidebarToggle img').attr('src', 'img/tri_arrow_left.png');
             var newMainWidth = $(document).width() - postman.layout.sidebar.width;
-            $('#main').animate({width:newMainWidth + "px", "margin-left":postman.layout.sidebar.width + "px"}, 500);
+            $('#main').animate({width:newMainWidth + "px", "margin-left":postman.layout.sidebar.width + "px"}, animationDuration);
             postman.layout.refreshScrollPanes();
         },
 
@@ -3160,6 +3176,17 @@ postman.envManager = {
 
             $('#environment-quicklook-globals ul').html("");
             $('#environment-quicklook-item').tmpl(globals).appendTo('#environment-quicklook-globals ul');
+        },
+
+        toggleDisplay:function () {
+            var display = $('#environment-quicklook-content').css("display");
+
+            if (display == "none") {
+                $('#environment-quicklook-content').css("display", "block");
+            }
+            else {
+                $('#environment-quicklook-content').css("display", "none");
+            }
         }
     },
     init:function () {

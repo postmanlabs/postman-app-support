@@ -12,37 +12,24 @@
     <link rel="stylesheet" type="text/css" href="css/keyvalueeditor.css"/>
     <link rel="stylesheet" type="text/css" href="css/bootstrap.simplex.css"/>
     <script>
-//        var _gaq = _gaq || [];
-//        _gaq.push(['_setAccount', 'UA-26564585-1']);
-//        _gaq.push(['_trackPageview']);
-//
-//        (function () {
-//            var ga = document.createElement('script');
-//            ga.type = 'text/javascript';
-//            ga.async = true;
-//            ga.src = 'https://ssl.google-analytics.com/ga.js';
-//            var s = document.getElementsByTagName('script')[0];
-//            s.parentNode.insertBefore(ga, s);
-//        })();
-    </script>
-    <script type="text/javascript">
-        //<![CDATA[
-        // Help IE style HTML5. This makes me sad.
-        // See http://remysharp.com/2009/01/07/html5-enabling-script/
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-26564585-1']);
+        _gaq.push(['_trackPageview']);
+
         (function () {
-            if (!/*@cc_on!@*/0)return;
-            var e = "abbr,article,aside,audio,bb,canvas,datagrid,datalist,details,dialog,eventsource,figure,footer,header,mark,menu,meter,nav,output,progress,section,time,video".split(','), i = e.length;
-            while (i--) {
-                document.createElement(e[i])
-            }
-        })()
-        //]]>
+            var ga = document.createElement('script');
+            ga.type = 'text/javascript';
+            ga.async = true;
+            ga.src = 'https://ssl.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(ga, s);
+        })();
     </script>
 </head>
 <body>
 <div id="container" class="clearfix">
 <div id="sidebarFooter">
-    Help make Postman better!
+    Make Postman better!
 </div>
 <div id="sidebarToggle">
     <img src="img/tri_arrow_left.png"/>
@@ -204,7 +191,8 @@
                     <label>Consumer Key</label>
 
                     <div class="controls">
-                        <input type="text" id="requestHelper-oauth1-consumerKey" class="cleanInput signatureParam"
+                        <input type="text" id="requestHelper-oauth1-consumerKey"
+                               class="cleanInput signatureParam"
                                key="oauth_consumer_key"/>
                     </div>
                 </div>
@@ -236,7 +224,8 @@
                     <label>Signature Method</label>
 
                     <div class="controls">
-                        <input type="text" id="requestHelper-oauth1-signatureMethod" class="cleanInput signatureParam"
+                        <input type="text" id="requestHelper-oauth1-signatureMethod"
+                               class="cleanInput signatureParam"
                                value="HMAC-SHA1" key="oauth_signature_method"/>
                     </div>
                 </div>
@@ -294,28 +283,31 @@
     <p id="requestDescription"></p>
 </div>
 
-<div id="requestUrl" class="row">
-    <div class="span5">
+<div id="requestUrl" class="clearfix">
+    <div id="requestUrlContainer">
         <input type="text" name="url" id="url" tabindex="1" class="inputTextLight"
                placeholder="Enter request URL here"/>
     </div>
-    <div class="span4">
-        <select id="requestMethodSelector">
-            <option value="GET" selected>GET</option>
-            <option value="POST">POST</option>
-            <option value="PUT">PUT</option>
-            <option value="PATCH">PATCH</option>
-            <option value="DELETE">DELETE</option>
-            <option value="HEAD">HEAD</option>
-            <option value="OPTIONS">OPTIONS</option>
-        </select>
-        <button href="javascript:void(0);" class="btn btn-small" id="url-keyvaleditor-actions-open"><i
-                class="icon-edit"></i> URL params
-        </button>
-        <button href="javascript:void(0);" class="btn btn-small" id="headers-keyvaleditor-actions-open"><i
-                class="icon-edit"></i> Headers (<span class="headers-count">0</span>)
-        </button>
-    </div>
+    <div id="requestMethodContainer"
+    ">
+    <select id="requestMethodSelector">
+        <option value="GET" selected>GET</option>
+        <option value="POST">POST</option>
+        <option value="PUT">PUT</option>
+        <option value="PATCH">PATCH</option>
+        <option value="DELETE">DELETE</option>
+        <option value="HEAD">HEAD</option>
+        <option value="OPTIONS">OPTIONS</option>
+    </select>
+</div>
+<div id="requestUrlButtonsContainer">
+    <button href="javascript:void(0);" class="btn btn-small" id="url-keyvaleditor-actions-open"><i
+            class="icon-edit"></i> URL params
+    </button>
+    <button href="javascript:void(0);" class="btn btn-small" id="headers-keyvaleditor-actions-open"><i
+            class="icon-edit"></i> Headers (<span class="headers-count">0</span>)
+    </button>
+</div>
 </div>
 
 <div id="url-keyvaleditor-container" class="row" style="margin-left: 0px; display: none;">
@@ -740,7 +732,7 @@
     <div class="modal-header">
         <a href="#" class="close" data-dismiss="modal">×</a>
 
-        <h3>Help make Postman better!</h3>
+        <h3>Make Postman better!</h3>
     </div>
     <div class="modal-body">
         <p>
@@ -836,6 +828,14 @@
             <tr>
                 <td>Clear history</td>
                 <td><strong>Alt + c</strong></td>
+            </tr>
+            <tr>
+                <td>Manage environments</td>
+                <td><strong>e</strong></td>
+            </tr>
+            <tr>
+                <td>Toggle Quicklook window</td>
+                <td><strong>q</strong></td>
             </tr>
             <tr>
                 <td>This window</td>
