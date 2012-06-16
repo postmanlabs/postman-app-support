@@ -1,7 +1,7 @@
 /**
-* vkBeautify - javascript plugin to pretty-print or minify text in XML, JSON and CSS formats.
+* vkBeautify - javascript plugin to pretty-print or minify text in XML, JSON, CSS and SQL formats.
 *  
-* Version - 0.97.00.beta 
+* Version - 0.98.00.beta 
 * Copyright (c) 2012 Vadim Kiryukhin
 * vkiryukhin @ gmail.com
 * http://www.eslinstructor.net/vkbeautify/
@@ -84,7 +84,11 @@ function vkbeautify(){
 
 vkbeautify.prototype.xml = function(text,step) {
 
-	var ar = text.replace(/>\s{0,}</g,"><").replace(/</g,"~::~<").split('~::~'),
+	var ar = text.replace(/>\s{0,}</g,"><")
+				 .replace(/</g,"~::~<")
+				 .replace(/xmlns\:/g,"~::~xmlns:")
+				 .replace(/xmlns\=/g,"~::~xmlns=")
+				 .split('~::~'),
 		len = ar.length,
 		inComment = false,
 		deep = 0,
@@ -132,7 +136,13 @@ vkbeautify.prototype.xml = function(text,step) {
 			// <? xml ... ?> //
 			if(ar[ix].search(/<\?/) > -1) { 
 				str += shift[deep]+ar[ix];
-			} else {
+			} else 
+			// xmlns //
+			if( ar[ix].search(/xmlns\:/) > -1  || ar[ix].search(/xmlns\=/) > -1) { 
+				str += shift[deep]+ar[ix];
+			} 
+			
+			else {
 				str += ar[ix];
 			}
 		}
@@ -141,6 +151,21 @@ vkbeautify.prototype.xml = function(text,step) {
 }
 
 vkbeautify.prototype.json = function(text,step) {
+
+    // Attempt to process using the native JSON first
+    if ( window.JSON && window.JSON.stringify ) {
+		if ( typeof text === "string" ) {
+			return JSON.stringify(JSON.parse(text), null, step);
+		}
+		if ( typeof text === "object" ) {
+			return JSON.stringify(text, null, step);
+		}
+		return null;
+    }
+
+	// there is no native JSON object, so let's use regexp
+	
+	if ( typeof text !== "string" || !text )  return null;
 
 	var ar = this.jsonmin(text).replace(/\{/g,"~::~{~::~")
 								.replace(/\[/g,"[~::~")
@@ -331,7 +356,8 @@ vkbeautify.prototype.sql = function(text,step) {
 vkbeautify.prototype.xmlmin = function(text, preserveComments) {
 
 	var str = preserveComments ? text
-							   : text.replace(/\<![ \r\n\t]*(--([^\-]|[\r\n]|-[^\-])*--[ \r\n\t]*)\>/g,"");
+							   : text.replace(/\<![ \r\n\t]*(--([^\-]|[\r\n]|-[^\-])*--[ \r\n\t]*)\>/g,"")
+									 .replace(/[ \r\n\t]{1,}xmlns/g, ' xmlns');
 	return  str.replace(/>\s{0,}</g,"><"); 
 }
 
