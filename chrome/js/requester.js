@@ -954,8 +954,8 @@ postman.currentRequest = {
             if (response.readyState == 4) {
                 //Something went wrong
                 if (response.status == 0) {
-
-                    $('#connection-error-url').html(postman.currentRequest.url);
+                    var errorUrl = postman.envManager.convertString(postman.currentRequest.url);
+                    $('#connection-error-url').html(errorUrl);
                     $('#modalResponseError').modal({
                         keyboard:true,
                         backdrop:"static"
@@ -1033,19 +1033,9 @@ postman.currentRequest = {
         },
 
         setFormat:function (language, response, format, forceCreate) {
-            if (format === "parsed") {
-                $('#responseAsCode').css("display", "block");
-                $('#responseAsText').css("display", "none");
-            }
-            else {
-                $('#codeDataRaw').val(this.text);
-                var codeDataWidth = $(document).width() - $('#sidebar').width() - 60;
-                $('#codeDataRaw').css("width", codeDataWidth + "px");
-                $('#codeDataRaw').css("height", "600px");
-                $('#responseAsCode').css("display", "none");
-                $('#responseAsText').css("display", "block");
-            }
-
+            //Keep CodeMirror div visible otherwise the response gets cut off
+            $('#responseAsCode').css("display", "block");
+            $('#responseAsText').css("display", "none");
 
             $('#responseAsImage').css("display", "none");
             $('#langFormat').css("display", "block");
@@ -1099,6 +1089,7 @@ postman.currentRequest = {
 
             if (!postman.editor.codeMirror || forceCreate) {
                 $('.CodeMirror').remove();
+                console.log("Initializing new CodeMirror area");
                 postman.editor.codeMirror = CodeMirror.fromTextArea(codeDataArea,
                     {
                         mode:renderMode,
@@ -1123,6 +1114,20 @@ postman.currentRequest = {
                 postman.editor.codeMirror.refresh();
                 CodeMirror.commands["goDocStart"](postman.editor.codeMirror);
                 $(window).scrollTop(0);
+            }
+
+            //If the format is raw then switch
+            if (format === "parsed") {
+                $('#responseAsCode').css("display", "block");
+                $('#responseAsText').css("display", "none");
+            }
+            else {
+                $('#codeDataRaw').val(this.text);
+                var codeDataWidth = $(document).width() - $('#sidebar').width() - 60;
+                $('#codeDataRaw').css("width", codeDataWidth + "px");
+                $('#codeDataRaw').css("height", "600px");
+                $('#responseAsCode').css("display", "none");
+                $('#responseAsText').css("display", "block");
             }
         },
 
