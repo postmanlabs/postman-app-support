@@ -202,7 +202,7 @@ postman.filesystem = {
         });
 
     }
-}
+};
 
 postman.keymap = {
     init:function () {
@@ -308,6 +308,7 @@ postman.editor = {
     mode:"html",
     codeMirror:null,
 
+    //Defines a links mode for CodeMirror
     init:function () {
         CodeMirror.defineMode("links", function (config, parserConfig) {
             var linksOverlay = {
@@ -896,6 +897,7 @@ postman.currentRequest = {
         headers:[],
         mime:"",
         text:"",
+
         state:{
             size:"normal"
         },
@@ -1147,7 +1149,7 @@ postman.currentRequest = {
                 $('#respData').css("width", $(document).width() - 20);
                 $('#respData').css("height", $(document).height());
                 $('#respData').css("z-index", 100);
-                $('#respData').css("background-color", "white");
+                $('#respData').css("background-color", "#fff");
                 $('#respData').css("padding", "10px");
             }
             else {
@@ -1159,7 +1161,7 @@ postman.currentRequest = {
                 $('#respData').css("width", this.state.width);
                 $('#respData').css("height", this.state.height);
                 $('#respData').css("z-index", 10);
-                $('#respData').css("background-color", "white");
+                $('#respData').css("background-color", "#fff");
                 $('#respData').css("padding", "0px");
             }
         },
@@ -1183,11 +1185,8 @@ postman.currentRequest = {
         openInNewWindow:function (data) {
             var name = "response.html";
             var type = "text/html";
-            var filedata = data;
-            postman.filesystem.saveAndOpenFile(name, filedata, type, function () {
-            });
+            postman.filesystem.saveAndOpenFile(name, data, type, function () {});
         }
-
     },
 
     startNew:function () {
@@ -1248,7 +1247,6 @@ postman.currentRequest = {
             else {
                 $('#requestDescription').css("display", "none");
             }
-
         }
         else {
             $('#requestHelp').css("display", "none");
@@ -1264,16 +1262,11 @@ postman.currentRequest = {
         this.startNew();
         this.url = link;
         this.method = "GET";
-
         this.refreshLayout();
     },
 
     isMethodWithBody:function (method) {
         return $.inArray(method, this.methodsWithBody) >= 0;
-    },
-
-    setHeadersParamString:function (headers) {
-        this.headers = headers;
     },
 
     packHeaders:function (headers) {
@@ -1510,8 +1503,7 @@ postman.currentRequest = {
         url = envManager.processString(url, envValues);
         url = ensureProperUrl(url);
         xhr.open(method, url, true);
-        var i = 0;
-
+        var i;
 
         for (i = 0; i < headers.length; i++) {
             var header = headers[i];
@@ -2038,7 +2030,6 @@ postman.collections = {
 
     importCollections:function (files) {
         // Loop through the FileList
-        var f;
         for (var i = 0, f; f = files[i]; i++) {
             var reader = new FileReader();
 
@@ -2458,10 +2449,6 @@ postman.layout = {
 
         $('#requestHelp').on("mouseleave", function () {
             $('.requestHelpActions').css("display", "none");
-        });
-
-        $('#collection-file-selector-button').on("click", function () {
-
         });
 
         this.setLayout();
@@ -3194,6 +3181,7 @@ postman.envManager = {
             }
         }
     },
+
     init:function () {
         postman.envManager.initGlobals();
         $('#itemEnvironmentList').tmpl(this.environments).appendTo('#environments-list');
@@ -3324,17 +3312,19 @@ postman.envManager = {
     processString:function (string, values) {
         var count = values.length;
         var finalString = string;
+        var patString;
+        var pattern;
         for (var i = 0; i < count; i++) {
-            var patString = "{{" + values[i].key + "}}";
-            var pattern = new RegExp(patString, 'g');
+            patString = "{{" + values[i].key + "}}";
+            pattern = new RegExp(patString, 'g');
             finalString = finalString.replace(patString, values[i].value);
         }
 
         var globals = postman.envManager.globals;
-        var count = globals.length;
+        count = globals.length;
         for (i = 0; i < count; i++) {
-            var patString = "{{" + globals[i].key + "}}";
-            var pattern = new RegExp(patString, 'g');
+            patString = "{{" + globals[i].key + "}}";
+            pattern = new RegExp(patString, 'g');
             finalString = finalString.replace(patString, globals[i].value);
         }
 
@@ -3498,7 +3488,6 @@ postman.envManager = {
 
     importEnvironments:function (files) {
         // Loop through the FileList
-        var f;
         for (var i = 0, f; f = files[i]; i++) {
             var reader = new FileReader();
 

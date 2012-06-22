@@ -274,6 +274,9 @@ fieldset {
     padding-top: 10px;
 }
 
+#responsePrint {
+    background-color: #fff;
+}
 #responseData {
     margin-top: -5px;
     background: white;
