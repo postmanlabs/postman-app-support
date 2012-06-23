@@ -1,6 +1,6 @@
 {
   "name": "__MSG_name__",
-  "version": "0.6.2",
+  "version": "0.6.6",
 
   "description": "__MSG_description__",
   "icons": {
@@ -23,6 +23,6 @@
       "matches": ["http://*/*", "https://*/*"],
       "js": ["js/listener.js"] 
     }
-  ]
-  
+  ],
+  "offline_enabled": true
 }

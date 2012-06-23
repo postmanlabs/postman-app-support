@@ -75,6 +75,9 @@
             key = key ? key : "";
             value = value ? value : "";
 
+            key = key.replace(/'/g, "&apos;").replace(/"/g, "&quot;");
+            value = value.replace(/'/g, "&apos;").replace(/"/g, "&quot;");
+
             var h;
             h = '<div class="keyvalueeditor-row">';
             h += '<input type="text" class="keyvalueeditor-key" placeHolder="' + pKey

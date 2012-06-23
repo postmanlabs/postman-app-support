@@ -274,6 +274,9 @@ fieldset {
     padding-top: 10px;
 }
 
+#responsePrint {
+    background-color: #fff;
+}
 #responseData {
     margin-top: -5px;
     background: white;
@@ -438,7 +441,7 @@ fieldset {
 #bodyDataContainer {
     margin-top: 5px;
     margin-bottom: 10px;
-    width: 580px;
+    width: 470px;
     display: none;
 }
 
@@ -571,6 +574,22 @@ li .right {
 
 #requestUrl button {
     margin-bottom: 9px;
+}
+
+#requestUrlContainer {
+    float: left;
+    min-width: 470px;
+    max-width: 1000px;
+    margin-right: 20px;
+}
+
+#requestMethodContainer {
+    float: left;
+    margin-right: 10px;
+}
+
+#requestUrlButtonsContainer {
+    float: left;
 }
 
 #methods {
@@ -1102,8 +1121,7 @@ li .right {
 }
 
 #environment-quicklook-environments {
-    float: left;
-    width: 150px;
+    width: 100%;
 }
 
 #environment-quicklook-content ul {
@@ -1120,11 +1138,10 @@ li .right {
 }
 
 #environment-quicklook-globals {
-    float: left;
-    border-left: solid thin #ccc;
-    margin-left: 10px;
-    padding-left: 10px;
-    width: 150px;
+    border-top: solid thin #ccc;
+    margin-top: 5px;
+    padding-top: 5px;
+    width: 100%;
 }
 
 #environment-quicklook img {
@@ -1273,21 +1290,27 @@ li .right {
 }
 
 #sidebarToggle {
-    position: absolute;
-    top: 15px;
-    left: 293px;
+    position: fixed;
+    bottom: 0;
+    left: 350px;
     opacity: 0.5;
-    z-index: 10;
+    z-index: 100;
     cursor: pointer;
+    height: 24px;
+    width: 16px;
+    background: #ccc;
+    border-top-right-radius: 5px;
+    padding-top: 6px;
+    padding-left: 3px;
+}
+
+#sidebarToggle img {
+    width: 10px;
+    height: 10px;
 }
 
 #sidebarToggle:hover {
     opacity: 1;
-}
-
-#sidebarToggle img {
-    width: 20px;
-    height: 20px;
 }
 
 #url-keyvaleditor-container,
@@ -1297,4 +1320,28 @@ li .right {
 
 #environments-list-help-detail {
     display: none;
+}
+
+#connection-error-url {
+    font-weight: bold;
+}
+
+.label-method-GET,
+.label-method-get {
+    background-color: #4DAB58;
+}
+
+.label-method-POST,
+.label-method-post {
+    background-color: #CC9900;
+}
+
+.label-method-DELETE,
+.label-method-delete {
+    background-color: #C30;
+}
+
+.label-method-PUT,
+.label-method-put {
+    background-color: #36F;
 }
