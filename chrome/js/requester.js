@@ -1091,7 +1091,6 @@ postman.currentRequest = {
 
             if (!postman.editor.codeMirror || forceCreate) {
                 $('.CodeMirror').remove();
-                console.log("Initializing new CodeMirror area");
                 postman.editor.codeMirror = CodeMirror.fromTextArea(codeDataArea,
                     {
                         mode:renderMode,
@@ -1185,7 +1184,8 @@ postman.currentRequest = {
         openInNewWindow:function (data) {
             var name = "response.html";
             var type = "text/html";
-            postman.filesystem.saveAndOpenFile(name, data, type, function () {});
+            postman.filesystem.saveAndOpenFile(name, data, type, function () {
+            });
         }
     },
 
