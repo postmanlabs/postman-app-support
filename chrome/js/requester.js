@@ -508,33 +508,9 @@ postman.currentRequest = {
                 valueTypes:["text", "file"],
                 deleteButton:'<img class="deleteButton" src="img/delete.png">',
                 onDeleteRow:function () {
-                    var params = $(editorId).keyvalueeditor('getValues');
-                    var newParams = [];
-                    for (var i = 0; i < params.length; i++) {
-                        var param = {
-                            key:params[i].key,
-                            value:params[i].value
-                        };
-
-                        newParams.push(param);
-                    }
-
-                    postman.currentRequest.setBodyParamString(newParams);
                 },
 
                 onBlurElement:function () {
-                    var params = $(editorId).keyvalueeditor('getValues');
-                    var newParams = [];
-                    for (var i = 0; i < params.length; i++) {
-                        var param = {
-                            key:params[i].key,
-                            value:params[i].value
-                        };
-
-                        newParams.push(param);
-                    }
-
-                    postman.currentRequest.setBodyParamString(newParams);
                 }
             };
 
@@ -550,33 +526,9 @@ postman.currentRequest = {
                 valueTypes:["text"],
                 deleteButton:'<img class="deleteButton" src="img/delete.png">',
                 onDeleteRow:function () {
-                    var params = $(editorId).keyvalueeditor('getValues');
-                    var newParams = [];
-                    for (var i = 0; i < params.length; i++) {
-                        var param = {
-                            key:params[i].key,
-                            value:params[i].value
-                        };
-
-                        newParams.push(param);
-                    }
-
-                    postman.currentRequest.setBodyParamString(newParams);
                 },
 
                 onBlurElement:function () {
-                    var params = $(editorId).keyvalueeditor('getValues');
-                    var newParams = [];
-                    for (var i = 0; i < params.length; i++) {
-                        var param = {
-                            key:params[i].key,
-                            value:params[i].value
-                        };
-
-                        newParams.push(param);
-                    }
-
-                    postman.currentRequest.setBodyParamString(newParams);
                 }
             };
 
@@ -598,8 +550,6 @@ postman.currentRequest = {
 
                 newParams.push(param);
             }
-
-            postman.currentRequest.setBodyParamString(newParams);
         },
 
         closeFormDataEditor:function () {
@@ -622,8 +572,6 @@ postman.currentRequest = {
 
                 newParams.push(param);
             }
-
-            postman.currentRequest.setBodyParamString(newParams);
         },
 
         closeUrlEncodedEditor:function () {
@@ -658,8 +606,45 @@ postman.currentRequest = {
             return postman.currentRequest.body.mode;
         },
 
-        getData:function (mode) {
+        getData:function () {
+            var data;
+            var mode = postman.currentRequest.body.mode;
+            var params;
+            var newParams;
+            var param;
+            var i;
 
+            if (mode === "params") {
+                params = $('#formdata-keyvaleditor').keyvalueeditor('getValues');
+                newParams = [];
+                for (i = 0; i < params.length; i++) {
+                    param = {
+                        key:params[i].key,
+                        value:params[i].value
+                    };
+
+                    newParams.push(param);
+                }
+                data = postman.currentRequest.getBodyParamString(newParams);
+            }
+            else if (mode === "raw") {
+                data = $('#body').val();
+            }
+            else if (mode === "urlencoded") {
+                params = $('#urlencoded-keyvaleditor').keyvalueeditor('getValues');
+                newParams = [];
+                for (i = 0; i < params.length; i++) {
+                    param = {
+                        key:params[i].key,
+                        value:params[i].value
+                    };
+
+                    newParams.push(param);
+                }
+                data = postman.currentRequest.getBodyParamString(newParams);
+            }
+
+            return data;
         },
 
         urlencode:function (data) {
@@ -780,7 +765,7 @@ postman.currentRequest = {
     getAsJson:function () {
         var request = {
             url:$('#url').val(),
-            data:$('#body').val(),
+            data:postman.currentRequest.body.getData(),
             headers:postman.currentRequest.getPackedHeaders(),
             dataMode:postman.currentRequest.dataMode,
             method:postman.currentRequest.method
@@ -1058,7 +1043,7 @@ postman.currentRequest = {
                     for (var i = 0; i < count; i++) {
                         var cookie = cookies[i];
                         if ("expirationDate" in cookie) {
-                            var date = new Date(cookie.expirationDate*1000);
+                            var date = new Date(cookie.expirationDate * 1000);
                             cookies[i].expires = date.toUTCString();
                         }
                     }
@@ -1266,7 +1251,7 @@ postman.currentRequest = {
     refreshLayout:function () {
         $('#url').val(this.url);
         $('#requestMethodSelector').val(this.method);
-        $('#body').val(this.body.data);
+        $('#body').val(postman.currentRequest.body.getData());
         $('#headers-keyvaleditor-actions-open .headers-count').html(this.headers.length);
         $('#submitRequest').button("reset");
         $('#dataModeSelector a').removeClass("active");
@@ -1475,6 +1460,10 @@ postman.currentRequest = {
     },
 
     setBodyParamString:function (params) {
+        $('#body').val(postman.currentRequest.getBodyParamString(params));
+    },
+
+    getBodyParamString:function (params) {
         var paramsLength = params.length;
         var paramArr = [];
         for (var i = 0; i < paramsLength; i++) {
@@ -1483,7 +1472,7 @@ postman.currentRequest = {
                 paramArr.push(p.key + "=" + p.value);
             }
         }
-        $('#body').val(paramArr.join('&'));
+        return paramArr.join('&');
     },
 
     setUrlParamString:function (params) {
@@ -1510,7 +1499,7 @@ postman.currentRequest = {
     send:function () {
         //Show error
         this.url = $('#url').val();
-        this.body.data = $('#body').val();
+        this.body.data = postman.currentRequest.body.getData();
 
         if (this.url === "") {
             return;
@@ -2181,7 +2170,7 @@ postman.collections = {
         collectionRequest.headers = postman.currentRequest.getPackedHeaders();
         collectionRequest.url = url;
         collectionRequest.method = postman.currentRequest.method;
-        collectionRequest.data = $('#body').val();
+        collectionRequest.data = postman.currentRequest.body.getData();
         collectionRequest.dataMode = postman.currentRequest.dataMode;
         collectionRequest.time = new Date().getTime();
 
@@ -2215,7 +2204,7 @@ postman.collections = {
         collectionRequest.headers = postman.currentRequest.getPackedHeaders();
         collectionRequest.url = url;
         collectionRequest.method = postman.currentRequest.method;
-        collectionRequest.data = $('#body').val();
+        collectionRequest.data = postman.currentRequest.body.getData();
         collectionRequest.dataMode = postman.currentRequest.dataMode;
         collectionRequest.name = newRequestName;
         collectionRequest.description = newRequestDescription;
