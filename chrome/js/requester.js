@@ -934,6 +934,9 @@ postman.currentRequest = {
         loadHeaders:function (data) {
             this.headers = postman.currentRequest.unpackResponseHeaders(data);
             $('#responseHeaders').html("");
+            this.headers = _.sortBy(this.headers, function(header) {
+                return header.name;
+            });
             $("#itemResponseHeader").tmpl(this.headers).appendTo("#responseHeaders");
             $('.responseHeaderName').popover();
         },

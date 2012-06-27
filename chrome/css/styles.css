@@ -279,8 +279,10 @@ fieldset {
 }
 #responseData {
     margin-top: -5px;
+    margin-left: -10px;
     background: white;
     min-height: 200px;
+    padding-left: 10px;
 }
 
 #respHeaders:focus,
