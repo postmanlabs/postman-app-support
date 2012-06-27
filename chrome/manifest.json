@@ -17,7 +17,7 @@
   },
 
   "default_locale": "en",
-  "permissions": ["http://*/*", "https://*/*"],
+  "permissions": ["cookies", "http://*/*", "https://*/*"],
   "content_scripts": [
     {
       "matches": ["http://*/*", "https://*/*"],

@@ -376,6 +376,7 @@
         <div id="responseTopBar">
             <ul class="response-tabs clearfix">
                 <li class="active" data-section="body">Body</li>
+                <li data-section="cookies" id="response-tabs-cookies">Cookies</li>
                 <li data-section="headers">Headers</li>
             </ul>
             <div id="pstatus">
@@ -437,9 +438,24 @@
                 </div>
             </div>
         </div>
+        <div id="response-cookies">
+            <table id="response-cookies-content" class="table table-striped table-bordered">
+                <thead>
+                <th>Name</th>
+                <th>Value</th>
+                <th>Domain</th>
+                <th>Path</th>
+                <th>Expires</th>
+                <th>HTTP</th>
+                <th>Secure</th>
+                </thead>
+                <tbody id="response-cookies-items">
+                </tbody>
+            </table>
+        </div>
         <div id="respHeaders">
             <div id="respHeadersContent">
-                <div id="responseHeaders" tabindex="6"></div>
+                <div id="responseHeaders"></div>
             </div>
         </div>
     </fieldset>
@@ -912,6 +928,17 @@
              rel="popover">${name} &rarr;</div>
         <div class="responseHeaderValue">${value}</div>
     </li>
+</script>
+<script id="itemResponseCookie" type="text/x-jquery-tmpl">
+    <tr>
+    <td>${name}</td>
+    <td>${value}</td>
+    <td>${domain}</td>
+    <td>${path}</td>
+    <td>${expires}</td>
+    <td>${httpOnly}</td>
+    <td>${secure}</td>
+    </tr>
 </script>
 <script id="itemCollectionSidebarHead" type="text/x-jquery-tmpl">
     <li id="collection-${id}" data-id="${id}" class="sidebarCollection">

@@ -293,11 +293,17 @@ fieldset {
     outline: none !important;
 }
 
-#respHeaders {
+#respHeaders,
+#response-cookies {
     margin-top: 20px;
     max-width: 1000px;
     font-size: 11px;
     display: none;
+}
+
+#response-cookies-content {
+    max-width: 1000px;
+    overflow: scroll;
 }
 
 #respHeaders textarea {
@@ -1250,6 +1256,10 @@ li .right {
 
 .response-tabs li:first-child {
     border-left: none;
+}
+
+#response-tabs-cookies {
+    display: none;
 }
 
 #dataModeSelector {

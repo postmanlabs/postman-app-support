@@ -934,7 +934,7 @@ postman.currentRequest = {
         loadHeaders:function (data) {
             this.headers = postman.currentRequest.unpackResponseHeaders(data);
             $('#responseHeaders').html("");
-            this.headers = _.sortBy(this.headers, function(header) {
+            this.headers = _.sortBy(this.headers, function (header) {
                 return header.name;
             });
             $("#itemResponseHeader").tmpl(this.headers).appendTo("#responseHeaders");
@@ -1032,9 +1032,42 @@ postman.currentRequest = {
                 else {
                     this.setFormat(language, this.text, postman.settings.previewType, true);
                 }
+
+                var url = postman.currentRequest.url;
+                postman.currentRequest.response.loadCookies(url);
             }
 
             postman.layout.setLayout();
+        },
+
+        loadCookies:function (url) {
+            chrome.cookies.getAll({url:url}, function (cookies) {
+                var count = cookies.length;
+                console.log(cookies);
+                if (count == 0) {
+                    $("#response-tabs-cookies").html("Cookies");
+                    $('#response-tabs-cookies').css("display", "none");
+                }
+                else {
+                    $("#response-tabs-cookies").html("Cookies (" + count + ")");
+                    $('#response-tabs-cookies').css("display", "block");
+
+                    $('#response-cookies-items').html("");
+                    cookies = _.sortBy(cookies, function (cookie) {
+                        return cookie.name;
+                    });
+
+                    for (var i = 0; i < count; i++) {
+                        var cookie = cookies[i];
+                        if ("expirationDate" in cookie) {
+                            var date = new Date(cookie.expirationDate*1000);
+                            // will display time in 10:30:23 format
+                            cookies[i].expires = date.toUTCString();
+                        }
+                    }
+                    $("#itemResponseCookie").tmpl(cookies).appendTo("#response-cookies-items");
+                }
+            });
         },
 
         setFormat:function (language, response, format, forceCreate) {
@@ -1172,23 +1205,32 @@ postman.currentRequest = {
         showHeaders:function () {
             $('.response-tabs li').removeClass("active");
             $('.response-tabs li[data-section="headers"]').addClass("active");
-
             $('#responsePrint').css("display", "none");
             $('#respHeaders').css("display", "block");
+            $('#response-cookies').css("display", "none");
         },
 
         showBody:function () {
             $('.response-tabs li').removeClass("active");
             $('.response-tabs li[data-section="body"]').addClass("active");
-
             $('#responsePrint').css("display", "block");
             $('#respHeaders').css("display", "none");
+            $('#response-cookies').css("display", "none");
+        },
+
+        showCookies:function () {
+            $('.response-tabs li').removeClass("active");
+            $('.response-tabs li[data-section="cookies"]').addClass("active");
+            $('#responsePrint').css("display", "none");
+            $('#respHeaders').css("display", "none");
+            $('#response-cookies').css("display", "block");
         },
 
         openInNewWindow:function (data) {
             var name = "response.html";
             var type = "text/html";
-            postman.filesystem.saveAndOpenFile(name, data, type, function () {});
+            postman.filesystem.saveAndOpenFile(name, data, type, function () {
+            });
         }
     },
 
@@ -1504,6 +1546,8 @@ postman.currentRequest = {
 
         var envManager = postman.envManager;
         url = envManager.processString(url, envValues);
+        postman.currentRequest.url = url;
+
         url = ensureProperUrl(url);
         xhr.open(method, url, true);
         var i;
@@ -1574,8 +1618,12 @@ postman.currentRequest = {
         }
 
         if (postman.settings.autoSaveRequest) {
-            postman.history.addRequest($('#url').val(), method, postman.currentRequest.getPackedHeaders(), originalData, this.dataMode);
+            postman.history.addRequest(url, method, postman.currentRequest.getPackedHeaders(), originalData, this.dataMode);
         }
+
+        var details = {
+            url:url
+        };
 
         $('#submitRequest').button("loading");
         this.response.clear();
@@ -2443,6 +2491,9 @@ postman.layout = {
             }
             else if (section === "headers") {
                 postman.currentRequest.response.showHeaders();
+            }
+            else if (section === "cookies") {
+                postman.currentRequest.response.showCookies();
             }
         });
 
