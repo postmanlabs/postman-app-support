@@ -1043,7 +1043,6 @@ postman.currentRequest = {
         loadCookies:function (url) {
             chrome.cookies.getAll({url:url}, function (cookies) {
                 var count = cookies.length;
-                console.log(cookies);
                 if (count == 0) {
                     $("#response-tabs-cookies").html("Cookies");
                     $('#response-tabs-cookies').css("display", "none");
@@ -1051,7 +1050,6 @@ postman.currentRequest = {
                 else {
                     $("#response-tabs-cookies").html("Cookies (" + count + ")");
                     $('#response-tabs-cookies').css("display", "block");
-
                     $('#response-cookies-items').html("");
                     cookies = _.sortBy(cookies, function (cookie) {
                         return cookie.name;
@@ -1061,7 +1059,6 @@ postman.currentRequest = {
                         var cookie = cookies[i];
                         if ("expirationDate" in cookie) {
                             var date = new Date(cookie.expirationDate*1000);
-                            // will display time in 10:30:23 format
                             cookies[i].expires = date.toUTCString();
                         }
                     }
