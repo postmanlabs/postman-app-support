@@ -90,15 +90,15 @@
                                          style="width:20px; height:20px; vertical-align: middle;"/></a>
         </div>
         <ul id="sidebarSelectors" class="nav nav-pills">
-            <li class="active"><a href="javascript:void(0);" data-id="history" data-toggle="tab">History</a></li>
-            <li><a href="javascript:void(0);" data-id="collections" data-toggle="tab">Collections</a></li>
+            <li class="active"><a href="#sidebarSection-history" data-id="history" data-toggle="tab">History</a></li>
+            <li><a href="#sidebarSection-collections" data-id="collections" data-toggle="tab">Collections</a></li>
         </ul>
         <div id="sidebarSectionContainer">
-            <div id="sidebarSection-history">
+            <div class="tab-pane active" id="sidebarSection-history">
                 <ul id="historyItems" class="clearfix">
                 </ul>
             </div>
-            <div id="sidebarSection-collections">
+            <div class="tab-pane active" id="sidebarSection-collections">
                 <ul id="collectionItems" class="clearfix">
                 </ul>
             </div>
@@ -624,12 +624,12 @@
     </div>
 
     <div class="modal-footer">
-        <a href="javascript:void(0);" data-dismiss="modal" class="btn">No</a>
         <a href="javascript:void(0);"
            data-collection-id=""
            id="modalDeleteCollectionYes"
            data-dismiss="modal"
            class="btn btn-danger">Yes</a>
+        <a href="javascript:void(0);" data-dismiss="modal" class="btn">No</a>
     </div>
 </div>
 <div id="modalEnvironments" class="modal fade">

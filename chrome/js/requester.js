@@ -995,7 +995,7 @@ postman.currentRequest = {
                 postman.currentRequest.response.previewType = postman.settings.previewType;
 
                 if (!_.isUndefined(contentType) && !_.isNull(contentType)) {
-                    if (contentType.search(/json/i) !== -1) {
+                    if (contentType.search(/json/i) !== -1 || contentType.search(/javascript/i) !== -1) {
                         language = 'javascript';
                     }
 
@@ -2274,8 +2274,7 @@ postman.collections = {
             });
         }
 
-        $('#sidebarSection-history').css("display", "none");
-        $('#sidebarSection-collections').css("display", "block");
+        postman.layout.sidebar.select("collections");
         $('#sidebarSelectors a[data-id="collections"]').tab('show');
     },
 
