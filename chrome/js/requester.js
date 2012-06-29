@@ -1109,7 +1109,6 @@ postman.currentRequest = {
 
             if (!postman.editor.codeMirror || forceCreate) {
                 $('.CodeMirror').remove();
-                console.log("Initializing new CodeMirror area");
                 postman.editor.codeMirror = CodeMirror.fromTextArea(codeDataArea,
                     {
                         mode:renderMode,
@@ -1152,6 +1151,10 @@ postman.currentRequest = {
         },
 
         toggleBodySize:function () {
+            if($('#response').css("display") === "none") {
+                return false;
+            }
+
             $('a[rel="tooltip"]').tooltip('hide');
             if (this.state.size === "normal") {
                 this.state.size = "maximized";
@@ -3397,20 +3400,12 @@ postman.envManager = {
     convertString:function (string) {
         var environment = postman.envManager.selectedEnv;
         var envValues = [];
-        var isEnvironmentAvailable = false;
 
         if (environment !== null) {
-            isEnvironmentAvailable = true;
             envValues = environment.values;
         }
 
-        if (isEnvironmentAvailable === true) {
-            return postman.envManager.processString(string, envValues);
-        }
-        else {
-            return string;
-        }
-
+        return postman.envManager.processString(string, envValues);
     },
 
     getAllEnvironments:function () {
