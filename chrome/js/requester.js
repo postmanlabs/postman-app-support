@@ -1392,6 +1392,7 @@ postman.currentRequest = {
         else {
             $('#updateRequestInCollection').css("display", "none");
         }
+
         if (typeof request.headers !== "undefined") {
             this.headers = this.unpackHeaders(request.headers);
         }
@@ -2126,6 +2127,15 @@ postman.collections = {
         });
     },
 
+    openCollection: function (id) {
+        var target = "#collectionRequests-" + id;
+        if ($(target).css("display") === "none") {
+            $(target).slideDown(100, function () {
+                postman.layout.refreshScrollPanes();
+            });
+        }
+    },
+
     toggleRequestList:function (id) {
         var target = "#collectionRequests-" + id;
         var label = "#collection-" + id + " .collection-head-actions .label";
@@ -2233,6 +2243,11 @@ postman.collections = {
 
                     $('#itemCollectionSidebarRequest').tmpl([req]).appendTo(targetElement);
                     postman.layout.refreshScrollPanes();
+
+                    postman.currentRequest.isFromCollection = true;
+                    postman.currentRequest.collectionRequestId = collectionRequest.id;
+                    $('#updateRequestInCollection').css("display", "block");
+                    postman.collections.openCollection(collectionRequest.collectionId);
                 });
             });
         }
@@ -2251,8 +2266,17 @@ postman.collections = {
 
                 $('#itemCollectionSidebarRequest').tmpl([req]).appendTo(targetElement);
                 postman.layout.refreshScrollPanes();
+
+                postman.currentRequest.isFromCollection = true;
+                postman.currentRequest.collectionRequestId = collectionRequest.id;
+                $('#updateRequestInCollection').css("display", "block");
+                postman.collections.openCollection(collectionRequest.collectionId);
             });
         }
+
+        $('#sidebarSection-history').css("display", "none");
+        $('#sidebarSection-collections').css("display", "block");
+        $('#sidebarSelectors a[data-id="collections"]').tab('show');
     },
 
     getAllCollections:function () {
