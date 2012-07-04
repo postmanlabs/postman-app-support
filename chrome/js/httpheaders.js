@@ -1,5 +1,13 @@
 var headerDetails = {
     "accept-ranges":"Content-Types that are acceptable",
+    "access-control-allow-credentials":"Indicates whether or not the response to the request can be exposed when the credentials flag is true. When used as part of a response to a preflight request, this indicates whether or not the actual request can be made using credentials.",
+    "access-control-allow-headers":"Used in response to a preflight request to indicate which HTTP headers can be used when making the actual request.",
+    "access-control-allow-origin":"Specifies a URI that may access the resource. For requests without credentials, the server may specify '*' as a wildcard, thereby allowing any origin to access the resource.",
+    "access-control-allow-methods":"Specifies the method or methods allowed when accessing the resource. This is used in response to a preflight request.",
+    "access-control-expose-headers":"Lets a server whitelist headers that browsers are allowed to access.",
+    "access-control-max-age":"Indicates how long the results of a preflight request can be cached in seconds.",
+    "access-control-request-method":"Used when issuing a preflight request to let the server know what HTTP method will be used when the actual request is made.",
+    "access-control-request-headers":"Used when issuing a preflight request to let the server know what HTTP headers will be used when the actual request is made.",
     "age":"The age the object has been in a proxy cache in seconds",
     "allow":"Valid actions for a specified resource. To be used for a 405 Method not allowed",
     "cache-control":"Tells all caching mechanisms from server to client whether they may cache this object. It is measured in seconds",
