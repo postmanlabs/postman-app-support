@@ -592,6 +592,31 @@
         <a href="javascript:void(0);" data-dismiss="modal" class="btn btn-secondary">Cancel</a>
     </div>
 </div>
+<div id="modalShareCollection" class="modal fade">
+    <div class="modal-header">
+        <a href="#" class="close" data-dismiss="modal" id="modal-share-collection-close">x</a>
+
+        <h3>Share collection</h3>
+    </div>
+
+    <div class="modal-body">
+        <div>
+            <h4>Share as a link</h4>
+
+            <p>Upload your collection to getpostman.com and get a link to share with others.</p>
+
+            <pre id="share-collection-link"></pre>
+            <a id="share-collection-get-link" data-collection-id="" href="javascript:void(0);" class="btn">Upload</a>
+        </div>
+        <div style="margin-top: 20px;">
+            <h4>Download as a file</h4>
+
+            <p>Get a JSON file to share with others or for backing up the collection.</p>
+            <a id="share-collection-download" data-collection-id="" href="javascript:void(0);" class="btn">Download</a>
+        </div>
+        <hr/>
+    </div>
+</div>
 <div id="modalImportCollection" class="modal fade">
     <div class="modal-header">
         <a href="#" class="close" data-dismiss="modal">x</a>
@@ -600,13 +625,31 @@
     </div>
 
     <div class="modal-body">
-        <p>Drag and drop Postman collections files here</p>
+        <h4>Import from disk</h4>
 
         <div class="modal-import-alerts"></div>
         <div id="import-collection-dropzone">
             <h3>Drop files here or</h3>
             <input type="file" id="collection-files-input"
                    name="files[]" multiple/>
+        </div>
+        <hr/>
+        <div id="import-collection-url-container">
+            <h4>Import from a URL</h4>
+
+            <div class="control-group">
+                <div class="controls">
+                    <input type="text"
+                           class="large cleanInput"
+                           placeholder="Enter URL and press import"
+                           id="import-collection-url-input"/>
+                </div>
+            </div>
+            <div class="control-group">
+                <a href="javascript:void(0);"
+                   id="import-collection-url-submit"
+                   class="btn btn-primary">Import</a>
+            </div>
         </div>
     </div>
 </div>
@@ -931,13 +974,13 @@
 </script>
 <script id="itemResponseCookie" type="text/x-jquery-tmpl">
     <tr>
-    <td>${name}</td>
-    <td>${value}</td>
-    <td>${domain}</td>
-    <td>${path}</td>
-    <td>${expires}</td>
-    <td>${httpOnly}</td>
-    <td>${secure}</td>
+        <td>${name}</td>
+        <td>${value}</td>
+        <td>${domain}</td>
+        <td>${path}</td>
+        <td>${expires}</td>
+        <td>${httpOnly}</td>
+        <td>${secure}</td>
     </tr>
 </script>
 <script id="itemCollectionSidebarHead" type="text/x-jquery-tmpl">
@@ -951,9 +994,9 @@
                     <img src="img/glyphicons_151_edit.png" style="vertical-align: middle;"/></a>
                 <a href="javascript:void(0);"
                    data-placement="bottom"
-                   rel="tooltip" data-original-title="Download collection"
+                   rel="tooltip" data-original-title="Share collection"
                    class="collection-actions-download" data-id="${id}">
-                    <img src="img/glyphicons_181_download_alt.png" style="vertical-align: middle;"/></a>
+                    <img src="img/share.png" style="vertical-align: middle;"/></a>
                 <a rel="tooltip" data-original-title="Delete collection"
                    data-name="${name}"
                    data-placement="bottom"

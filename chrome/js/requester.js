@@ -54,7 +54,7 @@ postman.indexedDB = {};
 postman.indexedDB.db = null;
 
 postman.fs = {};
-
+postman.webUrl = "http://localhost/postman-server";
 // IndexedDB implementations still use API prefixes
 var indexedDB = window.indexedDB || // Use the standard DB API
     window.mozIndexedDB || // Or Firefox's early version of it
@@ -1151,7 +1151,7 @@ postman.currentRequest = {
         },
 
         toggleBodySize:function () {
-            if($('#response').css("display") === "none") {
+            if ($('#response').css("display") === "none") {
                 return false;
             }
 
@@ -2028,8 +2028,29 @@ postman.collections = {
             postman.collections.deleteCollection(id);
         });
 
+        $('#import-collection-url-submit').on("click", function () {
+            var url = $('#import-collection-url-input').val();
+            postman.collections.importCollectionFromUrl(url);
+        });
+
         $('#collectionItems').on("click", ".collection-actions-download", function () {
             var id = $(this).attr('data-id');
+            $("#modalShareCollection").modal("show");
+            $('#share-collection-get-link').attr("data-collection-id", id);
+            $('#share-collection-download').attr("data-collection-id", id);
+            $('#share-collection-link').css("display", "none");
+        });
+
+        $('#share-collection-get-link').on("click", function () {
+            var id = $(this).attr('data-collection-id');
+            postman.collections.uploadCollection(id, function (link) {
+                $('#share-collection-link').css("display", "block");
+                $('#share-collection-link').html(link);
+            });
+        });
+
+        $('#share-collection-download').on("click", function () {
+            var id = $(this).attr('data-collection-id');
             postman.collections.saveCollection(id);
         });
 
@@ -2064,6 +2085,29 @@ postman.collections = {
                 var type = "application/json";
                 var filedata = JSON.stringify(collection);
                 postman.filesystem.saveAndOpenFile(name, filedata, type, function () {
+                });
+            });
+        });
+    },
+
+    uploadCollection:function (id, callback) {
+        postman.indexedDB.getCollection(id, function (data) {
+            var collection = data;
+            postman.indexedDB.getAllRequestsInCollection(id, function (data) {
+                collection['requests'] = data;
+                var name = collection['name'] + ".json";
+                var type = "application/json";
+                var filedata = JSON.stringify(collection);
+
+                var uploadUrl = postman.webUrl + '/collections';
+                $.ajax({
+                    type:'POST',
+                    url:uploadUrl,
+                    data:filedata,
+                    success:function (data) {
+                        var link = data.link;
+                        callback(link);
+                    }
                 });
             });
         });
@@ -2122,6 +2166,46 @@ postman.collections = {
         }
     },
 
+    importCollectionFromUrl:function (url) {
+        $.get(url, function (data) {
+            var collection = data;
+            collection.id = guid();
+            postman.indexedDB.addCollection(collection, function (c) {
+                $('#messageNoCollection').css("display", "none");
+                $('#itemCollectionSelectorList').tmpl([collection]).appendTo('#selectCollection');
+                $('#itemCollectionSidebarHead').tmpl([collection]).appendTo('#collectionItems');
+
+                $('a[rel="tooltip"]').tooltip();
+
+                var message = {
+                    name:collection.name,
+                    action:"added"
+                };
+
+                $('#messageCollectionAdded').tmpl([message]).appendTo('.modal-import-alerts');
+
+                for (var i = 0; i < collection.requests.length; i++) {
+                    var request = collection.requests[i];
+                    request.collectionId = collection.id;
+                    request.id = guid();
+
+                    postman.indexedDB.addCollectionRequest(request, function (req) {
+                        var targetElement = "#collectionRequests-" + req.collectionId;
+                        postman.urlCache.addUrl(req.url);
+
+                        if (typeof req.name === "undefined") {
+                            req.name = req.url;
+                        }
+
+                        req.name = limitStringLineWidth(req.name, 43);
+                        $('#itemCollectionSidebarRequest').tmpl([req]).appendTo(targetElement);
+                        postman.layout.refreshScrollPanes();
+                    });
+                }
+            });
+        });
+    },
+
     getCollectionRequest:function (id) {
         postman.indexedDB.getCollectionRequest(id, function (request) {
             postman.currentRequest.isFromCollection = true;
@@ -2130,7 +2214,7 @@ postman.collections = {
         });
     },
 
-    openCollection: function (id) {
+    openCollection:function (id) {
         var target = "#collectionRequests-" + id;
         if ($(target).css("display") === "none") {
             $(target).slideDown(100, function () {

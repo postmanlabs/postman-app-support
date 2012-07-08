@@ -67,8 +67,8 @@ header {
     color: #333 !important;
     padding: 5px !important;
     border: none !important;
-    box-shadow: none !important;
     border-bottom: solid thin #ccc !important;
+    box-shadow: none !important;
     border-radius: 0 !important;
     outline: none !important;
 }
@@ -756,6 +756,14 @@ li .right {
     border: 1px solid #DDD;
 }
 
+#modalImportCollection h4 {
+    margin-bottom: 10px;
+}
+
+#import-collection-url-input {
+    width: 90%;
+}
+
 #formModalAddToCollection {
     position: absolute;
     top: 50%;
@@ -1356,4 +1364,8 @@ li .right {
 .label-method-PUT,
 .label-method-put {
     background-color: #36F;
+}
+
+#share-collection-link {
+    display: none;
 }
