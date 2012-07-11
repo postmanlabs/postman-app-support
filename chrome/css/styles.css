@@ -740,7 +740,11 @@ li .right {
     float: left;
 }
 
-#requestActionsSecondary {
+#reqeustActionsSecondary {
+    display: inline-block;
+}
+
+#requestActionsRight {
     float: right;
 }
 

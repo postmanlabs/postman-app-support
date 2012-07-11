@@ -1383,7 +1383,7 @@ postman.currentRequest = {
         this.method = request.method.toUpperCase();
 
         if (isFromCollection) {
-            $('#updateRequestInCollection').css("display", "block");
+            $('#updateRequestInCollection').css("display", "inline-block");
         }
         else {
             $('#updateRequestInCollection').css("display", "none");
@@ -2326,7 +2326,7 @@ postman.collections = {
 
                     postman.currentRequest.isFromCollection = true;
                     postman.currentRequest.collectionRequestId = collectionRequest.id;
-                    $('#updateRequestInCollection').css("display", "block");
+                    $('#updateRequestInCollection').css("display", "inline-block");
                     postman.collections.openCollection(collectionRequest.collectionId);
                 });
             });
@@ -2349,12 +2349,17 @@ postman.collections = {
 
                 postman.currentRequest.isFromCollection = true;
                 postman.currentRequest.collectionRequestId = collectionRequest.id;
-                $('#updateRequestInCollection').css("display", "block");
+                $('#updateRequestInCollection').css("display", "inline-block");
                 postman.collections.openCollection(collectionRequest.collectionId);
             });
         }
 
         postman.layout.sidebar.select("collections");
+        $('#requestHelp').css("display", "block");
+        $('#requestName').css("display", "block");
+        $('#requestDescription').css("display", "block");
+        $('#requestName').html(newRequestName);
+        $('#requestDescription').html(newRequestDescription);
         $('#sidebarSelectors a[data-id="collections"]').tab('show');
     },
 
