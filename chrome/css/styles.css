@@ -553,6 +553,11 @@ li .right {
     float: left;
 }
 
+#response-language {
+    margin: 17px 0 15px 10px;
+    float: left;
+}
+
 #request {
     padding: 0 0 20px 20px;
     border-bottom: solid thin #ccc;

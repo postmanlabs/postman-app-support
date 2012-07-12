@@ -1,28 +1,30 @@
 {
-  "name": "__MSG_name__",
-  "version": "0.6.6",
+    "name":"__MSG_name__",
+    "version":"0.6.7",
 
-  "description": "__MSG_description__",
-  "icons": {
-    "16": "icon_16.png",
-    "32": "icon_32.png",
-    "48": "icon_48.png",
-    "128": "icon_128.png"
-  },
+    "description":"__MSG_description__",
+    "icons":{
+        "16":"icon_16.png",
+        "32":"icon_32.png",
+        "48":"icon_48.png",
+        "128":"icon_128.png"
+    },
 
-  "app": {
-    "launch": {
-      "local_path": "index.html"
-    }
-  },
+    "app":{
+        "launch":{
+            "local_path":"index.html"
+        }
+    },
 
-  "default_locale": "en",
-  "permissions": ["cookies", "http://*/*", "https://*/*"],
-  "content_scripts": [
-    {
-      "matches": ["http://*/*", "https://*/*"],
-      "js": ["js/listener.js"] 
-    }
-  ],
-  "offline_enabled": true
+    "default_locale":"en",
+    "permissions":["cookies", "http://*/*", "https://*/*"],
+    "content_scripts":[
+        {
+            "matches":["http://getpostman.com/*", "https://getpostman.com/*"],
+            "js":["js/listener.js"],
+            "run_at":"document_end"
+        }
+    ],
+
+    "offline_enabled":true
 }

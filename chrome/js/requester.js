@@ -434,7 +434,7 @@ postman.settings = {
             postman.settings[key] = localStorage[key];
         }
         else {
-            if(defaultVal) {
+            if (defaultVal) {
                 postman.settings[key] = defaultVal;
                 localStorage[key] = defaultVal;
             }
@@ -449,10 +449,10 @@ postman.settings = {
 
     get:function (key) {
         var val = localStorage[key];
-        if(val === "true") {
+        if (val === "true") {
             return true;
         }
-        else if(val === "false") {
+        else if (val === "false") {
             return false;
         }
         else {
@@ -882,6 +882,11 @@ postman.currentRequest = {
         },
         previewType:"parsed",
 
+        setMode:function (mode) {
+            var text = postman.currentRequest.response.text;
+            postman.currentRequest.response.setFormat(mode, text, postman.settings.get("previewType"), true);
+        },
+
         changePreviewType:function (newType) {
             if (this.previewType === newType) {
                 return;
@@ -1063,6 +1068,8 @@ postman.currentRequest = {
             var foldFunc;
             var mode;
 
+            $('#response-language').css("display", "block");
+            $('#response-language a').removeClass("active");
             //Use prettyprint here instead of stringify
             if (language === 'javascript') {
                 try {
@@ -1073,12 +1080,14 @@ postman.currentRequest = {
                 catch (e) {
                     mode = 'text';
                 }
+                $('#response-language a[data-mode="javascript"]').addClass("active");
 
             }
             else if (language === 'html') {
                 response = vkbeautify.xml(response);
                 mode = 'xml';
                 foldFunc = CodeMirror.newFoldFunction(CodeMirror.tagRangeFinder);
+                $('#response-language a[data-mode="html"]').addClass("active");
             }
             else {
                 mode = 'text';
@@ -2479,6 +2488,11 @@ postman.layout = {
         $('#langFormat').on("click", "a", function () {
             var previewType = $(this).attr('data-type');
             postman.currentRequest.response.changePreviewType(previewType);
+        });
+
+        $('#response-language').on("click", "a", function () {
+            var language = $(this).attr("data-mode");
+            postman.currentRequest.response.setMode(language);
         });
 
         this.sidebar.initialize();
