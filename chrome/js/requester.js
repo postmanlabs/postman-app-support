@@ -2803,7 +2803,7 @@ postman.indexedDB = {
     open:function () {
         var request = indexedDB.open("postman", "POSTman request history");
         request.onsuccess = function (e) {
-            var v = "0.44";
+            var v = "0.47";
             postman.indexedDB.db = e.target.result;
             var db = postman.indexedDB.db;
 
@@ -2815,9 +2815,8 @@ postman.indexedDB = {
                     console.log(e);
                 };
 
-                setVrequest.onsuccess = function (e) {
-                    console.log(e);
-
+                setVrequest.onsuccess = function (event) {
+                    console.log(event);
                     //Only create if does not already exist
 
                     if (!db.objectStoreNames.contains("requests")) {
@@ -2842,8 +2841,11 @@ postman.indexedDB = {
                         environmentsStore.createIndex("id", "id", { unique:false});
                     }
 
-                    postman.history.getAllRequests();
-                    postman.envManager.getAllEnvironments();
+                    var transaction = event.target.result;
+                    transaction.oncomplete = function() {
+                        postman.history.getAllRequests();
+                        postman.envManager.getAllEnvironments();
+                    };
                 };
 
                 setVrequest.onupgradeneeded = function (evt) {
