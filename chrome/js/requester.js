@@ -712,7 +712,7 @@ postman.currentRequest = {
             },
 
             onFocusElement:function () {
-                $("#headers-keyvaleditor input").autocomplete({
+                $("#headers-keyvaleditor .keyvalueeditor-key").autocomplete({
                     source:chromeHeaders,
                     delay:50
                 });
@@ -1009,7 +1009,8 @@ postman.currentRequest = {
                         var imgLink = $('#url').val();
                         $('#langFormat').css("display", "none");
                         $('#respDataActions').css("display", "none");
-                        $('#responseAsImage').html("<img src='" + imgLink + "'/>");
+                        $("#response-language").css("display", "none");
+                        $("#responseAsImage").html("<img src='" + imgLink + "'/>");
                     }
                 }
                 else {
@@ -2574,6 +2575,11 @@ postman.layout = {
                 req.description = description;
                 postman.indexedDB.updateCollectionRequest(req, function (newRequest) {
                     postman.collections.getAllRequestsInCollection(req.collectionId);
+                    if(postman.currentRequest.collectionRequestId === req.id) {
+                        $('#requestName').html(req.name);
+                        $('#requestDescription').html(req.description);
+                    }
+
                     $('#formModalEditCollectionRequest').modal('hide');
                 });
             });
@@ -2816,9 +2822,7 @@ postman.indexedDB = {
                 };
 
                 setVrequest.onsuccess = function (event) {
-                    console.log(event);
                     //Only create if does not already exist
-
                     if (!db.objectStoreNames.contains("requests")) {
                         var requestStore = db.createObjectStore("requests", {keyPath:"id"});
                         requestStore.createIndex("timestamp", "timestamp", { unique:false});
