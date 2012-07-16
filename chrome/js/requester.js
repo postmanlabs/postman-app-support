@@ -406,11 +406,14 @@ postman.settings = {
         postman.settings.create("selectedEnvironmentId", true);
         postman.settings.create("lineWrapping", true);
         postman.settings.create("previewType", "parsed");
+        postman.settings.create("retainLinkHeaders", false);
         postman.settings.create("lastRequest");
 
         $('#historyCount').val(postman.settings.get("historyCount"));
         $('#autoSaveRequest').val(postman.settings.get("autoSaveRequest") + "");
-        console.log(postman.settings.get("autoSaveRequest"));
+        $('#retain-link-headers').val(postman.settings.get("retainLinkHeaders") + "");
+
+        console.log(postman.settings.get("retainLinkHeaders"));
 
         $('#historyCount').change(function () {
             postman.settings.set("historyCount", $('#historyCount').val());
@@ -424,8 +427,16 @@ postman.settings = {
             else {
                 postman.settings.set("autoSaveRequest", false);
             }
+        });
 
-            console.log(postman.settings.get("autoSaveRequest"));
+        $('#retain-link-headers').change(function () {
+            var val = $('#retain-link-headers').val();
+            if (val == "true") {
+                postman.settings.set("retainLinkHeaders", true);
+            }
+            else {
+                postman.settings.set("retainLinkHeaders", false);
+            }
         });
     },
 
@@ -1246,6 +1257,7 @@ postman.currentRequest = {
         $('#url').val(this.url);
         $('#requestMethodSelector').val(this.method);
         $('#body').val(postman.currentRequest.body.getData());
+        $('#headers-keyvaleditor').keyvalueeditor('reset', this.headers);
         $('#headers-keyvaleditor-actions-open .headers-count').html(this.headers.length);
         $('#submitRequest').button("reset");
         $('#dataModeSelector a').removeClass("active");
@@ -1279,10 +1291,19 @@ postman.currentRequest = {
         $('.request-help-actions-togglesize img').attr('src', 'img/glyphicons_191_circle_minus.png');
     },
 
-    loadRequestFromLink:function (link) {
+    loadRequestFromLink:function (link, headers) {
         this.startNew();
         this.url = link;
         this.method = "GET";
+
+        console.log(headers);
+        if (postman.settings.get("retainLinkHeaders") === true) {
+            if (headers) {
+                console.log(headers);
+                this.headers = headers;
+            }
+        }
+
         this.refreshLayout();
     },
 
@@ -2556,7 +2577,7 @@ postman.layout = {
                 req.description = description;
                 postman.indexedDB.updateCollectionRequest(req, function (newRequest) {
                     postman.collections.getAllRequestsInCollection(req.collectionId);
-                    if(postman.currentRequest.collectionRequestId === req.id) {
+                    if (postman.currentRequest.collectionRequestId === req.id) {
                         $('#requestName').html(req.name);
                         $('#requestDescription').html(req.description);
                     }
@@ -2572,7 +2593,8 @@ postman.layout = {
 
         $('#respData').on("click", ".cm-link", function () {
             var link = $(this).html();
-            postman.currentRequest.loadRequestFromLink(link);
+            var headers = $('#headers-keyvaleditor').keyvalueeditor('getValues');
+            postman.currentRequest.loadRequestFromLink(link, headers);
         });
 
         $('#spreadTheWord').click(function () {
@@ -2827,7 +2849,7 @@ postman.indexedDB = {
                     }
 
                     var transaction = event.target.result;
-                    transaction.oncomplete = function() {
+                    transaction.oncomplete = function () {
                         postman.history.getAllRequests();
                         postman.envManager.getAllEnvironments();
                     };
