@@ -99,11 +99,11 @@ window.requestFileSystem = window.requestFileSystem || window.webkitRequestFileS
  Underscore
 
  */
-postman.initialize = function () {
-    this.history.initialize();
-    this.collections.initialize();
-    this.settings.initialize();
-    this.layout.initialize();
+postman.init = function () {
+    this.history.init();
+    this.collections.init();
+    this.settings.init();
+    this.layout.init();
     this.editor.init();
     this.currentRequest.init();
     this.urlCache.refreshAutoComplete();
@@ -400,13 +400,13 @@ postman.settings = {
     autoSaveRequest:true,
     selectedEnvironmentId:"",
 
-    initialize:function () {
-        postman.settings.init("historyCount", 100);
-        postman.settings.init("autoSaveRequest", true);
-        postman.settings.init("selectedEnvironmentId", true);
-        postman.settings.init("lineWrapping", true);
-        postman.settings.init("previewType", "parsed");
-        postman.settings.init("lastRequest");
+    init:function () {
+        postman.settings.create("historyCount", 100);
+        postman.settings.create("autoSaveRequest", true);
+        postman.settings.create("selectedEnvironmentId", true);
+        postman.settings.create("lineWrapping", true);
+        postman.settings.create("previewType", "parsed");
+        postman.settings.create("lastRequest");
 
         $('#historyCount').val(postman.settings.get("historyCount"));
         $('#autoSaveRequest').val(postman.settings.get("autoSaveRequest") + "");
@@ -429,7 +429,7 @@ postman.settings = {
         });
     },
 
-    init:function (key, defaultVal) {
+    create:function (key, defaultVal) {
         if (localStorage[key]) {
             postman.settings[key] = localStorage[key];
         }
@@ -639,19 +639,7 @@ postman.currentRequest = {
             }
 
             return data;
-        },
-
-        urlencode:function (data) {
-
-        },
-
-        loadData:function (data, mode) {
-
         }
-    },
-
-    getUrl:function () {
-        return $('#url').val();
     },
 
     init:function () {
@@ -1526,10 +1514,8 @@ postman.currentRequest = {
 
         var environment = postman.envManager.selectedEnv;
         var envValues = [];
-        var isEnvironmentAvailable = false;
 
         if (environment !== null) {
-            isEnvironmentAvailable = true;
             envValues = environment.values;
         }
 
@@ -1567,7 +1553,7 @@ postman.currentRequest = {
 
                 count = rows.length;
 
-                for (j = 0; j < rows.length; j++) {
+                for (j = 0; j < count; j++) {
                     row = rows[j];
                     key = row.keyElement.val();
                     var valueType = row.valueType;
@@ -1613,10 +1599,6 @@ postman.currentRequest = {
         if (postman.settings.get("autoSaveRequest")) {
             postman.history.addRequest(url, method, postman.currentRequest.getPackedHeaders(), originalData, this.dataMode);
         }
-
-        var details = {
-            url:url
-        };
 
         $('#submitRequest').button("loading");
         this.response.clear();
@@ -1673,7 +1655,6 @@ postman.helpers = {
     basic:{
         process:function () {
             var headers = postman.currentRequest.headers;
-            var headersLength = headers.length;
             var authHeaderKey = "Authorization";
             var pos = findPosition(headers, "key", authHeaderKey);
 
@@ -1798,7 +1779,7 @@ postman.helpers = {
 postman.history = {
     requests:{},
 
-    initialize:function () {
+    init:function () {
         $('.history-actions-delete').click(function () {
             postman.history.clear();
         });
@@ -1964,7 +1945,7 @@ postman.collections = {
     areLoaded:false,
     items:[],
 
-    initialize:function () {
+    init:function () {
         this.addCollectionListeners();
     },
 
@@ -2465,7 +2446,7 @@ postman.layout = {
         "plusOne":'<script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script><g:plusone size="medium" href="https://chrome.google.com/webstore/detail/fdmmgilgnpjigdojojpjoooidkmcomcm"></g:plusone>'
     },
 
-    initialize:function () {
+    init:function () {
         $('#sidebarFooter').on("click", function () {
             $('#modalSpreadTheWord').modal('show');
             postman.layout.attachSocialButtons();
@@ -2496,7 +2477,7 @@ postman.layout = {
             postman.currentRequest.response.setMode(language);
         });
 
-        this.sidebar.initialize();
+        this.sidebar.init();
 
         postman.currentRequest.response.clear();
 
@@ -2700,7 +2681,7 @@ postman.layout = {
             postman.layout.sidebar.isSidebarMaximized = !isSidebarMaximized;
         },
 
-        initialize:function () {
+        init:function () {
             $('#historyItems').on("click", ".request-actions-delete", function () {
                 var request_id = $(this).attr('data-request-id');
                 postman.history.deleteRequest(request_id);
@@ -3462,10 +3443,9 @@ postman.envManager = {
     },
 
     getEnvironmentFromId:function (id) {
-        var i = 0;
         var environments = postman.envManager.environments;
         var count = environments.length;
-        for (i = 0; i < count; i++) {
+        for (var i = 0; i < count; i++) {
             var env = environments[i];
             if (id === env.id) {
                 return env;
@@ -3595,7 +3575,7 @@ postman.envManager = {
         $('#modalEnvironments .modal-footer').css("display", "block");
     },
 
-    addEnvironment:function (id) {
+    addEnvironment:function () {
         var name = $('#environment-editor-name').val();
         var values = $('#environment-keyvaleditor').keyvalueeditor('getValues');
         var environment = {
@@ -3677,7 +3657,7 @@ postman.envManager = {
 };
 
 $(document).ready(function () {
-    postman.initialize();
+    postman.init();
 });
 
 $(window).on("unload", function () {
