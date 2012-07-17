@@ -54,7 +54,7 @@ postman.indexedDB = {};
 postman.indexedDB.db = null;
 
 postman.fs = {};
-postman.webUrl = "http://www.getpostman.com";
+postman.webUrl = "http://localhost/postman-server/html";
 // IndexedDB implementations still use API prefixes
 var indexedDB = window.indexedDB || // Use the standard DB API
     window.mozIndexedDB || // Or Firefox's early version of it
@@ -767,7 +767,7 @@ postman.currentRequest = {
         return JSON.stringify(request);
     },
 
-    saveCurrentToLocalStorage:function () {
+    saveCurrentRequestToLocalStorage:function () {
         postman.settings.set("lastRequest", postman.currentRequest.getAsJson());
     },
 
@@ -3683,5 +3683,5 @@ $(document).ready(function () {
 });
 
 $(window).on("unload", function () {
-    postman.currentRequest.saveCurrentToLocalStorage();
+    postman.currentRequest.saveCurrentRequestToLocalStorage();
 });
