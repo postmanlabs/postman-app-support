@@ -407,6 +407,8 @@ postman.settings = {
         postman.settings.create("lineWrapping", true);
         postman.settings.create("previewType", "parsed");
         postman.settings.create("retainLinkHeaders", false);
+        postman.settings.create("useProxy", false);
+        postman.settings.create("proxyURL", "");
         postman.settings.create("lastRequest");
 
         $('#historyCount').val(postman.settings.get("historyCount"));
