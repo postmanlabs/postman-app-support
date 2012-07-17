@@ -67,8 +67,8 @@ header {
     color: #333 !important;
     padding: 5px !important;
     border: none !important;
-    box-shadow: none !important;
     border-bottom: solid thin #ccc !important;
+    box-shadow: none !important;
     border-radius: 0 !important;
     outline: none !important;
 }
@@ -279,8 +279,10 @@ fieldset {
 }
 #responseData {
     margin-top: -5px;
+    margin-left: -10px;
     background: white;
     min-height: 200px;
+    padding-left: 10px;
 }
 
 #respHeaders:focus,
@@ -291,11 +293,17 @@ fieldset {
     outline: none !important;
 }
 
-#respHeaders {
+#respHeaders,
+#response-cookies {
     margin-top: 20px;
     max-width: 1000px;
     font-size: 11px;
     display: none;
+}
+
+#response-cookies-content {
+    max-width: 1000px;
+    overflow: scroll;
 }
 
 #respHeaders textarea {
@@ -545,6 +553,11 @@ li .right {
     float: left;
 }
 
+#response-language {
+    margin: 17px 0 15px 10px;
+    float: left;
+}
+
 #request {
     padding: 0 0 20px 20px;
     border-bottom: solid thin #ccc;
@@ -732,7 +745,11 @@ li .right {
     float: left;
 }
 
-#requestActionsSecondary {
+#reqeustActionsSecondary {
+    display: inline-block;
+}
+
+#requestActionsRight {
     float: right;
 }
 
@@ -746,6 +763,14 @@ li .right {
 
 .actions {
     border: 1px solid #DDD;
+}
+
+#modalImportCollection h4 {
+    margin-bottom: 10px;
+}
+
+#import-collection-url-input {
+    width: 90%;
 }
 
 #formModalAddToCollection {
@@ -1250,6 +1275,10 @@ li .right {
     border-left: none;
 }
 
+#response-tabs-cookies {
+    display: none;
+}
+
 #dataModeSelector {
     margin-bottom: 5px;
 }
@@ -1344,4 +1373,8 @@ li .right {
 .label-method-PUT,
 .label-method-put {
     background-color: #36F;
+}
+
+#share-collection-link {
+    display: none;
 }
