@@ -76,17 +76,17 @@
             </a>
         </div>
         <div id="collections-options" class="section-options">
-            <a href="#form-modal-new-collection" rel="tooltip" data-original-title="Add new collection"
+            <a href="#modal-new-collection" rel="tooltip" data-original-title="Add new collection"
                data-toggle="modal"
                data-backdrop="static"
                data-placement="bottom"
-               data-keyboard="true"><img src="img/glyphicons_145_folder_plus.png"
+               data-keyboard="true"><img src="img/folder_plus.png"
                                          style="width:20px; height:20px; vertical-align: middle;"/></a>
             <a href="#modal-import-collection" rel="tooltip" data-original-title="Import collection"
                data-toggle="modal"
                data-backdrop="static"
                data-placement="bottom"
-               data-keyboard="true"><img src="img/glyphicons_134_inbox_in.png"
+               data-keyboard="true"><img src="img/inbox_in.png"
                                          style="width:20px; height:20px; vertical-align: middle;"/></a>
         </div>
         <ul id="sidebar-selectors" class="nav nav-pills">
@@ -144,11 +144,11 @@
     <div class="top-sidebar">
         <a data-toggle="modal" href="#modal-shortcuts"
            rel="tooltip" data-placement="bottom" data-original-title="Shortcuts">
-            <img src="img/glyphicons_268_keyboard_wireless.png" style="vertical-align: middle;"/></a>
+            <img src="img/keyboard_wireless.png" style="vertical-align: middle;"/></a>
         <a href="#modal-settings" data-toggle="modal"
            rel="tooltip"
            data-placement="bottom" data-original-title="Settings">
-            <img src="img/glyphicons_280_settings.png" style="vertical-align: middle;"/></a>
+            <img src="img/settings.png" style="vertical-align: middle;"/></a>
     </div>
 </div>
 <div id="request-helpers" class="clearfix">
@@ -275,7 +275,7 @@
 <div id="request-help">
     <div class="request-help-actions">
         <a href="javascript:void(0);" class="request-help-actions-togglesize" data-action="minimize">
-            <img src="img/glyphicons_191_circle_minus.png"/>
+            <img src="img/circle_minus.png"/>
         </a>
     </div>
     <h5 id="request-name"></h5>
@@ -358,7 +358,7 @@
         </button>
         <button class="btn"
                 id="add-to-collection"
-                href="#form-modal-add-to-collection"
+                href="#modal-add-to-collection"
                 data-toggle="modal" data-backdrop="static"
                 data-keyboard="true">Add to collection
         </button>
@@ -411,7 +411,7 @@
                            data-placement="bottom"
                            data-original-title="Toggle wrapping"
                            id="response-body-line-wrapping">
-                            <img src="img/glyphicons_109_right_indent.png"
+                            <img src="img/right_indent.png"
                                  style="width:16px; height:16px; vertical-align: middle;"/>
                         </a>
                         <a class="btn"
@@ -468,7 +468,7 @@
 </section>
 </div>
 </div>
-<div id="form-modal-new-collection" class="modal fade">
+<div id="modal-new-collection" class="modal fade">
     <div class="modal-header">
         <a href="#" class="close" data-dismiss="modal">×</a>
         <h3>Create a new collection</h3>
@@ -489,7 +489,7 @@
         <a href="javascript:void(0);" data-dismiss="modal" class="btn btn-secondary">Cancel</a>
     </div>
 </div>
-<div id="form-modal-edit-collection" class="modal fade">
+<div id="modal-edit-collection" class="modal fade">
     <div class="modal-header">
         <a href="#" class="close" data-dismiss="modal">×</a>
 
@@ -512,7 +512,7 @@
         <a href="javascript:void(0);" data-dismiss="modal" class="btn btn-secondary">Cancel</a>
     </div>
 </div>
-<div id="form-modal-edit-collection-request" class="modal fade">
+<div id="modal-edit-collection-request" class="modal fade">
     <div class="modal-header">
         <a href="#" class="close" data-dismiss="modal">×</a>
 
@@ -546,7 +546,7 @@
         <a href="javascript:void(0);" data-dismiss="modal" class="btn btn-secondary">Cancel</a>
     </div>
 </div>
-<div id="form-modal-add-to-collection" class="modal fade">
+<div id="modal-add-to-collection" class="modal fade">
     <div class="modal-header">
         <a href="#" class="close" data-dismiss="modal">×</a>
         <h3>Add request to a collection</h3>
@@ -933,12 +933,6 @@
     </div>
 </div>
 <!--- jQuery Templates -->
-<script id="environment-quicklook-item" type="text/x-jquery-tmpl">
-    <li>
-        <span class="key">${key}</span> →
-        <span class="value">${value}</span>
-    </li>
-</script>
 <script id="message-no-history-tmpl" type="text/x-jquery-tmpl">
     <div id="message-no-history">
         Nothing in your history yet. You can automatically save and access your sent requests here.
@@ -958,6 +952,17 @@
         The environment ${name} has been ${action}.
     </div>
 </script>
+<script id="message-no-collection-tmpl" type="text/x-jquery-tmpl">
+    <div id="message-no-collection">
+        You haven't created any collections yet. Collections let you group requests together for quick access.
+    </div>
+</script>
+<script id="item-environment-quicklook" type="text/x-jquery-tmpl">
+    <li>
+        <span class="key">${key}</span> →
+        <span class="value">${value}</span>
+    </li>
+</script>
 <script id="item-environment-list" type="text/x-jquery-tmpl">
     <tr>
         <td>
@@ -968,7 +973,7 @@
                rel="tooltip" data-original-title="Download environment"
                data-placement="bottom"
                class="environment-action-download" data-id="${id}">
-                <img src="img/glyphicons_181_download_alt.png"
+                <img src="img/download.png"
                      style="vertical-align: middle; width: 20px; height: 20px;"/></a>
             <a href="javascript:void(0);"
                data-name="${name}"
@@ -977,11 +982,6 @@
                 <img src="img/delete.png" style="vertical-align: middle; width: 20px; height: 20px;"/></a>
         </td>
     </tr>
-</script>
-<script id="message-no-collection-tmpl" type="text/x-jquery-tmpl">
-    <div id="message-no-collection">
-        You haven't created any collections yet. Collections let you group requests together for quick access.
-    </div>
 </script>
 <script id="item-collection-selector-list" type="text/x-jquery-tmpl">
     <option value="${id}">${name}</option>
@@ -1019,7 +1019,7 @@
                    data-placement="bottom"
                    rel="tooltip" data-original-title="Edit collection"
                    class="collection-actions-edit" data-id="${id}" data-name="${name}">
-                    <img src="img/glyphicons_151_edit.png" style="vertical-align: middle;"/></a>
+                    <img src="img/edit.png" style="vertical-align: middle;"/></a>
                 <a href="javascript:void(0);"
                    data-placement="bottom"
                    rel="tooltip" data-original-title="Share collection"
@@ -1043,7 +1043,7 @@
     <li id="sidebar-request-${id}" class="sidebar-collection-request sidebar-request clearfix">
         <div class="request-actions">
             <a href="javascript:void(0);" data-id="${id}" class="request-actions-edit">
-                <img src="img/glyphicons_151_edit.png" style="vertical-align: middle;"/>
+                <img src="img/edit.png" style="vertical-align: middle;"/>
             </a>
             <a href="javascript:void(0);" data-id="${id}" class="request-actions-delete">
                 <img src="img/delete.png" style="vertical-align: middle;"/>
@@ -1104,8 +1104,5 @@
 <script type="text/javascript" src="js/jquery.jscrollpane.js"></script>
 <script type="text/javascript" src="js/bootstrap.min.js"></script>
 <script type="text/javascript" src="js/requester.js"></script>
-<script text="text/javascript">
-    $(":input:first").focus();
-</script>
 </body>
 </html>

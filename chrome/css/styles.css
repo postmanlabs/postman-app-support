@@ -773,7 +773,7 @@ li .right {
     width: 90%;
 }
 
-#form-modal-add-to-collection {
+#modal-add-to-collection {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -782,7 +782,7 @@ li .right {
     display: none;
 }
 
-#form-modal-add-to-collection label {
+#modal-add-to-collection label {
     margin-right: 20px;
 }
 

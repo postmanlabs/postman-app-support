@@ -112,6 +112,7 @@ postman.init = function () {
     this.envManager.init();
     this.filesystem.init();
     postman.indexedDB.open();
+    $(":input:first").focus();
 };
 
 postman.filesystem = {
@@ -291,11 +292,11 @@ postman.keymap = {
                 postman.collections.getAllCollections();
             }
 
-            $('#form-modal-add-to-collection').modal({
+            $('#modal-add-to-collection').modal({
                 keyboard:true,
                 backdrop:"static"
             });
-            $('#form-modal-add-to-collection').modal('show');
+            $('#modal-add-to-collection').modal('show');
 
             $('#new-request-name').val("");
             $('#new-request-description').val("");
@@ -855,11 +856,11 @@ postman.currentRequest = {
 
             if (action === "minimize") {
                 $(this).attr("data-action", "maximize");
-                $('.request-help-actions-togglesize img').attr('src', 'img/glyphicons_190_circle_plus.png');
+                $('.request-help-actions-togglesize img').attr('src', 'img/circle_plus.png');
                 $("#request-description").slideUp(100);
             }
             else {
-                $('.request-help-actions-togglesize img').attr('src', 'img/glyphicons_191_circle_minus.png');
+                $('.request-help-actions-togglesize img').attr('src', 'img/circle_minus.png');
                 $(this).attr("data-action", "minimize");
                 $("#request-description").slideDown(100);
             }
@@ -1290,7 +1291,7 @@ postman.currentRequest = {
         }
 
         $('.request-help-actions-togglesize a').attr('data-action', 'minimize');
-        $('.request-help-actions-togglesize img').attr('src', 'img/glyphicons_191_circle_minus.png');
+        $('.request-help-actions-togglesize img').attr('src', 'img/circle_minus.png');
     },
 
     loadRequestFromLink:function (link, headers) {
@@ -1438,7 +1439,7 @@ postman.currentRequest = {
         }
 
         $('.request-help-actions-togglesize').attr('data-action', 'minimize');
-        $('.request-help-actions-togglesize img').attr('src', 'img/glyphicons_191_circle_minus.png');
+        $('.request-help-actions-togglesize img').attr('src', 'img/circle_minus.png');
 
         $('#headers-keyvaleditor-actions-open .headers-count').html(this.headers.length);
 
@@ -2010,7 +2011,7 @@ postman.collections = {
             postman.indexedDB.getCollectionRequest(id, function (req) {
                 $('#form-edit-collection-request .collection-request-name').val(req.name);
                 $('#form-edit-collection-request .collection-request-description').val(req.description);
-                $('#form-modal-edit-collection-request').modal('show');
+                $('#modal-edit-collection-request').modal('show');
             });
         });
 
@@ -2019,7 +2020,7 @@ postman.collections = {
             var name = $(this).attr('data-name');
             $('#formEditCollection .collection-id').val(id);
             $('#formEditCollection .collection-name').val(name);
-            $('#form-modal-edit-collection').modal('show');
+            $('#modal-edit-collection').modal('show');
         });
 
         $('#collection-items').on("click", ".collection-actions-delete", function () {
@@ -2264,7 +2265,7 @@ postman.collections = {
             $('#new-collection-blank').val("");
         }
 
-        $('#form-modal-new-collection').modal('hide');
+        $('#modal-new-collection').modal('hide');
     },
 
     updateCollectionFromCurrentRequest:function () {
@@ -2536,13 +2537,13 @@ postman.layout = {
 
         $('#form-add-to-collection').submit(function () {
             postman.collections.addRequestToCollection();
-            $('#form-modal-add-to-collection').modal('hide');
+            $('#modal-add-to-collection').modal('hide');
             return false;
         });
 
-        $('#form-modal-add-to-collection .btn-primary').click(function () {
+        $('#modal-add-to-collection .btn-primary').click(function () {
             postman.collections.addRequestToCollection();
-            $('#form-modal-add-to-collection').modal('hide');
+            $('#modal-add-to-collection').modal('hide');
         });
 
         $('#form-new-collection').submit(function () {
@@ -2550,12 +2551,12 @@ postman.layout = {
             return false;
         });
 
-        $('#form-modal-new-collection .btn-primary').click(function () {
+        $('#modal-new-collection .btn-primary').click(function () {
             postman.collections.addCollection();
             return false;
         });
 
-        $('#form-modal-edit-collection .btn-primary').click(function () {
+        $('#modal-edit-collection .btn-primary').click(function () {
             var id = $('#formEditCollection .collection-id').val();
             var name = $('#formEditCollection .collection-name').val();
 
@@ -2566,10 +2567,10 @@ postman.layout = {
                 });
             });
 
-            $('#form-modal-edit-collection').modal('hide');
+            $('#modal-edit-collection').modal('hide');
         });
 
-        $('#form-modal-edit-collection-request .btn-primary').click(function () {
+        $('#modal-edit-collection-request .btn-primary').click(function () {
             var id = $('#form-edit-collection-request .collection-request-id').val();
             var name = $('#form-edit-collection-request .collection-request-name').val();
             var description = $('#form-edit-collection-request .collection-request-description').val();
@@ -2584,7 +2585,7 @@ postman.layout = {
                         $('#request-description').html(req.description);
                     }
 
-                    $('#form-modal-edit-collection-request').modal('hide');
+                    $('#modal-edit-collection-request').modal('hide');
                 });
             });
         });
@@ -2597,10 +2598,6 @@ postman.layout = {
             var link = $(this).html();
             var headers = $('#headers-keyvaleditor').keyvalueeditor('getValues');
             postman.currentRequest.loadRequestFromLink(link, headers);
-        });
-
-        $('#spreadTheWord').click(function () {
-            postman.layout.attachSocialButtons();
         });
 
         $('.response-tabs').on("click", "li", function () {
@@ -3331,7 +3328,7 @@ postman.envManager = {
             }
             $('#environment-quicklook-environments h6').html(environment.name);
             $('#environment-quicklook-environments ul').html("");
-            $('#environment-quicklook-item').tmpl(environment.values).appendTo('#environment-quicklook-environments ul');
+            $('#item-environment-quicklook').tmpl(environment.values).appendTo('#environment-quicklook-environments ul');
         },
 
         refreshGlobals:function (globals) {
@@ -3340,7 +3337,7 @@ postman.envManager = {
             }
 
             $('#environment-quicklook-globals ul').html("");
-            $('#environment-quicklook-item').tmpl(globals).appendTo('#environment-quicklook-globals ul');
+            $('#item-environment-quicklook').tmpl(globals).appendTo('#environment-quicklook-globals ul');
         },
 
         toggleDisplay:function () {
