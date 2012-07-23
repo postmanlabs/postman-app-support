@@ -219,7 +219,7 @@ fieldset {
     padding-top: 5px;
 }
 
-#historyItems {
+#history-items {
 }
 
 .historyItem {
@@ -253,24 +253,24 @@ fieldset {
 
 }
 
-#mainNavigation {
+#main-navigation {
     float: right;
 }
 
-#mainNavigation ul li {
+#main-navigation ul li {
     float: left;
     list-style: none;
     margin-left: 5px;
     margin-right: 0;
 }
 
-#mainNavigation ul li img {
+#main-navigation ul li img {
     width: 20px;
     height: 20px;
     opacity: 0.3;
 }
 
-#sidebarContainer {
+#sidebar-container {
     padding-top: 10px;
 }
 
@@ -628,13 +628,13 @@ li .right {
     margin: 2px;
 }
 
-#sidebarContainer ul {
+#sidebar-container ul {
     list-style: none;
     margin: 0;
     padding: 0;
 }
 
-#sidebarFooter {
+#sidebar-footer {
     background-color: #000;
     color: #fff;
     font-size: 11px;
@@ -650,35 +650,35 @@ li .right {
     cursor: pointer;
 }
 
-#sidebarFooter:hover {
+#sidebar-footer:hover {
     opacity: 1;
 }
 
-#sidebarFooter a {
+#sidebar-footer a {
     color: white;
 }
 
-#sidebarFooter a:hover {
+#sidebar-footer a:hover {
     text-decoration: none;
 }
 
-#sidebarFiller {
+#sidebar-filler {
     height: 50px;
 }
 
-#sidebarSectionContainer {
+#sidebar-section-container {
     margin-bottom: 50px;
 }
 
-#sidebarSectionContainer ul {
+#sidebar-section-container ul {
     margin-left: -10px;
 }
 
-#sidebarContainer .pills {
+#sidebar-container .pills {
     margin-left: -4px;
 }
 
-#sidebarContainer .pills .active .a {
+#sidebar-container .pills .active .a {
     background-color: #333;
 }
 
@@ -733,7 +733,7 @@ li .right {
     display: none;
 }
 
-#sidebarSection-collections {
+#sidebar-section-collections {
     display: none;
 }
 
@@ -892,7 +892,7 @@ li .right {
     opacity: 1;
 }
 
-#collectionItems .request-actions {
+#collection-items .request-actions {
     margin-left: 270px;
     opacity: 1;
 }
@@ -974,29 +974,29 @@ li .right {
     margin-right: 10px;
 }
 
-.sectionOptions {
+.section-options {
     position: absolute;
     margin-left: 200px;
     margin-top: 5px;
 }
 
-.sectionOptions img {
+.section-options img {
     opacity: 0.5;
 }
 
-.sectionOptions img:hover {
+.section-options img:hover {
     opacity: 1;
 }
 
-#historyOptions {
+#history-options {
     margin-left: 295px;
 }
 
-#collectionsOptions {
+#collections-options {
     margin-left: 270px;
 }
 
-#collectionsOptions {
+#collections-options {
     display: none;
 }
 
@@ -1318,7 +1318,7 @@ li .right {
     height: 100px;
 }
 
-#sidebarToggle {
+#sidebar-toggle {
     position: fixed;
     bottom: 0;
     left: 350px;
@@ -1333,12 +1333,12 @@ li .right {
     padding-left: 3px;
 }
 
-#sidebarToggle img {
+#sidebar-toggle img {
     width: 10px;
     height: 10px;
 }
 
-#sidebarToggle:hover {
+#sidebar-toggle:hover {
     opacity: 1;
 }
 

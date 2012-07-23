@@ -1858,7 +1858,7 @@ postman.history = {
             if (count === 0) {
                 $('#messageNoHistoryTmpl').tmpl([
                     {}
-                ]).appendTo('#sidebarSection-history');
+                ]).appendTo('#sidebar-section-history');
             }
             else {
                 for (var i = 0; i < count; i++) {
@@ -1884,8 +1884,8 @@ postman.history = {
 
                 outAr.reverse();
 
-                $('#itemHistorySidebarRequest').tmpl(outAr).prependTo('#historyItems');
-                $('#historyItems').fadeIn();
+                $('#itemHistorySidebarRequest').tmpl(outAr).prependTo('#history-items');
+                $('#history-items').fadeIn();
             }
 
             postman.history.requests = historyRequests;
@@ -1959,7 +1959,7 @@ postman.history = {
 
     clear:function () {
         postman.indexedDB.deleteHistory(function () {
-            $('#historyItems').html("");
+            $('#history-items').html("");
         });
     }
 };
@@ -1973,37 +1973,37 @@ postman.collections = {
     },
 
     addCollectionListeners:function () {
-        $('#collectionItems').on("mouseenter", ".sidebarCollection .sidebar-collection-head", function () {
+        $('#collection-items').on("mouseenter", ".sidebarCollection .sidebar-collection-head", function () {
             var actionsEl = jQuery('.collection-head-actions', this);
             actionsEl.css('display', 'block');
         });
 
-        $('#collectionItems').on("mouseleave", ".sidebarCollection .sidebar-collection-head", function () {
+        $('#collection-items').on("mouseleave", ".sidebarCollection .sidebar-collection-head", function () {
             var actionsEl = jQuery('.collection-head-actions', this);
             actionsEl.css('display', 'none');
         });
 
-        $('#collectionItems').on("click", ".sidebar-collection-head-name", function () {
+        $('#collection-items').on("click", ".sidebar-collection-head-name", function () {
             var id = $(this).attr('data-id');
             postman.collections.toggleRequestList(id);
         });
 
-        $('#collectionItems').on("click", ".collection-head-actions .label", function () {
+        $('#collection-items').on("click", ".collection-head-actions .label", function () {
             var id = $(this).parent().parent().parent().attr('data-id');
             postman.collections.toggleRequestList(id);
         });
 
-        $('#collectionItems').on("click", ".request-actions-delete", function () {
+        $('#collection-items').on("click", ".request-actions-delete", function () {
             var id = $(this).attr('data-id');
             postman.collections.deleteCollectionRequest(id);
         });
 
-        $('#collectionItems').on("click", ".request-actions-load", function () {
+        $('#collection-items').on("click", ".request-actions-load", function () {
             var id = $(this).attr('data-id');
             postman.collections.getCollectionRequest(id);
         });
 
-        $('#collectionItems').on("click", ".request-actions-edit", function () {
+        $('#collection-items').on("click", ".request-actions-edit", function () {
             var id = $(this).attr('data-id');
             $('#formEditCollectionRequest .collection-request-id').val(id);
 
@@ -2014,7 +2014,7 @@ postman.collections = {
             });
         });
 
-        $('#collectionItems').on("click", ".collection-actions-edit", function () {
+        $('#collection-items').on("click", ".collection-actions-edit", function () {
             var id = $(this).attr('data-id');
             var name = $(this).attr('data-name');
             $('#formEditCollection .collection-id').val(id);
@@ -2022,7 +2022,7 @@ postman.collections = {
             $('#formModalEditCollection').modal('show');
         });
 
-        $('#collectionItems').on("click", ".collection-actions-delete", function () {
+        $('#collection-items').on("click", ".collection-actions-delete", function () {
             var id = $(this).attr('data-id');
             var name = $(this).attr('data-name');
 
@@ -2040,7 +2040,7 @@ postman.collections = {
             postman.collections.importCollectionFromUrl(url);
         });
 
-        $('#collectionItems').on("click", ".collection-actions-download", function () {
+        $('#collection-items').on("click", ".collection-actions-download", function () {
             var id = $(this).attr('data-id');
             $("#modalShareCollection").modal("show");
             $('#share-collection-get-link').attr("data-collection-id", id);
@@ -2135,7 +2135,7 @@ postman.collections = {
                     postman.indexedDB.addCollection(collection, function (c) {
                         $('#messageNoCollection').css("display", "none");
                         $('#itemCollectionSelectorList').tmpl([collection]).appendTo('#selectCollection');
-                        $('#itemCollectionSidebarHead').tmpl([collection]).appendTo('#collectionItems');
+                        $('#itemCollectionSidebarHead').tmpl([collection]).appendTo('#collection-items');
 
                         $('a[rel="tooltip"]').tooltip();
 
@@ -2180,7 +2180,7 @@ postman.collections = {
             postman.indexedDB.addCollection(collection, function (c) {
                 $('#messageNoCollection').css("display", "none");
                 $('#itemCollectionSelectorList').tmpl([collection]).appendTo('#selectCollection');
-                $('#itemCollectionSidebarHead').tmpl([collection]).appendTo('#collectionItems');
+                $('#itemCollectionSidebarHead').tmpl([collection]).appendTo('#collection-items');
 
                 $('a[rel="tooltip"]').tooltip();
 
@@ -2323,7 +2323,7 @@ postman.collections = {
                 $('#newCollection').val("");
                 collectionRequest.collectionId = collection.id;
                 $('#itemCollectionSelectorList').tmpl([collection]).appendTo('#selectCollection');
-                $('#itemCollectionSidebarHead').tmpl([collection]).appendTo('#collectionItems');
+                $('#itemCollectionSidebarHead').tmpl([collection]).appendTo('#collection-items');
                 $('a[rel="tooltip"]').tooltip();
                 postman.layout.refreshScrollPanes();
                 postman.indexedDB.addCollectionRequest(collectionRequest, function (req) {
@@ -2374,11 +2374,11 @@ postman.collections = {
         $('#requestDescription').css("display", "block");
         $('#requestName').html(newRequestName);
         $('#requestDescription').html(newRequestDescription);
-        $('#sidebarSelectors a[data-id="collections"]').tab('show');
+        $('#sidebar-selectors a[data-id="collections"]').tab('show');
     },
 
     getAllCollections:function () {
-        $('#collectionItems').html("");
+        $('#collection-items').html("");
         $('#selectCollection').html("<option>Select</option>");
         postman.indexedDB.getCollections(function (items) {
             $('#messageNoCollection').css("display", "none");
@@ -2387,11 +2387,11 @@ postman.collections = {
                 //Replace this with showEmptyMessage
                 $('#messageNoCollectionTmpl').tmpl([
                     {}
-                ]).appendTo('#sidebarSection-collections');
+                ]).appendTo('#sidebar-section-collections');
             }
 
             $('#itemCollectionSelectorList').tmpl(items).appendTo('#selectCollection');
-            $('#itemCollectionSidebarHead').tmpl(items).appendTo('#collectionItems');
+            $('#itemCollectionSidebarHead').tmpl(items).appendTo('#collection-items');
             $('a[rel="tooltip"]').tooltip();
 
             var itemsLength = items.length;
@@ -2470,7 +2470,7 @@ postman.layout = {
     },
 
     init:function () {
-        $('#sidebarFooter').on("click", function () {
+        $('#sidebar-footer').on("click", function () {
             $('#modalSpreadTheWord').modal('show');
             postman.layout.attachSocialButtons();
         });
@@ -2527,7 +2527,7 @@ postman.layout = {
             postman.currentRequest.setMethod(val);
         });
 
-        $('#sidebarSelectors li a').click(function () {
+        $('#sidebar-selectors li a').click(function () {
             var id = $(this).attr('data-id');
             postman.layout.sidebar.select(id);
         });
@@ -2671,23 +2671,23 @@ postman.layout = {
 
         minimizeSidebar:function () {
             var animationDuration = postman.layout.sidebar.animationDuration;
-            $('#sidebarToggle').animate({left:"0"}, animationDuration);
+            $('#sidebar-toggle').animate({left:"0"}, animationDuration);
             $('#sidebar').animate({width:"5px"}, animationDuration);
-            $('#sidebarFooter').css("display", "none");
+            $('#sidebar-footer').css("display", "none");
             $('#sidebar div').animate({opacity:0}, animationDuration);
             var newMainWidth = $(document).width() - 5;
             $('#main').animate({width:newMainWidth + "px", "margin-left":"5px"}, animationDuration);
-            $('#sidebarToggle img').attr('src', 'img/tri_arrow_right.png');
+            $('#sidebar-toggle img').attr('src', 'img/tri_arrow_right.png');
         },
 
         maximizeSidebar:function () {
             var animationDuration = postman.layout.sidebar.animationDuration;
-            $('#sidebarToggle').animate({left:"350px"}, animationDuration, function () {
-                $('#sidebarFooter').fadeIn();
+            $('#sidebar-toggle').animate({left:"350px"}, animationDuration, function () {
+                $('#sidebar-footer').fadeIn();
             });
             $('#sidebar').animate({width:postman.layout.sidebar.width + "px"}, animationDuration);
             $('#sidebar div').animate({opacity:1}, animationDuration);
-            $('#sidebarToggle img').attr('src', 'img/tri_arrow_left.png');
+            $('#sidebar-toggle img').attr('src', 'img/tri_arrow_left.png');
             var newMainWidth = $(document).width() - postman.layout.sidebar.width;
             $('#main').animate({width:newMainWidth + "px", "margin-left":postman.layout.sidebar.width + "px"}, animationDuration);
             postman.layout.refreshScrollPanes();
@@ -2706,17 +2706,17 @@ postman.layout = {
         },
 
         init:function () {
-            $('#historyItems').on("click", ".request-actions-delete", function () {
+            $('#history-items').on("click", ".request-actions-delete", function () {
                 var request_id = $(this).attr('data-request-id');
                 postman.history.deleteRequest(request_id);
             });
 
-            $('#historyItems').on("click", ".request", function () {
+            $('#history-items').on("click", ".request", function () {
                 var request_id = $(this).attr('data-request-id');
                 postman.history.loadRequest(request_id);
             });
 
-            $('#sidebarToggle').on("click", function () {
+            $('#sidebar-toggle').on("click", function () {
                 postman.layout.sidebar.toggleSidebar();
             });
 
@@ -2730,12 +2730,12 @@ postman.layout = {
                 postman.collections.getAllCollections();
             }
 
-            $('#sidebarSection-' + this.currentSection).css("display", "none");
+            $('#sidebar-section-' + this.currentSection).css("display", "none");
             $('#' + this.currentSection + 'Options').css("display", "none");
 
             this.currentSection = section;
 
-            $('#sidebarSection-' + section).fadeIn();
+            $('#sidebar-section-' + section).fadeIn();
             $('#' + section + 'Options').css("display", "block");
             postman.layout.refreshScrollPanes();
             return true;
@@ -2755,10 +2755,10 @@ postman.layout = {
             };
 
             if (position === 'top') {
-                $('#itemHistorySidebarRequest').tmpl([request]).prependTo('#historyItems');
+                $('#itemHistorySidebarRequest').tmpl([request]).prependTo('#history-items');
             }
             else {
-                $('#itemHistorySidebarRequest').tmpl([request]).appendTo('#historyItems');
+                $('#itemHistorySidebarRequest').tmpl([request]).appendTo('#history-items');
             }
 
             $('#messageNoHistory').css("display", "none");
@@ -2766,12 +2766,12 @@ postman.layout = {
         },
 
         addRequestListeners:function () {
-            $('#sidebarContainer').on("mouseenter", ".sidebarRequest", function () {
+            $('#sidebar-container').on("mouseenter", ".sidebarRequest", function () {
                 var actionsEl = jQuery('.request-actions', this);
                 actionsEl.css('display', 'block');
             });
 
-            $('#sidebarContainer').on("mouseleave", ".sidebarRequest", function () {
+            $('#sidebar-container').on("mouseleave", ".sidebarRequest", function () {
                 var actionsEl = jQuery('.request-actions', this);
                 actionsEl.css('display', 'none');
             });
