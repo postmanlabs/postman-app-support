@@ -108,7 +108,7 @@
 </div>
 <div id="main" class="content">
 <section id="request">
-<div id="requestTypes" class="clearfix">
+<div id="request-types" class="clearfix">
     <ul class="helper-tabs">
         <li class="active" data-id="normal">Normal</li>
         <li data-id="basicAuth">Basic Auth</li>
@@ -151,47 +151,47 @@
             <img src="img/glyphicons_280_settings.png" style="vertical-align: middle;"/></a>
     </div>
 </div>
-<div id="requestHelpers" class="clearfix">
-    <div id="requestHelper-normal" class="requestHelpers"></div>
-    <div id="requestHelper-basicAuth" class="requestHelpers">
-        <div class="requestHelperFormContainer">
+<div id="request-helpers" class="clearfix">
+    <div id="request-helper-normal" class="request-helpers"></div>
+    <div id="request-helper-basicAuth" class="request-helpers">
+        <div class="request-helper-form-container">
             <form class="form form-horizontal">
                 <div class="control-group">
                     <label class="control-label">Username</label>
 
                     <div class="controls">
-                        <input type="text" id="requestHelper-basicAuth-username" class="cleanInput"/>
+                        <input type="text" id="request-helper-basicAuth-username" class="cleanInput"/>
                     </div>
                 </div>
                 <div class="control-group">
                     <label class="control-label">Password</label>
 
                     <div class="controls">
-                        <input type="password" id="requestHelper-basicAuth-password" class="cleanInput"/>
+                        <input type="password" id="request-helper-basicAuth-password" class="cleanInput"/>
                     </div>
                 </div>
                 <div class="control-group">
                     <div class="controls">
                         <a href="javascript:void(0);"
-                           class="btn btn-small btn-secondary requestHelper-submit"
+                           class="btn btn-small btn-secondary request-helper-submit"
                            data-type="basic">Refresh headers</a>
                     </div>
                 </div>
             </form>
         </div>
-        <div class="requestHelperFormDescription">
+        <div class="request-helper-form-description">
             <h4>Note</h4>
             The authorization header will be generated and added as a custom header.
         </div>
     </div>
-    <div id="requestHelper-oAuth1" class="requestHelpers">
-        <div class="requestHelperFormContainer">
+    <div id="request-helper-oAuth1" class="request-helpers">
+        <div class="request-helper-form-container">
             <form class="form-horizontal">
                 <div class="control-group">
                     <label>Consumer Key</label>
 
                     <div class="controls">
-                        <input type="text" id="requestHelper-oauth1-consumerKey"
+                        <input type="text" id="request-helper-oauth1-consumerKey"
                                class="cleanInput signatureParam"
                                key="oauth_consumer_key"/>
                     </div>
@@ -200,7 +200,7 @@
                     <label>Consumer Secret</label>
 
                     <div class="controls">
-                        <input type="text" id="requestHelper-oauth1-consumerSecret" class="cleanInput"
+                        <input type="text" id="request-helper-oauth1-consumerSecret" class="cleanInput"
                                key="oauth_consumer_secret"/>
                     </div>
                 </div>
@@ -208,7 +208,7 @@
                     <label>Token</label>
 
                     <div class="controls">
-                        <input type="text" id="requestHelper-oauth1-token" class="cleanInput signatureParam"
+                        <input type="text" id="request-helper-oauth1-token" class="cleanInput signatureParam"
                                key="oauth_token"/>
                     </div>
                 </div>
@@ -216,7 +216,7 @@
                     <label>Token Secret</label>
 
                     <div class="controls">
-                        <input type="text" id="requestHelper-oauth1-tokenSecret" class="cleanInput"
+                        <input type="text" id="request-helper-oauth1-tokenSecret" class="cleanInput"
                                key="oauth_token_secret"/>
                     </div>
                 </div>
@@ -224,7 +224,7 @@
                     <label>Signature Method</label>
 
                     <div class="controls">
-                        <input type="text" id="requestHelper-oauth1-signatureMethod"
+                        <input type="text" id="request-helper-oauth1-signatureMethod"
                                class="cleanInput signatureParam"
                                value="HMAC-SHA1" key="oauth_signature_method"/>
                     </div>
@@ -233,7 +233,7 @@
                     <label>Timestamp</label>
 
                     <div class="controls">
-                        <input type="text" id="requestHelper-oauth1-timestamp" class="cleanInput signatureParam"
+                        <input type="text" id="request-helper-oauth1-timestamp" class="cleanInput signatureParam"
                                key="oauth_timestamp"/>
                     </div>
                 </div>
@@ -241,7 +241,7 @@
                     <label>Nonce</label>
 
                     <div class="controls">
-                        <input type="text" id="requestHelper-oauth1-nonce" class="cleanInput signatureParam"
+                        <input type="text" id="request-helper-oauth1-nonce" class="cleanInput signatureParam"
                                key="oauth_nonce"/>
                     </div>
                 </div>
@@ -249,14 +249,14 @@
                     <label>Version</label>
 
                     <div class="controls">
-                        <input type="text" id="requestHelper-oauth1-version" class="cleanInput signatureParam"
+                        <input type="text" id="request-helper-oauth1-version" class="cleanInput signatureParam"
                                value="1.0"
                                key="oauth_version"/>
                     </div>
                 </div>
                 <div class="control-group">
                     <div class="controls">
-                        <a href="javascript:void(0);" class="btn btn-small btn-secondary requestHelper-submit"
+                        <a href="javascript:void(0);" class="btn btn-small btn-secondary request-helper-submit"
                            data-type="oAuth1">
                             Refresh request
                         </a>
@@ -264,7 +264,7 @@
                 </div>
             </form>
         </div>
-        <div class="requestHelperFormDescription">
+        <div class="request-helper-form-description">
             <h4>Note</h4>
             The OAuth signature will be added to the header list. It'll be updated automatically
             when you update the URL parameters.
@@ -272,42 +272,40 @@
     </div>
 </div>
 
-<div id="requestHelp">
-    <div class="requestHelpActions">
+<div id="request-help">
+    <div class="request-help-actions">
         <a href="javascript:void(0);" class="request-help-actions-togglesize" data-action="minimize">
             <img src="img/glyphicons_191_circle_minus.png"/>
         </a>
     </div>
-    <h5 id="requestName"></h5>
-
-    <p id="requestDescription"></p>
+    <h5 id="request-name"></h5>
+    <p id="request-description"></p>
 </div>
 
-<div id="requestUrl" class="clearfix">
-    <div id="requestUrlContainer">
-        <input type="text" name="url" id="url" tabindex="1" class="inputTextLight"
+<div id="request-url" class="clearfix">
+    <div id="request-url-container">
+        <input type="text" name="url" id="url" tabindex="1" class="input-text-light"
                placeholder="Enter request URL here"/>
     </div>
-    <div id="requestMethodContainer"
-    ">
-    <select id="requestMethodSelector">
-        <option value="GET" selected>GET</option>
-        <option value="POST">POST</option>
-        <option value="PUT">PUT</option>
-        <option value="PATCH">PATCH</option>
-        <option value="DELETE">DELETE</option>
-        <option value="HEAD">HEAD</option>
-        <option value="OPTIONS">OPTIONS</option>
-    </select>
-</div>
-<div id="requestUrlButtonsContainer">
-    <button href="javascript:void(0);" class="btn btn-small" id="url-keyvaleditor-actions-open"><i
-            class="icon-edit"></i> URL params
-    </button>
-    <button href="javascript:void(0);" class="btn btn-small" id="headers-keyvaleditor-actions-open"><i
-            class="icon-edit"></i> Headers (<span class="headers-count">0</span>)
-    </button>
-</div>
+    <div id="request-method-container">
+        <select id="request-method-selector">
+            <option value="GET" selected>GET</option>
+            <option value="POST">POST</option>
+            <option value="PUT">PUT</option>
+            <option value="PATCH">PATCH</option>
+            <option value="DELETE">DELETE</option>
+            <option value="HEAD">HEAD</option>
+            <option value="OPTIONS">OPTIONS</option>
+        </select>
+    </div>
+    <div id="request-url-buttons-container">
+        <button href="javascript:void(0);" class="btn btn-small" id="url-keyvaleditor-actions-open"><i
+                class="icon-edit"></i> URL params
+        </button>
+        <button href="javascript:void(0);" class="btn btn-small" id="headers-keyvaleditor-actions-open"><i
+                class="icon-edit"></i> Headers (<span class="headers-count">0</span>)
+        </button>
+    </div>
 </div>
 
 <div id="url-keyvaleditor-container" class="row" style="margin-left: 0px; display: none;">
@@ -329,44 +327,44 @@
 </div>
 
 <div id="data">
-    <div id="dataModeSelector" class="btn-group clearfix"
+    <div id="data-mode-selector" class="btn-group clearfix"
          data-toggle="buttons-radio">
         <a class="btn" data-mode="params" href="javascript:void(0);">form-data</a>
         <a class="btn" data-mode="urlencoded" href="javascript:void(0);">x-www-form-urlencoded</a>
         <a class="btn" data-mode="raw" href="javascript:void(0);">raw</a>
     </div>
-    <div id="bodyDataContainers">
+    <div id="body-data-containers">
         <div id="formdata-keyvaleditor-container" class="row" style="margin-left: 0;">
             <div id="formdata-keyvaleditor"></div>
         </div>
         <div id="urlencoded-keyvaleditor-container" class="row" style="margin-left: 0;">
             <div id="urlencoded-keyvaleditor"></div>
         </div>
-        <div id="bodyDataContainer">
+        <div id="body-data-container">
             <textarea name="data" id="body" tabindex="4" class="inputText">
             </textarea>
         </div>
     </div>
 </div>
 
-<div id="requestActions" class="clearfix">
-    <div id="requestActionsMain">
+<div id="request-actions" class="clearfix">
+    <div id="request-actions-main">
         <button class="btn btn-primary" data-loading-text="Fetching data..." type="button"
-                data-complete-text="Send request" id="submitRequest" tabindex="5">
+                data-complete-text="Send request" id="submit-request" tabindex="5">
             Send
         </button>
         <button class="btn"
-                id="updateRequestInCollection">Save
+                id="update-request-in-collection">Save
         </button>
         <button class="btn"
-                id="addToCollection"
+                id="add-to-collection"
                 href="#formModalAddToCollection"
                 data-toggle="modal" data-backdrop="static"
                 data-keyboard="true">Add to collection
         </button>
     </div>
-    <div id="requestActionsRight">
-        <button class="btn" id="requestActionsReset">Reset</button>
+    <div id="request-actions-right">
+        <button class="btn" id="request-actions-reset">Reset</button>
     </div>
 </div>
 </section>

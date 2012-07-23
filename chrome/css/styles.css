@@ -44,7 +44,7 @@ html, body {
     outline: none;
 }
 
-#requestMethodSelector {
+#request-method-selector {
     width: 100px;
 }
 
@@ -135,7 +135,7 @@ fieldset {
     padding: 5px;
 }
 
-.inputTextLight {
+.input-text-light {
     border-style: none !important;
     border-bottom: 1px solid #CCC !important;
     box-shadow: none;
@@ -146,7 +146,7 @@ fieldset {
     padding-left: 0px;
 }
 
-.inputTextLight:focus {
+.input-text-light:focus {
     border-bottom-color: #999 !important;
     outline: none !important;
     box-shadow: none !important;
@@ -446,14 +446,14 @@ fieldset {
     display: none;
 }
 
-#bodyDataContainer {
+#body-data-container {
     margin-top: 5px;
     margin-bottom: 10px;
     width: 470px;
     display: none;
 }
 
-#bodyDataContainer input {
+#body-data-container input {
     padding: 5px;
     border: solid thin #ccc;
     border-radius: 5px;
@@ -567,7 +567,7 @@ li .right {
     padding: 0 0 20px 20px;
 }
 
-#requestDescription {
+#request-description {
     max-width: 800px;
 }
 
@@ -580,28 +580,28 @@ li .right {
     margin-top: 0;
 }
 
-#requestUrl {
+#request-url {
     margin-top: 10px;
     margin-bottom: 5px;
 }
 
-#requestUrl button {
+#request-url button {
     margin-bottom: 9px;
 }
 
-#requestUrlContainer {
+#request-url-container {
     float: left;
     min-width: 470px;
     max-width: 1000px;
     margin-right: 20px;
 }
 
-#requestMethodContainer {
+#request-method-container {
     float: left;
     margin-right: 10px;
 }
 
-#requestUrlButtonsContainer {
+#request-url-buttons-container {
     float: left;
 }
 
@@ -737,27 +737,27 @@ li .right {
     display: none;
 }
 
-#requestActions {
+#request-actions {
     width: 480px;
 }
 
-#requestActionsMain {
+#request-actions-main {
     float: left;
 }
 
-#reqeustActionsSecondary {
+#reqeust-actions-secondary {
     display: inline-block;
 }
 
-#requestActionsRight {
+#request-actions-right {
     float: right;
 }
 
-#updateRequestInCollection {
+#update-request-in-collection {
     display: none;
 }
 
-#requestActionsOptions {
+#request-actionsOptions {
     float: right;
 }
 
@@ -1056,41 +1056,41 @@ li .right {
     border-left: none;
 }
 
-#requestTypes {
+#request-types {
     border-bottom: solid thin #ccc;
     height: 35px;
     margin-left: -20px;
     margin-bottom: 12px;
 }
 
-#requestHelpers {
+#request-helpers {
     display: none;
     border-bottom: solid thin #ccc;
     margin-left: -20px;
     margin-bottom: 15px;
 }
 
-.requestHelpers label {
+.request-helpers label {
     font-size: 11px;
     font-weight: bold;
 }
 
-.requestHelpers div.input {
+.request-helpers div.input {
 }
 
-.requestHelperFormContainer {
+.request-helper-form-container {
     float: left;
     width: 400px;
 }
 
-.requestHelperFormDescription {
+.request-helper-form-description {
     float: left;
     color: #555;
     font-size: 11px;
     max-width: 200px;
 }
 
-.requestHelperFormDescription h4 {
+.request-helper-form-description h4 {
     font-size: 12px;
     text-transform: none;
     padding-bottom: 0;
@@ -1279,18 +1279,18 @@ li .right {
     display: none;
 }
 
-#dataModeSelector {
+#data-mode-selector {
     margin-bottom: 5px;
 }
 
-#requestHelp {
+#request-help {
     margin-left: -20px;
     padding-left: 20px;
     border-bottom: solid thin #ccc;
     display: none;
 }
 
-.requestHelpActions {
+.request-help-actions {
     position: absolute;
     margin-left: -17px;
     margin-top: 2px;
@@ -1301,12 +1301,12 @@ li .right {
     z-index: 300 !important;
 }
 
-.requestHelpActions img {
+.request-help-actions img {
     width: 14px;
     height: 14px;
 }
 
-#requestName {
+#request-name {
     margin-bottom: 5px;
 }
 
