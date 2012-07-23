@@ -63,7 +63,7 @@ header {
     z-index: 2;
 }
 
-.cleanInput {
+.clean-input {
     color: #333 !important;
     padding: 5px !important;
     border: none !important;
@@ -73,7 +73,7 @@ header {
     outline: none !important;
 }
 
-.cleanInput:focus {
+.clean-input:focus {
     outline: 0 !important;
     outline-width: 0 !important;
     border-bottom-color: #999 !important;
@@ -274,10 +274,10 @@ fieldset {
     padding-top: 10px;
 }
 
-#responsePrint {
+#response-print {
     background-color: #fff;
 }
-#responseData {
+#response-data {
     margin-top: -5px;
     margin-left: -10px;
     background: white;
@@ -285,15 +285,15 @@ fieldset {
     padding-left: 10px;
 }
 
-#respHeaders:focus,
-#responseHeaders:focus,
-#respHeadersContent:focus,
-#responseData:focus {
+#resp-headers:focus,
+#response-headers:focus,
+#resp-headers-content:focus,
+#response-data:focus {
     border: none;
     outline: none !important;
 }
 
-#respHeaders,
+#resp-headers,
 #response-cookies {
     margin-top: 20px;
     max-width: 1000px;
@@ -306,15 +306,15 @@ fieldset {
     overflow: scroll;
 }
 
-#respHeaders textarea {
+#resp-headers textarea {
     min-height: 125px;
 }
 
-#respData {
+#resp-data {
     max-height: 1000px;
 }
 
-#respData pre {
+#resp-data pre {
     font-family: Consolas, "Andale Mono", monospace;
 }
 
@@ -332,31 +332,31 @@ fieldset {
     overflow: visible !important;
 }
 
-.responseHeader {
+.response-header {
     font-family: Helvetica, arial, sans-serif;
     list-style: none;
     margin-bottom: 5px;
     color: #111;
 }
 
-.responseHeader .responseHeaderName {
+.response-header .response-header-name {
     font-weight: bold;
     color: #555;
 }
 
-.responseHeaderName {
+.response-header-name {
     float: left;
     margin-right: 5px;
     cursor: pointer;
 }
 
-.responseHeaderValue {
+.response-header-value {
     float: left;
 }
 
 #responsedata,
 #headers,
-#body, #codeData {
+#body, #code-data {
     font-family: "Consolas", Courier, monospace, sans-serif;
     font-size: 12px;
 }
@@ -547,7 +547,7 @@ li .right {
     zoom: 1;
 }
 
-#langFormat {
+#lang-format {
     margin-top: 17px;
     margin-bottom: 15px;
     float: left;
@@ -682,7 +682,7 @@ li .right {
     background-color: #333;
 }
 
-#respHeadersContent {
+#resp-headers-content {
     margin-top: 10px;
     margin-bottom: 15px;
 }
@@ -765,7 +765,7 @@ li .right {
     border: 1px solid #DDD;
 }
 
-#modalImportCollection h4 {
+#modal-import-collection h4 {
     margin-bottom: 10px;
 }
 
@@ -773,7 +773,7 @@ li .right {
     width: 90%;
 }
 
-#formModalAddToCollection {
+#form-modal-add-to-collection {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -782,20 +782,11 @@ li .right {
     display: none;
 }
 
-#formModalAddToCollection label {
+#form-modal-add-to-collection label {
     margin-right: 20px;
 }
 
-#modalAboutPostman {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    margin-top: -150px;
-    margin-left: -250px;
-    display: none;
-}
-
-#modalShortcuts {
+#modal-shortcuts {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -804,7 +795,7 @@ li .right {
     display: none;
 }
 
-#modalSpreadTheWord {
+#modal-spread-the-word {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -813,29 +804,29 @@ li .right {
     display: none;
 }
 
-#newCollectionContainer {
+#new-collection-container {
 }
 
-.sidebarCollection {
+.sidebar-collection {
     border-bottom: solid thin #DEDEDE;
 }
 
-.sidebarCollectionRequest,
-.sidebarHistoryRequest {
+.sidebar-collection-request,
+.sidebar-history-request {
     border-radius: 3px;
 }
 
-.sidebarCollectionRequest div {
+.sidebar-collection-request div {
     padding: 8px;
     padding-left: 20px;
 }
 
-.sidebarHistoryRequest div {
+.sidebar-history-request div {
     padding: 8px;
 }
 
-.sidebarCollectionRequest:hover,
-.sidebarHistoryRequest:hover {
+.sidebar-collection-request:hover,
+.sidebar-history-request:hover {
     background-color: #DEDEDE;
     cursor: pointer;
 }
@@ -845,10 +836,10 @@ li .right {
     padding-left: 5px;
 }
 
-.sidebarCollectionRequest a,
-.sidebarCollectionRequest a:hover,
-.sidebarHistoryRequest a,
-.sidebarHistoryRequest a:hover {
+.sidebar-collection-request a,
+.sidebar-collection-request a:hover,
+.sidebar-history-request a,
+.sidebar-history-request a:hover {
     color: #333;
     text-decoration: none;
 }
@@ -915,30 +906,6 @@ li .right {
     cursor: pointer;
 }
 
-#url-ParamsEditor {
-    margin-left: -20px;
-    padding-left: 20px;
-    border-bottom: solid thin #ccc;
-}
-
-#url-ParamsEditor .key,
-#headers-ParamsEditor .key {
-    width: 282px;
-}
-
-#url-ParamsEditorActions {
-    margin-top: 10px;
-}
-
-#url-ParamsEditor .value,
-#headers-ParamsEditor .value {
-    width: 281px;
-}
-
-#body-ParamsEditor .file {
-    width: 239px;
-}
-
 .form-stacked {
     margin-bottom: 0px;
 }
@@ -954,22 +921,22 @@ li .right {
     display: none;
 }
 
-#reponseAsText {
+#response-as-text {
     display: none;
 }
 
-#responseAsImage {
+#response-as-image {
     display: none;
     margin-top: 20px;
 }
 
-#aboutPostmanSocialButtons {
+#about-postman-social-buttons {
     margin: 5px 0 5px 0;
 }
 
-#aboutPostmanTwitterButton,
-#aboutPostmanPlusOneButton,
-#aboutPostmanFacebookButton {
+#about-postman-twitter-button,
+#about-postman-plus-one-button,
+#about-postman-facebook-button {
     float: left;
     margin-right: 10px;
 }
@@ -1000,21 +967,21 @@ li .right {
     display: none;
 }
 
-.responseCode {
+.response-code {
     cursor: pointer;
 }
 
-.responseCode .data {
+.response-code .data {
     display: inline-block;
 }
 
-#messageNoCollection,
-#messageNoHistory {
+#message-no-collection,
+#message-no-history {
     margin-top: 10px;
 
 }
 
-#respDataActions {
+#resp-data-actions {
     float: left;
     margin-top: 17px;
     margin-left: 10px;
@@ -1096,25 +1063,25 @@ li .right {
     padding-bottom: 0;
 }
 
-.topSidebar {
+.top-sidebar {
     float: right;
     margin-right: 25px;
     margin-top: 5px;
     width: 60px;
 }
 
-.topSidebar a {
+.top-sidebar a {
     font-size: 11px;
     font-weight: bold;
     text-decoration: none;
     margin-right: 5px;
 }
 
-.topSidebar img {
+.top-sidebar img {
     height: 14px;
 }
 
-.topSidebar a:hover {
+.top-sidebar a:hover {
     text-decoration: none;
 }
 
@@ -1214,7 +1181,7 @@ li .right {
     font-weight: bold;
 }
 
-#modalEnvironments .modal-footer {
+#modal-environments .modal-footer {
     display: none;
 }
 
@@ -1232,7 +1199,7 @@ li .right {
     color: #BBB;
 }
 
-#responseTopBar {
+#response-top-bar {
     border-bottom: solid thin #ccc;
     height: 35px;
     margin-left: -20px;
@@ -1310,11 +1277,11 @@ li .right {
     margin-bottom: 5px;
 }
 
-#modalSpreadTheWord a {
+#modal-spread-the-word a {
     font-weight: bold;
 }
 
-#newRequestDescription {
+#new-request-description {
     height: 100px;
 }
 

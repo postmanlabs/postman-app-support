@@ -76,13 +76,13 @@
             </a>
         </div>
         <div id="collections-options" class="section-options">
-            <a href="#formModalNewCollection" rel="tooltip" data-original-title="Add new collection"
+            <a href="#form-modal-new-collection" rel="tooltip" data-original-title="Add new collection"
                data-toggle="modal"
                data-backdrop="static"
                data-placement="bottom"
                data-keyboard="true"><img src="img/glyphicons_145_folder_plus.png"
                                          style="width:20px; height:20px; vertical-align: middle;"/></a>
-            <a href="#modalImportCollection" rel="tooltip" data-original-title="Import collection"
+            <a href="#modal-import-collection" rel="tooltip" data-original-title="Import collection"
                data-toggle="modal"
                data-backdrop="static"
                data-placement="bottom"
@@ -141,11 +141,11 @@
             </div>
         </div>
     </div>
-    <div class="topSidebar">
-        <a data-toggle="modal" href="#modalShortcuts"
+    <div class="top-sidebar">
+        <a data-toggle="modal" href="#modal-shortcuts"
            rel="tooltip" data-placement="bottom" data-original-title="Shortcuts">
             <img src="img/glyphicons_268_keyboard_wireless.png" style="vertical-align: middle;"/></a>
-        <a href="#modalSettings" data-toggle="modal"
+        <a href="#modal-settings" data-toggle="modal"
            rel="tooltip"
            data-placement="bottom" data-original-title="Settings">
             <img src="img/glyphicons_280_settings.png" style="vertical-align: middle;"/></a>
@@ -160,14 +160,14 @@
                     <label class="control-label">Username</label>
 
                     <div class="controls">
-                        <input type="text" id="request-helper-basicAuth-username" class="cleanInput"/>
+                        <input type="text" id="request-helper-basicAuth-username" class="clean-input"/>
                     </div>
                 </div>
                 <div class="control-group">
                     <label class="control-label">Password</label>
 
                     <div class="controls">
-                        <input type="password" id="request-helper-basicAuth-password" class="cleanInput"/>
+                        <input type="password" id="request-helper-basicAuth-password" class="clean-input"/>
                     </div>
                 </div>
                 <div class="control-group">
@@ -192,7 +192,7 @@
 
                     <div class="controls">
                         <input type="text" id="request-helper-oauth1-consumerKey"
-                               class="cleanInput signatureParam"
+                               class="clean-input signatureParam"
                                key="oauth_consumer_key"/>
                     </div>
                 </div>
@@ -200,7 +200,7 @@
                     <label>Consumer Secret</label>
 
                     <div class="controls">
-                        <input type="text" id="request-helper-oauth1-consumerSecret" class="cleanInput"
+                        <input type="text" id="request-helper-oauth1-consumerSecret" class="clean-input"
                                key="oauth_consumer_secret"/>
                     </div>
                 </div>
@@ -208,7 +208,7 @@
                     <label>Token</label>
 
                     <div class="controls">
-                        <input type="text" id="request-helper-oauth1-token" class="cleanInput signatureParam"
+                        <input type="text" id="request-helper-oauth1-token" class="clean-input signatureParam"
                                key="oauth_token"/>
                     </div>
                 </div>
@@ -216,7 +216,7 @@
                     <label>Token Secret</label>
 
                     <div class="controls">
-                        <input type="text" id="request-helper-oauth1-tokenSecret" class="cleanInput"
+                        <input type="text" id="request-helper-oauth1-tokenSecret" class="clean-input"
                                key="oauth_token_secret"/>
                     </div>
                 </div>
@@ -225,7 +225,7 @@
 
                     <div class="controls">
                         <input type="text" id="request-helper-oauth1-signatureMethod"
-                               class="cleanInput signatureParam"
+                               class="clean-input signatureParam"
                                value="HMAC-SHA1" key="oauth_signature_method"/>
                     </div>
                 </div>
@@ -233,7 +233,7 @@
                     <label>Timestamp</label>
 
                     <div class="controls">
-                        <input type="text" id="request-helper-oauth1-timestamp" class="cleanInput signatureParam"
+                        <input type="text" id="request-helper-oauth1-timestamp" class="clean-input signatureParam"
                                key="oauth_timestamp"/>
                     </div>
                 </div>
@@ -241,7 +241,7 @@
                     <label>Nonce</label>
 
                     <div class="controls">
-                        <input type="text" id="request-helper-oauth1-nonce" class="cleanInput signatureParam"
+                        <input type="text" id="request-helper-oauth1-nonce" class="clean-input signatureParam"
                                key="oauth_nonce"/>
                     </div>
                 </div>
@@ -249,7 +249,7 @@
                     <label>Version</label>
 
                     <div class="controls">
-                        <input type="text" id="request-helper-oauth1-version" class="cleanInput signatureParam"
+                        <input type="text" id="request-helper-oauth1-version" class="clean-input signatureParam"
                                value="1.0"
                                key="oauth_version"/>
                     </div>
@@ -358,7 +358,7 @@
         </button>
         <button class="btn"
                 id="add-to-collection"
-                href="#formModalAddToCollection"
+                href="#form-modal-add-to-collection"
                 data-toggle="modal" data-backdrop="static"
                 data-keyboard="true">Add to collection
         </button>
@@ -371,7 +371,7 @@
 
 <section id="response">
     <fieldset>
-        <div id="responseTopBar">
+        <div id="response-top-bar">
             <ul class="response-tabs clearfix">
                 <li class="active" data-section="body">Body</li>
                 <li data-section="cookies" id="response-tabs-cookies">Cookies</li>
@@ -386,10 +386,10 @@
             </div>
         </div>
 
-        <div id="responsePrint" class="clearfix">
-            <div id="respData" style="display:none" class="clearfix">
-                <div id="respDataOptions" class="clearfix">
-                    <div id="langFormat" class="btn-group clearfix" data-toggle="buttons-radio">
+        <div id="response-print" class="clearfix">
+            <div id="resp-data" style="display:none" class="clearfix">
+                <div id="resp-data-options" class="clearfix">
+                    <div id="lang-format" class="btn-group clearfix" data-toggle="buttons-radio">
                         <a href="javascript:void(0);" data-type="parsed" class="btn">
                             Pretty
                         </a>
@@ -397,12 +397,12 @@
                             Raw
                         </a>
                     </div>
-                    <div id="respDataActions" class="clearfix">
+                    <div id="resp-data-actions" class="clearfix">
                         <a href="javascript:void(0);" class="btn"
                            rel="tooltip"
                            data-placement="bottom"
                            data-original-title="Toggle size"
-                           id="responseBodyToggle">
+                           id="response-body-toggle">
                             <img src="img/full-screen-alt-4.png"
                                  style="width:16px; height:16px; vertical-align: middle;"/>
                         </a>
@@ -410,7 +410,7 @@
                            rel="tooltip"
                            data-placement="bottom"
                            data-original-title="Toggle wrapping"
-                           id="responseBodyLineWrapping">
+                           id="response-body-line-wrapping">
                             <img src="img/glyphicons_109_right_indent.png"
                                  style="width:16px; height:16px; vertical-align: middle;"/>
                         </a>
@@ -418,7 +418,7 @@
                            rel="tooltip"
                            data-placement="bottom"
                            data-original-title="View as HTML"
-                           id="responseOpenInNewWindow">
+                           id="response-open-in-new-window">
                             <img src="img/html.png"
                                  style="width:20px; height:16px; vertical-align: middle;"/>
                         </a>
@@ -432,15 +432,15 @@
                         </a>
                     </div>
                 </div>
-                <div name="responseData" id="responseData" contenteditable="true">
-                    <div id="responseAsCode">
-                        <textarea name="codeData" id="codeData" data-formatted="false">
+                <div name="response-data" id="response-data" contenteditable="true">
+                    <div id="response-as-code">
+                        <textarea id="code-data" data-formatted="false">
                         </textarea>
                     </div>
-                    <div id="responseAsText">
-                        <textarea name="codeData" id="codeDataRaw"></textarea>
+                    <div id="response-as-text">
+                        <textarea id="code-data-raw"></textarea>
                     </div>
-                    <div id="responseAsImage"></div>
+                    <div id="response-as-image"></div>
                 </div>
             </div>
         </div>
@@ -459,28 +459,27 @@
                 </tbody>
             </table>
         </div>
-        <div id="respHeaders">
-            <div id="respHeadersContent">
-                <div id="responseHeaders"></div>
+        <div id="resp-headers">
+            <div id="resp-headers-content">
+                <div id="response-headers"></div>
             </div>
         </div>
     </fieldset>
 </section>
 </div>
 </div>
-<div id="formModalNewCollection" class="modal fade">
+<div id="form-modal-new-collection" class="modal fade">
     <div class="modal-header">
         <a href="#" class="close" data-dismiss="modal">×</a>
-
         <h3>Create a new collection</h3>
     </div>
     <div class="modal-body">
-        <form class="form form-horizontal" id="formNewCollection">
-            <div class="control-group" id="newCollectionContainer">
+        <form class="form form-horizontal" id="form-new-collection">
+            <div class="control-group" id="new-collection-container">
                 <label class="control-label">Collection name</label>
 
                 <div class="controls">
-                    <input type="text" class="medium cleanInput" name="newCollectionBlank" id="newCollectionBlank"/>
+                    <input type="text" class="medium clean-input" name="new-collection-blank" id="new-collection-blank"/>
                 </div>
             </div>
         </form>
@@ -490,7 +489,7 @@
         <a href="javascript:void(0);" data-dismiss="modal" class="btn btn-secondary">Cancel</a>
     </div>
 </div>
-<div id="formModalEditCollection" class="modal fade">
+<div id="form-modal-edit-collection" class="modal fade">
     <div class="modal-header">
         <a href="#" class="close" data-dismiss="modal">×</a>
 
@@ -503,7 +502,7 @@
 
                 <div class="controls">
                     <input type="hidden" name="collection-id" class="collection-id"/>
-                    <input type="text" name="collection-name" class="medium collection-name cleanInput"/>
+                    <input type="text" name="collection-name" class="medium collection-name clean-input"/>
                 </div>
             </div>
         </form>
@@ -513,26 +512,26 @@
         <a href="javascript:void(0);" data-dismiss="modal" class="btn btn-secondary">Cancel</a>
     </div>
 </div>
-<div id="formModalEditCollectionRequest" class="modal fade">
+<div id="form-modal-edit-collection-request" class="modal fade">
     <div class="modal-header">
         <a href="#" class="close" data-dismiss="modal">×</a>
 
         <h3>Edit request</h3>
     </div>
     <div class="modal-body">
-        <form class="form-horizontal" id="formEditCollectionRequest">
+        <form class="form-horizontal" id="form-edit-collection-request">
             <div class="control-group">
-                <label for="newCollection">Request name</label>
+                <label for="new-collection">Request name</label>
 
                 <div class="controls">
                     <div class="input">
                         <input type="hidden" class="collection-request-id"/>
-                        <input type="text" class="medium cleanInput collection-request-name"/>
+                        <input type="text" class="medium clean-input collection-request-name"/>
                     </div>
                 </div>
             </div>
             <div class="control-group">
-                <label for="newCollection">Request description</label>
+                <label for="new-collection">Request description</label>
 
                 <div class="controls">
                     <div class="input">
@@ -547,47 +546,46 @@
         <a href="javascript:void(0);" data-dismiss="modal" class="btn btn-secondary">Cancel</a>
     </div>
 </div>
-<div id="formModalAddToCollection" class="modal fade">
+<div id="form-modal-add-to-collection" class="modal fade">
     <div class="modal-header">
         <a href="#" class="close" data-dismiss="modal">×</a>
-
         <h3>Add request to a collection</h3>
     </div>
     <div class="modal-body">
-        <form class="form-horizontal" id="formAddToCollection">
-            <div class="control-group" id="selectCollectionContainer">
-                <label for="selectCollection">Existing collection</label>
+        <form class="form-horizontal" id="form-add-to-collection">
+            <div class="control-group" id="select-collection-container">
+                <label for="select-collection">Existing collection</label>
 
                 <div class="controls">
-                    <select name="selectCollection" class="medium" id="selectCollection">
+                    <select name="select-collection" class="medium" id="select-collection">
                         <option value="_select">Select</option>
                     </select>
                 </div>
             </div>
             <div class="control-group">
-                <label for="newCollection">or create a new one</label>
+                <label for="new-collection">or create a new one</label>
 
                 <div class="controls">
                     <div class="input">
-                        <input type="text" class="medium cleanInput" id="newCollection"/>
+                        <input type="text" class="medium clean-input" id="new-collection"/>
                     </div>
                 </div>
             </div>
             <div class="control-group">
-                <label for="newCollection">Request name</label>
+                <label for="new-collection">Request name</label>
 
                 <div class="controls">
                     <div class="input">
-                        <input type="text" class="medium cleanInput" id="newRequestName"/>
+                        <input type="text" class="medium clean-input" id="new-request-name"/>
                     </div>
                 </div>
             </div>
             <div class="control-group">
-                <label for="newCollection">Request description</label>
+                <label for="new-collection">Request description</label>
 
                 <div class="controls">
                     <div class="input">
-                        <textarea class="medium" id="newRequestDescription"></textarea>
+                        <textarea class="medium" id="new-request-description"></textarea>
                     </div>
                 </div>
             </div>
@@ -598,7 +596,7 @@
         <a href="javascript:void(0);" data-dismiss="modal" class="btn btn-secondary">Cancel</a>
     </div>
 </div>
-<div id="modalShareCollection" class="modal fade">
+<div id="modal-share-collection" class="modal fade">
     <div class="modal-header">
         <a href="#" class="close" data-dismiss="modal" id="modal-share-collection-close">x</a>
 
@@ -608,9 +606,7 @@
     <div class="modal-body">
         <div>
             <h4>Share as a link</h4>
-
             <p>Upload your collection to getpostman.com and get a link to share with others.</p>
-
             <pre id="share-collection-link"></pre>
             <a id="share-collection-get-link" data-collection-id="" href="javascript:void(0);" class="btn">Upload</a>
         </div>
@@ -623,7 +619,7 @@
         <hr/>
     </div>
 </div>
-<div id="modalImportCollection" class="modal fade">
+<div id="modal-import-collection" class="modal fade">
     <div class="modal-header">
         <a href="#" class="close" data-dismiss="modal">x</a>
 
@@ -646,7 +642,7 @@
             <div class="control-group">
                 <div class="controls">
                     <input type="text"
-                           class="large cleanInput"
+                           class="large clean-input"
                            placeholder="Enter URL and press import"
                            id="import-collection-url-input"/>
                 </div>
@@ -659,7 +655,7 @@
         </div>
     </div>
 </div>
-<div id="modalDeleteCollection" class="modal fade">
+<div id="modal-delete-collection" class="modal fade">
     <div class="modal-header">
         <a href="#" class="close" data-dismiss="modal">x</a>
 
@@ -668,20 +664,20 @@
 
     <div class="modal-body">
         <p>
-            Are you sure you want to delete <span id="modalDeleteCollectionName"></span>?
+            Are you sure you want to delete <span id="modal-delete-collection-name"></span>?
         </p>
     </div>
 
     <div class="modal-footer">
         <a href="javascript:void(0);"
            data-collection-id=""
-           id="modalDeleteCollectionYes"
+           id="modal-delete-collection-yes"
            data-dismiss="modal"
            class="btn btn-danger">Yes</a>
         <a href="javascript:void(0);" data-dismiss="modal" class="btn">No</a>
     </div>
 </div>
-<div id="modalEnvironments" class="modal fade">
+<div id="modal-environments" class="modal fade">
     <div class="modal-header">
         <a href="#" class="close" data-dismiss="modal">x</a>
 
@@ -719,9 +715,9 @@
             </table>
         </div>
         <div id="environment-editor">
-            <input type="text" name="environment-editor-name" id="environment-editor-name" class="cleanInput"
+            <input type="text" name="environment-editor-name" id="environment-editor-name" class="clean-input"
                    placeholder="New environment"/>
-            <input type="hidden" name="environment-editor-id" id="environment-editor-id" value="0" class="cleanInput"/>
+            <input type="hidden" name="environment-editor-id" id="environment-editor-id" value="0" class="clean-input"/>
 
             <div id="environment-keyvaleditor"></div>
         </div>
@@ -743,7 +739,7 @@
         </div>
     </div>
 </div>
-<div id="modalSettings" class="modal fade">
+<div id="modal-settings" class="modal fade">
     <div class="modal-header">
         <a href="#" class="close" data-dismiss="modal">×</a>
 
@@ -752,10 +748,10 @@
     <div class="modal-body">
         <form class="form-horizontal">
             <div class="control-group">
-                <label class="control-label" for="historyCount">Max history items</label>
+                <label class="control-label" for="history-count">Max history items</label>
 
                 <div class="controls">
-                    <select class="medium" name="historyCount" id="historyCount">
+                    <select class="medium" name="history-count" id="history-count">
                         <option value="50">50</option>
                         <option value="100">100</option>
                         <option value="200">200</option>
@@ -763,10 +759,10 @@
                 </div>
             </div>
             <div class="control-group">
-                <label class="control-label" for="historyCount">Auto save request</label>
+                <label class="control-label" for="history-count">Auto save request</label>
 
                 <div class="controls">
-                    <select class="medium" name="autoSaveRequest" id="autoSaveRequest">
+                    <select class="medium" name="auto-save-request" id="auto-save-request">
                         <option value="true">Yes</option>
                         <option value="false">No</option>
                     </select>
@@ -784,7 +780,7 @@
             </div>
 
             <div class="control-group">
-                <label class="control-label" for="historyCount">Use Postman proxy?</label>
+                <label class="control-label" for="history-count">Use Postman proxy?</label>
 
                 <div class="controls">
                     <select class="medium" name="use-postman-proxy" id="use-postman-proxy">
@@ -794,7 +790,7 @@
                 </div>
             </div>
             <div class="control-group">
-                <label class="control-label" for="historyCount">Postman proxy URL</label>
+                <label class="control-label" for="history-count">Postman proxy URL</label>
 
                 <div class="controls">
                     <input type="text" name="postman-proxy-url" id="postman-proxy-url"/>
@@ -803,7 +799,7 @@
         </form>
     </div>
 </div>
-<div id="modalResponseError" class="modal fade">
+<div id="modal-response-error" class="modal fade">
     <div class="modal-header">
         <a href="#" class="close" data-dismiss="modal">×</a>
 
@@ -821,7 +817,7 @@
     </div>
 </div>
 </div>
-<div id="modalSpreadTheWord" class="modal fade">
+<div id="modal-spread-the-word" class="modal fade">
     <div class="modal-header">
         <a href="#" class="close" data-dismiss="modal">×</a>
 
@@ -869,10 +865,10 @@
                     <strong>Share Postman</strong>
 
                     <div class="spreadtheword-sharebuttons">
-                        <div id="aboutPostmanSocialButtons" class="clearfix">
-                            <div id="aboutPostmanTwitterButton"></div>
-                            <div id="aboutPostmanPlusOneButton"></div>
-                            <div id="aboutPostmanFacebookButton"></div>
+                        <div id="about-postman-social-buttons" class="clearfix">
+                            <div id="about-postman-twitter-button"></div>
+                            <div id="about-postman-plus-one-button"></div>
+                            <div id="about-postman-facebook-button"></div>
                         </div>
                     </div>
                 </td>
@@ -880,10 +876,9 @@
         </table>
     </div>
 </div>
-<div id="modalShortcuts" class="modal fade">
+<div id="modal-shortcuts" class="modal fade">
     <div class="modal-header">
         <a href="#" class="close" data-dismiss="modal">×</a>
-
         <h3>Shortcuts</h3>
     </div>
     <div class="modal-body">
@@ -944,34 +939,33 @@
         <span class="value">${value}</span>
     </li>
 </script>
-<script id="messageNoHistoryTmpl" type="text/x-jquery-tmpl">
-    <div id="messageNoHistory">
+<script id="message-no-history-tmpl" type="text/x-jquery-tmpl">
+    <div id="message-no-history">
         Nothing in your history yet. You can automatically save and access your sent requests here.
     </div>
 </script>
-<script id="messageCollectionAdded" type="text/x-jquery-tmpl">
+<script id="message-collection-added" type="text/x-jquery-tmpl">
     <div class="alert alert-block">
         <a class="close" data-dismiss="alert">×</a>
         <h4 class="alert-heading">It worked!</h4>
         The collection ${name} has been ${action}.
     </div>
 </script>
-<script id="messageEnvironmentAdded" type="text/x-jquery-tmpl">
+<script id="message-environment-added" type="text/x-jquery-tmpl">
     <div class="alert alert-block">
         <a class="close" data-dismiss="alert">×</a>
         <h4 class="alert-heading">It worked!</h4>
         The environment ${name} has been ${action}.
     </div>
 </script>
-<script id="itemEnvironmentList" type="text/x-jquery-tmpl">
+<script id="item-environment-list" type="text/x-jquery-tmpl">
     <tr>
         <td>
             <a href="javascript:void(0);" class="environment-action-edit" data-id="${id}">${name}</a>
         </td>
         <td style="width: 50px;">
             <a href="javascript:void(0);"
-               rel="tooltip" data-original-title="Download
-						environment"
+               rel="tooltip" data-original-title="Download environment"
                data-placement="bottom"
                class="environment-action-download" data-id="${id}">
                 <img src="img/glyphicons_181_download_alt.png"
@@ -984,29 +978,29 @@
         </td>
     </tr>
 </script>
-<script id="messageNoCollectionTmpl" type="text/x-jquery-tmpl">
-    <div id="messageNoCollection">
+<script id="message-no-collection-tmpl" type="text/x-jquery-tmpl">
+    <div id="message-no-collection">
         You haven't created any collections yet. Collections let you group requests together for quick access.
     </div>
 </script>
-<script id="itemCollectionSelectorList" type="text/x-jquery-tmpl">
+<script id="item-collection-selector-list" type="text/x-jquery-tmpl">
     <option value="${id}">${name}</option>
 </script>
-<script id="itemResponseCode" type="text/x-jquery-tmpl">
-    <div class="responseCode" data-placement="bottom" data-original-title="${code} ${name}" data-content="${detail}"
+<script id="item-response-code" type="text/x-jquery-tmpl">
+    <div class="response-code" data-placement="bottom" data-original-title="${code} ${name}" data-content="${detail}"
          rel="popover"><span class="label">Status</span>
 
         <div class="data">${code} ${name}</div>
     </div>
 </script>
-<script id="itemResponseHeader" type="text/x-jquery-tmpl">
-    <li class="responseHeader clearfix">
-        <div class="responseHeaderName" data-placement="top" data-original-title="${name}" data-content="${description}"
+<script id="item-response-header" type="text/x-jquery-tmpl">
+    <li class="response-header clearfix">
+        <div class="response-header-name" data-placement="top" data-original-title="${name}" data-content="${description}"
              rel="popover">${name} &rarr;</div>
-        <div class="responseHeaderValue">${value}</div>
+        <div class="response-header-value">${value}</div>
     </li>
 </script>
-<script id="itemResponseCookie" type="text/x-jquery-tmpl">
+<script id="item-response-cookie" type="text/x-jquery-tmpl">
     <tr>
         <td>${name}</td>
         <td>${value}</td>
@@ -1017,8 +1011,8 @@
         <td>${secure}</td>
     </tr>
 </script>
-<script id="itemCollectionSidebarHead" type="text/x-jquery-tmpl">
-    <li id="collection-${id}" data-id="${id}" class="sidebarCollection">
+<script id="item-collection-sidebar-head" type="text/x-jquery-tmpl">
+    <li id="collection-${id}" data-id="${id}" class="sidebar-collection">
         <div class="sidebar-collection-head">
             <div class="collection-head-actions">
                 <a href="javascript:void(0);"
@@ -1034,7 +1028,7 @@
                 <a rel="tooltip" data-original-title="Delete collection"
                    data-name="${name}"
                    data-placement="bottom"
-                   href="#modalDeleteCollection" data-toggle="modal"
+                   href="#modal-delete-collection" data-toggle="modal"
                    class="collection-actions-delete" data-id="${id}">
                     <img src="img/delete.png" style="vertical-align: middle;"/></a>
             </div>
@@ -1042,11 +1036,11 @@
                 ${name}
             </div>
         </div>
-        <ul id="collectionRequests-${id}" class="sidebar-collection-requests"></ul>
+        <ul id="collection-requests-${id}" class="sidebar-collection-requests"></ul>
     </li>
 </script>
-<script id="itemCollectionSidebarRequest" type="text/x-jquery-tmpl">
-    <li id="sidebarRequest-${id}" class="sidebarCollectionRequest sidebarRequest clearfix">
+<script id="item-collection-sidebar-request" type="text/x-jquery-tmpl">
+    <li id="sidebar-request-${id}" class="sidebar-collection-request sidebar-request clearfix">
         <div class="request-actions">
             <a href="javascript:void(0);" data-id="${id}" class="request-actions-edit">
                 <img src="img/glyphicons_151_edit.png" style="vertical-align: middle;"/>
@@ -1060,8 +1054,8 @@
         </div>
     </li>
 </script>
-<script id="itemHistorySidebarRequest" type="text/x-jquery-tmpl">
-    <li id="sidebarRequest-${id}" class="sidebarHistoryRequest sidebarRequest clearfix">
+<script id="item-history-sidebar-request" type="text/x-jquery-tmpl">
+    <li id="sidebar-request-${id}" class="sidebar-history-request sidebar-request clearfix">
         <div class="request-actions">
             <a href="javascript:void(0);" data-request-id="${id}" class="request-actions-delete">
                 <img src="img/delete.png"/>
@@ -1073,58 +1067,17 @@
         </div>
     </li>
 </script>
-<script id="itemEditorStandard" type="text/x-jquery-tmpl">
+<script id="item-editor-standard" type="text/x-jquery-tmpl">
 </script>
-<script id="itemParamsEditor" type="text/x-jquery-tmpl">
-    <div>
-        <input type="text"
-               data-section="${section}"
-               name="${section}[key][]"
-               class="key ui-autocomplete-input"
-               placeholder="${placeHolderKey}"
-               role="textbox"
-               value="${key}"
-               aria-autocomplete="list"
-               aria-haspopup="true"/>
-        {{if inputType == "file" }}
-        <input type="file"
-               name="${section}[value][]"
-               class="file"
-               multiple
-               placeholder="${placeHolderValue}"/>
-        {{/if}}
-        {{if inputType == "text" }}
-        <input type="text"
-               name="${section}[value][]"
-               class="value"
-               value="${value}"
-               placeholder="${placeHolderValue}"/>
-        {{/if}}
-        {{if section == "body" }}
-        <select>
-            <option value="text"
-            ${selectedText}>Text</option>
-            <option value="file"
-            ${selectedFile}>File</option>
-        </select>
-        {{/if}}
-
-        {{if canBeClosed}}
-        <a href="javascript:void(0);" class="deleteParam">
-            <img class="deleteButton" src="img/delete.png">
-        </a>
-        {{/if}}
-    </div>
-</script>
-<script id="itemEnvironmentSelector" type="text/x-jquery-tmpl">
+<script id="item-environment-selector" type="text/x-jquery-tmpl">
     <li><a href="javascript:void(0);" class="environment-list-item" data-id="${id}">${name}</a></li>
 </script>
-<script id="environmentSelectorActions" type="text/x-jquery-tmpl">
+<script id="environment-selector-actions" type="text/x-jquery-tmpl">
     <li>
         <a class="environment-list-item-noenvironment" href="javascript:void(0);">No environment</a>
     </li>
     <li class="divider"></li>
-    <li><a href="#modalEnvironments" data-toggle="modal"
+    <li><a href="#modal-environments" data-toggle="modal"
            data-backdrop="static" data-keyboard="true">Manage environments</a></li>
 </script>
 <script type="text/javascript" src="js/jquery.min.js"></script>
