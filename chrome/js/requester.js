@@ -1528,6 +1528,7 @@ postman.currentRequest = {
         postman.currentRequest.xhr = xhr;
 
         var url = this.url;
+        var originalUrl = $('#url').val();
         var method = this.method.toUpperCase();
         var data = this.body.data;
         var originalData = data;
@@ -1621,7 +1622,7 @@ postman.currentRequest = {
         }
 
         if (postman.settings.get("autoSaveRequest")) {
-            postman.history.addRequest(url, method, postman.currentRequest.getPackedHeaders(), originalData, this.dataMode);
+            postman.history.addRequest(originalUrl, method, postman.currentRequest.getPackedHeaders(), originalData, this.dataMode);
         }
 
         $('#submit-request').button("loading");
