@@ -1973,12 +1973,12 @@ postman.collections = {
     },
 
     addCollectionListeners:function () {
-        $('#collection-items').on("mouseenter", ".#sidebar-collection .sidebar-collection-head", function () {
+        $('#collection-items').on("mouseenter", ".sidebar-collection .sidebar-collection-head", function () {
             var actionsEl = jQuery('.collection-head-actions', this);
             actionsEl.css('display', 'block');
         });
 
-        $('#collection-items').on("mouseleave", ".#sidebar-collection .sidebar-collection-head", function () {
+        $('#collection-items').on("mouseleave", ".sidebar-collection .sidebar-collection-head", function () {
             var actionsEl = jQuery('.collection-head-actions', this);
             actionsEl.css('display', 'none');
         });
@@ -2160,7 +2160,7 @@ postman.collections = {
                                 }
 
                                 req.name = limitStringLineWidth(req.name, 43);
-                                $('#itemCollectionSidebarRequest').tmpl([req]).appendTo(targetElement);
+                                $('#item-collection-sidebar-request').tmpl([req]).appendTo(targetElement);
                                 postman.layout.refreshScrollPanes();
                             });
                         }
@@ -2205,7 +2205,7 @@ postman.collections = {
                         }
 
                         req.name = limitStringLineWidth(req.name, 43);
-                        $('#itemCollectionSidebarRequest').tmpl([req]).appendTo(targetElement);
+                        $('#item-collection-sidebar-request').tmpl([req]).appendTo(targetElement);
                         postman.layout.refreshScrollPanes();
                     });
                 }
@@ -2335,7 +2335,7 @@ postman.collections = {
                     }
                     req.name = limitStringLineWidth(req.name, 43);
 
-                    $('#itemCollectionSidebarRequest').tmpl([req]).appendTo(targetElement);
+                    $('#item-collection-sidebar-request').tmpl([req]).appendTo(targetElement);
                     postman.layout.refreshScrollPanes();
 
                     postman.currentRequest.isFromCollection = true;
@@ -2358,7 +2358,7 @@ postman.collections = {
                 }
                 req.name = limitStringLineWidth(req.name, 43);
 
-                $('#itemCollectionSidebarRequest').tmpl([req]).appendTo(targetElement);
+                $('#item-collection-sidebar-request').tmpl([req]).appendTo(targetElement);
                 postman.layout.refreshScrollPanes();
 
                 postman.currentRequest.isFromCollection = true;
@@ -2731,12 +2731,12 @@ postman.layout = {
             }
 
             $('#sidebar-section-' + this.currentSection).css("display", "none");
-            $('#' + this.currentSection + 'Options').css("display", "none");
+            $('#' + this.currentSection + '-options').css("display", "none");
 
             this.currentSection = section;
 
             $('#sidebar-section-' + section).fadeIn();
-            $('#' + section + 'Options').css("display", "block");
+            $('#' + section + '-options').css("display", "block");
             postman.layout.refreshScrollPanes();
             return true;
         },
@@ -2766,12 +2766,12 @@ postman.layout = {
         },
 
         addRequestListeners:function () {
-            $('#sidebar-container').on("mouseenter", ".sidebarRequest", function () {
+            $('#sidebar-container').on("mouseenter", ".sidebar-request", function () {
                 var actionsEl = jQuery('.request-actions', this);
                 actionsEl.css('display', 'block');
             });
 
-            $('#sidebar-container').on("mouseleave", ".sidebarRequest", function () {
+            $('#sidebar-container').on("mouseleave", ".sidebar-request", function () {
                 var actionsEl = jQuery('.request-actions', this);
                 actionsEl.css('display', 'none');
             });
