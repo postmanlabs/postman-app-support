@@ -167,79 +167,6 @@ fieldset {
     border-radius: 0;
 }
 
-#url-ParamsEditor,
-#body-ParamsEditor {
-    display: none;
-}
-
-#editParamsButton {
-}
-
-.labelText {
-    color: #4c4c4c;
-    font-size: 95%;
-    font-weight: bold;
-}
-
-.blueButton {
-    background-color: #e2f0f5;
-    background-image: -webkit-linear-gradient(#e5f1f6, #cfe6ee);
-    box-shadow: 0px 0px 10px #cfe6ee;
-    color: #6b97a8;
-    border-radius: 20px;
-    padding-top: 10px;
-    padding-bottom: 10px;
-    padding-left: 20px;
-    padding-right: 20px;
-    border-color: #6b97a8;
-    border-width: 1px;
-    font-weight: bolder;
-    font-size: small;
-    text-align: center;
-}
-
-#bluebuttonlayout {
-    border-top: thin solid #CCC;
-    margin-top: 14px;
-    padding-top: 20px;
-}
-
-.infoText {
-    color: #0074a5;
-    font-size: 70%;
-    font-weight: bold;
-    text-decoration: none;
-}
-
-.historyItemSelected {
-    background-color: #414141;
-    color: #fff;
-    padding-left: 10px;
-    padding-bottom: 5px;
-    padding-top: 5px;
-}
-
-#history-items {
-}
-
-.historyItem {
-    padding-left: 10px;
-    padding-bottom: 5px;
-    padding-top: 5px;
-}
-
-.editTextButton {
-    color: #fff;
-    background-color: #535353;
-    background-image: -webkit-linear-gradient(#5e5e5e, #1e1e1e);
-    padding: 7px;
-    border-radius: 3px;
-    text-decoration: none;
-    font-size: 70%;
-    font-weight: bolder;
-    box-shadow: 0px 0px 5px #535353;
-}
-
 #header {
     padding: 12px;
     padding-left: 10px;
@@ -250,27 +177,26 @@ fieldset {
 
 #logo {
     float: left;
-
 }
 
-#main-navigation {
+#external-links {
     float: right;
 }
 
-#main-navigation ul li {
+#external-links ul li {
     float: left;
     list-style: none;
     margin-left: 5px;
     margin-right: 0;
 }
 
-#main-navigation ul li img {
+#external-links ul li img {
     width: 20px;
     height: 20px;
     opacity: 0.3;
 }
 
-#sidebar-container {
+#sidebar-sections {
     padding-top: 10px;
 }
 
@@ -285,29 +211,22 @@ fieldset {
     padding-left: 10px;
 }
 
-#resp-headers:focus,
-#response-headers:focus,
-#resp-headers-content:focus,
 #response-data:focus {
     border: none;
     outline: none !important;
 }
 
-#resp-headers,
-#response-cookies {
+#response-headers-container,
+#response-cookies-container {
     margin-top: 20px;
     max-width: 1000px;
     font-size: 11px;
     display: none;
 }
 
-#response-cookies-content {
+#response-cookies {
     max-width: 1000px;
     overflow: scroll;
-}
-
-#resp-headers textarea {
-    min-height: 125px;
 }
 
 #resp-data {
@@ -316,20 +235,6 @@ fieldset {
 
 #resp-data pre {
     font-family: Consolas, "Andale Mono", monospace;
-}
-
-.CodeMirror pre {
-    font-family: Consolas, "Andale Mono", monospace;
-}
-
-.CodeMirror-gutter-text {
-    cursor: pointer;
-    padding-left: 1em !important;
-}
-
-.CodeMirror-scroll {
-    height: auto !important;
-    overflow: visible !important;
 }
 
 .response-header {
@@ -365,77 +270,10 @@ fieldset {
     height: 200px;
 }
 
-#pstatus {
+#response-status {
     margin-top: 5px;
     float: left;
     margin-left: 30px;
-}
-
-#pbodysize {
-    margin-top: 10px;
-}
-
-.paramsEditor {
-    margin-bottom: 10px;
-    width: 630px;
-}
-
-.paramsEditor .actions {
-    width: 550px;
-    margin-bottom: 10px;
-}
-
-.paramsEditor h4 {
-    font-size: 11px;
-    margin-top: 2px;
-    margin-bottom: 4px;
-}
-
-.paramsEditor input {
-    padding: 5px;
-}
-
-.paramsEditor .key,
-.paramsEditor .value {
-    padding: 5px;
-    border: none;
-    box-shadow: none;
-    border-bottom: solid thin #ccc;
-    border-radius: 0;
-}
-
-.paramsEditor .key:focus,
-.paramsEditor .value:focus {
-    border-color: #999;
-}
-
-.paramsEditor .file {
-    padding: 0px 5px 0px 5px;
-}
-
-.paramsEditor .key {
-    width: 257px;
-}
-
-.paramsEditor .value {
-    width: 240px;
-}
-
-.paramsEditor select {
-    padding: 3px;
-    border-radius: 5px;
-    border-color: #CCC;
-    width: 65px;
-}
-
-.paramsEditor .deleteButton {
-    margin-left: 10px;
-    margin-top: 6px;
-    float: right;
-}
-
-#bodyFileButton {
-    opacity: 0.5;
 }
 
 #data {
@@ -459,11 +297,11 @@ fieldset {
     border-radius: 5px;
 }
 
-#ptime, #pstatus {
+#response-time, #response-status {
     margin-top: 8px;
 }
 
-#ptime label, #pstatus label {
+#response-time label, #response-status label {
     display: block;
     width: 120px;
 }
@@ -473,8 +311,8 @@ fieldset {
     font-family: Helvetica, Arial, sans-serif;
 }
 
-#ptime .data,
-#pstatus .data {
+#response-time .data,
+#response-status .data {
     font-size: 10px;
     font-weight: bold;
 }
@@ -628,7 +466,7 @@ li .right {
     margin: 2px;
 }
 
-#sidebar-container ul {
+#sidebar-sections ul {
     list-style: none;
     margin: 0;
     padding: 0;
@@ -666,34 +504,26 @@ li .right {
     height: 50px;
 }
 
-#sidebar-section-container {
+#sidebar-section-data {
     margin-bottom: 50px;
 }
 
-#sidebar-section-container ul {
+#sidebar-section-data ul {
     margin-left: -10px;
 }
 
-#sidebar-container .pills {
+#sidebar-sections .pills {
     margin-left: -4px;
 }
 
-#sidebar-container .pills .active .a {
+#sidebar-sections .pills .active .a {
     background-color: #333;
 }
 
-#resp-headers-content {
-    margin-top: 10px;
+#response-headers {
+    margin-top: 15px;
     margin-bottom: 15px;
-}
-
-#responseAsIFrame {
-    width: 100%;
-}
-
-#codeIFrame {
-    width: 100%;
-    border: none;
+    margin-left: 0;
 }
 
 .hsbarV {
@@ -720,17 +550,13 @@ li .right {
     -webkit-box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.5);
 }
 
-#headers-ParamsEditor {
-    width: 630px;
+.empty-message {
+    margin-top: 5px;
 }
 
 #pheaders {
     margin-top: 10px;
     margin-left: 5px;
-}
-
-#emptyHistoryMessage {
-    display: none;
 }
 
 #sidebar-section-collections {
@@ -741,15 +567,11 @@ li .right {
     width: 480px;
 }
 
-#request-actions-main {
+#request-actions-primary {
     float: left;
 }
 
-#reqeust-actions-secondary {
-    display: inline-block;
-}
-
-#request-actions-right {
+#request-actions-secondary {
     float: right;
 }
 
@@ -987,13 +809,13 @@ li .right {
     margin-left: 10px;
 }
 
-.helper-tabs {
+.request-helper-tabs {
     position: absolute;
     margin: 0;
     padding: 0;
 }
 
-.helper-tabs li {
+.request-helper-tabs li {
     float: left;
     font-size: 11px;
     font-weight: bold;
@@ -1006,20 +828,20 @@ li .right {
     height: 14px;
 }
 
-.helper-tabs li:hover {
+.request-helper-tabs li:hover {
     color: #333;
 }
 
-.helper-tabs li.active {
+.request-helper-tabs li.active {
     color: black;
     height: 15px;
 }
 
-.helper-tabs li:last-child {
+.request-helper-tabs li:last-child {
     border-right: solid thin #ccc;
 }
 
-.helper-tabs li:first-child {
+.request-helper-tabs li:first-child {
     border-left: none;
 }
 
@@ -1063,25 +885,25 @@ li .right {
     padding-bottom: 0;
 }
 
-.top-sidebar {
+.preferences {
     float: right;
     margin-right: 25px;
     margin-top: 5px;
     width: 60px;
 }
 
-.top-sidebar a {
+.preferences a {
     font-size: 11px;
     font-weight: bold;
     text-decoration: none;
     margin-right: 5px;
 }
 
-.top-sidebar img {
+.preferences img {
     height: 14px;
 }
 
-.top-sidebar a:hover {
+.preferences a:hover {
     text-decoration: none;
 }
 
@@ -1148,7 +970,7 @@ li .right {
 #environment-selector-wrapper {
     position: absolute;
     margin-top: 8px;
-    margin-left: 290px;
+    margin-left: 230px;
     font-size: 11px;
 }
 
@@ -1250,14 +1072,14 @@ li .right {
     margin-bottom: 5px;
 }
 
-#request-help {
+#request-meta {
     margin-left: -20px;
     padding-left: 20px;
     border-bottom: solid thin #ccc;
     display: none;
 }
 
-.request-help-actions {
+.request-meta-actions {
     position: absolute;
     margin-left: -17px;
     margin-top: 2px;
@@ -1268,7 +1090,7 @@ li .right {
     z-index: 300 !important;
 }
 
-.request-help-actions img {
+.request-meta-actions img {
     width: 14px;
     height: 14px;
 }
@@ -1344,4 +1166,19 @@ li .right {
 
 #share-collection-link {
     display: none;
+}
+
+/* CodeMirror overrides */
+.CodeMirror pre {
+    font-family: Consolas, "Andale Mono", monospace;
+}
+
+.CodeMirror-gutter-text {
+    cursor: pointer;
+    padding-left: 1em !important;
+}
+
+.CodeMirror-scroll {
+    height: auto !important;
+    overflow: visible !important;
 }

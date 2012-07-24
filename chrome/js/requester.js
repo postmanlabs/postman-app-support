@@ -851,16 +851,16 @@ postman.currentRequest = {
             postman.currentRequest.body.setDataMode(mode);
         });
 
-        $('.request-help-actions-togglesize').on("click", function () {
+        $('.request-meta-actions-togglesize').on("click", function () {
             var action = $(this).attr('data-action');
 
             if (action === "minimize") {
                 $(this).attr("data-action", "maximize");
-                $('.request-help-actions-togglesize img').attr('src', 'img/circle_plus.png');
+                $('.request-meta-actions-togglesize img').attr('src', 'img/circle_plus.png');
                 $("#request-description").slideUp(100);
             }
             else {
-                $('.request-help-actions-togglesize img').attr('src', 'img/circle_minus.png');
+                $('.request-meta-actions-togglesize img').attr('src', 'img/circle_minus.png');
                 $(this).attr("data-action", "minimize");
                 $("#request-description").slideDown(100);
             }
@@ -969,8 +969,8 @@ postman.currentRequest = {
 
                 var diff = postman.currentRequest.getTotalTime();
 
-                $('#pstatus').html('');
-                $('#item-response-code').tmpl([responseCode]).appendTo('#pstatus');
+                $('#response-status').html('');
+                $('#item-response-code').tmpl([responseCode]).appendTo('#response-status');
                 $('.response-code').popover();
 
                 //This sets loadHeders
@@ -981,8 +981,7 @@ postman.currentRequest = {
 
                 $("#loader").css("display", "none");
 
-                $('#ptime .data').html(diff + " ms");
-                $('#pbodysize .data').html(diff + " bytes");
+                $('#response-time .data').html(diff + " ms");
 
                 var contentType = response.getResponseHeader("Content-Type");
 
@@ -1196,24 +1195,24 @@ postman.currentRequest = {
             $('.response-tabs li').removeClass("active");
             $('.response-tabs li[data-section="headers"]').addClass("active");
             $('#response-print').css("display", "none");
-            $('#resp-headers').css("display", "block");
-            $('#response-cookies').css("display", "none");
+            $('#response-headers-container').css("display", "block");
+            $('#response-cookies-container').css("display", "none");
         },
 
         showBody:function () {
             $('.response-tabs li').removeClass("active");
             $('.response-tabs li[data-section="body"]').addClass("active");
             $('#response-print').css("display", "block");
-            $('#resp-headers').css("display", "none");
-            $('#response-cookies').css("display", "none");
+            $('#response-headers-container').css("display", "none");
+            $('#response-cookies-container').css("display", "none");
         },
 
         showCookies:function () {
             $('.response-tabs li').removeClass("active");
             $('.response-tabs li[data-section="cookies"]').addClass("active");
             $('#response-print').css("display", "none");
-            $('#resp-headers').css("display", "none");
-            $('#response-cookies').css("display", "block");
+            $('#response-headers-container').css("display", "none");
+            $('#response-cookies-container').css("display", "block");
         },
 
         openInNewWindow:function (data) {
@@ -1275,7 +1274,7 @@ postman.currentRequest = {
         }
 
         if (this.name !== "") {
-            $('#request-help').css("display", "block");
+            $('#request-meta').css("display", "block");
             $('#request-name').css("display", "block");
             if ($('#request-description').css("display") === "block") {
                 $('#request-description').css("display", "block");
@@ -1285,7 +1284,7 @@ postman.currentRequest = {
             }
         }
         else {
-            $('#request-help').css("display", "none");
+            $('#request-meta').css("display", "none");
             $('#request-name').css("display", "none");
             $('#request-description').css("display", "none");
         }
@@ -1420,12 +1419,12 @@ postman.currentRequest = {
 
         if (typeof request.name !== "undefined") {
             this.name = request.name;
-            $('#request-help').css("display", "block");
+            $('#request-meta').css("display", "block");
             $('#request-name').html(this.name);
             $('#request-name').css("display", "block");
         }
         else {
-            $('#request-help').css("display", "none");
+            $('#request-meta').css("display", "none");
             $('#request-name').css("display", "none");
         }
 
@@ -1438,8 +1437,8 @@ postman.currentRequest = {
             $('#request-description').css("display", "none");
         }
 
-        $('.request-help-actions-togglesize').attr('data-action', 'minimize');
-        $('.request-help-actions-togglesize img').attr('src', 'img/circle_minus.png');
+        $('.request-meta-actions-togglesize').attr('data-action', 'minimize');
+        $('.request-meta-actions-togglesize img').attr('src', 'img/circle_minus.png');
 
         $('#headers-keyvaleditor-actions-open .headers-count').html(this.headers.length);
 
@@ -1632,8 +1631,8 @@ postman.currentRequest = {
 
 postman.helpers = {
     init:function () {
-        $("#request-types .helper-tabs li").on("click", function () {
-            $("#request-types .helper-tabs li").removeClass("active");
+        $("#request-types .request-helper-tabs li").on("click", function () {
+            $("#request-types .request-helper-tabs li").removeClass("active");
             $(this).addClass("active");
             var type = $(this).attr('data-id');
             postman.helpers.showRequestHelper(type);
@@ -1858,7 +1857,7 @@ postman.history = {
             var count = historyRequests.length;
 
             if (count === 0) {
-                $('#message-no-history-tmpl').tmpl([
+                $('#message-no-history').tmpl([
                     {}
                 ]).appendTo('#sidebar-section-history');
             }
@@ -2135,7 +2134,7 @@ postman.collections = {
                     var collection = JSON.parse(data);
                     collection.id = guid();
                     postman.indexedDB.addCollection(collection, function (c) {
-                        $('#message-no-collection').css("display", "none");
+                        $('#sidebar-section-collections .empty-message').css("display", "none");
                         $('#item-collection-selector-list').tmpl([collection]).appendTo('#select-collection');
                         $('#item-collection-sidebar-head').tmpl([collection]).appendTo('#collection-items');
 
@@ -2180,7 +2179,7 @@ postman.collections = {
             var collection = data;
             collection.id = guid();
             postman.indexedDB.addCollection(collection, function (c) {
-                $('#message-no-collection').css("display", "none");
+                $('#sidebar-section-collections .empty-message').css("display", "none");
                 $('#item-collection-selector-list').tmpl([collection]).appendTo('#select-collection');
                 $('#item-collection-sidebar-head').tmpl([collection]).appendTo('#collection-items');
 
@@ -2257,7 +2256,7 @@ postman.collections = {
             collection.id = guid();
             collection.name = newCollection;
             postman.indexedDB.addCollection(collection, function (collection) {
-                $('#message-no-collection').css("display", "none");
+                $('#sidebar-section-collections .empty-message').css("display", "none");
                 postman.collections.getAllCollections();
                 postman.indexedDB.getAllRequestsInCollection(collection.id, function () {
                 });
@@ -2321,7 +2320,7 @@ postman.collections = {
             collection.id = guid();
             collection.name = newCollection;
             postman.indexedDB.addCollection(collection, function (collection) {
-                $('#message-no-collection').css("display", "none");
+                $('#sidebar-section-collections .empty-message').css("display", "none");
                 $('#new-collection').val("");
                 collectionRequest.collectionId = collection.id;
                 $('#item-collection-selector-list').tmpl([collection]).appendTo('#select-collection');
@@ -2371,7 +2370,7 @@ postman.collections = {
         }
 
         postman.layout.sidebar.select("collections");
-        $('#request-help').css("display", "block");
+        $('#request-meta').css("display", "block");
         $('#request-name').css("display", "block");
         $('#request-description').css("display", "block");
         $('#request-name').html(newRequestName);
@@ -2383,11 +2382,11 @@ postman.collections = {
         $('#collection-items').html("");
         $('#select-collection').html("<option>Select</option>");
         postman.indexedDB.getCollections(function (items) {
-            $('#message-no-collection').css("display", "none");
+            $('#sidebar-section-collections .empty-message').css("display", "none");
             postman.collections.items = items;
             if (items.length == 0) {
                 //Replace this with showEmptyMessage
-                $('#message-no-collection-tmpl').tmpl([
+                $('#message-no-collection').tmpl([
                     {}
                 ]).appendTo('#sidebar-section-collections');
             }
@@ -2614,12 +2613,12 @@ postman.layout = {
             }
         });
 
-        $('#request-help').on("mouseenter", function () {
-            $('.request-help-actions').css("display", "block");
+        $('#request-meta').on("mouseenter", function () {
+            $('.request-meta-actions').css("display", "block");
         });
 
-        $('#request-help').on("mouseleave", function () {
-            $('.request-help-actions').css("display", "none");
+        $('#request-meta').on("mouseleave", function () {
+            $('.request-meta-actions').css("display", "none");
         });
 
         this.setLayout();
@@ -2759,17 +2758,17 @@ postman.layout = {
                 $('#item-history-sidebar-request').tmpl([request]).appendTo('#history-items');
             }
 
-            $('#message-no-history').css("display", "none");
+            $('#sidebar-section-history .empty-message').css("display", "none");
             postman.layout.refreshScrollPanes();
         },
 
         addRequestListeners:function () {
-            $('#sidebar-container').on("mouseenter", ".sidebar-request", function () {
+            $('#sidebar-sections').on("mouseenter", ".sidebar-request", function () {
                 var actionsEl = jQuery('.request-actions', this);
                 actionsEl.css('display', 'block');
             });
 
-            $('#sidebar-container').on("mouseleave", ".sidebar-request", function () {
+            $('#sidebar-sections').on("mouseleave", ".sidebar-request", function () {
                 var actionsEl = jQuery('.request-actions', this);
                 actionsEl.css('display', 'none');
             });
