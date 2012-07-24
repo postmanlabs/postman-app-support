@@ -55,6 +55,30 @@ postman.indexedDB.db = null;
 
 postman.fs = {};
 postman.webUrl = "http://localhost/postman-server/html";
+postman.bannedHeaders = [
+    'accept-charset',
+    'accept-encoding',
+    'access-control-request-headers',
+    'access-control-request-method',
+    'connection',
+    'content-length',
+    'cookie',
+    'cookie2',
+    'content-transfer-encoding',
+    'date',
+    'expect',
+    'host',
+    'keep-alive',
+    'origin',
+    'referer',
+    'te',
+    'trailer',
+    'transfer-encoding',
+    'upgrade',
+    'user-agent',
+    'via'
+];
+
 // IndexedDB implementations still use API prefixes
 var indexedDB = window.indexedDB || // Use the standard DB API
     window.mozIndexedDB || // Or Firefox's early version of it
@@ -97,8 +121,8 @@ window.requestFileSystem = window.requestFileSystem || window.webkitRequestFileS
  Bootstrap
  CodeMirror
  Underscore
-
  */
+
 postman.init = function () {
     this.history.init();
     this.collections.init();
@@ -408,15 +432,15 @@ postman.settings = {
         postman.settings.create("lineWrapping", true);
         postman.settings.create("previewType", "parsed");
         postman.settings.create("retainLinkHeaders", false);
-        postman.settings.create("useProxy", false);
+        postman.settings.create("usePostmanProxy", false);
         postman.settings.create("proxyURL", "");
         postman.settings.create("lastRequest");
 
         $('#history-count').val(postman.settings.get("historyCount"));
         $('#auto-save-request').val(postman.settings.get("autoSaveRequest") + "");
         $('#retain-link-headers').val(postman.settings.get("retainLinkHeaders") + "");
-
-        console.log(postman.settings.get("retainLinkHeaders"));
+        $('#use-postman-proxy').val(postman.settings.get("usePostmanProxy") + "");
+        $('#postman-proxy-url').val(postman.settings.get("postmanProxyUrl"));
 
         $('#history-count').change(function () {
             postman.settings.set("historyCount", $('#history-count').val());
@@ -441,6 +465,29 @@ postman.settings = {
                 postman.settings.set("retainLinkHeaders", false);
             }
         });
+
+        $('#use-postman-proxy').change(function () {
+            var val = $('#use-postman-proxy').val();
+            if (val == "true") {
+                postman.settings.set("usePostmanProxy", true);
+                $('#postman-proxy-url-container').css("display", "block");
+            }
+            else {
+                postman.settings.set("usePostmanProxy", false);
+                $('#postman-proxy-url-container').css("display", "none");
+            }
+        });
+
+        $('#postman-proxy-url').change(function () {
+            postman.settings.set("postmanProxyUrl", $('#postman-proxy-url').val());
+        });
+
+        if (postman.settings.get("usePostmanProxy") == true) {
+            $('#postman-proxy-url-container').css("display", "block");
+        }
+        else {
+            $('#postman-proxy-url-container').css("display", "none");
+        }
     },
 
     create:function (key, defaultVal) {
@@ -1513,6 +1560,19 @@ postman.currentRequest = {
     reset:function () {
     },
 
+    prepareHeadersForProxy: function(headers) {
+        var count = headers.length;
+        for(var i = 0; i < count; i++) {
+            var key = headers[i].key.toLowerCase();
+            if(_.indexOf(postman.bannedHeaders, key) >= 0) {
+                headers[i].key = "Postman-" + headers[i].key;
+                headers[i].name = "Postman-" + headers[i].name;
+            }
+        }
+
+        return headers;
+    },
+
     //Send the current request
     send:function () {
         //Show error
@@ -1534,6 +1594,10 @@ postman.currentRequest = {
         var finalBodyData;
         var headers = this.headers;
 
+        if(postman.settings.get("usePostmanProxy") == true) {
+            headers = postman.currentRequest.prepareHeadersForProxy(headers);
+            console.log(headers);
+        }
         postman.currentRequest.startTime = new Date().getTime();
 
         var environment = postman.envManager.selectedEnv;

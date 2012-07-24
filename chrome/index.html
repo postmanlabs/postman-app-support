@@ -506,7 +506,6 @@
 <div id="modal-edit-collection-request" class="modal fade">
     <div class="modal-header">
         <a href="#" class="close" data-dismiss="modal">×</a>
-
         <h3>Edit request</h3>
     </div>
     <div class="modal-body">
@@ -782,7 +781,8 @@
                     </select>
                 </div>
             </div>
-            <div class="control-group">
+
+            <div class="control-group" id="postman-proxy-url-container">
                 <label class="control-label" for="history-count">Postman proxy URL</label>
 
                 <div class="controls">
@@ -827,7 +827,6 @@
                     <a target="_blank"
                        href="https://chrome.google.com/webstore/detail/fdmmgilgnpjigdojojpjoooidkmcomcm/reviews">Write a
                         review</a>
-
                     <p>
                         We would love a good review. A bad review would hurt but make it as informative as possible!
                     </p>
@@ -1068,9 +1067,7 @@
     <li><a href="javascript:void(0);" class="environment-list-item" data-id="${id}">${name}</a></li>
 </script>
 <script id="environment-selector-actions" type="text/x-jquery-tmpl">
-    <li>
-        <a class="environment-list-item-noenvironment" href="javascript:void(0);">No environment</a>
-    </li>
+    <li><a class="environment-list-item-noenvironment" href="javascript:void(0);">No environment</a></li>
     <li class="divider"></li>
     <li><a href="#modal-environments" data-toggle="modal"
            data-backdrop="static" data-keyboard="true">Manage environments</a></li>
