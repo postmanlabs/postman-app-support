@@ -200,10 +200,11 @@ fieldset {
     padding-top: 10px;
 }
 
-#response-print {
+#response-data-container {
     background-color: #fff;
 }
-#response-data {
+
+#response-editors {
     margin-top: -5px;
     margin-left: -10px;
     background: white;
@@ -211,7 +212,7 @@ fieldset {
     padding-left: 10px;
 }
 
-#response-data:focus {
+#response-editors:focus {
     border: none;
     outline: none !important;
 }
@@ -229,11 +230,11 @@ fieldset {
     overflow: scroll;
 }
 
-#resp-data {
+#response-data {
     max-height: 1000px;
 }
 
-#resp-data pre {
+#response-data pre {
     font-family: Consolas, "Andale Mono", monospace;
 }
 
@@ -385,7 +386,7 @@ li .right {
     zoom: 1;
 }
 
-#lang-format {
+#response-formatting {
     margin-top: 17px;
     margin-bottom: 15px;
     float: left;
@@ -803,7 +804,7 @@ li .right {
 
 }
 
-#resp-data-actions {
+#response-actions {
     float: left;
     margin-top: 17px;
     margin-left: 10px;

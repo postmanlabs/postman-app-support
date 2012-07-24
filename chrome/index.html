@@ -386,18 +386,14 @@
         </div>
     </div>
 
-    <div id="response-print" class="clearfix">
-        <div id="resp-data" style="display:none" class="clearfix">
-            <div id="resp-data-options" class="clearfix">
-                <div id="lang-format" class="btn-group clearfix" data-toggle="buttons-radio">
-                    <a href="javascript:void(0);" data-type="parsed" class="btn">
-                        Pretty
-                    </a>
-                    <a href="javascript:void(0);" data-type="raw" class="btn">
-                        Raw
-                    </a>
+    <div id="response-data-container" class="clearfix">
+        <div id="response-data" style="display:none" class="clearfix">
+            <div id="response-data-options" class="clearfix">
+                <div id="response-formatting" class="btn-group clearfix" data-toggle="buttons-radio">
+                    <a href="javascript:void(0);" data-type="parsed" class="btn">Pretty</a>
+                    <a href="javascript:void(0);" data-type="raw" class="btn">Raw</a>
                 </div>
-                <div id="resp-data-actions" class="clearfix">
+                <div id="response-actions" class="clearfix">
                     <a href="javascript:void(0);" class="btn"
                        rel="tooltip"
                        data-placement="bottom"
@@ -424,15 +420,11 @@
                     </a>
                 </div>
                 <div id="response-language" class="btn-group clearfix" data-toggle="buttons-radio">
-                    <a href="javascript:void(0);" data-mode="javascript" class="btn">
-                        JSON
-                    </a>
-                    <a href="javascript:void(0);" data-mode="html" class="btn">
-                        XML
-                    </a>
+                    <a href="javascript:void(0);" data-mode="javascript" class="btn">JSON</a>
+                    <a href="javascript:void(0);" data-mode="html" class="btn">XML</a>
                 </div>
             </div>
-            <div name="response-data" id="response-data" contenteditable="true">
+            <div id="response-editors">
                 <div id="response-as-code">
                     <textarea id="code-data" data-formatted="false">
                     </textarea>
@@ -495,7 +487,7 @@
         <h3>Edit collection</h3>
     </div>
     <div class="modal-body">
-        <form class="form form-horizontal" id="formEditCollection">
+        <form class="form form-horizontal" id="form-edit-collection">
             <div class="control-group">
                 <label class="control-label">Collection name</label>
 

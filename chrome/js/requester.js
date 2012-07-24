@@ -895,8 +895,8 @@ postman.currentRequest = {
             }
 
             this.previewType = newType;
-            $('#lang-format a').removeClass('active');
-            $('#lang-format a[data-type="' + this.previewType + '"]').addClass('active');
+            $('#response-formatting a').removeClass('active');
+            $('#response-formatting a[data-type="' + this.previewType + '"]').addClass('active');
 
             postman.settings.set("previewType", newType);
 
@@ -977,7 +977,7 @@ postman.currentRequest = {
                 this.loadHeaders(response.getAllResponseHeaders());
 
                 $('.response-tabs li[data-section="headers"]').html("Headers (" + this.headers.length + ")");
-                $("#resp-data").css("display", "block");
+                $("#response-data").css("display", "block");
 
                 $("#loader").css("display", "none");
 
@@ -1008,8 +1008,8 @@ postman.currentRequest = {
                         $('#response-as-text').css("display", "none");
                         $('#response-as-image').css("display", "block");
                         var imgLink = $('#url').val();
-                        $('#lang-format').css("display", "none");
-                        $('#resp-data-actions').css("display", "none");
+                        $('#response-formatting').css("display", "none");
+                        $('#response-actions').css("display", "none");
                         $("#response-language").css("display", "none");
                         $("#response-as-image").html("<img src='" + imgLink + "'/>");
                     }
@@ -1058,11 +1058,11 @@ postman.currentRequest = {
             $('#response-as-text').css("display", "none");
 
             $('#response-as-image').css("display", "none");
-            $('#lang-format').css("display", "block");
-            $('#resp-data-actions').css("display", "block");
+            $('#response-formatting').css("display", "block");
+            $('#response-actions').css("display", "block");
 
-            $('#lang-format a').removeClass('active');
-            $('#lang-format a[data-type="' + format + '"]').addClass('active');
+            $('#response-formatting a').removeClass('active');
+            $('#response-formatting a[data-type="' + format + '"]').addClass('active');
             $('#code-data').css("display", "none");
             $('#code-data').attr("data-mime", language);
 
@@ -1163,38 +1163,38 @@ postman.currentRequest = {
             if (this.state.size === "normal") {
                 this.state.size = "maximized";
                 $('#response-body-toggle img').attr("src", "img/full-screen-exit-alt-2.png");
-                this.state.width = $('#resp-data').width();
-                this.state.height = $('#resp-data').height();
-                this.state.display = $('#resp-data').css("display");
-                this.state.position = $('#resp-data').css("position");
+                this.state.width = $('#response-data').width();
+                this.state.height = $('#response-data').height();
+                this.state.display = $('#response-data').css("display");
+                this.state.position = $('#response-data').css("position");
 
-                $('#resp-data').css("position", "absolute");
-                $('#resp-data').css("left", 0);
-                $('#resp-data').css("top", "-15px");
-                $('#resp-data').css("width", $(document).width() - 20);
-                $('#resp-data').css("height", $(document).height());
-                $('#resp-data').css("z-index", 100);
-                $('#resp-data').css("background-color", "#fff");
-                $('#resp-data').css("padding", "10px");
+                $('#response-data').css("position", "absolute");
+                $('#response-data').css("left", 0);
+                $('#response-data').css("top", "-15px");
+                $('#response-data').css("width", $(document).width() - 20);
+                $('#response-data').css("height", $(document).height());
+                $('#response-data').css("z-index", 100);
+                $('#response-data').css("background-color", "#fff");
+                $('#response-data').css("padding", "10px");
             }
             else {
                 this.state.size = "normal";
                 $('#response-body-toggle img').attr("src", "img/full-screen-alt-4.png");
-                $('#resp-data').css("position", this.state.position);
-                $('#resp-data').css("left", 0);
-                $('#resp-data').css("top", 0);
-                $('#resp-data').css("width", this.state.width);
-                $('#resp-data').css("height", this.state.height);
-                $('#resp-data').css("z-index", 10);
-                $('#resp-data').css("background-color", "#fff");
-                $('#resp-data').css("padding", "0px");
+                $('#response-data').css("position", this.state.position);
+                $('#response-data').css("left", 0);
+                $('#response-data').css("top", 0);
+                $('#response-data').css("width", this.state.width);
+                $('#response-data').css("height", this.state.height);
+                $('#response-data').css("z-index", 10);
+                $('#response-data').css("background-color", "#fff");
+                $('#response-data').css("padding", "0px");
             }
         },
 
         showHeaders:function () {
             $('.response-tabs li').removeClass("active");
             $('.response-tabs li[data-section="headers"]').addClass("active");
-            $('#response-print').css("display", "none");
+            $('#response-data-container').css("display", "none");
             $('#response-headers-container').css("display", "block");
             $('#response-cookies-container').css("display", "none");
         },
@@ -1202,7 +1202,7 @@ postman.currentRequest = {
         showBody:function () {
             $('.response-tabs li').removeClass("active");
             $('.response-tabs li[data-section="body"]').addClass("active");
-            $('#response-print').css("display", "block");
+            $('#response-data-container').css("display", "block");
             $('#response-headers-container').css("display", "none");
             $('#response-cookies-container').css("display", "none");
         },
@@ -1210,7 +1210,7 @@ postman.currentRequest = {
         showCookies:function () {
             $('.response-tabs li').removeClass("active");
             $('.response-tabs li[data-section="cookies"]').addClass("active");
-            $('#response-print').css("display", "none");
+            $('#response-data-container').css("display", "none");
             $('#response-headers-container').css("display", "none");
             $('#response-cookies-container').css("display", "block");
         },
@@ -2018,8 +2018,8 @@ postman.collections = {
         $('#collection-items').on("click", ".collection-actions-edit", function () {
             var id = $(this).attr('data-id');
             var name = $(this).attr('data-name');
-            $('#formEditCollection .collection-id').val(id);
-            $('#formEditCollection .collection-name').val(name);
+            $('#form-edit-collection .collection-id').val(id);
+            $('#form-edit-collection .collection-name').val(name);
             $('#modal-edit-collection').modal('show');
         });
 
@@ -2491,7 +2491,7 @@ postman.layout = {
         });
 
 
-        $('#lang-format').on("click", "a", function () {
+        $('#response-formatting').on("click", "a", function () {
             var previewType = $(this).attr('data-type');
             postman.currentRequest.response.changePreviewType(previewType);
         });
@@ -2557,8 +2557,8 @@ postman.layout = {
         });
 
         $('#modal-edit-collection .btn-primary').click(function () {
-            var id = $('#formEditCollection .collection-id').val();
-            var name = $('#formEditCollection .collection-name').val();
+            var id = $('#form-edit-collection .collection-id').val();
+            var name = $('#form-edit-collection .collection-name').val();
 
             postman.indexedDB.getCollection(id, function (collection) {
                 collection.name = name;
@@ -2594,7 +2594,7 @@ postman.layout = {
             postman.layout.setLayout();
         });
 
-        $('#resp-data').on("click", ".cm-link", function () {
+        $('#response-data').on("click", ".cm-link", function () {
             var link = $(this).html();
             var headers = $('#headers-keyvaleditor').keyvalueeditor('getValues');
             postman.currentRequest.loadRequestFromLink(link, headers);
