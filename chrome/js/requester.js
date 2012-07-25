@@ -1560,11 +1560,31 @@ postman.currentRequest = {
     reset:function () {
     },
 
-    prepareHeadersForProxy: function(headers) {
+    encodeUrl:function (url) {
+        var quesLocation = url.indexOf('?');
+
+        if (quesLocation > 0) {
+            var urlVars = getUrlVars(url);
+            var baseUrl = url.substring(0, quesLocation);
+            var urlVarsCount = urlVars.length;
+            var newUrl = baseUrl + "?";
+            for (var i = 0; i < urlVarsCount; i++) {
+                newUrl += encodeURIComponent(urlVars[i].key) + "=" + encodeURIComponent(urlVars[i].value) + "&";
+            }
+
+            newUrl = newUrl.substr(0, newUrl.length - 1);
+            return url;
+        }
+        else {
+            return url;
+        }
+    },
+
+    prepareHeadersForProxy:function (headers) {
         var count = headers.length;
-        for(var i = 0; i < count; i++) {
+        for (var i = 0; i < count; i++) {
             var key = headers[i].key.toLowerCase();
-            if(_.indexOf(postman.bannedHeaders, key) >= 0) {
+            if (_.indexOf(postman.bannedHeaders, key) >= 0) {
                 headers[i].key = "Postman-" + headers[i].key;
                 headers[i].name = "Postman-" + headers[i].name;
             }
@@ -1575,18 +1595,20 @@ postman.currentRequest = {
 
     //Send the current request
     send:function () {
-        //Show error
+        var i;
         this.url = $('#url').val();
+        var url = this.url;
         this.body.data = postman.currentRequest.body.getData();
 
-        if (this.url === "") {
+        if (url === "") {
             return;
         }
 
         var xhr = new XMLHttpRequest();
         postman.currentRequest.xhr = xhr;
 
-        var url = this.url;
+        url = postman.currentRequest.encodeUrl(url);
+        
         var originalUrl = $('#url').val();
         var method = this.method.toUpperCase();
         var data = this.body.data;
@@ -1594,10 +1616,10 @@ postman.currentRequest = {
         var finalBodyData;
         var headers = this.headers;
 
-        if(postman.settings.get("usePostmanProxy") == true) {
+        if (postman.settings.get("usePostmanProxy") == true) {
             headers = postman.currentRequest.prepareHeadersForProxy(headers);
-            console.log(headers);
         }
+
         postman.currentRequest.startTime = new Date().getTime();
 
         var environment = postman.envManager.selectedEnv;
@@ -1617,7 +1639,6 @@ postman.currentRequest = {
 
         url = ensureProperUrl(url);
         xhr.open(method, url, true);
-        var i;
 
         for (i = 0; i < headers.length; i++) {
             var header = headers[i];
