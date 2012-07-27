@@ -332,17 +332,22 @@ postman.keymap = {
 postman.editor = {
     mode:"html",
     codeMirror:null,
+    charCount:0,
 
     //Defines a links mode for CodeMirror
     init:function () {
         CodeMirror.defineMode("links", function (config, parserConfig) {
             var linksOverlay = {
+                startState:function () {
+                    return { "link":"" }
+                },
+
                 token:function (stream, state) {
+                    postman.editor.charCount = 0;
                     if (stream.eatSpace()) {
                         return null;
                     }
 
-                    //@todo Needs to be improved
                     var matches;
                     if (matches = stream.match(/https?:\/\/[^\\'"\n\t\s]*(?=[<"'\n\t\s])/, false)) {
                         //Eat all characters before http link
@@ -354,30 +359,21 @@ postman.editor = {
                         }
 
                         var match = matches[0];
-                        try {
-                            var currentPos = stream.current().search(match);
-                            while (currentPos < 0) {
-                                var ch = stream.next();
-                                if (ch === "\"" || ch === "'") {
-                                    stream.backUp(1);
-                                    break;
-                                }
-
-                                if (ch == null) {
-                                    break;
-                                }
-                                currentPos = stream.current().search(match);
+                        if (match != state.link) {
+                            state.link = matches[0];
+                            for (var i = 0; i < state.link.length; i++) {
+                                stream.next();
                             }
-
                             return "link";
                         }
-                        catch (e) {
-                            stream.skipToEnd();
-                            return null;
-                        }
+
+                        stream.skipToEnd();
+                        return null;
                     }
 
                     stream.skipToEnd();
+                    return null;
+
                 }
             };
 
@@ -1608,7 +1604,7 @@ postman.currentRequest = {
         postman.currentRequest.xhr = xhr;
 
         url = postman.currentRequest.encodeUrl(url);
-        
+
         var originalUrl = $('#url').val();
         var method = this.method.toUpperCase();
         var data = this.body.data;
