@@ -1044,7 +1044,11 @@
             </a>
         </div>
         <div class="request request-actions-load" data-id="${id}">
-            <a href="javascript:void(0);"><span class="label label-method-${method}">${method}</span> {{html name}}</a>
+            <a href="javascript:void(0);"><span class="label label-method-${method}">${method}</span>
+                <span class="request-name">
+                {{html name}}
+                </span>
+            </a>
         </div>
     </li>
 </script>
@@ -1057,7 +1061,10 @@
         </div>
         <div class="request" data-request-id="${id}">
             <a href="javascript:void(0);" data-request-id="${id}"><span
-                    class="label label-method-${method}">${method}</span> {{html url}}</a>
+                    class="label label-method-${method}">${method}</span>
+                <span class="request-name">
+                {{html url}}
+                </span></a>
         </div>
     </li>
 </script>

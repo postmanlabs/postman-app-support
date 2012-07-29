@@ -48,6 +48,25 @@ function Request() {
     this.timestamp = 0;
 }
 
+function sortAlphabetical(a, b) {
+    var counter;
+    if (a.name.length > b.name.legnth)
+        counter = b.name.length;
+    else
+        counter = a.name.length;
+
+    for (var i = 0; i < counter; i++) {
+        if (a.name[i] == b.name[i]) {
+            continue;
+        } else if (a.name[i] > b.name[i]) {
+            return 1;
+        } else {
+            return -1;
+        }
+    }
+    return 1;
+}
+
 var postman = {};
 
 postman.indexedDB = {};
@@ -121,6 +140,12 @@ window.requestFileSystem = window.requestFileSystem || window.webkitRequestFileS
  Bootstrap
  CodeMirror
  Underscore
+
+ Code status
+
+ I am not exactly happy with the code I have written. Most of this has resulted from rapid UI
+ prototyping. I hope to rewrite this using either Ember or Backbone one day! Till then I'll be
+ cleaning this up bit by bit.
  */
 
 postman.init = function () {
@@ -343,7 +368,6 @@ postman.editor = {
                 },
 
                 token:function (stream, state) {
-                    postman.editor.charCount = 0;
                     if (stream.eatSpace()) {
                         return null;
                     }
@@ -402,7 +426,7 @@ postman.urlCache = {
     urls:[],
     addUrl:function (url) {
         if ($.inArray(url, this.urls) == -1) {
-            this.urls.push(url);
+            postman.urlCache.urls.push(url);
             this.refreshAutoComplete();
         }
     },
@@ -2168,7 +2192,7 @@ postman.collections = {
     saveCollection:function (id) {
         postman.indexedDB.getCollection(id, function (data) {
             var collection = data;
-            postman.indexedDB.getAllRequestsInCollection(id, function (data) {
+            postman.indexedDB.getAllRequestsInCollection(collection, function (collection, data) {
                 collection['requests'] = data;
                 var name = collection['name'] + ".json";
                 var type = "application/json";
@@ -2182,7 +2206,7 @@ postman.collections = {
     uploadCollection:function (id, callback) {
         postman.indexedDB.getCollection(id, function (data) {
             var collection = data;
-            postman.indexedDB.getAllRequestsInCollection(id, function (data) {
+            postman.indexedDB.getAllRequestsInCollection(collection, function (collection, data) {
                 collection['requests'] = data;
                 var name = collection['name'] + ".json";
                 var type = "application/json";
@@ -2202,6 +2226,8 @@ postman.collections = {
         });
     },
 
+
+    //TODO Replace import calls with the render method
     importCollections:function (files) {
         // Loop through the FileList
         for (var i = 0, f; f = files[i]; i++) {
@@ -2337,10 +2363,7 @@ postman.collections = {
             collection.id = guid();
             collection.name = newCollection;
             postman.indexedDB.addCollection(collection, function (collection) {
-                $('#sidebar-section-collections .empty-message').css("display", "none");
                 postman.collections.getAllCollections();
-                postman.indexedDB.getAllRequestsInCollection(collection.id, function () {
-                });
             });
 
             $('#new-collection-blank').val("");
@@ -2364,9 +2387,13 @@ postman.collections = {
             collectionRequest.name = req.name;
             collectionRequest.description = req.description;
             collectionRequest.collectionId = req.collectionId;
+            $('#sidebar-request-' + req.id + " .request .label").removeClass('label-method-' + req.method);
 
             postman.indexedDB.updateCollectionRequest(collectionRequest, function (request) {
-                postman.collections.getAllRequestsInCollection(collectionRequest.collectionId);
+                var requestName = limitStringLineWidth(request.name, 43);
+                $('#sidebar-request-' + request.id + " .request .request-name").html(requestName);
+                $('#sidebar-request-' + request.id + " .request .label").html(request.method);
+                $('#sidebar-request-' + request.id + " .request .label").addClass('label-method-' + request.method);
             });
         });
 
@@ -2451,6 +2478,7 @@ postman.collections = {
         }
 
         postman.layout.sidebar.select("collections");
+
         $('#request-meta').css("display", "block");
         $('#request-name').css("display", "block");
         $('#request-description').css("display", "block");
@@ -2463,22 +2491,16 @@ postman.collections = {
         $('#collection-items').html("");
         $('#select-collection').html("<option>Select</option>");
         postman.indexedDB.getCollections(function (items) {
-            $('#sidebar-section-collections .empty-message').css("display", "none");
             postman.collections.items = items;
-            if (items.length == 0) {
-                //Replace this with showEmptyMessage
-                $('#message-no-collection').tmpl([
-                    {}
-                ]).appendTo('#sidebar-section-collections');
-            }
-
-            $('#item-collection-selector-list').tmpl(items).appendTo('#select-collection');
-            $('#item-collection-sidebar-head').tmpl(items).appendTo('#collection-items');
-            $('a[rel="tooltip"]').tooltip();
+            $('#sidebar-section-collections .empty-message').css("display", "none");
 
             var itemsLength = items.length;
             for (var i = 0; i < itemsLength; i++) {
-                postman.collections.getAllRequestsInCollection(items[i].id);
+                var collection = items[i];
+                postman.indexedDB.getAllRequestsInCollection(collection, function (collection, requests) {
+                    collection.requests = requests;
+                    postman.collections.render(collection);
+                });
             }
 
             postman.collections.areLoaded = true;
@@ -2486,46 +2508,36 @@ postman.collections = {
         });
     },
 
-    getAllRequestsInCollection:function (id) {
-        $('#collection-requests-' + id).html("");
-        postman.indexedDB.getAllRequestsInCollection(id, function (requests) {
-            var targetElement = "#collection-requests-" + id;
-            var count = requests.length;
+    render:function (collection) {
+        $('#sidebar-section-collections .empty-message').css("display", "none");
 
-            for (var i = 0; i < count; i++) {
-                postman.urlCache.addUrl(requests[i].url);
-                if (typeof requests[i].name === "undefined") {
-                    requests[i].name = requests[i].url;
-                }
+        var currentEl = $('#collection-' + collection.id);
+        if(currentEl) {
+            currentEl.remove();
+        }
 
-                requests[i].name = limitStringLineWidth(requests[i].name, 40);
+        $('#item-collection-selector-list').tmpl([collection]).appendTo('#select-collection');
+        $('#item-collection-sidebar-head').tmpl([collection]).appendTo('#collection-items');
+        $('a[rel="tooltip"]').tooltip();
+
+        var id = collection.id;
+        var requests = collection.requests;
+
+        var targetElement = "#collection-requests-" + id;
+        var count = requests.length;
+
+        for (var i = 0; i < count; i++) {
+            postman.urlCache.addUrl(requests[i].url);
+            if (typeof requests[i].name === "undefined") {
+                requests[i].name = requests[i].url;
             }
+            requests[i].name = limitStringLineWidth(requests[i].name, 40);
+        }
 
-            //Sort requesta as A-Z order
-            requests.sort(sortfunction);
-
-            function sortfunction(a, b) {
-                var counter;
-                if (a.name.length > b.name.legnth)
-                    counter = b.name.length;
-                else
-                    counter = a.name.length;
-
-                for (var i = 0; i < counter; i++) {
-                    if (a.name[i] == b.name[i]) {
-                        continue;
-                    } else if (a.name[i] > b.name[i]) {
-                        return 1;
-                    } else {
-                        return -1;
-                    }
-                }
-                return 1;
-            }
-
-            $('#item-collection-sidebar-request').tmpl(requests).appendTo(targetElement);
-            postman.layout.refreshScrollPanes();
-        });
+        //Sort requesta as A-Z order
+        requests.sort(sortAlphabetical);
+        $('#item-collection-sidebar-request').tmpl(requests).appendTo(targetElement);
+        postman.layout.refreshScrollPanes();
     },
 
     deleteCollectionRequest:function (id) {
@@ -2644,7 +2656,7 @@ postman.layout = {
             postman.indexedDB.getCollection(id, function (collection) {
                 collection.name = name;
                 postman.indexedDB.updateCollection(collection, function (collection) {
-                    postman.collections.getAllCollections();
+                    $('#collection-' + collection.id + " .sidebar-collection-head-name").html(collection.name);
                 });
             });
 
@@ -2660,12 +2672,12 @@ postman.layout = {
                 req.name = name;
                 req.description = description;
                 postman.indexedDB.updateCollectionRequest(req, function (newRequest) {
-                    postman.collections.getAllRequestsInCollection(req.collectionId);
+                    var requestName = limitStringLineWidth(req.name, 43);
+                    $('#sidebar-request-' + req.id + " .request .request-name").html(requestName);
                     if (postman.currentRequest.collectionRequestId === req.id) {
                         $('#request-name').html(req.name);
                         $('#request-description').html(req.description);
                     }
-
                     $('#modal-edit-collection-request').modal('hide');
                 });
             });
@@ -3079,12 +3091,12 @@ postman.indexedDB = {
         };
     },
 
-    getAllRequestsInCollection:function (id, callback) {
+    getAllRequestsInCollection:function (collection, callback) {
         var db = postman.indexedDB.db;
         var trans = db.transaction(["collection_requests"], IDBTransaction.READ_WRITE);
 
         //Get everything in the store
-        var keyRange = IDBKeyRange.only(id);
+        var keyRange = IDBKeyRange.only(collection.id);
         var store = trans.objectStore("collection_requests");
 
         var index = store.index("collectionId");
@@ -3096,7 +3108,7 @@ postman.indexedDB = {
             var result = e.target.result;
 
             if (!result) {
-                callback(requests);
+                callback(collection, requests);
                 return;
             }
 
