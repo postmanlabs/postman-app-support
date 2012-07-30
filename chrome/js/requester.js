@@ -73,7 +73,7 @@ postman.indexedDB = {};
 postman.indexedDB.db = null;
 
 postman.fs = {};
-postman.webUrl = "http://localhost/postman-server/html";
+postman.webUrl = "http://getpostman.com";
 postman.bannedHeaders = [
     'accept-charset',
     'accept-encoding',
@@ -1365,10 +1365,8 @@ postman.currentRequest = {
         this.url = link;
         this.method = "GET";
 
-        console.log(headers);
         if (postman.settings.get("retainLinkHeaders") === true) {
             if (headers) {
-                console.log(headers);
                 this.headers = headers;
             }
         }
@@ -2227,7 +2225,6 @@ postman.collections = {
     },
 
 
-    //TODO Replace import calls with the render method
     importCollections:function (files) {
         // Loop through the FileList
         for (var i = 0, f; f = files[i]; i++) {
@@ -2241,12 +2238,6 @@ postman.collections = {
                     var collection = JSON.parse(data);
                     collection.id = guid();
                     postman.indexedDB.addCollection(collection, function (c) {
-                        $('#sidebar-section-collections .empty-message').css("display", "none");
-                        $('#item-collection-selector-list').tmpl([collection]).appendTo('#select-collection');
-                        $('#item-collection-sidebar-head').tmpl([collection]).appendTo('#collection-items');
-
-                        $('a[rel="tooltip"]').tooltip();
-
                         var message = {
                             name:collection.name,
                             action:"added"
@@ -2254,24 +2245,19 @@ postman.collections = {
 
                         $('#message-collection-added').tmpl([message]).appendTo('.modal-import-alerts');
 
+                        var requests = [];
                         for (var i = 0; i < collection.requests.length; i++) {
                             var request = collection.requests[i];
                             request.collectionId = collection.id;
                             request.id = guid();
 
-                            postman.indexedDB.addCollectionRequest(request, function (req) {
-                                var targetElement = "#collection-requests-" + req.collectionId;
-                                postman.urlCache.addUrl(req.url);
-
-                                if (typeof req.name === "undefined") {
-                                    req.name = req.url;
-                                }
-
-                                req.name = limitStringLineWidth(req.name, 43);
-                                $('#item-collection-sidebar-request').tmpl([req]).appendTo(targetElement);
-                                postman.layout.refreshScrollPanes();
-                            });
+                            postman.indexedDB.addCollectionRequest(request, function(req) {});
+                            requests.push(request);
                         }
+
+                        collection.requests = requests;
+
+                        postman.collections.render(collection);
                     });
                 };
             })(f);
@@ -2286,12 +2272,6 @@ postman.collections = {
             var collection = data;
             collection.id = guid();
             postman.indexedDB.addCollection(collection, function (c) {
-                $('#sidebar-section-collections .empty-message').css("display", "none");
-                $('#item-collection-selector-list').tmpl([collection]).appendTo('#select-collection');
-                $('#item-collection-sidebar-head').tmpl([collection]).appendTo('#collection-items');
-
-                $('a[rel="tooltip"]').tooltip();
-
                 var message = {
                     name:collection.name,
                     action:"added"
@@ -2299,24 +2279,18 @@ postman.collections = {
 
                 $('#message-collection-added').tmpl([message]).appendTo('.modal-import-alerts');
 
+                var requests = [];
                 for (var i = 0; i < collection.requests.length; i++) {
                     var request = collection.requests[i];
                     request.collectionId = collection.id;
                     request.id = guid();
 
-                    postman.indexedDB.addCollectionRequest(request, function (req) {
-                        var targetElement = "#collection-requests-" + req.collectionId;
-                        postman.urlCache.addUrl(req.url);
-
-                        if (typeof req.name === "undefined") {
-                            req.name = req.url;
-                        }
-
-                        req.name = limitStringLineWidth(req.name, 43);
-                        $('#item-collection-sidebar-request').tmpl([req]).appendTo(targetElement);
-                        postman.layout.refreshScrollPanes();
-                    });
+                    postman.indexedDB.addCollectionRequest(request);
+                    requests.push(request);
                 }
+
+                collection.requests = requests;
+                postman.collections.render(collection);
             });
         });
     },
@@ -2363,7 +2337,7 @@ postman.collections = {
             collection.id = guid();
             collection.name = newCollection;
             postman.indexedDB.addCollection(collection, function (collection) {
-                postman.collections.getAllCollections();
+                postman.collections.render(collection);
             });
 
             $('#new-collection-blank').val("");
@@ -2512,7 +2486,7 @@ postman.collections = {
         $('#sidebar-section-collections .empty-message').css("display", "none");
 
         var currentEl = $('#collection-' + collection.id);
-        if(currentEl) {
+        if (currentEl) {
             currentEl.remove();
         }
 
@@ -2520,23 +2494,28 @@ postman.collections = {
         $('#item-collection-sidebar-head').tmpl([collection]).appendTo('#collection-items');
         $('a[rel="tooltip"]').tooltip();
 
-        var id = collection.id;
-        var requests = collection.requests;
+        if ("requests" in collection) {
+            var id = collection.id;
+            var requests = collection.requests;
+            var targetElement = "#collection-requests-" + id;
+            var count = requests.length;
 
-        var targetElement = "#collection-requests-" + id;
-        var count = requests.length;
+            if (count > 1) {
+                for (var i = 0; i < count; i++) {
+                    postman.urlCache.addUrl(requests[i].url);
+                    if (typeof requests[i].name === "undefined") {
+                        requests[i].name = requests[i].url;
+                    }
+                    requests[i].name = limitStringLineWidth(requests[i].name, 40);
+                }
 
-        for (var i = 0; i < count; i++) {
-            postman.urlCache.addUrl(requests[i].url);
-            if (typeof requests[i].name === "undefined") {
-                requests[i].name = requests[i].url;
+                //Sort requests as A-Z order
+                requests.sort(sortAlphabetical);
+                $('#item-collection-sidebar-request').tmpl(requests).appendTo(targetElement);
             }
-            requests[i].name = limitStringLineWidth(requests[i].name, 40);
+
         }
 
-        //Sort requesta as A-Z order
-        requests.sort(sortAlphabetical);
-        $('#item-collection-sidebar-request').tmpl(requests).appendTo(targetElement);
         postman.layout.refreshScrollPanes();
     },
 
@@ -2657,6 +2636,7 @@ postman.layout = {
                 collection.name = name;
                 postman.indexedDB.updateCollection(collection, function (collection) {
                     $('#collection-' + collection.id + " .sidebar-collection-head-name").html(collection.name);
+                    $('#select-collection option[value="' + collection.id + '"]').html(collection.name);
                 });
             });
 
