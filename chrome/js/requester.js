@@ -2285,7 +2285,7 @@ postman.collections = {
                     request.collectionId = collection.id;
                     request.id = guid();
 
-                    postman.indexedDB.addCollectionRequest(request);
+                    postman.indexedDB.addCollectionRequest(request, function(req) {});
                     requests.push(request);
                 }
 
