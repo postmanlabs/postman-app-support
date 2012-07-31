@@ -1190,6 +1190,7 @@ li .right {
     margin-left: 10px;
 }
 
+#environment-copier,
 #environment-importer,
 #globals-editor {
     display: none;
@@ -1209,7 +1210,8 @@ li .right {
     display: none;
 }
 
-#environment-editor-name {
+#environment-editor-name,
+#environment-copier-name {
     font-size: 18px;
     font-weight: bold;
 }

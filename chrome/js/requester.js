@@ -2245,6 +2245,7 @@ postman.collections = {
 
     addCollection:function () {
         var newCollection = $('#newCollectionBlank').val();
+        var copyFromCollection = $('#newCollectionCopyFrom').val();
 
         var collection = new Collection();
 
@@ -2252,6 +2253,25 @@ postman.collections = {
             //Add the new collection and get guid
             collection.id = guid();
             collection.name = newCollection;
+            if (copyFromCollection && copyFromCollection != "_none") {
+                postman.indexedDB.getAllRequestsInCollection(copyFromCollection, function (data) {
+                    for (var i in data) {
+                        var collectionRequest = new CollectionRequest();
+                        collectionRequest.id = guid();
+                        collectionRequest.collectionId = collection.id;
+                        collectionRequest.headers = data[i].headers;
+                        collectionRequest.url = data[i].url;
+                        collectionRequest.method = data[i].method;
+                        collectionRequest.data = data[i].data;
+                        collectionRequest.dataMode = data[i].dataMode;
+                        collectionRequest.name = data[i].name;
+                        collectionRequest.description = data[i].description;
+                        collectionRequest.time = new Date().getTime();
+                        postman.indexedDB.addCollectionRequest(collectionRequest, function(req){});
+                    }
+                    postman.layout.refreshScrollPanes();
+                });
+            }
             postman.indexedDB.addCollection(collection, function (collection) {
                 $('#messageNoCollection').css("display", "none");
                 postman.collections.getAllCollections();
@@ -2378,6 +2398,7 @@ postman.collections = {
     getAllCollections:function () {
         $('#collectionItems').html("");
         $('#selectCollection').html("<option>Select</option>");
+        $('#newCollectionCopyFrom').html("<option value=\"_none\">None</option>");
         postman.indexedDB.getCollections(function (items) {
             $('#messageNoCollection').css("display", "none");
             postman.collections.items = items;
@@ -2389,6 +2410,7 @@ postman.collections = {
             }
 
             $('#itemCollectionSelectorList').tmpl(items).appendTo('#selectCollection');
+            $('#itemCollectionSelectorList').tmpl(items).appendTo('#newCollectionCopyFrom');
             $('#itemCollectionSidebarHead').tmpl(items).appendTo('#collectionItems');
             $('a[rel="tooltip"]').tooltip();
 
@@ -2501,6 +2523,12 @@ postman.layout = {
         this.sidebar.init();
 
         postman.currentRequest.response.clear();
+
+        $('#addNewCollectionLink').on("click", function() {
+            if (postman.collections.areLoaded === false) {
+                postman.collections.getAllCollections();
+            }
+        });
 
         $('#addToCollection').on("click", function () {
             if (postman.collections.areLoaded === false) {
@@ -3406,9 +3434,12 @@ postman.envManager = {
             postman.envManager.importEnvironments(files);
         });
 
-
         $('.environments-actions-add').on("click", function () {
             postman.envManager.showEditor();
+        });
+
+        $('.environments-actions-copy').on("click", function () {
+            postman.envManager.showCopier();
         });
 
         $('.environments-actions-import').on('click', function () {
@@ -3438,6 +3469,16 @@ postman.envManager = {
             postman.envManager.showSelector();
             $('#environment-editor-name').val("");
             $('#environment-keyvaleditor').keyvalueeditor('reset', []);
+        });
+
+        $('.environments-actions-copy-submit').on("click", function () {
+            postman.envManager.copyEnvironment();
+            $('#environment-copier-name').val("");
+        });
+
+        $('.environments-actions-copy-back').on("click", function () {
+            postman.envManager.showSelector();
+            $('#environment-copier-name').val("");
         });
 
         $('#environments-list-help-toggle').on("click", function () {
@@ -3514,8 +3555,10 @@ postman.envManager = {
         postman.indexedDB.environments.getAllEnvironments(function (environments) {
             $('#environment-selector .dropdown-menu').html("");
             $('#environments-list tbody').html("");
+            $('#environment-copier-from').html("");
             postman.envManager.environments = environments;
             $('#itemEnvironmentSelector').tmpl(environments).appendTo('#environment-selector .dropdown-menu');
+            $('#itemEnvironmentSelectorList').tmpl(environments).appendTo('#environment-copier-from');
             $('#itemEnvironmentList').tmpl(environments).appendTo('#environments-list tbody');
             $('#environmentSelectorActions').tmpl([
                 {}
@@ -3556,10 +3599,12 @@ postman.envManager = {
     showSelector:function () {
         $('#environments-list-wrapper').css("display", "block");
         $('#environment-editor').css("display", "none");
+        $('#environment-copier').css("display", "none");
         $('#environment-importer').css("display", "none");
         $('#globals-editor').css("display", "none");
         $('.environments-actions-add-submit').css("display", "inline");
         $('#modalEnvironments .modal-footer').css("display", "none");
+        $('#modalEnvironments .copier-footer').css("display", "none");
     },
 
     showEditor:function (id) {
@@ -3575,26 +3620,43 @@ postman.envManager = {
 
         $('#environments-list-wrapper').css("display", "none");
         $('#environment-editor').css("display", "block");
+        $('#environment-copier').css("display", "none");
+        $('#environment-importer').css("display", "none");
         $('#globals-editor').css("display", "none");
         $('#modalEnvironments .modal-footer').css("display", "block");
+        $('#modalEnvironments .copier-footer').css("display", "none");
+    },
+
+    showCopier:function () {
+        $('#environments-list-wrapper').css("display", "none");
+        $('#environment-editor').css("display", "none");
+        $('#environment-copier').css("display", "block");
+        $('#environment-importer').css("display", "none");
+        $('#globals-editor').css("display", "none");
+        $('#modalEnvironments .modal-footer').css("display", "none");
+        $('#modalEnvironments .copier-footer').css("display", "block");
     },
 
     showImporter:function () {
         $('#environments-list-wrapper').css("display", "none");
         $('#environment-editor').css("display", "none");
+        $('#environment-copier').css("display", "none");
         $('#globals-editor').css("display", "none");
         $('#environment-importer').css("display", "block");
         $('.environments-actions-add-submit').css("display", "none");
         $('#modalEnvironments .modal-footer').css("display", "block");
+        $('#modalEnvironments .copier-footer').css("display", "none");
     },
 
     showGlobals:function () {
         $('#environments-list-wrapper').css("display", "none");
         $('#environment-editor').css("display", "none");
+        $('#environment-copier').css("display", "none");
         $('#globals-editor').css("display", "block");
         $('#environment-importer').css("display", "none");
         $('.environments-actions-add-submit').css("display", "none");
         $('#modalEnvironments .modal-footer').css("display", "block");
+        $('#modalEnvironments .copier-footer').css("display", "none");
     },
 
     addEnvironment:function () {
@@ -3604,6 +3666,23 @@ postman.envManager = {
             id:guid(),
             name:name,
             values:values,
+            timestamp:new Date().getTime()
+        };
+
+        postman.indexedDB.environments.addEnvironment(environment, function () {
+            postman.envManager.getAllEnvironments();
+            postman.envManager.showSelector();
+        });
+    },
+
+    copyEnvironment:function () {
+        var name = $('#environment-copier-name').val();
+        var from = $('#environment-copier-from').val();
+        var fromEnvironment = postman.envManager.getEnvironmentFromId(from);
+        var environment = {
+            id:guid(),
+            name:name,
+            values:fromEnvironment.values,
             timestamp:new Date().getTime()
         };
 

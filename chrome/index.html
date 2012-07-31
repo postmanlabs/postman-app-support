@@ -76,7 +76,7 @@
             </a>
         </div>
         <div id="collectionsOptions" class="sectionOptions">
-            <a href="#formModalNewCollection" rel="tooltip" data-original-title="Add new collection"
+            <a id="addNewCollectionLink" href="#formModalNewCollection" rel="tooltip" data-original-title="Add new collection"
                data-toggle="modal"
                data-backdrop="static"
                data-placement="bottom"
@@ -288,26 +288,25 @@
         <input type="text" name="url" id="url" tabindex="1" class="inputTextLight"
                placeholder="Enter request URL here"/>
     </div>
-    <div id="requestMethodContainer"
-    ">
-    <select id="requestMethodSelector">
-        <option value="GET" selected>GET</option>
-        <option value="POST">POST</option>
-        <option value="PUT">PUT</option>
-        <option value="PATCH">PATCH</option>
-        <option value="DELETE">DELETE</option>
-        <option value="HEAD">HEAD</option>
-        <option value="OPTIONS">OPTIONS</option>
-    </select>
-</div>
-<div id="requestUrlButtonsContainer">
-    <button href="javascript:void(0);" class="btn btn-small" id="url-keyvaleditor-actions-open"><i
-            class="icon-edit"></i> URL params
-    </button>
-    <button href="javascript:void(0);" class="btn btn-small" id="headers-keyvaleditor-actions-open"><i
-            class="icon-edit"></i> Headers (<span class="headers-count">0</span>)
-    </button>
-</div>
+    <div id="requestMethodContainer">
+        <select id="requestMethodSelector">
+            <option value="GET" selected>GET</option>
+            <option value="POST">POST</option>
+            <option value="PUT">PUT</option>
+            <option value="PATCH">PATCH</option>
+            <option value="DELETE">DELETE</option>
+            <option value="HEAD">HEAD</option>
+            <option value="OPTIONS">OPTIONS</option>
+        </select>
+    </div>
+    <div id="requestUrlButtonsContainer">
+        <button href="javascript:void(0);" class="btn btn-small" id="url-keyvaleditor-actions-open">
+            <i class="icon-edit"></i> URL params
+        </button>
+        <button href="javascript:void(0);" class="btn btn-small" id="headers-keyvaleditor-actions-open">
+            <i class="icon-edit"></i> Headers (<span class="headers-count">0</span>)
+        </button>
+    </div>
 </div>
 
 <div id="url-keyvaleditor-container" class="row" style="margin-left: 0px; display: none;">
@@ -483,6 +482,15 @@
 
                 <div class="controls">
                     <input type="text" class="medium cleanInput" name="newCollectionBlank" id="newCollectionBlank"/>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">Copy from</label>
+
+                <div class="controls">
+                    <select name="newCollectionCopyFrom" class="medium" id="newCollectionCopyFrom">
+                        <option value="_none">None</option>
+                    </select>
                 </div>
             </div>
         </form>
@@ -707,6 +715,9 @@
                 <button class="btn btn-small environments-actions-add">
                     Add
                 </button>
+                <button class="btn btn-small environments-actions-copy">
+                    Copy
+                </button>
                 <button class="btn btn-small environments-actions-import">
                     Import
                 </button>
@@ -727,6 +738,14 @@
 
             <div id="environment-keyvaleditor"></div>
         </div>
+        <div id="environment-copier">
+            <input type="text" name="environment-copier-name" id="environment-copier-name" class="cleanInput"
+                   placeholder="New environment"/>
+
+            <div class="controls">
+                <select name="environment-copier-from" class="medium" id="environment-copier-from"></select>
+            </div>
+        </div>
         <div id="environment-importer">
             <p>Select environment files from your desktop</p>
 
@@ -742,6 +761,10 @@
         <div class="modal-footer">
             <a href="javascript:void(0);" class="btn btn-primary environments-actions-add-submit">Submit</a>
             <a href="javascript:void(0);" class="btn environments-actions-add-back">Back</a>
+        </div>
+        <div class="modal-footer copier-footer">
+            <a href="javascript:void(0);" class="btn btn-primary environments-actions-copy-submit">Submit</a>
+            <a href="javascript:void(0);" class="btn environments-actions-copy-back">Back</a>
         </div>
     </div>
 </div>
@@ -974,6 +997,9 @@
     </div>
 </script>
 <script id="itemCollectionSelectorList" type="text/x-jquery-tmpl">
+    <option value="${id}">${name}</option>
+</script>
+<script id="itemEnvironmentSelectorList" type="text/x-jquery-tmpl">
     <option value="${id}">${name}</option>
 </script>
 <script id="itemResponseCode" type="text/x-jquery-tmpl">
