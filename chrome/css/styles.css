@@ -877,7 +877,7 @@ li .right {
 
 .request-actions {
     position: absolute;
-    margin-left: 300px;
+    margin-left: 282px;
     opacity: 1;
     display: none;
 }
@@ -893,7 +893,7 @@ li .right {
 }
 
 #collectionItems .request-actions {
-    margin-left: 270px;
+    margin-left: 252px;
     opacity: 1;
 }
 
