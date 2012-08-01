@@ -1892,7 +1892,7 @@ postman.history = {
 
     },
 
-    loadRequest:function (id) {
+    loadRequest:function (id, callback) {
         postman.indexedDB.getRequest(id, function (request) {
             postman.currentRequest.loadRequestInEditor(request);
         });
@@ -1999,6 +1999,13 @@ postman.collections = {
         $('#collectionItems').on("click", ".request-actions-load", function () {
             var id = $(this).attr('data-id');
             postman.collections.getCollectionRequest(id);
+        });
+
+        $('#collectionItems').on("click", ".request-actions-send", function () {
+            var id = $(this).attr('data-id');
+            postman.collections.getCollectionRequest(id, function() {
+                postman.currentRequest.send();
+            });
         });
 
         $('#collectionItems').on("click", ".request-actions-edit", function () {
@@ -2211,11 +2218,12 @@ postman.collections = {
         });
     },
 
-    getCollectionRequest:function (id) {
+    getCollectionRequest:function (id, callback) {
         postman.indexedDB.getCollectionRequest(id, function (request) {
             postman.currentRequest.isFromCollection = true;
             postman.currentRequest.collectionRequestId = id;
             postman.currentRequest.loadRequestInEditor(request, true);
+            callback();
         });
     },
 
@@ -2704,6 +2712,13 @@ postman.layout = {
         },
 
         init:function () {
+            $('#historyItems').on("click", ".request-actions-send", function () {
+                var request_id = $(this).attr('data-request-id');
+                postman.history.loadRequest(request_id, function() {
+                    postman.currentRequest.send();
+                });
+            });
+
             $('#historyItems').on("click", ".request-actions-delete", function () {
                 var request_id = $(this).attr('data-request-id');
                 postman.history.deleteRequest(request_id);
