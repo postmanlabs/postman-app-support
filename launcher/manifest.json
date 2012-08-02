@@ -1,6 +1,7 @@
 {
+  "manifest_version": 2,
   "name":"Postman Launcher",
-  "version":"0.1",
+  "version":"0.2",
 
   "description":"Get to Postman in a snap",
   "icons":{
@@ -19,6 +20,6 @@
   },
 
   "permissions": ["management"],
-
+  "content_security_policy": "default-src 'self'; style-src 'self'; script-src 'self';",
   "offline_enabled":true
 }
