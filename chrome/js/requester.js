@@ -748,6 +748,21 @@ pm.request = {
         }
     },
 
+    getHeaderEditorParams:function () {
+        var hs = $('#headers-keyvaleditor').keyvalueeditor('getValues');
+        var newHeaders = [];
+        for (var i = 0; i < hs.length; i++) {
+            var header = {
+                key:hs[i].key,
+                value:hs[i].value,
+                name:hs[i].key
+            };
+
+            newHeaders.push(header);
+        }
+        return newHeaders;
+    },
+
     initializeHeaderEditor:function () {
         var params = {
             placeHolderKey:"Header",
@@ -764,20 +779,8 @@ pm.request = {
             },
 
             onDeleteRow:function () {
-                var hs = $('#headers-keyvaleditor').keyvalueeditor('getValues');
-                var newHeaders = [];
-                for (var i = 0; i < hs.length; i++) {
-                    var header = {
-                        key:hs[i].key,
-                        value:hs[i].value,
-                        name:hs[i].key
-                    };
-
-                    newHeaders.push(header);
-                }
-
-                pm.request.headers = newHeaders;
-                $('#headers-keyvaleditor-actions-open .headers-count').html(newHeaders.length);
+                pm.request.headers = pm.request.getHeaderEditorParams();
+                $('#headers-keyvaleditor-actions-open .headers-count').html(pm.request.headers.length);
             },
 
             onFocusElement:function () {
@@ -792,20 +795,8 @@ pm.request = {
                     source:chromeHeaders,
                     delay:50
                 });
-                var hs = $('#headers-keyvaleditor').keyvalueeditor('getValues');
-                var newHeaders = [];
-                for (var i = 0; i < hs.length; i++) {
-                    var header = {
-                        key:hs[i].key,
-                        value:hs[i].value,
-                        name:hs[i].key
-                    };
-
-                    newHeaders.push(header);
-                }
-
-                pm.request.headers = newHeaders;
-                $('#headers-keyvaleditor-actions-open .headers-count').html(newHeaders.length);
+                pm.request.headers = pm.request.getHeaderEditorParams();
+                $('#headers-keyvaleditor-actions-open .headers-count').html(pm.request.headers.length);
             },
 
             onReset:function () {
@@ -851,6 +842,22 @@ pm.request = {
         $(containerId).css("display", "none");
     },
 
+    getUrlEditorParams:function () {
+        var editorId = "#url-keyvaleditor";
+        var params = $(editorId).keyvalueeditor('getValues');
+        var newParams = [];
+        for (var i = 0; i < params.length; i++) {
+            var param = {
+                key:params[i].key,
+                value:params[i].value
+            };
+
+            newParams.push(param);
+        }
+
+        return newParams;
+    },
+
     initializeUrlEditor:function () {
         var editorId = "#url-keyvaleditor";
 
@@ -859,33 +866,11 @@ pm.request = {
             placeHolderValue:"Value",
             deleteButton:'<img class="deleteButton" src="img/delete.png">',
             onDeleteRow:function () {
-                var params = $(editorId).keyvalueeditor('getValues');
-                var newParams = [];
-                for (var i = 0; i < params.length; i++) {
-                    var param = {
-                        key:params[i].key,
-                        value:params[i].value
-                    };
-
-                    newParams.push(param);
-                }
-
-                pm.request.setUrlParamString(newParams);
+                pm.request.setUrlParamString(pm.request.getUrlEditorParams());
             },
 
             onBlurElement:function () {
-                var params = $(editorId).keyvalueeditor('getValues');
-                var newParams = [];
-                for (var i = 0; i < params.length; i++) {
-                    var param = {
-                        key:params[i].key,
-                        value:params[i].value
-                    };
-
-                    newParams.push(param);
-                }
-
-                pm.request.setUrlParamString(newParams);
+                pm.request.setUrlParamString(pm.request.getUrlEditorParams());
             }
         };
 
@@ -1163,7 +1148,7 @@ pm.request = {
             }
 
             var lineWrapping;
-            if (pm.settings.get("lineWrapping") === "true") {
+            if (pm.settings.get("lineWrapping") === true) {
                 $('#response-body-line-wrapping').addClass("active");
                 lineWrapping = true;
             }
@@ -1613,6 +1598,11 @@ pm.request = {
 
     //Send the current request
     send:function () {
+        // Set state as if change event of input handlers was called
+        pm.request.setUrlParamString(pm.request.getUrlEditorParams());
+        pm.request.headers = pm.request.getHeaderEditorParams();
+        $('#headers-keyvaleditor-actions-open .headers-count').html(pm.request.headers.length);
+
         var i;
         this.url = $('#url').val();
         var url = this.url;
@@ -1629,6 +1619,7 @@ pm.request = {
 
         var originalUrl = $('#url').val();
         var method = this.method.toUpperCase();
+
         var data = this.body.data;
         var originalData = data;
         var finalBodyData;
@@ -2184,6 +2175,7 @@ pm.collections = {
         $('#collection-files-input').on('change', function (event) {
             var files = event.target.files;
             pm.collections.importCollections(files);
+            $('#collection-files-input').val("");
         });
     },
 
@@ -2250,7 +2242,8 @@ pm.collections = {
                             request.collectionId = collection.id;
                             request.id = guid();
 
-                            pm.indexedDB.addCollectionRequest(request, function(req) {});
+                            pm.indexedDB.addCollectionRequest(request, function (req) {
+                            });
                             requests.push(request);
                         }
 
@@ -2284,7 +2277,8 @@ pm.collections = {
                     request.collectionId = collection.id;
                     request.id = guid();
 
-                    pm.indexedDB.addCollectionRequest(request, function(req) {});
+                    pm.indexedDB.addCollectionRequest(request, function (req) {
+                    });
                     requests.push(request);
                 }
 
@@ -3475,6 +3469,7 @@ pm.envManager = {
         $('#environment-files-input').on('change', function (event) {
             var files = event.target.files;
             pm.envManager.importEnvironments(files);
+            $('#environment-files-input').val("");
         });
 
 
@@ -3718,6 +3713,7 @@ pm.envManager = {
     },
 
     importEnvironments:function (files) {
+        console.log(files);
         // Loop through the FileList
         for (var i = 0, f; f = files[i]; i++) {
             var reader = new FileReader();
