@@ -20,6 +20,6 @@
   },
 
   "permissions": ["management"],
-  "content_security_policy": "default-src 'self'; style-src 'self'; script-src 'self';",
+  "content_security_policy": "default-src 'self'; style-src 'self'; script-src 'self'; img-src 'http://www.google-analytics.com'",
   "offline_enabled":true
 }

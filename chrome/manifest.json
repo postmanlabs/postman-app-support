@@ -1,8 +1,6 @@
 {
     "name":"__MSG_name__",
-    "version":"0.6.7",
-
-    "description":"__MSG_description__",
+    "version":"0.6.8",
     "icons":{
         "16":"icon_16.png",
         "32":"icon_32.png",
@@ -26,5 +24,7 @@
         }
     ],
 
+    "manifest_version": 2,
+    "content_security_policy": "default-src 'self'; connect-src *; script-src 'self' https://ssl.google-analytics.com https://platform.twitter.com https://apis.google.com; style-src 'self' blob: data: filesystem: 'unsafe-inline'; img-src *; frame-src 'self' http://www.facebook.com https://plusone.google.com https://platform.twitter.com blob: data: filesystem:; font-src 'self' blob: data: filesystem:; media-src *;",
     "offline_enabled":true
 }

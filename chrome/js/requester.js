@@ -73,7 +73,7 @@ pm.indexedDB = {};
 pm.indexedDB.db = null;
 
 pm.fs = {};
-pm.webUrl = "http://getpm.com";
+pm.webUrl = "http://getpostman.com";
 pm.bannedHeaders = [
     'accept-charset',
     'accept-encoding',
@@ -974,7 +974,7 @@ pm.request = {
             this.headers = _.sortBy(this.headers, function (header) {
                 return header.name;
             });
-            $("#item-response-header").tmpl(this.headers).appendTo("#response-headers");
+            //$("#item-response-header").tmpl(this.headers).appendTo("#response-headers");
             $('.response-header-name').popover();
         },
 
@@ -1022,7 +1022,7 @@ pm.request = {
                 var diff = pm.request.getTotalTime();
 
                 $('#response-status').html('');
-                $('#item-response-code').tmpl([responseCode]).appendTo('#response-status');
+                //$('#item-response-code').tmpl([responseCode]).appendTo('#response-status');
                 $('.response-code').popover();
 
                 //This sets loadHeders
@@ -1099,7 +1099,7 @@ pm.request = {
                             cookies[i].expires = date.toUTCString();
                         }
                     }
-                    $("#item-response-cookie").tmpl(cookies).appendTo("#response-cookies-items");
+                    //$("#item-response-cookie").tmpl(cookies).appendTo("#response-cookies-items");
                 }
             });
         },
@@ -1951,9 +1951,7 @@ pm.history = {
             var count = historyRequests.length;
 
             if (count === 0) {
-                $('#message-no-history').tmpl([
-                    {}
-                ]).appendTo('#sidebar-section-history');
+                //$('#message-no-history').tmpl([{}]).appendTo('#sidebar-section-history');
             }
             else {
                 for (var i = 0; i < count; i++) {
@@ -1979,7 +1977,9 @@ pm.history = {
 
                 outAr.reverse();
 
-                $('#item-history-sidebar-request').tmpl(outAr).prependTo('#history-items');
+                var item = Handlebars.templates.item_history_sidebar_request(outAr[0]);
+                $('#history-items').append(item);
+                //$('#item-history-sidebar-request').tmpl(outAr).prependTo('#history-items');
                 $('#history-items').fadeIn();
             }
 
@@ -2234,7 +2234,7 @@ pm.collections = {
                             action:"added"
                         };
 
-                        $('#message-collection-added').tmpl([message]).appendTo('.modal-import-alerts');
+                        //$('#message-collection-added').tmpl([message]).appendTo('.modal-import-alerts');
 
                         var requests = [];
                         for (var i = 0; i < collection.requests.length; i++) {
@@ -2269,7 +2269,7 @@ pm.collections = {
                     action:"added"
                 };
 
-                $('#message-collection-added').tmpl([message]).appendTo('.modal-import-alerts');
+                //$('#message-collection-added').tmpl([message]).appendTo('.modal-import-alerts');
 
                 var requests = [];
                 for (var i = 0; i < collection.requests.length; i++) {
@@ -2398,8 +2398,8 @@ pm.collections = {
                 $('#sidebar-section-collections .empty-message').css("display", "none");
                 $('#new-collection').val("");
                 collectionRequest.collectionId = collection.id;
-                $('#item-collection-selector-list').tmpl([collection]).appendTo('#select-collection');
-                $('#item-collection-sidebar-head').tmpl([collection]).appendTo('#collection-items');
+                //$('#item-collection-selector-list').tmpl([collection]).appendTo('#select-collection');
+                //$('#item-collection-sidebar-head').tmpl([collection]).appendTo('#collection-items');
                 $('a[rel="tooltip"]').tooltip();
                 pm.layout.refreshScrollPanes();
                 pm.indexedDB.addCollectionRequest(collectionRequest, function (req) {
@@ -2411,7 +2411,7 @@ pm.collections = {
                     }
                     req.name = limitStringLineWidth(req.name, 43);
 
-                    $('#item-collection-sidebar-request').tmpl([req]).appendTo(targetElement);
+                    //$('#item-collection-sidebar-request').tmpl([req]).appendTo(targetElement);
                     pm.layout.refreshScrollPanes();
 
                     pm.request.isFromCollection = true;
@@ -2483,8 +2483,8 @@ pm.collections = {
             currentEl.remove();
         }
 
-        $('#item-collection-selector-list').tmpl([collection]).appendTo('#select-collection');
-        $('#item-collection-sidebar-head').tmpl([collection]).appendTo('#collection-items');
+        //$('#item-collection-selector-list').tmpl([collection]).appendTo('#select-collection');
+        //$('#item-collection-sidebar-head').tmpl([collection]).appendTo('#collection-items');
         $('a[rel="tooltip"]').tooltip();
 
         if ("requests" in collection) {
@@ -2504,7 +2504,7 @@ pm.collections = {
 
                 //Sort requests as A-Z order
                 requests.sort(sortAlphabetical);
-                $('#item-collection-sidebar-request').tmpl(requests).appendTo(targetElement);
+                //$('#item-collection-sidebar-request').tmpl(requests).appendTo(targetElement);
             }
 
         }
@@ -2531,7 +2531,7 @@ pm.collections = {
 pm.layout = {
     socialButtons:{
         "facebook":'<iframe src="http://www.facebook.com/plugins/like.php?href=https%3A%2F%2Fchrome.google.com%2Fwebstore%2Fdetail%2Ffdmmgilgnpjigdojojpjoooidkmcomcm&amp;send=false&amp;layout=button_count&amp;width=250&amp;show_faces=true&amp;action=like&amp;colorscheme=light&amp;font&amp;height=21&amp;appId=26438002524" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:250px; height:21px;" allowTransparency="true"></iframe>',
-        "twitter":'<a href="https://twitter.com/share" class="twitter-share-button" data-url="https://chrome.google.com/webstore/detail/fdmmgilgnpjigdojojpjoooidkmcomcm" data-text="I am using Postman to super-charge REST API testing and development!" data-count="horizontal" data-via="postmanclient">Tweet</a><script type="text/javascript" src="http://platform.twitter.com/widgets.js"></script>',
+        "twitter":'<a href="https://twitter.com/share" class="twitter-share-button" data-url="https://chrome.google.com/webstore/detail/fdmmgilgnpjigdojojpjoooidkmcomcm" data-text="I am using Postman to super-charge REST API testing and development!" data-count="horizontal" data-via="postmanclient">Tweet</a><script type="text/javascript" src="https://platform.twitter.com/widgets.js"></script>',
         "plusOne":'<script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script><g:plusone size="medium" href="https://chrome.google.com/webstore/detail/fdmmgilgnpjigdojojpjoooidkmcomcm"></g:plusone>'
     },
 
@@ -2818,10 +2818,10 @@ pm.layout = {
             };
 
             if (position === 'top') {
-                $('#item-history-sidebar-request').tmpl([request]).prependTo('#history-items');
+                //$('#item-history-sidebar-request').tmpl([request]).prependTo('#history-items');
             }
             else {
-                $('#item-history-sidebar-request').tmpl([request]).appendTo('#history-items');
+                //$('#item-history-sidebar-request').tmpl([request]).appendTo('#history-items');
             }
 
             $('#sidebar-section-history .empty-message').css("display", "none");
@@ -3394,7 +3394,7 @@ pm.envManager = {
             }
             $('#environment-quicklook-environments h6').html(environment.name);
             $('#environment-quicklook-environments ul').html("");
-            $('#item-environment-quicklook').tmpl(environment.values).appendTo('#environment-quicklook-environments ul');
+            //$('#item-environment-quicklook').tmpl(environment.values).appendTo('#environment-quicklook-environments ul');
         },
 
         refreshGlobals:function (globals) {
@@ -3403,7 +3403,7 @@ pm.envManager = {
             }
 
             $('#environment-quicklook-globals ul').html("");
-            $('#item-environment-quicklook').tmpl(globals).appendTo('#environment-quicklook-globals ul');
+            //$('#item-environment-quicklook').tmpl(globals).appendTo('#environment-quicklook-globals ul');
         },
 
         toggleDisplay:function () {
@@ -3420,7 +3420,10 @@ pm.envManager = {
 
     init:function () {
         pm.envManager.initGlobals();
-        $('#item-environment-list').tmpl(this.environments).appendTo('#environments-list');
+        var template = Handlebars.templates.item_environment_list;
+        console.log(pm.envManager.environments);
+        console.log(template(this.environments));
+        //$('#item-environment-list').tmpl(this.environments).appendTo('#environments-list');
 
         $('#environments-list').on("click", ".environment-action-delete", function () {
             var id = $(this).attr('data-id');
@@ -3581,11 +3584,10 @@ pm.envManager = {
             $('#environment-selector .dropdown-menu').html("");
             $('#environments-list tbody').html("");
             pm.envManager.environments = environments;
-            $('#item-environment-selector').tmpl(environments).appendTo('#environment-selector .dropdown-menu');
-            $('#item-environment-list').tmpl(environments).appendTo('#environments-list tbody');
-            $('#environment-selector-actions').tmpl([
-                {}
-            ]).appendTo('#environment-selector .dropdown-menu');
+
+            //$('#item-environment-selector').tmpl(environments).appendTo('#environment-selector .dropdown-menu');
+            //$('#item-environment-list').tmpl(environments).appendTo('#environments-list tbody');
+            //$('#environment-selector-actions').tmpl([{}]).appendTo('#environment-selector .dropdown-menu');
 
             var selectedEnvId = pm.settings.get("selectedEnvironmentId");
             var selectedEnv = pm.envManager.getEnvironmentFromId(selectedEnvId);
@@ -3732,7 +3734,7 @@ pm.envManager = {
                             action:'added'
                         };
 
-                        $("#message-environment-added").tmpl([o]).appendTo('#environment-importer-confirmations');
+                        //$("#message-environment-added").tmpl([o]).appendTo('#environment-importer-confirmations');
                         pm.envManager.getAllEnvironments();
                     });
                 };

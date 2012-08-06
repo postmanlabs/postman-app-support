@@ -11,20 +11,6 @@
     <link rel="stylesheet" type="text/css" href="css/styles.css"/>
     <link rel="stylesheet" type="text/css" href="css/keyvalueeditor.css"/>
     <link rel="stylesheet" type="text/css" href="css/bootstrap.simplex.css"/>
-    <script>
-        var _gaq = _gaq || [];
-        _gaq.push(['_setAccount', 'UA-26564585-1']);
-        _gaq.push(['_trackPageview']);
-
-        (function () {
-            var ga = document.createElement('script');
-            ga.type = 'text/javascript';
-            ga.async = true;
-            ga.src = 'https://ssl.google-analytics.com/ga.js';
-            var s = document.getElementsByTagName('script')[0];
-            s.parentNode.insertBefore(ga, s);
-        })();
-    </script>
 </head>
 <body>
 <div id="container" class="clearfix">
@@ -925,160 +911,7 @@
         </table>
     </div>
 </div>
-<!--- jQuery Templates -->
-<script id="message-no-history" type="text/x-jquery-tmpl">
-    <div class="empty-message">
-        Nothing in your history yet. You can automatically save and access your sent requests here.
-    </div>
-</script>
-<script id="message-collection-added" type="text/x-jquery-tmpl">
-    <div class="alert alert-block">
-        <a class="close" data-dismiss="alert">×</a>
-        <h4 class="alert-heading">It worked!</h4>
-        The collection ${name} has been ${action}.
-    </div>
-</script>
-<script id="message-environment-added" type="text/x-jquery-tmpl">
-    <div class="alert alert-block">
-        <a class="close" data-dismiss="alert">×</a>
-        <h4 class="alert-heading">It worked!</h4>
-        The environment ${name} has been ${action}.
-    </div>
-</script>
-<script id="message-no-collection" type="text/x-jquery-tmpl">
-    <div class="empty-message">
-        You haven't created any collections yet. Collections let you group requests together for quick access.
-    </div>
-</script>
-<script id="item-environment-quicklook" type="text/x-jquery-tmpl">
-    <li>
-        <span class="key">${key}</span> →
-        <span class="value">${value}</span>
-    </li>
-</script>
-<script id="item-environment-list" type="text/x-jquery-tmpl">
-    <tr>
-        <td>
-            <a href="javascript:void(0);" class="environment-action-edit" data-id="${id}">${name}</a>
-        </td>
-        <td style="width: 50px;">
-            <a href="javascript:void(0);"
-               rel="tooltip" data-original-title="Download environment"
-               data-placement="bottom"
-               class="environment-action-download" data-id="${id}">
-                <img src="img/download.png"
-                     style="vertical-align: middle; width: 20px; height: 20px;"/></a>
-            <a href="javascript:void(0);"
-               data-name="${name}"
-               rel="tooltip" data-original-title="Delete environment" data-placement="bottom"
-               class="environment-action-delete" data-id="${id}">
-                <img src="img/delete.png" style="vertical-align: middle; width: 20px; height: 20px;"/></a>
-        </td>
-    </tr>
-</script>
-<script id="item-collection-selector-list" type="text/x-jquery-tmpl">
-    <option value="${id}">${name}</option>
-</script>
-<script id="item-response-code" type="text/x-jquery-tmpl">
-    <div class="response-code" data-placement="bottom" data-original-title="${code} ${name}" data-content="${detail}"
-         rel="popover"><span class="label">Status</span>
-
-        <div class="data">${code} ${name}</div>
-    </div>
-</script>
-<script id="item-response-header" type="text/x-jquery-tmpl">
-    <li class="response-header clearfix">
-        <div class="response-header-name" data-placement="top" data-original-title="${name}"
-             data-content="${description}"
-             rel="popover">${name} &rarr;</div>
-        <div class="response-header-value">${value}</div>
-    </li>
-</script>
-<script id="item-response-cookie" type="text/x-jquery-tmpl">
-    <tr>
-        <td>${name}</td>
-        <td>${value}</td>
-        <td>${domain}</td>
-        <td>${path}</td>
-        <td>${expires}</td>
-        <td>${httpOnly}</td>
-        <td>${secure}</td>
-    </tr>
-</script>
-<script id="item-collection-sidebar-head" type="text/x-jquery-tmpl">
-    <li id="collection-${id}" data-id="${id}" class="sidebar-collection">
-        <div class="sidebar-collection-head">
-            <div class="collection-head-actions">
-                <a href="javascript:void(0);"
-                   data-placement="bottom"
-                   rel="tooltip" data-original-title="Edit collection"
-                   class="collection-actions-edit" data-id="${id}" data-name="${name}">
-                    <img src="img/edit.png" style="vertical-align: middle;"/></a>
-                <a href="javascript:void(0);"
-                   data-placement="bottom"
-                   rel="tooltip" data-original-title="Share collection"
-                   class="collection-actions-download" data-id="${id}">
-                    <img src="img/share.png" style="vertical-align: middle;"/></a>
-                <a rel="tooltip" data-original-title="Delete collection"
-                   data-name="${name}"
-                   data-placement="bottom"
-                   href="#modal-delete-collection" data-toggle="modal"
-                   class="collection-actions-delete" data-id="${id}">
-                    <img src="img/delete.png" style="vertical-align: middle;"/></a>
-            </div>
-            <div class="sidebar-collection-head-name" data-id="${id}">
-                ${name}
-            </div>
-        </div>
-        <ul id="collection-requests-${id}" class="sidebar-collection-requests"></ul>
-    </li>
-</script>
-<script id="item-collection-sidebar-request" type="text/x-jquery-tmpl">
-    <li id="sidebar-request-${id}" class="sidebar-collection-request sidebar-request clearfix">
-        <div class="request-actions">
-            <a href="javascript:void(0);" data-id="${id}" class="request-actions-edit">
-                <img src="img/edit.png" style="vertical-align: middle;"/>
-            </a>
-            <a href="javascript:void(0);" data-id="${id}" class="request-actions-delete">
-                <img src="img/delete.png" style="vertical-align: middle;"/>
-            </a>
-        </div>
-        <div class="request request-actions-load" data-id="${id}">
-            <a href="javascript:void(0);"><span class="label label-method-${method}">${method}</span>
-                <span class="request-name">
-                {{html name}}
-                </span>
-            </a>
-        </div>
-    </li>
-</script>
-<script id="item-history-sidebar-request" type="text/x-jquery-tmpl">
-    <li id="sidebar-request-${id}" class="sidebar-history-request sidebar-request clearfix">
-        <div class="request-actions">
-            <a href="javascript:void(0);" data-request-id="${id}" class="request-actions-delete">
-                <img src="img/delete.png"/>
-            </a>
-        </div>
-        <div class="request" data-request-id="${id}">
-            <a href="javascript:void(0);" data-request-id="${id}"><span
-                    class="label label-method-${method}">${method}</span>
-                <span class="request-name">
-                {{html url}}
-                </span></a>
-        </div>
-    </li>
-</script>
-<script id="item-editor-standard" type="text/x-jquery-tmpl">
-</script>
-<script id="item-environment-selector" type="text/x-jquery-tmpl">
-    <li><a href="javascript:void(0);" class="environment-list-item" data-id="${id}">${name}</a></li>
-</script>
-<script id="environment-selector-actions" type="text/x-jquery-tmpl">
-    <li><a class="environment-list-item-noenvironment" href="javascript:void(0);">No environment</a></li>
-    <li class="divider"></li>
-    <li><a href="#modal-environments" data-toggle="modal"
-           data-backdrop="static" data-keyboard="true">Manage environments</a></li>
-</script>
+<script type="text/javascript" src="js/ga.js"></script>
 <script type="text/javascript" src="js/jquery.min.js"></script>
 <script type="text/javascript" src="js/underscore-min.js"></script>
 <script type="text/javascript" src="js/jquery-ui-1.8.16.custom.min.js"></script>
@@ -1097,11 +930,12 @@
 <script type="text/javascript" src="js/codemirror.overlayParser.js"></script>
 <script type="text/javascript" src="js/vkbeautify.js"></script>
 <script type="text/javascript" src="js/jquery.keyvalueeditor.js"></script>
-<script type="text/javascript" src="js/jquery.tmpl.min.js"></script>
 <script type="text/javascript" src="js/jquery.hotkeys.js"></script>
 <script type="text/javascript" src="js/jquery.mousewheel.js"></script>
 <script type="text/javascript" src="js/jquery.jscrollpane.js"></script>
 <script type="text/javascript" src="js/bootstrap.min.js"></script>
+<script type="text/javascript" src="js/handlebars.js"></script>
+<script type="text/javascript" src="js/templates.js"></script>
 <script type="text/javascript" src="js/requester.js"></script>
 </body>
 </html>
