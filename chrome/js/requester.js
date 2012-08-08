@@ -1952,7 +1952,7 @@ pm.history = {
             var count = historyRequests.length;
 
             if (count === 0) {
-                //$('#message-no-history').tmpl([{}]).appendTo('#sidebar-section-history');
+                $('#sidebar-section-history').append(Handlebars.templates.message_no_history({}));
             }
             else {
                 for (var i = 0; i < count; i++) {
@@ -1978,11 +1978,7 @@ pm.history = {
 
                 outAr.reverse();
 
-                var h = {"items": outAr};
-                var items = Handlebars.templates.history_sidebar_requests(h);
-                $('#history-items').append(items);
-                console.log(items);
-                //$('#item-history-sidebar-request').tmpl(outAr).prependTo('#history-items');
+                $('#history-items').append(Handlebars.templates.history_sidebar_requests({"items": outAr}));
                 $('#history-items').fadeIn();
             }
 
