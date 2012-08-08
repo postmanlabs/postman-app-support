@@ -149,6 +149,7 @@ window.requestFileSystem = window.requestFileSystem || window.webkitRequestFileS
  */
 
 pm.init = function () {
+    Handlebars.partials = Handlebars.templates;
     this.history.init();
     this.collections.init();
     this.settings.init();
@@ -1977,8 +1978,10 @@ pm.history = {
 
                 outAr.reverse();
 
-                var item = Handlebars.templates.item_history_sidebar_request(outAr[0]);
-                $('#history-items').append(item);
+                var h = {"items": outAr};
+                var items = Handlebars.templates.history_sidebar_requests(h);
+                $('#history-items').append(items);
+                console.log(items);
                 //$('#item-history-sidebar-request').tmpl(outAr).prependTo('#history-items');
                 $('#history-items').fadeIn();
             }

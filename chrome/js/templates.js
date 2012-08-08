@@ -6,6 +6,24 @@ templates['environment_selector_actions'] = template(function (Handlebars,depth0
 
 
   return "<script id=\"environment-selector-actions\" type=\"text/x-handlebars-template\">\n    <li><a class=\"environment-list-item-noenvironment\" href=\"javascript:void(0);\">No environment</a></li>\n    <li class=\"divider\"></li>\n    <li><a href=\"#modal-environments\" data-toggle=\"modal\"\n           data-backdrop=\"static\" data-keyboard=\"true\">Manage environments</a></li>\n</script>";});
+templates['history_sidebar_requests'] = template(function (Handlebars,depth0,helpers,partials,data) {
+  helpers = helpers || Handlebars.helpers; partials = partials || Handlebars.partials;
+  var stack1, self=this;
+
+function program1(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n    ";
+  stack1 = depth0;
+  stack1 = self.invokePartial(partials.item_history_sidebar_request, 'item_history_sidebar_request', stack1, helpers, partials);;
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n";
+  return buffer;}
+
+  stack1 = depth0.items;
+  stack1 = helpers.each.call(depth0, stack1, {hash:{},inverse:self.noop,fn:self.program(1, program1, data)});
+  if(stack1 || stack1 === 0) { return stack1; }
+  else { return ''; }});
 templates['item_collection_selector_list'] = template(function (Handlebars,depth0,helpers,partials,data) {
   helpers = helpers || Handlebars.helpers;
   var buffer = "", stack1, foundHelper, functionType="function", escapeExpression=this.escapeExpression;
@@ -199,7 +217,8 @@ templates['item_history_sidebar_request'] = template(function (Handlebars,depth0
   foundHelper = helpers.url;
   if (foundHelper) { stack1 = foundHelper.call(depth0, {hash:{}}); }
   else { stack1 = depth0.url; stack1 = typeof stack1 === functionType ? stack1() : stack1; }
-  buffer += escapeExpression(stack1) + "\n            </span>\n        </a>\n    </div>\n</li>";
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n            </span>\n        </a>\n    </div>\n</li>";
   return buffer;});
 templates['item_response_code'] = template(function (Handlebars,depth0,helpers,partials,data) {
   helpers = helpers || Handlebars.helpers;
