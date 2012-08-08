@@ -1563,7 +1563,9 @@ pm.request = {
         }
 
         var baseUrl = url.split("?")[0];
-        $('#url').val(baseUrl + "?" + paramArr.join('&'));
+        if(paramArr.length > 0) {
+            $('#url').val(baseUrl + "?" + paramArr.join('&'));
+        }
     },
 
     reset:function () {
