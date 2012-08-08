@@ -71,6 +71,10 @@ var pm = {};
 
 pm.indexedDB = {};
 pm.indexedDB.db = null;
+pm.indexedDB.modes = {
+    readwrite: "readwrite",
+    readonly: "readonly"
+};
 
 pm.fs = {};
 pm.webUrl = "http://getpostman.com";
@@ -975,7 +979,9 @@ pm.request = {
             this.headers = _.sortBy(this.headers, function (header) {
                 return header.name;
             });
-            //$("#item-response-header").tmpl(this.headers).appendTo("#response-headers");
+
+            $("#response-headers").append(Handlebars.templates.response_headers({"items":this.headers}));
+
             $('.response-header-name').popover();
         },
 
@@ -1022,8 +1028,7 @@ pm.request = {
 
                 var diff = pm.request.getTotalTime();
 
-                $('#response-status').html('');
-                //$('#item-response-code').tmpl([responseCode]).appendTo('#response-status');
+                $('#response-status').html(Handlebars.templates.item_response_code(responseCode));
                 $('.response-code').popover();
 
                 //This sets loadHeders
@@ -1088,7 +1093,6 @@ pm.request = {
                 else {
                     $("#response-tabs-cookies").html("Cookies (" + count + ")");
                     $('#response-tabs-cookies').css("display", "block");
-                    $('#response-cookies-items').html("");
                     cookies = _.sortBy(cookies, function (cookie) {
                         return cookie.name;
                     });
@@ -1100,7 +1104,8 @@ pm.request = {
                             cookies[i].expires = date.toUTCString();
                         }
                     }
-                    //$("#item-response-cookie").tmpl(cookies).appendTo("#response-cookies-items");
+
+                    $('#response-cookies-items').html(Handlebars.templates.response_cookies({"items":cookies}));
                 }
             });
         },
@@ -1978,7 +1983,7 @@ pm.history = {
 
                 outAr.reverse();
 
-                $('#history-items').append(Handlebars.templates.history_sidebar_requests({"items": outAr}));
+                $('#history-items').append(Handlebars.templates.history_sidebar_requests({"items":outAr}));
                 $('#history-items').fadeIn();
             }
 
@@ -2233,7 +2238,7 @@ pm.collections = {
                             action:"added"
                         };
 
-                        //$('#message-collection-added').tmpl([message]).appendTo('.modal-import-alerts');
+                        $('.modal-import-alerts').append(Handlebars.templates.message_collection_added());
 
                         var requests = [];
                         for (var i = 0; i < collection.requests.length; i++) {
@@ -2268,7 +2273,7 @@ pm.collections = {
                     action:"added"
                 };
 
-                //$('#message-collection-added').tmpl([message]).appendTo('.modal-import-alerts');
+                $('.modal-import-alerts').append(Handlebars.templates.message_collection_added());
 
                 var requests = [];
                 for (var i = 0; i < collection.requests.length; i++) {
@@ -2397,8 +2402,10 @@ pm.collections = {
                 $('#sidebar-section-collections .empty-message').css("display", "none");
                 $('#new-collection').val("");
                 collectionRequest.collectionId = collection.id;
-                //$('#item-collection-selector-list').tmpl([collection]).appendTo('#select-collection');
-                //$('#item-collection-sidebar-head').tmpl([collection]).appendTo('#collection-items');
+
+                $('#select-collection').append(Handlebars.templates.item_collection_selector_list(collection));
+                $('#collection-items').append(Handlebars.templates.item_collection_sidebar_head(collection));
+
                 $('a[rel="tooltip"]').tooltip();
                 pm.layout.refreshScrollPanes();
                 pm.indexedDB.addCollectionRequest(collectionRequest, function (req) {
@@ -2410,7 +2417,8 @@ pm.collections = {
                     }
                     req.name = limitStringLineWidth(req.name, 43);
 
-                    //$('#item-collection-sidebar-request').tmpl([req]).appendTo(targetElement);
+                    $(targetElement).append(Handlebars.templates.item_collection_sidebar_request(req));
+
                     pm.layout.refreshScrollPanes();
 
                     pm.request.isFromCollection = true;
@@ -2433,7 +2441,7 @@ pm.collections = {
                 }
                 req.name = limitStringLineWidth(req.name, 43);
 
-                $('#item-collection-sidebar-request').tmpl([req]).appendTo(targetElement);
+                $(targetElement).append(Handlebars.templates.item_collection_sidebar_request(req));
                 pm.layout.refreshScrollPanes();
 
                 pm.request.isFromCollection = true;
@@ -2482,8 +2490,9 @@ pm.collections = {
             currentEl.remove();
         }
 
-        //$('#item-collection-selector-list').tmpl([collection]).appendTo('#select-collection');
-        //$('#item-collection-sidebar-head').tmpl([collection]).appendTo('#collection-items');
+        $('#select-collection').append(Handlebars.templates.item_collection_selector_list(collection));
+        $('#collection-items').append(Handlebars.templates.item_collection_sidebar_head(collection));
+
         $('a[rel="tooltip"]').tooltip();
 
         if ("requests" in collection) {
@@ -2503,7 +2512,7 @@ pm.collections = {
 
                 //Sort requests as A-Z order
                 requests.sort(sortAlphabetical);
-                //$('#item-collection-sidebar-request').tmpl(requests).appendTo(targetElement);
+                $(targetElement).append(Handlebars.templates.collection_sidebar({"items": requests}));
             }
 
         }
@@ -2817,10 +2826,10 @@ pm.layout = {
             };
 
             if (position === 'top') {
-                //$('#item-history-sidebar-request').tmpl([request]).prependTo('#history-items');
+                $('#history-items').prepend(Handlebars.templates.item_history_sidebar_request(request));
             }
             else {
-                //$('#item-history-sidebar-request').tmpl([request]).appendTo('#history-items');
+                $('#history-items').append(Handlebars.templates.item_history_sidebar_request(request));
             }
 
             $('#sidebar-section-history .empty-message').css("display", "none");
@@ -2934,7 +2943,7 @@ pm.indexedDB = {
 
     addCollection:function (collection, callback) {
         var db = pm.indexedDB.db;
-        var trans = db.transaction(["collections"], IDBTransaction.READ_WRITE);
+        var trans = db.transaction(["collections"], "readwrite");
         var store = trans.objectStore("collections");
 
         var request = store.put({
@@ -2954,7 +2963,7 @@ pm.indexedDB = {
 
     updateCollection:function (collection, callback) {
         var db = pm.indexedDB.db;
-        var trans = db.transaction(["collections"], IDBTransaction.READ_WRITE);
+        var trans = db.transaction(["collections"], "readwrite");
         var store = trans.objectStore("collections");
 
         var boundKeyRange = IDBKeyRange.only(collection.id);
@@ -2971,7 +2980,7 @@ pm.indexedDB = {
 
     addCollectionRequest:function (req, callback) {
         var db = pm.indexedDB.db;
-        var trans = db.transaction(["collection_requests"], IDBTransaction.READ_WRITE);
+        var trans = db.transaction(["collection_requests"], "readwrite");
         var store = trans.objectStore("collection_requests");
 
         var collectionRequest = store.put({
@@ -2998,7 +3007,7 @@ pm.indexedDB = {
 
     updateCollectionRequest:function (req, callback) {
         var db = pm.indexedDB.db;
-        var trans = db.transaction(["collection_requests"], IDBTransaction.READ_WRITE);
+        var trans = db.transaction(["collection_requests"], "readwrite");
         var store = trans.objectStore("collection_requests");
 
         var boundKeyRange = IDBKeyRange.only(req.id);
@@ -3015,7 +3024,7 @@ pm.indexedDB = {
 
     getCollection:function (id, callback) {
         var db = pm.indexedDB.db;
-        var trans = db.transaction(["collections"], IDBTransaction.READ_WRITE);
+        var trans = db.transaction(["collections"], "readwrite");
         var store = trans.objectStore("collections");
 
         //Get everything in the store
@@ -3035,7 +3044,7 @@ pm.indexedDB = {
             return;
         }
 
-        var trans = db.transaction(["collections"], IDBTransaction.READ_WRITE);
+        var trans = db.transaction(["collections"], "readwrite");
         var store = trans.objectStore("collections");
 
         //Get everything in the store
@@ -3065,7 +3074,7 @@ pm.indexedDB = {
 
     getAllRequestsInCollection:function (collection, callback) {
         var db = pm.indexedDB.db;
-        var trans = db.transaction(["collection_requests"], IDBTransaction.READ_WRITE);
+        var trans = db.transaction(["collection_requests"], "readwrite");
 
         //Get everything in the store
         var keyRange = IDBKeyRange.only(collection.id);
@@ -3095,7 +3104,7 @@ pm.indexedDB = {
 
     addRequest:function (historyRequest, callback) {
         var db = pm.indexedDB.db;
-        var trans = db.transaction(["requests"], IDBTransaction.READ_WRITE);
+        var trans = db.transaction(["requests"], "readwrite");
         var store = trans.objectStore("requests");
         var request = store.put(historyRequest);
 
@@ -3110,7 +3119,7 @@ pm.indexedDB = {
 
     getRequest:function (id, callback) {
         var db = pm.indexedDB.db;
-        var trans = db.transaction(["requests"], IDBTransaction.READ_WRITE);
+        var trans = db.transaction(["requests"], "readwrite");
         var store = trans.objectStore("requests");
 
         //Get everything in the store
@@ -3129,7 +3138,7 @@ pm.indexedDB = {
 
     getCollectionRequest:function (id, callback) {
         var db = pm.indexedDB.db;
-        var trans = db.transaction(["collection_requests"], IDBTransaction.READ_WRITE);
+        var trans = db.transaction(["collection_requests"], "readwrite");
         var store = trans.objectStore("collection_requests");
 
         //Get everything in the store
@@ -3154,7 +3163,7 @@ pm.indexedDB = {
             return;
         }
 
-        var trans = db.transaction(["requests"], IDBTransaction.READ_WRITE);
+        var trans = db.transaction(["requests"], "readwrite");
         var store = trans.objectStore("requests");
 
         //Get everything in the store
@@ -3184,7 +3193,7 @@ pm.indexedDB = {
     deleteRequest:function (id, callback) {
         try {
             var db = pm.indexedDB.db;
-            var trans = db.transaction(["requests"], IDBTransaction.READ_WRITE);
+            var trans = db.transaction(["requests"], "readwrite");
             var store = trans.objectStore(["requests"]);
 
             var request = store['delete'](id);
@@ -3205,7 +3214,7 @@ pm.indexedDB = {
 
     deleteHistory:function (callback) {
         var db = pm.indexedDB.db;
-        var clearTransaction = db.transaction(["requests"], IDBTransaction.READ_WRITE);
+        var clearTransaction = db.transaction(["requests"], "readwrite");
         var clearRequest = clearTransaction.objectStore(["requests"]).clear();
         clearRequest.onsuccess = function (event) {
             callback();
@@ -3214,7 +3223,7 @@ pm.indexedDB = {
 
     deleteCollectionRequest:function (id, callback) {
         var db = pm.indexedDB.db;
-        var trans = db.transaction(["collection_requests"], IDBTransaction.READ_WRITE);
+        var trans = db.transaction(["collection_requests"], "readwrite");
         var store = trans.objectStore(["collection_requests"]);
 
         var request = store['delete'](id);
@@ -3230,7 +3239,7 @@ pm.indexedDB = {
 
     deleteAllCollectionRequests:function (id) {
         var db = pm.indexedDB.db;
-        var trans = db.transaction(["collection_requests"], IDBTransaction.READ_WRITE);
+        var trans = db.transaction(["collection_requests"], "readwrite");
 
         //Get everything in the store
         var keyRange = IDBKeyRange.only(id);
@@ -3255,7 +3264,7 @@ pm.indexedDB = {
 
     deleteCollection:function (id, callback) {
         var db = pm.indexedDB.db;
-        var trans = db.transaction(["collections"], IDBTransaction.READ_WRITE);
+        var trans = db.transaction(["collections"], "readwrite");
         var store = trans.objectStore(["collections"]);
 
         var request = store['delete'](id);
@@ -3273,7 +3282,7 @@ pm.indexedDB = {
     environments:{
         addEnvironment:function (environment, callback) {
             var db = pm.indexedDB.db;
-            var trans = db.transaction(["environments"], IDBTransaction.READ_WRITE);
+            var trans = db.transaction(["environments"], "readwrite");
             var store = trans.objectStore("environments");
             var request = store.put(environment);
 
@@ -3288,7 +3297,7 @@ pm.indexedDB = {
 
         getEnvironment:function (id, callback) {
             var db = pm.indexedDB.db;
-            var trans = db.transaction(["environments"], IDBTransaction.READ_WRITE);
+            var trans = db.transaction(["environments"], "readwrite");
             var store = trans.objectStore("environments");
 
             //Get everything in the store
@@ -3303,7 +3312,7 @@ pm.indexedDB = {
 
         deleteEnvironment:function (id, callback) {
             var db = pm.indexedDB.db;
-            var trans = db.transaction(["environments"], IDBTransaction.READ_WRITE);
+            var trans = db.transaction(["environments"], "readwrite");
             var store = trans.objectStore(["environments"]);
 
             var request = store['delete'](id);
@@ -3323,7 +3332,7 @@ pm.indexedDB = {
                 return;
             }
 
-            var trans = db.transaction(["environments"], IDBTransaction.READ_WRITE);
+            var trans = db.transaction(["environments"], "readwrite");
             var store = trans.objectStore("environments");
 
             //Get everything in the store
@@ -3352,7 +3361,7 @@ pm.indexedDB = {
 
         updateEnvironment:function (environment, callback) {
             var db = pm.indexedDB.db;
-            var trans = db.transaction(["environments"], IDBTransaction.READ_WRITE);
+            var trans = db.transaction(["environments"], "readwrite");
             var store = trans.objectStore("environments");
 
             var boundKeyRange = IDBKeyRange.only(environment.id);
@@ -3393,7 +3402,9 @@ pm.envManager = {
             }
             $('#environment-quicklook-environments h6').html(environment.name);
             $('#environment-quicklook-environments ul').html("");
-            //$('#item-environment-quicklook').tmpl(environment.values).appendTo('#environment-quicklook-environments ul');
+            $('#environment-quicklook-environments ul').append(Handlebars.templates.environment_quicklook({
+                "items":environment.values
+            }));
         },
 
         refreshGlobals:function (globals) {
@@ -3402,7 +3413,9 @@ pm.envManager = {
             }
 
             $('#environment-quicklook-globals ul').html("");
-            //$('#item-environment-quicklook').tmpl(globals).appendTo('#environment-quicklook-globals ul');
+            $('#environment-quicklook-globals ul').append(Handlebars.templates.environment_quicklook({
+                "items":globals
+            }));
         },
 
         toggleDisplay:function () {
@@ -3419,10 +3432,7 @@ pm.envManager = {
 
     init:function () {
         pm.envManager.initGlobals();
-        var template = Handlebars.templates.item_environment_list;
-        console.log(pm.envManager.environments);
-        console.log(template(this.environments));
-        //$('#item-environment-list').tmpl(this.environments).appendTo('#environments-list');
+        $('#environment-list').append(Handlebars.templates.environment_list({"items":this.environments}));
 
         $('#environments-list').on("click", ".environment-action-delete", function () {
             var id = $(this).attr('data-id');
@@ -3584,9 +3594,10 @@ pm.envManager = {
             $('#environments-list tbody').html("");
             pm.envManager.environments = environments;
 
-            //$('#item-environment-selector').tmpl(environments).appendTo('#environment-selector .dropdown-menu');
-            //$('#item-environment-list').tmpl(environments).appendTo('#environments-list tbody');
-            //$('#environment-selector-actions').tmpl([{}]).appendTo('#environment-selector .dropdown-menu');
+
+            $('#environment-selector .dropdown-menu').append(Handlebars.templates.environment_selector({"items":environments}));
+            $('#environments-list tbody').append(Handlebars.templates.environment_list({"items":environments}));
+            $('#environment-selector .dropdown-menu').append(Handlebars.templates.environment_selector_actions());
 
             var selectedEnvId = pm.settings.get("selectedEnvironmentId");
             var selectedEnv = pm.envManager.getEnvironmentFromId(selectedEnvId);
@@ -3733,7 +3744,7 @@ pm.envManager = {
                             action:'added'
                         };
 
-                        //$("#message-environment-added").tmpl([o]).appendTo('#environment-importer-confirmations');
+                        $('#environment-importer-confirmations').append(Handlebars.templates.message_environment_added());
                         pm.envManager.getAllEnvironments();
                     });
                 };
