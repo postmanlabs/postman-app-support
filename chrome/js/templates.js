@@ -96,6 +96,25 @@ templates['environment_selector_actions'] = template(function (Handlebars,depth0
 
 
   return "<li><a class=\"environment-list-item-noenvironment\" href=\"javascript:void(0);\">No environment</a></li>\n<li class=\"divider\"></li>\n<li><a href=\"#modal-environments\" data-toggle=\"modal\"\n       data-backdrop=\"static\" data-keyboard=\"true\">Manage environments</a></li>";});
+templates['environment_selector_list'] = template(function (Handlebars,depth0,helpers,partials,data) {
+  helpers = helpers || Handlebars.helpers; partials = partials || Handlebars.partials;
+  var buffer = "", stack1, self=this;
+
+function program1(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n    ";
+  stack1 = depth0;
+  stack1 = self.invokePartial(partials.item_environment_selector_list, 'item_environment_selector_list', stack1, helpers, partials);;
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n";
+  return buffer;}
+
+  stack1 = depth0.items;
+  stack1 = helpers.each.call(depth0, stack1, {hash:{},inverse:self.noop,fn:self.program(1, program1, data)});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n";
+  return buffer;});
 templates['history_sidebar_requests'] = template(function (Handlebars,depth0,helpers,partials,data) {
   helpers = helpers || Handlebars.helpers; partials = partials || Handlebars.partials;
   var stack1, self=this;
@@ -274,6 +293,21 @@ templates['item_environment_selector'] = template(function (Handlebars,depth0,he
   if (foundHelper) { stack1 = foundHelper.call(depth0, {hash:{}}); }
   else { stack1 = depth0.name; stack1 = typeof stack1 === functionType ? stack1() : stack1; }
   buffer += escapeExpression(stack1) + "</a></li>\n";
+  return buffer;});
+templates['item_environment_selector_list'] = template(function (Handlebars,depth0,helpers,partials,data) {
+  helpers = helpers || Handlebars.helpers;
+  var buffer = "", stack1, foundHelper, functionType="function", escapeExpression=this.escapeExpression;
+
+
+  buffer += "<option value=\"";
+  foundHelper = helpers.id;
+  if (foundHelper) { stack1 = foundHelper.call(depth0, {hash:{}}); }
+  else { stack1 = depth0.id; stack1 = typeof stack1 === functionType ? stack1() : stack1; }
+  buffer += escapeExpression(stack1) + "\">";
+  foundHelper = helpers.name;
+  if (foundHelper) { stack1 = foundHelper.call(depth0, {hash:{}}); }
+  else { stack1 = depth0.name; stack1 = typeof stack1 === functionType ? stack1() : stack1; }
+  buffer += escapeExpression(stack1) + "</option>\n";
   return buffer;});
 templates['item_history_sidebar_request'] = template(function (Handlebars,depth0,helpers,partials,data) {
   helpers = helpers || Handlebars.helpers;

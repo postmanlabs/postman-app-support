@@ -62,7 +62,7 @@
             </a>
         </div>
         <div id="collections-options" class="section-options">
-            <a href="#modal-new-collection" rel="tooltip" data-original-title="Add new collection"
+            <a id="collections-options-add" href="#modal-new-collection" rel="tooltip" data-original-title="Add new collection"
                data-toggle="modal"
                data-backdrop="static"
                data-placement="bottom"
@@ -276,23 +276,23 @@
     </div>
     <div id="request-method-container">
         <select id="request-method-selector">
-            <option value="GET" selected>GET</option>
-            <option value="POST">POST</option>
-            <option value="PUT">PUT</option>
-            <option value="PATCH">PATCH</option>
-            <option value="DELETE">DELETE</option>
-            <option value="HEAD">HEAD</option>
-            <option value="OPTIONS">OPTIONS</option>
-        </select>
-    </div>
+        <option value="GET" selected>GET</option>
+        <option value="POST">POST</option>
+        <option value="PUT">PUT</option>
+        <option value="PATCH">PATCH</option>
+        <option value="DELETE">DELETE</option>
+        <option value="HEAD">HEAD</option>
+        <option value="OPTIONS">OPTIONS</option>
+    </select>
+</div>
     <div id="request-url-buttons-container">
-        <button href="javascript:void(0);" class="btn btn-small" id="url-keyvaleditor-actions-open"><i
-                class="icon-edit"></i> URL params
-        </button>
-        <button href="javascript:void(0);" class="btn btn-small" id="headers-keyvaleditor-actions-open"><i
-                class="icon-edit"></i> Headers (<span class="headers-count">0</span>)
-        </button>
-    </div>
+        <button href="javascript:void(0);" class="btn btn-small" id="url-keyvaleditor-actions-open">
+            <i class="icon-edit"></i> URL params
+    </button>
+        <button href="javascript:void(0);" class="btn btn-small" id="headers-keyvaleditor-actions-open">
+            <i class="icon-edit"></i> Headers (<span class="headers-count">0</span>)
+    </button>
+</div>
 </div>
 
 <div id="url-keyvaleditor-container" class="row" style="margin-left: 0px; display: none;">
@@ -358,19 +358,19 @@
 
 <section id="response">
     <div id="response-top-bar">
-        <ul class="response-tabs clearfix">
-            <li class="active" data-section="body">Body</li>
-            <li data-section="cookies" id="response-tabs-cookies">Cookies</li>
-            <li data-section="headers">Headers</li>
-        </ul>
+            <ul class="response-tabs clearfix">
+                <li class="active" data-section="body">Body</li>
+                <li data-section="cookies" id="response-tabs-cookies">Cookies</li>
+                <li data-section="headers">Headers</li>
+            </ul>
         <div id="response-status">
-        </div>
+            </div>
 
         <div id="response-time" class="span2">
-            <span class="label">Time</span>
-            <span class="data">0 millisecs</span>
+                <span class="label">Time</span>
+                <span class="data">0 millisecs</span>
+            </div>
         </div>
-    </div>
 
     <div id="response-data-container" class="clearfix">
         <div id="response-data" style="display:none" class="clearfix">
@@ -378,68 +378,68 @@
                 <div id="response-formatting" class="btn-group clearfix" data-toggle="buttons-radio">
                     <a href="javascript:void(0);" data-type="parsed" class="btn">Pretty</a>
                     <a href="javascript:void(0);" data-type="raw" class="btn">Raw</a>
-                </div>
+                    </div>
                 <div id="response-actions" class="clearfix">
-                    <a href="javascript:void(0);" class="btn"
-                       rel="tooltip"
-                       data-placement="bottom"
-                       data-original-title="Toggle size"
+                        <a href="javascript:void(0);" class="btn"
+                           rel="tooltip"
+                           data-placement="bottom"
+                           data-original-title="Toggle size"
                        id="response-body-toggle">
-                        <img src="img/full-screen-alt-4.png"
-                             style="width:16px; height:16px; vertical-align: middle;"/>
-                    </a>
-                    <a class="btn"
-                       rel="tooltip"
-                       data-placement="bottom"
-                       data-original-title="Toggle wrapping"
+                            <img src="img/full-screen-alt-4.png"
+                                 style="width:16px; height:16px; vertical-align: middle;"/>
+                        </a>
+                        <a class="btn"
+                           rel="tooltip"
+                           data-placement="bottom"
+                           data-original-title="Toggle wrapping"
                        id="response-body-line-wrapping">
                         <img src="img/right_indent.png"
-                             style="width:16px; height:16px; vertical-align: middle;"/>
-                    </a>
-                    <a class="btn"
-                       rel="tooltip"
-                       data-placement="bottom"
-                       data-original-title="View as HTML"
+                                 style="width:16px; height:16px; vertical-align: middle;"/>
+                        </a>
+                        <a class="btn"
+                           rel="tooltip"
+                           data-placement="bottom"
+                           data-original-title="View as HTML"
                        id="response-open-in-new-window">
-                        <img src="img/html.png"
-                             style="width:20px; height:16px; vertical-align: middle;"/>
-                    </a>
-                </div>
-                <div id="response-language" class="btn-group clearfix" data-toggle="buttons-radio">
+                            <img src="img/html.png"
+                                 style="width:20px; height:16px; vertical-align: middle;"/>
+                        </a>
+                    </div>
+                    <div id="response-language" class="btn-group clearfix" data-toggle="buttons-radio">
                     <a href="javascript:void(0);" data-mode="javascript" class="btn">JSON</a>
                     <a href="javascript:void(0);" data-mode="html" class="btn">XML</a>
+                    </div>
                 </div>
-            </div>
             <div id="response-editors">
                 <div id="response-as-code">
                     <textarea id="code-data" data-formatted="false">
-                    </textarea>
-                </div>
+                        </textarea>
+                    </div>
                 <div id="response-as-text">
                     <textarea id="code-data-raw"></textarea>
-                </div>
+                    </div>
                 <div id="response-as-image"></div>
+                </div>
             </div>
         </div>
-    </div>
     <div id="response-cookies-container">
         <table id="response-cookies" class="table table-striped table-bordered">
-            <thead>
-            <th>Name</th>
-            <th>Value</th>
-            <th>Domain</th>
-            <th>Path</th>
-            <th>Expires</th>
-            <th>HTTP</th>
-            <th>Secure</th>
-            </thead>
-            <tbody id="response-cookies-items">
-            </tbody>
-        </table>
-    </div>
+                <thead>
+                <th>Name</th>
+                <th>Value</th>
+                <th>Domain</th>
+                <th>Path</th>
+                <th>Expires</th>
+                <th>HTTP</th>
+                <th>Secure</th>
+                </thead>
+                <tbody id="response-cookies-items">
+                </tbody>
+            </table>
+        </div>
     <div id="response-headers-container">
         <ul id="response-headers"></ul>
-    </div>
+            </div>
 </section>
 </div>
 </div>
@@ -457,6 +457,15 @@
                 <div class="controls">
                     <input type="text" class="medium clean-input" name="new-collection-blank"
                            id="new-collection-blank"/>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">Copy from</label>
+
+                <div class="controls">
+                    <select name="new-collection-copy-from" class="medium" id="new-collection-copy-from">
+                        <option value="_none">None</option>
+                    </select>
                 </div>
             </div>
         </form>
@@ -679,6 +688,9 @@
                 <button class="btn btn-small environments-actions-add">
                     Add
                 </button>
+                <button class="btn btn-small environments-actions-copy">
+                    Copy
+                </button>
                 <button class="btn btn-small environments-actions-import">
                     Import
                 </button>
@@ -698,6 +710,14 @@
             <input type="hidden" name="environment-editor-id" id="environment-editor-id" value="0" class="clean-input"/>
 
             <div id="environment-keyvaleditor"></div>
+        </div>
+        <div id="environment-copier">
+            <input type="text" name="environment-copier-name" id="environment-copier-name" class="cleanInput"
+                   placeholder="New environment"/>
+
+            <div class="controls">
+                <select name="environment-copier-from" class="medium" id="environment-copier-from"></select>
+            </div>
         </div>
         <div id="environment-importer">
             <p>Select environment files from your desktop</p>

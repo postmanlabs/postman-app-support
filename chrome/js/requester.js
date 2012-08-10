@@ -2326,6 +2326,7 @@ pm.collections = {
 
     addCollection:function () {
         var newCollection = $('#new-collection-blank').val();
+        var copyFromCollection = $('#new-collection-copy-from').val();
 
         var collection = new Collection();
 
@@ -2333,11 +2334,50 @@ pm.collections = {
             //Add the new collection and get guid
             collection.id = guid();
             collection.name = newCollection;
+
             pm.indexedDB.addCollection(collection, function (collection) {
-                pm.collections.render(collection);
+                // Copy collection requests if necessary
+                if (copyFromCollection && copyFromCollection != "_none") {
+                    pm.indexedDB.getCollection(copyFromCollection, function (data) {
+                        var collectionToCopy = data;
+                        pm.indexedDB.getAllRequestsInCollection(collectionToCopy, function (col, req) {
+                            var last = req.length - 1;
+                            var lastId = null;
+                            collection["requests"] = new Array();
+                            for (var i in req) {
+                                var newReq = new CollectionRequest();
+                                newReq.id = guid();
+                                newReq.collectionId = collection.id;
+                                newReq.headers = req[i].headers;
+                                newReq.url = req[i].url;
+                                newReq.method = req[i].method;
+                                newReq.data = req[i].data;
+                                newReq.dataMode = req[i].dataMode;
+                                newReq.name = req[i].name;
+                                newReq.description = req[i].description;
+                                newReq.time = new Date().getTime();
+                                // Add the new request to the collection object
+                                collection["requests"][i] = newReq;
+                                if (i == last) {
+                                    lastId = newReq.id;
+                                }
+                                // Save the new requests
+                                pm.indexedDB.addCollectionRequest(newReq, function(r){
+                                    // Render collection on the last request
+                                    if (r.id == lastId) {
+                                        pm.collections.render(collection);
+                                    }
+                                });
+                            } 
+                        });
+                    });
+                } else {
+                    pm.collections.render(collection);
+                }
             });
 
             $('#new-collection-blank').val("");
+            $('#new-collection-copy-from').val("");
         }
 
         $('#modal-new-collection').modal('hide');
@@ -2405,6 +2445,7 @@ pm.collections = {
 
                 $('#select-collection').append(Handlebars.templates.item_collection_selector_list(collection));
                 $('#collection-items').append(Handlebars.templates.item_collection_sidebar_head(collection));
+                $('#new-collection-copy-from').append(Handlebars.templates.item_collection_selector_list(collection));
 
                 $('a[rel="tooltip"]').tooltip();
                 pm.layout.refreshScrollPanes();
@@ -2464,6 +2505,8 @@ pm.collections = {
     getAllCollections:function () {
         $('#collection-items').html("");
         $('#select-collection').html("<option>Select</option>");
+        $('#new-collection-copy-from').html("<option value=\"_none\">None</option>");
+
         pm.indexedDB.getCollections(function (items) {
             pm.collections.items = items;
             $('#sidebar-section-collections .empty-message').css("display", "none");
@@ -2491,6 +2534,7 @@ pm.collections = {
         }
 
         $('#select-collection').append(Handlebars.templates.item_collection_selector_list(collection));
+        $('#new-collection-copy-from').append(Handlebars.templates.item_collection_selector_list(collection));
         $('#collection-items').append(Handlebars.templates.item_collection_sidebar_head(collection));
 
         $('a[rel="tooltip"]').tooltip();
@@ -2501,7 +2545,7 @@ pm.collections = {
             var targetElement = "#collection-requests-" + id;
             var count = requests.length;
 
-            if (count > 1) {
+            if (count > 0) {
                 for (var i = 0; i < count; i++) {
                     pm.urlCache.addUrl(requests[i].url);
                     if (typeof requests[i].name === "undefined") {
@@ -2531,6 +2575,8 @@ pm.collections = {
             pm.layout.sidebar.removeCollection(id);
 
             var target = '#select-collection option[value="' + id + '"]';
+            $(target).remove();
+            target = '#new-collection-copy-from option[value="' + id + '"]';
             $(target).remove();
         });
     }
@@ -2577,6 +2623,12 @@ pm.layout = {
         this.sidebar.init();
 
         pm.request.response.clear();
+
+        $('#collections-options-add').on("click", function() {
+            if (pm.collections.areLoaded === false) {
+                pm.collections.getAllCollections();
+            }
+        });
 
         $('#add-to-collection').on("click", function () {
             if (pm.collections.areLoaded === false) {
@@ -2638,6 +2690,7 @@ pm.layout = {
                 pm.indexedDB.updateCollection(collection, function (collection) {
                     $('#collection-' + collection.id + " .sidebar-collection-head-name").html(collection.name);
                     $('#select-collection option[value="' + collection.id + '"]').html(collection.name);
+                    $('#new-collection-copy-from option[value="' + collection.id + '"]').html(collection.name);
                 });
             });
 
@@ -3384,6 +3437,7 @@ pm.envManager = {
     globals:{},
     selectedEnv:null,
     selectedEnvironmentId:"",
+    action:null,
 
     quicklook:{
         init:function () {
@@ -3484,9 +3538,12 @@ pm.envManager = {
             $('#environment-files-input').val("");
         });
 
-
         $('.environments-actions-add').on("click", function () {
             pm.envManager.showEditor();
+        });
+
+        $('.environments-actions-copy').on("click", function () {
+            pm.envManager.showCopier();
         });
 
         $('.environments-actions-import').on('click', function () {
@@ -3498,23 +3555,29 @@ pm.envManager = {
         });
 
         $('.environments-actions-add-submit').on("click", function () {
-            var id = $('#environment-editor-id').val();
-            if (id === "0") {
-                pm.envManager.addEnvironment();
+            if (pm.envManager.action == "edit") {
+                var id = $('#environment-editor-id').val();
+                if (id === "0") {
+                    pm.envManager.addEnvironment();
+                }
+                else {
+                    pm.envManager.updateEnvironment();
+                }
+                
+                $('#environment-editor-name').val("");
+                $('#environment-keyvaleditor').keyvalueeditor('reset', []);
+            } else if (pm.envManager.action == "copy") {
+                pm.envManager.copyEnvironment();
+                $('#environment-copier-name').val("");
             }
-            else {
-                pm.envManager.updateEnvironment();
-            }
-
-            $('#environment-editor-name').val("");
-            $('#environment-keyvaleditor').keyvalueeditor('reset', []);
-
+            pm.envManager.action = null;
         });
 
         $('.environments-actions-add-back').on("click", function () {
             pm.envManager.saveGlobals();
             pm.envManager.showSelector();
             $('#environment-editor-name').val("");
+            $('#environment-copier-name').val("");
             $('#environment-keyvaleditor').keyvalueeditor('reset', []);
         });
 
@@ -3563,7 +3626,7 @@ pm.envManager = {
         for (var i = 0; i < count; i++) {
             patString = "{{" + values[i].key + "}}";
             pattern = new RegExp(patString, 'g');
-            finalString = finalString.replace(patString, values[i].value);
+            finalString = finalString.replace(pattern, values[i].value);
         }
 
         var globals = pm.envManager.globals;
@@ -3571,7 +3634,7 @@ pm.envManager = {
         for (i = 0; i < count; i++) {
             patString = "{{" + globals[i].key + "}}";
             pattern = new RegExp(patString, 'g');
-            finalString = finalString.replace(patString, globals[i].value);
+            finalString = finalString.replace(pattern, globals[i].value);
         }
 
         return finalString;
@@ -3592,10 +3655,12 @@ pm.envManager = {
         pm.indexedDB.environments.getAllEnvironments(function (environments) {
             $('#environment-selector .dropdown-menu').html("");
             $('#environments-list tbody').html("");
+            $('#environment-copier-from').html("");
+                                                                              
             pm.envManager.environments = environments;
 
-
             $('#environment-selector .dropdown-menu').append(Handlebars.templates.environment_selector({"items":environments}));
+            $('#environment-copier-from').append(Handlebars.templates.environment_selector_list({"items":environments}));
             $('#environments-list tbody').append(Handlebars.templates.environment_list({"items":environments}));
             $('#environment-selector .dropdown-menu').append(Handlebars.templates.environment_selector_actions());
 
@@ -3634,6 +3699,7 @@ pm.envManager = {
     showSelector:function () {
         $('#environments-list-wrapper').css("display", "block");
         $('#environment-editor').css("display", "none");
+        $('#environment-copier').css("display", "none");
         $('#environment-importer').css("display", "none");
         $('#globals-editor').css("display", "none");
         $('.environments-actions-add-submit').css("display", "inline");
@@ -3641,6 +3707,7 @@ pm.envManager = {
     },
 
     showEditor:function (id) {
+        pm.envManager.action = "edit";
         if (id) {
             var environment = pm.envManager.getEnvironmentFromId(id);
             $('#environment-editor-name').val(environment.name);
@@ -3653,6 +3720,18 @@ pm.envManager = {
 
         $('#environments-list-wrapper').css("display", "none");
         $('#environment-editor').css("display", "block");
+        $('#environment-copier').css("display", "none");
+        $('#environment-importer').css("display", "none");
+        $('#globals-editor').css("display", "none");
+        $('#modal-environments .modal-footer').css("display", "block");
+    },
+
+    showCopier:function () {
+        pm.envManager.action = "copy";
+        $('#environments-list-wrapper').css("display", "none");
+        $('#environment-editor').css("display", "none");
+        $('#environment-copier').css("display", "block");
+        $('#environment-importer').css("display", "none");
         $('#globals-editor').css("display", "none");
         $('#modal-environments .modal-footer').css("display", "block");
     },
@@ -3660,6 +3739,7 @@ pm.envManager = {
     showImporter:function () {
         $('#environments-list-wrapper').css("display", "none");
         $('#environment-editor').css("display", "none");
+        $('#environment-copier').css("display", "none");
         $('#globals-editor').css("display", "none");
         $('#environment-importer').css("display", "block");
         $('.environments-actions-add-submit').css("display", "none");
@@ -3669,6 +3749,7 @@ pm.envManager = {
     showGlobals:function () {
         $('#environments-list-wrapper').css("display", "none");
         $('#environment-editor').css("display", "none");
+        $('#environment-copier').css("display", "none");
         $('#globals-editor').css("display", "block");
         $('#environment-importer').css("display", "none");
         $('.environments-actions-add-submit').css("display", "none");
@@ -3682,6 +3763,23 @@ pm.envManager = {
             id:guid(),
             name:name,
             values:values,
+            timestamp:new Date().getTime()
+        };
+
+        pm.indexedDB.environments.addEnvironment(environment, function () {
+            pm.envManager.getAllEnvironments();
+            pm.envManager.showSelector();
+        });
+    },
+
+    copyEnvironment:function () {
+        var name = $('#environment-copier-name').val();
+        var from = $('#environment-copier-from').val();
+        var fromEnvironment = pm.envManager.getEnvironmentFromId(from);
+        var environment = {
+            id:guid(),
+            name:name,
+            values:fromEnvironment.values,
             timestamp:new Date().getTime()
         };
 
