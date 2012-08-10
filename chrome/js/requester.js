@@ -2177,7 +2177,6 @@ pm.collections = {
             var files = evt.dataTransfer.files; // FileList object.
 
             pm.collections.importCollections(files);
-            $('#modal-import-collection').modal('hide');
         }, false);
 
         $('#collection-files-input').on('change', function (event) {
