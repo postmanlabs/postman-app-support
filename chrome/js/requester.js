@@ -1482,6 +1482,7 @@ pm.request = {
             $('#request-name').css("display", "block");
         }
         else {
+            this.name = "";
             $('#request-meta').css("display", "none");
             $('#request-name').css("display", "none");
         }
@@ -1492,6 +1493,7 @@ pm.request = {
             $('#request-description').css("display", "block");
         }
         else {
+            this.description = "";
             $('#request-description').css("display", "none");
         }
 
