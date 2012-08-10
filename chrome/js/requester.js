@@ -2276,7 +2276,7 @@ pm.collections = {
                     action:"added"
                 };
 
-                $('.modal-import-alerts').append(Handlebars.templates.message_collection_added());
+                $('.modal-import-alerts').append(Handlebars.templates.message_collection_added(message));
 
                 var requests = [];
                 for (var i = 0; i < collection.requests.length; i++) {
@@ -3747,7 +3747,7 @@ pm.envManager = {
                             action:'added'
                         };
 
-                        $('#environment-importer-confirmations').append(Handlebars.templates.message_environment_added());
+                        $('#environment-importer-confirmations').append(Handlebars.templates.message_environment_added(o));
                         pm.envManager.getAllEnvironments();
                     });
                 };
