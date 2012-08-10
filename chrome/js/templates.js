@@ -95,7 +95,7 @@ templates['environment_selector_actions'] = template(function (Handlebars,depth0
   
 
 
-  return "<li><a class=\"environment-list-item-noenvironment\" href=\"#\">No environment</a></li>\n<li class=\"divider\"></li>\n<li><a href=\"#modal-environments\" data-toggle=\"modal\"\n       data-backdrop=\"static\" data-keyboard=\"true\">Manage environments</a></li>";});
+  return "<li><a class=\"environment-list-item-noenvironment\" >No environment</a></li>\n<li class=\"divider\"></li>\n<li><a href=\"#modal-environments\" data-toggle=\"modal\"\n       data-backdrop=\"static\" data-keyboard=\"true\">Manage environments</a></li>";});
 templates['history_sidebar_requests'] = template(function (Handlebars,depth0,helpers,partials,data) {
   helpers = helpers || Handlebars.helpers; partials = partials || Handlebars.partials;
   var stack1, self=this;
@@ -142,7 +142,7 @@ templates['item_collection_sidebar_head'] = template(function (Handlebars,depth0
   foundHelper = helpers.id;
   if (foundHelper) { stack1 = foundHelper.call(depth0, {hash:{}}); }
   else { stack1 = depth0.id; stack1 = typeof stack1 === functionType ? stack1() : stack1; }
-  buffer += escapeExpression(stack1) + "\" class=\"sidebar-collection\">\n    <div class=\"sidebar-collection-head\">\n        <div class=\"collection-head-actions\">\n            <a href=\"#\"\n               data-placement=\"bottom\"\n               rel=\"tooltip\" data-original-title=\"Edit collection\"\n               class=\"collection-actions-edit\" data-id=\"";
+  buffer += escapeExpression(stack1) + "\" class=\"sidebar-collection\">\n    <div class=\"sidebar-collection-head\">\n        <div class=\"collection-head-actions\">\n            <a\n               data-placement=\"bottom\"\n               rel=\"tooltip\" data-original-title=\"Edit collection\"\n               class=\"collection-actions-edit\" data-id=\"";
   foundHelper = helpers.id;
   if (foundHelper) { stack1 = foundHelper.call(depth0, {hash:{}}); }
   else { stack1 = depth0.id; stack1 = typeof stack1 === functionType ? stack1() : stack1; }
@@ -150,7 +150,7 @@ templates['item_collection_sidebar_head'] = template(function (Handlebars,depth0
   foundHelper = helpers.name;
   if (foundHelper) { stack1 = foundHelper.call(depth0, {hash:{}}); }
   else { stack1 = depth0.name; stack1 = typeof stack1 === functionType ? stack1() : stack1; }
-  buffer += escapeExpression(stack1) + "\">\n                <img src=\"img/edit.png\" style=\"vertical-align: middle;\"/></a>\n            <a href=\"#\"\n               data-placement=\"bottom\"\n               rel=\"tooltip\" data-original-title=\"Share collection\"\n               class=\"collection-actions-download\" data-id=\"";
+  buffer += escapeExpression(stack1) + "\">\n                <img src=\"img/edit.png\" style=\"vertical-align: middle;\"/></a>\n            <a\n               data-placement=\"bottom\"\n               rel=\"tooltip\" data-original-title=\"Share collection\"\n               class=\"collection-actions-download\" data-id=\"";
   foundHelper = helpers.id;
   if (foundHelper) { stack1 = foundHelper.call(depth0, {hash:{}}); }
   else { stack1 = depth0.id; stack1 = typeof stack1 === functionType ? stack1() : stack1; }
@@ -185,11 +185,11 @@ templates['item_collection_sidebar_request'] = template(function (Handlebars,dep
   foundHelper = helpers.id;
   if (foundHelper) { stack1 = foundHelper.call(depth0, {hash:{}}); }
   else { stack1 = depth0.id; stack1 = typeof stack1 === functionType ? stack1() : stack1; }
-  buffer += escapeExpression(stack1) + "\" class=\"sidebar-collection-request sidebar-request clearfix\">\n        <div class=\"request-actions\">\n            <a href=\"#\" data-id=\"";
+  buffer += escapeExpression(stack1) + "\" class=\"sidebar-collection-request sidebar-request clearfix\">\n        <div class=\"request-actions\">\n            <a  data-id=\"";
   foundHelper = helpers.id;
   if (foundHelper) { stack1 = foundHelper.call(depth0, {hash:{}}); }
   else { stack1 = depth0.id; stack1 = typeof stack1 === functionType ? stack1() : stack1; }
-  buffer += escapeExpression(stack1) + "\" class=\"request-actions-edit\">\n                <img src=\"img/edit.png\" style=\"vertical-align: middle;\"/>\n            </a>\n            <a href=\"#\" data-id=\"";
+  buffer += escapeExpression(stack1) + "\" class=\"request-actions-edit\">\n                <img src=\"img/edit.png\" style=\"vertical-align: middle;\"/>\n            </a>\n            <a  data-id=\"";
   foundHelper = helpers.id;
   if (foundHelper) { stack1 = foundHelper.call(depth0, {hash:{}}); }
   else { stack1 = depth0.id; stack1 = typeof stack1 === functionType ? stack1() : stack1; }
@@ -197,7 +197,7 @@ templates['item_collection_sidebar_request'] = template(function (Handlebars,dep
   foundHelper = helpers.id;
   if (foundHelper) { stack1 = foundHelper.call(depth0, {hash:{}}); }
   else { stack1 = depth0.id; stack1 = typeof stack1 === functionType ? stack1() : stack1; }
-  buffer += escapeExpression(stack1) + "\">\n            <a href=\"#\"><span class=\"label label-method-";
+  buffer += escapeExpression(stack1) + "\">\n            <a ><span class=\"label label-method-";
   foundHelper = helpers.method;
   if (foundHelper) { stack1 = foundHelper.call(depth0, {hash:{}}); }
   else { stack1 = depth0.method; stack1 = typeof stack1 === functionType ? stack1() : stack1; }
@@ -223,7 +223,7 @@ templates['item_environment_list'] = template(function (Handlebars,depth0,helper
   var buffer = "", stack1, foundHelper, functionType="function", escapeExpression=this.escapeExpression;
 
 
-  buffer += "<tr>\n    <td>\n        <a href=\"#\" class=\"environment-action-edit\" data-id=\"";
+  buffer += "<tr>\n    <td>\n        <a  class=\"environment-action-edit\" data-id=\"";
   foundHelper = helpers.id;
   if (foundHelper) { stack1 = foundHelper.call(depth0, {hash:{}}); }
   else { stack1 = depth0.id; stack1 = typeof stack1 === functionType ? stack1() : stack1; }
@@ -231,11 +231,11 @@ templates['item_environment_list'] = template(function (Handlebars,depth0,helper
   foundHelper = helpers.name;
   if (foundHelper) { stack1 = foundHelper.call(depth0, {hash:{}}); }
   else { stack1 = depth0.name; stack1 = typeof stack1 === functionType ? stack1() : stack1; }
-  buffer += escapeExpression(stack1) + "</a>\n    </td>\n    <td style=\"width: 50px;\">\n        <a href=\"#\"\n           rel=\"tooltip\" data-original-title=\"Download environment\"\n           data-placement=\"bottom\"\n           class=\"environment-action-download\" data-id=\"";
+  buffer += escapeExpression(stack1) + "</a>\n    </td>\n    <td style=\"width: 50px;\">\n        <a\n           rel=\"tooltip\" data-original-title=\"Download environment\"\n           data-placement=\"bottom\"\n           class=\"environment-action-download\" data-id=\"";
   foundHelper = helpers.id;
   if (foundHelper) { stack1 = foundHelper.call(depth0, {hash:{}}); }
   else { stack1 = depth0.id; stack1 = typeof stack1 === functionType ? stack1() : stack1; }
-  buffer += escapeExpression(stack1) + "\">\n            <img src=\"img/download.png\"\n                 style=\"vertical-align: middle; width: 20px; height: 20px;\"/></a>\n        <a href=\"#\"\n           data-name=\"";
+  buffer += escapeExpression(stack1) + "\">\n            <img src=\"img/download.png\"\n                 style=\"vertical-align: middle; width: 20px; height: 20px;\"/></a>\n        <a\n           data-name=\"";
   foundHelper = helpers.name;
   if (foundHelper) { stack1 = foundHelper.call(depth0, {hash:{}}); }
   else { stack1 = depth0.name; stack1 = typeof stack1 === functionType ? stack1() : stack1; }
@@ -265,7 +265,7 @@ templates['item_environment_selector'] = template(function (Handlebars,depth0,he
   var buffer = "", stack1, foundHelper, functionType="function", escapeExpression=this.escapeExpression;
 
 
-  buffer += "<li><a href=\"#\" class=\"environment-list-item\" data-id=\"";
+  buffer += "<li><a  class=\"environment-list-item\" data-id=\"";
   foundHelper = helpers.id;
   if (foundHelper) { stack1 = foundHelper.call(depth0, {hash:{}}); }
   else { stack1 = depth0.id; stack1 = typeof stack1 === functionType ? stack1() : stack1; }
@@ -284,7 +284,7 @@ templates['item_history_sidebar_request'] = template(function (Handlebars,depth0
   foundHelper = helpers.id;
   if (foundHelper) { stack1 = foundHelper.call(depth0, {hash:{}}); }
   else { stack1 = depth0.id; stack1 = typeof stack1 === functionType ? stack1() : stack1; }
-  buffer += escapeExpression(stack1) + "\" class=\"sidebar-history-request sidebar-request clearfix\">\n    <div class=\"request-actions\">\n        <a href=\"#\" data-request-id=\"";
+  buffer += escapeExpression(stack1) + "\" class=\"sidebar-history-request sidebar-request clearfix\">\n    <div class=\"request-actions\">\n        <a  data-request-id=\"";
   foundHelper = helpers.id;
   if (foundHelper) { stack1 = foundHelper.call(depth0, {hash:{}}); }
   else { stack1 = depth0.id; stack1 = typeof stack1 === functionType ? stack1() : stack1; }
@@ -292,7 +292,7 @@ templates['item_history_sidebar_request'] = template(function (Handlebars,depth0
   foundHelper = helpers.id;
   if (foundHelper) { stack1 = foundHelper.call(depth0, {hash:{}}); }
   else { stack1 = depth0.id; stack1 = typeof stack1 === functionType ? stack1() : stack1; }
-  buffer += escapeExpression(stack1) + "\">\n        <a href=\"#\" data-request-id=\"";
+  buffer += escapeExpression(stack1) + "\">\n        <a  data-request-id=\"";
   foundHelper = helpers.id;
   if (foundHelper) { stack1 = foundHelper.call(depth0, {hash:{}}); }
   else { stack1 = depth0.id; stack1 = typeof stack1 === functionType ? stack1() : stack1; }

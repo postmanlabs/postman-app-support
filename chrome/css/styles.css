@@ -8,6 +8,10 @@ html, body {
     margin: 0;
 }
 
+a, a:hover {
+    cursor: pointer;
+}
+
 /*Bootstrap overrides*/
 .pills li a {
     font-size: 11px;
