@@ -3723,7 +3723,7 @@ pm.envManager = {
         $('#environment-copier').css("display", "none");
         $('#environment-importer').css("display", "none");
         $('#globals-editor').css("display", "none");
-        $('#modal-environments .modal-footer').css("display", "block");                              
+        $('#modal-environments .modal-footer').css("display", "block");
     },
 
     showCopier:function () {
