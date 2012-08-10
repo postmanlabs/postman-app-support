@@ -221,6 +221,8 @@ pm.filesystem = {
     },
 
     saveAndOpenFile:function (name, data, type, callback) {
+        name = encodeURI(name);
+        name = name.replace("/", "_");
         pm.filesystem.removeFileIfExists(name, function () {
             pm.filesystem.fs.root.getFile(name,
                 {create:true},
@@ -2240,7 +2242,7 @@ pm.collections = {
                             action:"added"
                         };
 
-                        $('.modal-import-alerts').append(Handlebars.templates.message_collection_added());
+                        $('.modal-import-alerts').append(Handlebars.templates.message_collection_added(message));
 
                         var requests = [];
                         for (var i = 0; i < collection.requests.length; i++) {
