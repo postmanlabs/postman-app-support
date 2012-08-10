@@ -48,13 +48,60 @@ function Request() {
     this.timestamp = 0;
 }
 
-var postman = {};
+function sortAlphabetical(a, b) {
+    var counter;
+    if (a.name.length > b.name.legnth)
+        counter = b.name.length;
+    else
+        counter = a.name.length;
 
-postman.indexedDB = {};
-postman.indexedDB.db = null;
+    for (var i = 0; i < counter; i++) {
+        if (a.name[i] == b.name[i]) {
+            continue;
+        } else if (a.name[i] > b.name[i]) {
+            return 1;
+        } else {
+            return -1;
+        }
+    }
+    return 1;
+}
 
-postman.fs = {};
-postman.webUrl = "http://localhost/postman-server/html";
+var pm = {};
+
+pm.indexedDB = {};
+pm.indexedDB.db = null;
+pm.indexedDB.modes = {
+    readwrite: "readwrite",
+    readonly: "readonly"
+};
+
+pm.fs = {};
+pm.webUrl = "http://getpostman.com";
+pm.bannedHeaders = [
+    'accept-charset',
+    'accept-encoding',
+    'access-control-request-headers',
+    'access-control-request-method',
+    'connection',
+    'content-length',
+    'cookie',
+    'cookie2',
+    'content-transfer-encoding',
+    'date',
+    'expect',
+    'host',
+    'keep-alive',
+    'origin',
+    'referer',
+    'te',
+    'trailer',
+    'transfer-encoding',
+    'upgrade',
+    'user-agent',
+    'via'
+];
+
 // IndexedDB implementations still use API prefixes
 var indexedDB = window.indexedDB || // Use the standard DB API
     window.mozIndexedDB || // Or Firefox's early version of it
@@ -98,27 +145,35 @@ window.requestFileSystem = window.requestFileSystem || window.webkitRequestFileS
  CodeMirror
  Underscore
 
+ Code status
+
+ I am not exactly happy with the code I have written. Most of this has resulted from rapid UI
+ prototyping. I hope to rewrite this using either Ember or Backbone one day! Till then I'll be
+ cleaning this up bit by bit.
  */
-postman.init = function () {
+
+pm.init = function () {
+    Handlebars.partials = Handlebars.templates;
     this.history.init();
     this.collections.init();
     this.settings.init();
     this.layout.init();
     this.editor.init();
-    this.currentRequest.init();
+    this.request.init();
     this.urlCache.refreshAutoComplete();
     this.helpers.init();
     this.keymap.init();
     this.envManager.init();
     this.filesystem.init();
-    postman.indexedDB.open();
+    pm.indexedDB.open();
+    $(":input:first").focus();
 };
 
-postman.filesystem = {
+pm.filesystem = {
     fs:{},
 
     onInitFs:function (filesystem) {
-        postman.filesystem.fs = filesystem;
+        pm.filesystem.fs = filesystem;
     },
 
     errorHandler:function (e) {
@@ -153,7 +208,7 @@ postman.filesystem = {
     },
 
     removeFileIfExists:function (name, callback) {
-        postman.filesystem.fs.root.getFile(name,
+        pm.filesystem.fs.root.getFile(name,
             {create:false}, function (fileEntry) {
                 fileEntry.remove(function () {
                     callback();
@@ -166,8 +221,8 @@ postman.filesystem = {
     },
 
     saveAndOpenFile:function (name, data, type, callback) {
-        postman.filesystem.removeFileIfExists(name, function () {
-            postman.filesystem.fs.root.getFile(name,
+        pm.filesystem.removeFileIfExists(name, function () {
+            pm.filesystem.fs.root.getFile(name,
                 {create:true},
                 function (fileEntry) {
                     fileEntry.createWriter(function (fileWriter) {
@@ -194,20 +249,20 @@ postman.filesystem = {
                         bb.append(data);
                         fileWriter.write(bb.getBlob('text/plain'));
 
-                    }, postman.filesystem.errorHandler);
+                    }, pm.filesystem.errorHandler);
 
 
-                }, postman.filesystem.errorHandler
+                }, pm.filesystem.errorHandler
             );
         });
 
     }
 };
 
-postman.keymap = {
+pm.keymap = {
     init:function () {
         var clearHistoryHandler = function () {
-            postman.history.clear();
+            pm.history.clear();
             return false;
         };
 
@@ -217,7 +272,7 @@ postman.keymap = {
         };
 
         var newRequestHandler = function () {
-            postman.currentRequest.startNew();
+            pm.request.startNew();
         };
 
         $('body').on('keydown', 'input', function (event) {
@@ -225,7 +280,7 @@ postman.keymap = {
                 $(event.target).blur();
             }
             else if (event.keyCode == 13) {
-                postman.currentRequest.send();
+                pm.request.send();
             }
 
             return true;
@@ -248,12 +303,12 @@ postman.keymap = {
         $(document).bind('keydown', 'alt+n', newRequestHandler);
 
         $(document).bind('keydown', 'q', function () {
-            postman.envManager.quicklook.toggleDisplay();
+            pm.envManager.quicklook.toggleDisplay();
             return false;
         });
 
         $(document).bind('keydown', 'e', function () {
-            $('#modalEnvironments').modal({
+            $('#modal-environments').modal({
                 keyboard:true,
                 backdrop:"static"
             });
@@ -261,63 +316,67 @@ postman.keymap = {
 
 
         $(document).bind('keydown', 'h', function () {
-            postman.currentRequest.openHeaderEditor();
+            pm.request.openHeaderEditor();
             $('#headers-keyvaleditor div:first-child input:first-child').focus();
             return false;
         });
 
         $(document).bind('keydown', 'return', function () {
-            postman.currentRequest.send();
+            pm.request.send();
             return false;
         });
 
         $(document).bind('keydown', 'p', function () {
-            if (postman.currentRequest.isMethodWithBody(postman.currentRequest.method)) {
+            if (pm.request.isMethodWithBody(pm.request.method)) {
                 $('#formdata-keyvaleditor div:first-child input:first-child').focus();
                 return false;
             }
         });
 
         $(document).bind('keydown', 'f', function () {
-            postman.currentRequest.response.toggleBodySize();
+            pm.request.response.toggleBodySize();
         });
 
         $(document).bind('keydown', 'shift+/', function () {
-            $('#modalShortcuts').modal('show');
+            $('#modal-shortcuts').modal('show');
         });
 
         $(document).bind('keydown', 'a', function () {
-            if (postman.collections.areLoaded === false) {
-                postman.collections.getAllCollections();
+            if (pm.collections.areLoaded === false) {
+                pm.collections.getAllCollections();
             }
 
-            $('#formModalAddToCollection').modal({
+            $('#modal-add-to-collection').modal({
                 keyboard:true,
                 backdrop:"static"
             });
-            $('#formModalAddToColllection').modal('show');
+            $('#modal-add-to-collection').modal('show');
 
-            $('#newRequestName').val("");
-            $('#newRequestDescription').val("");
+            $('#new-request-name').val("");
+            $('#new-request-description').val("");
             return false;
         });
     }
 };
 
-postman.editor = {
+pm.editor = {
     mode:"html",
     codeMirror:null,
+    charCount:0,
 
     //Defines a links mode for CodeMirror
     init:function () {
         CodeMirror.defineMode("links", function (config, parserConfig) {
             var linksOverlay = {
+                startState:function () {
+                    return { "link":"" }
+                },
+
                 token:function (stream, state) {
                     if (stream.eatSpace()) {
                         return null;
                     }
 
-                    //@todo Needs to be improved
                     var matches;
                     if (matches = stream.match(/https?:\/\/[^\\'"\n\t\s]*(?=[<"'\n\t\s])/, false)) {
                         //Eat all characters before http link
@@ -329,124 +388,140 @@ postman.editor = {
                         }
 
                         var match = matches[0];
-                        try {
-                            var currentPos = stream.current().search(match);
-                            while (currentPos < 0) {
-                                var ch = stream.next();
-                                if (ch === "\"" || ch === "'") {
-                                    stream.backUp(1);
-                                    break;
-                                }
-
-                                if (ch == null) {
-                                    break;
-                                }
-                                currentPos = stream.current().search(match);
+                        if (match != state.link) {
+                            state.link = matches[0];
+                            for (var i = 0; i < state.link.length; i++) {
+                                stream.next();
                             }
-
                             return "link";
                         }
-                        catch (e) {
-                            stream.skipToEnd();
-                            return null;
-                        }
+
+                        stream.skipToEnd();
+                        return null;
                     }
 
                     stream.skipToEnd();
+                    return null;
+
                 }
             };
 
-            return CodeMirror.overlayParser(CodeMirror.getMode(config, parserConfig.backdrop || postman.editor.mode), linksOverlay);
+            return CodeMirror.overlayParser(CodeMirror.getMode(config, parserConfig.backdrop || pm.editor.mode), linksOverlay);
         });
     },
 
     toggleLineWrapping:function () {
-        var lineWrapping = postman.editor.codeMirror.getOption("lineWrapping");
+        var lineWrapping = pm.editor.codeMirror.getOption("lineWrapping");
         if (lineWrapping === true) {
-            $('#responseBodyLineWrapping').removeClass("active");
+            $('#response-body-line-wrapping').removeClass("active");
             lineWrapping = false;
-            postman.editor.codeMirror.setOption("lineWrapping", false);
+            pm.editor.codeMirror.setOption("lineWrapping", false);
         }
         else {
-            $('#responseBodyLineWrapping').addClass("active");
+            $('#response-body-line-wrapping').addClass("active");
             lineWrapping = true;
-            postman.editor.codeMirror.setOption("lineWrapping", true);
+            pm.editor.codeMirror.setOption("lineWrapping", true);
         }
 
-        postman.settings.set("lineWrapping", lineWrapping);
+        pm.settings.set("lineWrapping", lineWrapping);
     }
 };
 
-postman.urlCache = {
+pm.urlCache = {
     urls:[],
     addUrl:function (url) {
         if ($.inArray(url, this.urls) == -1) {
-            this.urls.push(url);
+            pm.urlCache.urls.push(url);
             this.refreshAutoComplete();
         }
     },
 
     refreshAutoComplete:function () {
         $("#url").autocomplete({
-            source:postman.urlCache.urls,
+            source:pm.urlCache.urls,
             delay:50
         });
     }
 };
 
-postman.settings = {
+pm.settings = {
     historyCount:50,
     lastRequest:"",
     autoSaveRequest:true,
     selectedEnvironmentId:"",
 
     init:function () {
-        postman.settings.create("historyCount", 100);
-        postman.settings.create("autoSaveRequest", true);
-        postman.settings.create("selectedEnvironmentId", true);
-        postman.settings.create("lineWrapping", true);
-        postman.settings.create("previewType", "parsed");
-        postman.settings.create("retainLinkHeaders", false);
-        postman.settings.create("lastRequest");
+        pm.settings.create("historyCount", 100);
+        pm.settings.create("autoSaveRequest", true);
+        pm.settings.create("selectedEnvironmentId", true);
+        pm.settings.create("lineWrapping", true);
+        pm.settings.create("previewType", "parsed");
+        pm.settings.create("retainLinkHeaders", false);
+        pm.settings.create("usePostmanProxy", false);
+        pm.settings.create("proxyURL", "");
+        pm.settings.create("lastRequest");
 
-        $('#historyCount').val(postman.settings.get("historyCount"));
-        $('#autoSaveRequest').val(postman.settings.get("autoSaveRequest") + "");
-        $('#retain-link-headers').val(postman.settings.get("retainLinkHeaders") + "");
+        $('#history-count').val(pm.settings.get("historyCount"));
+        $('#auto-save-request').val(pm.settings.get("autoSaveRequest") + "");
+        $('#retain-link-headers').val(pm.settings.get("retainLinkHeaders") + "");
+        $('#use-postman-proxy').val(pm.settings.get("usePostmanProxy") + "");
+        $('#postman-proxy-url').val(pm.settings.get("postmanProxyUrl"));
 
-        console.log(postman.settings.get("retainLinkHeaders"));
-
-        $('#historyCount').change(function () {
-            postman.settings.set("historyCount", $('#historyCount').val());
+        $('#history-count').change(function () {
+            pm.settings.set("historyCount", $('#history-count').val());
         });
 
-        $('#autoSaveRequest').change(function () {
-            var val = $('#autoSaveRequest').val();
+        $('#auto-save-request').change(function () {
+            var val = $('#auto-save-request').val();
             if (val == "true") {
-                postman.settings.set("autoSaveRequest", true);
+                pm.settings.set("autoSaveRequest", true);
             }
             else {
-                postman.settings.set("autoSaveRequest", false);
+                pm.settings.set("autoSaveRequest", false);
             }
         });
 
         $('#retain-link-headers').change(function () {
             var val = $('#retain-link-headers').val();
             if (val == "true") {
-                postman.settings.set("retainLinkHeaders", true);
+                pm.settings.set("retainLinkHeaders", true);
             }
             else {
-                postman.settings.set("retainLinkHeaders", false);
+                pm.settings.set("retainLinkHeaders", false);
             }
         });
+
+        $('#use-postman-proxy').change(function () {
+            var val = $('#use-postman-proxy').val();
+            if (val == "true") {
+                pm.settings.set("usePostmanProxy", true);
+                $('#postman-proxy-url-container').css("display", "block");
+            }
+            else {
+                pm.settings.set("usePostmanProxy", false);
+                $('#postman-proxy-url-container').css("display", "none");
+            }
+        });
+
+        $('#postman-proxy-url').change(function () {
+            pm.settings.set("postmanProxyUrl", $('#postman-proxy-url').val());
+        });
+
+        if (pm.settings.get("usePostmanProxy") == true) {
+            $('#postman-proxy-url-container').css("display", "block");
+        }
+        else {
+            $('#postman-proxy-url-container').css("display", "none");
+        }
     },
 
     create:function (key, defaultVal) {
         if (localStorage[key]) {
-            postman.settings[key] = localStorage[key];
+            pm.settings[key] = localStorage[key];
         }
         else {
             if (defaultVal) {
-                postman.settings[key] = defaultVal;
+                pm.settings[key] = defaultVal;
                 localStorage[key] = defaultVal;
             }
 
@@ -454,7 +529,7 @@ postman.settings = {
     },
 
     set:function (key, value) {
-        postman.settings[key] = value;
+        pm.settings[key] = value;
         localStorage[key] = value;
     },
 
@@ -472,7 +547,7 @@ postman.settings = {
     }
 };
 
-postman.currentRequest = {
+pm.request = {
     url:"",
     urlParams:{},
     name:"",
@@ -499,8 +574,8 @@ postman.currentRequest = {
         },
 
         hide:function () {
-            postman.currentRequest.body.closeFormDataEditor();
-            postman.currentRequest.body.closeUrlEncodedEditor();
+            pm.request.body.closeFormDataEditor();
+            pm.request.body.closeUrlEncodedEditor();
             $("#data").css("display", "none");
         },
 
@@ -585,35 +660,35 @@ postman.currentRequest = {
         },
 
         setDataMode:function (mode) {
-            postman.currentRequest.dataMode = mode;
-            postman.currentRequest.body.mode = mode;
-            $('#dataModeSelector a').removeClass("active");
-            $('#dataModeSelector a[data-mode="' + mode + '"]').addClass("active");
+            pm.request.dataMode = mode;
+            pm.request.body.mode = mode;
+            $('#data-mode-selector a').removeClass("active");
+            $('#data-mode-selector a[data-mode="' + mode + '"]').addClass("active");
 
             if (mode === "params") {
-                postman.currentRequest.body.openFormDataEditor();
-                postman.currentRequest.body.closeUrlEncodedEditor();
-                $('#bodyDataContainer').css("display", "none");
+                pm.request.body.openFormDataEditor();
+                pm.request.body.closeUrlEncodedEditor();
+                $('#body-data-container').css("display", "none");
             }
             else if (mode === "raw") {
-                postman.currentRequest.body.closeUrlEncodedEditor();
-                postman.currentRequest.body.closeFormDataEditor();
-                $('#bodyDataContainer').css("display", "block");
+                pm.request.body.closeUrlEncodedEditor();
+                pm.request.body.closeFormDataEditor();
+                $('#body-data-container').css("display", "block");
             }
             else if (mode === "urlencoded") {
-                postman.currentRequest.body.closeFormDataEditor();
-                postman.currentRequest.body.openUrlEncodedEditor();
-                $('#bodyDataContainer').css("display", "none");
+                pm.request.body.closeFormDataEditor();
+                pm.request.body.openUrlEncodedEditor();
+                $('#body-data-container').css("display", "none");
             }
         },
 
         getDataMode:function () {
-            return postman.currentRequest.body.mode;
+            return pm.request.body.mode;
         },
 
         getData:function () {
             var data;
-            var mode = postman.currentRequest.body.mode;
+            var mode = pm.request.body.mode;
             var params;
             var newParams;
             var param;
@@ -630,7 +705,7 @@ postman.currentRequest = {
 
                     newParams.push(param);
                 }
-                data = postman.currentRequest.getBodyParamString(newParams);
+                data = pm.request.getBodyParamString(newParams);
             }
             else if (mode === "raw") {
                 data = $('#body').val();
@@ -646,7 +721,7 @@ postman.currentRequest = {
 
                     newParams.push(param);
                 }
-                data = postman.currentRequest.getBodyParamString(newParams);
+                data = pm.request.getBodyParamString(newParams);
             }
 
             return data;
@@ -672,10 +747,25 @@ postman.currentRequest = {
             this.addListeners();
         }
 
-        if (postman.settings.get("lastRequest")) {
-            var lastRequest = JSON.parse(postman.settings.get("lastRequest"));
-            postman.currentRequest.loadRequestInEditor(lastRequest);
+        if (pm.settings.get("lastRequest")) {
+            var lastRequest = JSON.parse(pm.settings.get("lastRequest"));
+            pm.request.loadRequestInEditor(lastRequest);
         }
+    },
+
+    getHeaderEditorParams:function () {
+        var hs = $('#headers-keyvaleditor').keyvalueeditor('getValues');
+        var newHeaders = [];
+        for (var i = 0; i < hs.length; i++) {
+            var header = {
+                key:hs[i].key,
+                value:hs[i].value,
+                name:hs[i].key
+            };
+
+            newHeaders.push(header);
+        }
+        return newHeaders;
     },
 
     initializeHeaderEditor:function () {
@@ -694,20 +784,8 @@ postman.currentRequest = {
             },
 
             onDeleteRow:function () {
-                var hs = $('#headers-keyvaleditor').keyvalueeditor('getValues');
-                var newHeaders = [];
-                for (var i = 0; i < hs.length; i++) {
-                    var header = {
-                        key:hs[i].key,
-                        value:hs[i].value,
-                        name:hs[i].key
-                    };
-
-                    newHeaders.push(header);
-                }
-
-                postman.currentRequest.headers = newHeaders;
-                $('#headers-keyvaleditor-actions-open .headers-count').html(newHeaders.length);
+                pm.request.headers = pm.request.getHeaderEditorParams();
+                $('#headers-keyvaleditor-actions-open .headers-count').html(pm.request.headers.length);
             },
 
             onFocusElement:function () {
@@ -722,20 +800,8 @@ postman.currentRequest = {
                     source:chromeHeaders,
                     delay:50
                 });
-                var hs = $('#headers-keyvaleditor').keyvalueeditor('getValues');
-                var newHeaders = [];
-                for (var i = 0; i < hs.length; i++) {
-                    var header = {
-                        key:hs[i].key,
-                        value:hs[i].value,
-                        name:hs[i].key
-                    };
-
-                    newHeaders.push(header);
-                }
-
-                postman.currentRequest.headers = newHeaders;
-                $('#headers-keyvaleditor-actions-open .headers-count').html(newHeaders.length);
+                pm.request.headers = pm.request.getHeaderEditorParams();
+                $('#headers-keyvaleditor-actions-open .headers-count').html(pm.request.headers.length);
             },
 
             onReset:function () {
@@ -747,28 +813,28 @@ postman.currentRequest = {
         $('#headers-keyvaleditor').keyvalueeditor('init', params);
 
         $('#headers-keyvaleditor-actions-close').on("click", function () {
-            postman.currentRequest.closeHeaderEditor();
+            pm.request.closeHeaderEditor();
         });
 
         $('#headers-keyvaleditor-actions-open').on("click", function () {
-            postman.currentRequest.openHeaderEditor();
+            pm.request.openHeaderEditor();
         });
     },
 
     getAsJson:function () {
         var request = {
             url:$('#url').val(),
-            data:postman.currentRequest.body.getData(),
-            headers:postman.currentRequest.getPackedHeaders(),
-            dataMode:postman.currentRequest.dataMode,
-            method:postman.currentRequest.method
+            data:pm.request.body.getData(),
+            headers:pm.request.getPackedHeaders(),
+            dataMode:pm.request.dataMode,
+            method:pm.request.method
         };
 
         return JSON.stringify(request);
     },
 
     saveCurrentRequestToLocalStorage:function () {
-        postman.settings.set("lastRequest", postman.currentRequest.getAsJson());
+        pm.settings.set("lastRequest", pm.request.getAsJson());
     },
 
     openHeaderEditor:function () {
@@ -781,6 +847,22 @@ postman.currentRequest = {
         $(containerId).css("display", "none");
     },
 
+    getUrlEditorParams:function () {
+        var editorId = "#url-keyvaleditor";
+        var params = $(editorId).keyvalueeditor('getValues');
+        var newParams = [];
+        for (var i = 0; i < params.length; i++) {
+            var param = {
+                key:params[i].key,
+                value:params[i].value
+            };
+
+            newParams.push(param);
+        }
+
+        return newParams;
+    },
+
     initializeUrlEditor:function () {
         var editorId = "#url-keyvaleditor";
 
@@ -789,46 +871,24 @@ postman.currentRequest = {
             placeHolderValue:"Value",
             deleteButton:'<img class="deleteButton" src="img/delete.png">',
             onDeleteRow:function () {
-                var params = $(editorId).keyvalueeditor('getValues');
-                var newParams = [];
-                for (var i = 0; i < params.length; i++) {
-                    var param = {
-                        key:params[i].key,
-                        value:params[i].value
-                    };
-
-                    newParams.push(param);
-                }
-
-                postman.currentRequest.setUrlParamString(newParams);
+                pm.request.setUrlParamString(pm.request.getUrlEditorParams());
             },
 
             onBlurElement:function () {
-                var params = $(editorId).keyvalueeditor('getValues');
-                var newParams = [];
-                for (var i = 0; i < params.length; i++) {
-                    var param = {
-                        key:params[i].key,
-                        value:params[i].value
-                    };
-
-                    newParams.push(param);
-                }
-
-                postman.currentRequest.setUrlParamString(newParams);
+                pm.request.setUrlParamString(pm.request.getUrlEditorParams());
             }
         };
 
         $(editorId).keyvalueeditor('init', params);
 
         $('#url-keyvaleditor-actions-close').on("click", function () {
-            postman.currentRequest.closeUrlEditor();
+            pm.request.closeUrlEditor();
         });
 
         $('#url-keyvaleditor-actions-open').on("click", function () {
             var newRows = getUrlVars($('#url').val(), false);
             $(editorId).keyvalueeditor('reset', newRows);
-            postman.currentRequest.openUrlEditor();
+            pm.request.openUrlEditor();
         });
     },
 
@@ -843,23 +903,23 @@ postman.currentRequest = {
     },
 
     addListeners:function () {
-        $('#dataModeSelector').on("click", "a", function () {
+        $('#data-mode-selector').on("click", "a", function () {
             var mode = $(this).attr("data-mode");
-            postman.currentRequest.body.setDataMode(mode);
+            pm.request.body.setDataMode(mode);
         });
 
-        $('.request-help-actions-togglesize').on("click", function () {
+        $('.request-meta-actions-togglesize').on("click", function () {
             var action = $(this).attr('data-action');
 
             if (action === "minimize") {
                 $(this).attr("data-action", "maximize");
-                $('.request-help-actions-togglesize img').attr('src', 'img/glyphicons_190_circle_plus.png');
-                $("#requestDescription").slideUp(100);
+                $('.request-meta-actions-togglesize img').attr('src', 'img/circle_plus.png');
+                $("#request-description").slideUp(100);
             }
             else {
-                $('.request-help-actions-togglesize img').attr('src', 'img/glyphicons_191_circle_minus.png');
+                $('.request-meta-actions-togglesize img').attr('src', 'img/circle_minus.png');
                 $(this).attr("data-action", "minimize");
-                $("#requestDescription").slideDown(100);
+                $("#request-description").slideDown(100);
             }
         });
     },
@@ -882,8 +942,8 @@ postman.currentRequest = {
         previewType:"parsed",
 
         setMode:function (mode) {
-            var text = postman.currentRequest.response.text;
-            postman.currentRequest.response.setFormat(mode, text, postman.settings.get("previewType"), true);
+            var text = pm.request.response.text;
+            pm.request.response.setFormat(mode, text, pm.settings.get("previewType"), true);
         },
 
         changePreviewType:function (newType) {
@@ -892,35 +952,37 @@ postman.currentRequest = {
             }
 
             this.previewType = newType;
-            $('#langFormat a').removeClass('active');
-            $('#langFormat a[data-type="' + this.previewType + '"]').addClass('active');
+            $('#response-formatting a').removeClass('active');
+            $('#response-formatting a[data-type="' + this.previewType + '"]').addClass('active');
 
-            postman.settings.set("previewType", newType);
+            pm.settings.set("previewType", newType);
 
             if (newType === 'raw') {
-                $('#responseAsText').css("display", "block");
-                $('#responseAsCode').css("display", "none");
-                $('#codeDataRaw').val(this.text);
+                $('#response-as-text').css("display", "block");
+                $('#response-as-code').css("display", "none");
+                $('#code-data-raw').val(this.text);
                 var codeDataWidth = $(document).width() - $('#sidebar').width() - 60;
-                $('#codeDataRaw').css("width", codeDataWidth + "px");
-                $('#codeDataRaw').css("height", "600px");
+                $('#code-data-raw').css("width", codeDataWidth + "px");
+                $('#code-data-raw').css("height", "600px");
             }
             else {
-                $('#responseAsText').css("display", "none");
-                $('#responseAsCode').css("display", "block");
-                $('#codeData').css("display", "none");
-                postman.editor.codeMirror.refresh();
+                $('#response-as-text').css("display", "none");
+                $('#response-as-code').css("display", "block");
+                $('#code-data').css("display", "none");
+                pm.editor.codeMirror.refresh();
             }
         },
 
         loadHeaders:function (data) {
-            this.headers = postman.currentRequest.unpackResponseHeaders(data);
-            $('#responseHeaders').html("");
+            this.headers = pm.request.unpackResponseHeaders(data);
+            $('#response-headers').html("");
             this.headers = _.sortBy(this.headers, function (header) {
                 return header.name;
             });
-            $("#itemResponseHeader").tmpl(this.headers).appendTo("#responseHeaders");
-            $('.responseHeaderName').popover();
+
+            $("#response-headers").append(Handlebars.templates.response_headers({"items":this.headers}));
+
+            $('.response-header-name').popover();
         },
 
         clear:function () {
@@ -941,19 +1003,19 @@ postman.currentRequest = {
             if (response.readyState == 4) {
                 //Something went wrong
                 if (response.status == 0) {
-                    var errorUrl = postman.envManager.convertString(postman.currentRequest.url);
+                    var errorUrl = pm.envManager.convertString(pm.request.url);
                     $('#connection-error-url').html(errorUrl);
-                    $('#modalResponseError').modal({
+                    $('#modal-response-error').modal({
                         keyboard:true,
                         backdrop:"static"
                     });
 
-                    $('#modalResponseError').modal('show');
-                    $('#submitRequest').button("reset");
+                    $('#modal-response-error').modal('show');
+                    $('#submit-request').button("reset");
                     return false;
                 }
 
-                postman.currentRequest.response.showBody();
+                pm.request.response.showBody();
 
                 var responseCode = {
                     'code':response.status,
@@ -962,34 +1024,32 @@ postman.currentRequest = {
                 };
 
                 this.text = response.responseText;
-                postman.currentRequest.endTime = new Date().getTime();
+                pm.request.endTime = new Date().getTime();
 
-                var diff = postman.currentRequest.getTotalTime();
+                var diff = pm.request.getTotalTime();
 
-                $('#pstatus').html('');
-                $('#itemResponseCode').tmpl([responseCode]).appendTo('#pstatus');
-                $('.responseCode').popover();
+                $('#response-status').html(Handlebars.templates.item_response_code(responseCode));
+                $('.response-code').popover();
 
                 //This sets loadHeders
                 this.loadHeaders(response.getAllResponseHeaders());
 
                 $('.response-tabs li[data-section="headers"]').html("Headers (" + this.headers.length + ")");
-                $("#respData").css("display", "block");
+                $("#response-data").css("display", "block");
 
                 $("#loader").css("display", "none");
 
-                $('#ptime .data').html(diff + " ms");
-                $('#pbodysize .data').html(diff + " bytes");
+                $('#response-time .data').html(diff + " ms");
 
                 var contentType = response.getResponseHeader("Content-Type");
 
                 $('#response').css("display", "block");
-                $('#submitRequest').button("reset");
-                $('#codeData').css("display", "block");
+                $('#submit-request').button("reset");
+                $('#code-data').css("display", "block");
 
                 var language = 'html';
 
-                postman.currentRequest.response.previewType = postman.settings.get("previewType");
+                pm.request.response.previewType = pm.settings.get("previewType");
 
                 if (!_.isUndefined(contentType) && !_.isNull(contentType)) {
                     if (contentType.search(/json/i) !== -1 || contentType.search(/javascript/i) !== -1) {
@@ -999,28 +1059,28 @@ postman.currentRequest = {
                     $('#language').val(language);
 
                     if (contentType.search(/image/i) === -1) {
-                        this.setFormat(language, this.text, postman.settings.get("previewType"), true);
+                        this.setFormat(language, this.text, pm.settings.get("previewType"), true);
                     }
                     else {
-                        $('#responseAsCode').css("display", "none");
-                        $('#responseAsText').css("display", "none");
-                        $('#responseAsImage').css("display", "block");
+                        $('#response-as-code').css("display", "none");
+                        $('#response-as-text').css("display", "none");
+                        $('#response-as-image').css("display", "block");
                         var imgLink = $('#url').val();
-                        $('#langFormat').css("display", "none");
-                        $('#respDataActions').css("display", "none");
+                        $('#response-formatting').css("display", "none");
+                        $('#response-actions').css("display", "none");
                         $("#response-language").css("display", "none");
-                        $("#responseAsImage").html("<img src='" + imgLink + "'/>");
+                        $("#response-as-image").html("<img src='" + imgLink + "'/>");
                     }
                 }
                 else {
-                    this.setFormat(language, this.text, postman.settings.get("previewType"), true);
+                    this.setFormat(language, this.text, pm.settings.get("previewType"), true);
                 }
 
-                var url = postman.currentRequest.url;
-                postman.currentRequest.response.loadCookies(url);
+                var url = pm.request.url;
+                pm.request.response.loadCookies(url);
             }
 
-            postman.layout.setLayout();
+            pm.layout.setLayout();
         },
 
         loadCookies:function (url) {
@@ -1033,7 +1093,6 @@ postman.currentRequest = {
                 else {
                     $("#response-tabs-cookies").html("Cookies (" + count + ")");
                     $('#response-tabs-cookies').css("display", "block");
-                    $('#response-cookies-items').html("");
                     cookies = _.sortBy(cookies, function (cookie) {
                         return cookie.name;
                     });
@@ -1045,26 +1104,27 @@ postman.currentRequest = {
                             cookies[i].expires = date.toUTCString();
                         }
                     }
-                    $("#itemResponseCookie").tmpl(cookies).appendTo("#response-cookies-items");
+
+                    $('#response-cookies-items').html(Handlebars.templates.response_cookies({"items":cookies}));
                 }
             });
         },
 
         setFormat:function (language, response, format, forceCreate) {
             //Keep CodeMirror div visible otherwise the response gets cut off
-            $('#responseAsCode').css("display", "block");
-            $('#responseAsText').css("display", "none");
+            $('#response-as-code').css("display", "block");
+            $('#response-as-text').css("display", "none");
 
-            $('#responseAsImage').css("display", "none");
-            $('#langFormat').css("display", "block");
-            $('#respDataActions').css("display", "block");
+            $('#response-as-image').css("display", "none");
+            $('#response-formatting').css("display", "block");
+            $('#response-actions').css("display", "block");
 
-            $('#langFormat a').removeClass('active');
-            $('#langFormat a[data-type="' + format + '"]').addClass('active');
-            $('#codeData').css("display", "none");
-            $('#codeData').attr("data-mime", language);
+            $('#response-formatting a').removeClass('active');
+            $('#response-formatting a[data-type="' + format + '"]').addClass('active');
+            $('#code-data').css("display", "none");
+            $('#code-data').attr("data-mime", language);
 
-            var codeDataArea = document.getElementById("codeData");
+            var codeDataArea = document.getElementById("code-data");
             var foldFunc;
             var mode;
 
@@ -1094,24 +1154,24 @@ postman.currentRequest = {
             }
 
             var lineWrapping;
-            if (postman.settings.get("lineWrapping") === "true") {
-                $('#responseBodyLineWrapping').addClass("active");
+            if (pm.settings.get("lineWrapping") === true) {
+                $('#response-body-line-wrapping').addClass("active");
                 lineWrapping = true;
             }
             else {
-                $('#responseBodyLineWrapping').removeClass("active");
+                $('#response-body-line-wrapping').removeClass("active");
                 lineWrapping = false;
             }
 
-            postman.editor.mode = mode;
+            pm.editor.mode = mode;
             var renderMode = mode;
             if ($.inArray(mode, ["javascript", "xml", "html"]) >= 0) {
                 renderMode = "links";
             }
 
-            if (!postman.editor.codeMirror || forceCreate) {
+            if (!pm.editor.codeMirror || forceCreate) {
                 $('.CodeMirror').remove();
-                postman.editor.codeMirror = CodeMirror.fromTextArea(codeDataArea,
+                pm.editor.codeMirror = CodeMirror.fromTextArea(codeDataArea,
                     {
                         mode:renderMode,
                         lineNumbers:true,
@@ -1122,33 +1182,33 @@ postman.currentRequest = {
                         readOnly:true
                     });
 
-                var cm = postman.editor.codeMirror;
+                var cm = pm.editor.codeMirror;
                 cm.setValue(response);
             }
             else {
-                postman.editor.codeMirror.setOption("onGutterClick", foldFunc);
-                postman.editor.codeMirror.setOption("mode", renderMode);
-                postman.editor.codeMirror.setOption("lineWrapping", lineWrapping);
-                postman.editor.codeMirror.setOption("theme", "eclipse");
-                postman.editor.codeMirror.setOption("readOnly", false);
-                postman.editor.codeMirror.setValue(response);
-                postman.editor.codeMirror.refresh();
-                CodeMirror.commands["goDocStart"](postman.editor.codeMirror);
+                pm.editor.codeMirror.setOption("onGutterClick", foldFunc);
+                pm.editor.codeMirror.setOption("mode", renderMode);
+                pm.editor.codeMirror.setOption("lineWrapping", lineWrapping);
+                pm.editor.codeMirror.setOption("theme", "eclipse");
+                pm.editor.codeMirror.setOption("readOnly", false);
+                pm.editor.codeMirror.setValue(response);
+                pm.editor.codeMirror.refresh();
+                CodeMirror.commands["goDocStart"](pm.editor.codeMirror);
                 $(window).scrollTop(0);
             }
 
             //If the format is raw then switch
             if (format === "parsed") {
-                $('#responseAsCode').css("display", "block");
-                $('#responseAsText').css("display", "none");
+                $('#response-as-code').css("display", "block");
+                $('#response-as-text').css("display", "none");
             }
             else {
-                $('#codeDataRaw').val(this.text);
+                $('#code-data-raw').val(this.text);
                 var codeDataWidth = $(document).width() - $('#sidebar').width() - 60;
-                $('#codeDataRaw').css("width", codeDataWidth + "px");
-                $('#codeDataRaw').css("height", "600px");
-                $('#responseAsCode').css("display", "none");
-                $('#responseAsText').css("display", "block");
+                $('#code-data-raw').css("width", codeDataWidth + "px");
+                $('#code-data-raw').css("height", "600px");
+                $('#response-as-code').css("display", "none");
+                $('#response-as-text').css("display", "block");
             }
         },
 
@@ -1160,70 +1220,70 @@ postman.currentRequest = {
             $('a[rel="tooltip"]').tooltip('hide');
             if (this.state.size === "normal") {
                 this.state.size = "maximized";
-                $('#responseBodyToggle img').attr("src", "img/full-screen-exit-alt-2.png");
-                this.state.width = $('#respData').width();
-                this.state.height = $('#respData').height();
-                this.state.display = $('#respData').css("display");
-                this.state.position = $('#respData').css("position");
+                $('#response-body-toggle img').attr("src", "img/full-screen-exit-alt-2.png");
+                this.state.width = $('#response-data').width();
+                this.state.height = $('#response-data').height();
+                this.state.display = $('#response-data').css("display");
+                this.state.position = $('#response-data').css("position");
 
-                $('#respData').css("position", "absolute");
-                $('#respData').css("left", 0);
-                $('#respData').css("top", "-15px");
-                $('#respData').css("width", $(document).width() - 20);
-                $('#respData').css("height", $(document).height());
-                $('#respData').css("z-index", 100);
-                $('#respData').css("background-color", "#fff");
-                $('#respData').css("padding", "10px");
+                $('#response-data').css("position", "absolute");
+                $('#response-data').css("left", 0);
+                $('#response-data').css("top", "-15px");
+                $('#response-data').css("width", $(document).width() - 20);
+                $('#response-data').css("height", $(document).height());
+                $('#response-data').css("z-index", 100);
+                $('#response-data').css("background-color", "#fff");
+                $('#response-data').css("padding", "10px");
             }
             else {
                 this.state.size = "normal";
-                $('#responseBodyToggle img').attr("src", "img/full-screen-alt-4.png");
-                $('#respData').css("position", this.state.position);
-                $('#respData').css("left", 0);
-                $('#respData').css("top", 0);
-                $('#respData').css("width", this.state.width);
-                $('#respData').css("height", this.state.height);
-                $('#respData').css("z-index", 10);
-                $('#respData').css("background-color", "#fff");
-                $('#respData').css("padding", "0px");
+                $('#response-body-toggle img').attr("src", "img/full-screen-alt-4.png");
+                $('#response-data').css("position", this.state.position);
+                $('#response-data').css("left", 0);
+                $('#response-data').css("top", 0);
+                $('#response-data').css("width", this.state.width);
+                $('#response-data').css("height", this.state.height);
+                $('#response-data').css("z-index", 10);
+                $('#response-data').css("background-color", "#fff");
+                $('#response-data').css("padding", "0px");
             }
         },
 
         showHeaders:function () {
             $('.response-tabs li').removeClass("active");
             $('.response-tabs li[data-section="headers"]').addClass("active");
-            $('#responsePrint').css("display", "none");
-            $('#respHeaders').css("display", "block");
-            $('#response-cookies').css("display", "none");
+            $('#response-data-container').css("display", "none");
+            $('#response-headers-container').css("display", "block");
+            $('#response-cookies-container').css("display", "none");
         },
 
         showBody:function () {
             $('.response-tabs li').removeClass("active");
             $('.response-tabs li[data-section="body"]').addClass("active");
-            $('#responsePrint').css("display", "block");
-            $('#respHeaders').css("display", "none");
-            $('#response-cookies').css("display", "none");
+            $('#response-data-container').css("display", "block");
+            $('#response-headers-container').css("display", "none");
+            $('#response-cookies-container').css("display", "none");
         },
 
         showCookies:function () {
             $('.response-tabs li').removeClass("active");
             $('.response-tabs li[data-section="cookies"]').addClass("active");
-            $('#responsePrint').css("display", "none");
-            $('#respHeaders').css("display", "none");
-            $('#response-cookies').css("display", "block");
+            $('#response-data-container').css("display", "none");
+            $('#response-headers-container').css("display", "none");
+            $('#response-cookies-container').css("display", "block");
         },
 
         openInNewWindow:function (data) {
             var name = "response.html";
             var type = "text/html";
-            postman.filesystem.saveAndOpenFile(name, data, type, function () {
+            pm.filesystem.saveAndOpenFile(name, data, type, function () {
             });
         }
     },
 
     startNew:function () {
-        if (postman.currentRequest.xhr !== null) {
-            postman.currentRequest.xhr.abort();
+        if (pm.request.xhr !== null) {
+            pm.request.xhr.abort();
         }
 
         this.url = "";
@@ -1241,7 +1301,7 @@ postman.currentRequest = {
         $('#url-keyvaleditor').keyvalueeditor('reset');
         $('#headers-keyvaleditor').keyvalueeditor('reset');
         $('#formdata-keyvaleditor').keyvalueeditor('reset');
-        $('#updateRequestInCollection').css("display", "none");
+        $('#update-request-in-collection').css("display", "none");
         $('#url').val();
         $('#url').focus();
         this.response.clear();
@@ -1255,40 +1315,40 @@ postman.currentRequest = {
 
     refreshLayout:function () {
         $('#url').val(this.url);
-        $('#requestMethodSelector').val(this.method);
-        $('#body').val(postman.currentRequest.body.getData());
+        $('#request-method-selector').val(this.method);
+        $('#body').val(pm.request.body.getData());
         $('#headers-keyvaleditor').keyvalueeditor('reset', this.headers);
         $('#headers-keyvaleditor-actions-open .headers-count').html(this.headers.length);
-        $('#submitRequest').button("reset");
-        $('#dataModeSelector a').removeClass("active");
-        $('#dataModeSelector a[data-mode="' + this.dataMode + '"]').addClass("active");
+        $('#submit-request').button("reset");
+        $('#data-mode-selector a').removeClass("active");
+        $('#data-mode-selector a[data-mode="' + this.dataMode + '"]').addClass("active");
 
         if (this.isMethodWithBody(this.method)) {
             $("#data").css("display", "block");
             var mode = this.dataMode;
-            postman.currentRequest.body.setDataMode(mode);
+            pm.request.body.setDataMode(mode);
         } else {
-            postman.currentRequest.body.hide();
+            pm.request.body.hide();
         }
 
         if (this.name !== "") {
-            $('#requestHelp').css("display", "block");
-            $('#requestName').css("display", "block");
-            if ($('#requestDescription').css("display") === "block") {
-                $('#requestDescription').css("display", "block");
+            $('#request-meta').css("display", "block");
+            $('#request-name').css("display", "block");
+            if ($('#request-description').css("display") === "block") {
+                $('#request-description').css("display", "block");
             }
             else {
-                $('#requestDescription').css("display", "none");
+                $('#request-description').css("display", "none");
             }
         }
         else {
-            $('#requestHelp').css("display", "none");
-            $('#requestName').css("display", "none");
-            $('#requestDescription').css("display", "none");
+            $('#request-meta').css("display", "none");
+            $('#request-name').css("display", "none");
+            $('#request-description').css("display", "none");
         }
 
         $('.request-help-actions-togglesize a').attr('data-action', 'minimize');
-        $('.request-help-actions-togglesize img').attr('src', 'img/glyphicons_191_circle_minus.png');
+        $('.request-help-actions-togglesize img').attr('src', 'img/circle_minus.png');
     },
 
     loadRequestFromLink:function (link, headers) {
@@ -1296,10 +1356,8 @@ postman.currentRequest = {
         this.url = link;
         this.method = "GET";
 
-        console.log(headers);
-        if (postman.settings.get("retainLinkHeaders") === true) {
+        if (pm.settings.get("retainLinkHeaders") === true) {
             if (headers) {
-                console.log(headers);
                 this.headers = headers;
             }
         }
@@ -1396,16 +1454,16 @@ postman.currentRequest = {
     },
 
     loadRequestInEditor:function (request, isFromCollection) {
-        postman.helpers.showRequestHelper("normal");
+        pm.helpers.showRequestHelper("normal");
         this.url = request.url;
         this.body.data = request.body;
         this.method = request.method.toUpperCase();
 
         if (isFromCollection) {
-            $('#updateRequestInCollection').css("display", "inline-block");
+            $('#update-request-in-collection').css("display", "inline-block");
         }
         else {
-            $('#updateRequestInCollection').css("display", "none");
+            $('#update-request-in-collection').css("display", "none");
         }
 
         if (typeof request.headers !== "undefined") {
@@ -1417,26 +1475,26 @@ postman.currentRequest = {
 
         if (typeof request.name !== "undefined") {
             this.name = request.name;
-            $('#requestHelp').css("display", "block");
-            $('#requestName').html(this.name);
-            $('#requestName').css("display", "block");
+            $('#request-meta').css("display", "block");
+            $('#request-name').html(this.name);
+            $('#request-name').css("display", "block");
         }
         else {
-            $('#requestHelp').css("display", "none");
-            $('#requestName').css("display", "none");
+            $('#request-meta').css("display", "none");
+            $('#request-name').css("display", "none");
         }
 
         if (typeof request.description !== "undefined") {
             this.description = request.description;
-            $('#requestDescription').html(this.description);
-            $('#requestDescription').css("display", "block");
+            $('#request-description').html(this.description);
+            $('#request-description').css("display", "block");
         }
         else {
-            $('#requestDescription').css("display", "none");
+            $('#request-description').css("display", "none");
         }
 
-        $('.request-help-actions-togglesize').attr('data-action', 'minimize');
-        $('.request-help-actions-togglesize img').attr('src', 'img/glyphicons_191_circle_minus.png');
+        $('.request-meta-actions-togglesize').attr('data-action', 'minimize');
+        $('.request-meta-actions-togglesize img').attr('src', 'img/circle_minus.png');
 
         $('#headers-keyvaleditor-actions-open .headers-count').html(this.headers.length);
 
@@ -1450,7 +1508,7 @@ postman.currentRequest = {
 
         this.response.clear();
 
-        $('#requestMethodSelector').val(this.method);
+        $('#request-method-selector').val(this.method);
 
         if (this.isMethodWithBody(this.method)) {
             this.dataMode = request.dataMode;
@@ -1469,14 +1527,14 @@ postman.currentRequest = {
         else {
             $('#body').val("");
             $('#data').css("display", "none");
-            postman.currentRequest.body.closeFormDataEditor();
+            pm.request.body.closeFormDataEditor();
         }
 
         $('body').scrollTop(0);
     },
 
     setBodyParamString:function (params) {
-        $('#body').val(postman.currentRequest.getBodyParamString(params));
+        $('#body').val(pm.request.getBodyParamString(params));
     },
 
     getBodyParamString:function (params) {
@@ -1511,29 +1569,75 @@ postman.currentRequest = {
     reset:function () {
     },
 
+    encodeUrl:function (url) {
+        var quesLocation = url.indexOf('?');
+
+        if (quesLocation > 0) {
+            var urlVars = getUrlVars(url);
+            var baseUrl = url.substring(0, quesLocation);
+            var urlVarsCount = urlVars.length;
+            var newUrl = baseUrl + "?";
+            for (var i = 0; i < urlVarsCount; i++) {
+                newUrl += encodeURIComponent(urlVars[i].key) + "=" + encodeURIComponent(urlVars[i].value) + "&";
+            }
+
+            newUrl = newUrl.substr(0, newUrl.length - 1);
+            return url;
+        }
+        else {
+            return url;
+        }
+    },
+
+    prepareHeadersForProxy:function (headers) {
+        var count = headers.length;
+        for (var i = 0; i < count; i++) {
+            var key = headers[i].key.toLowerCase();
+            if (_.indexOf(pm.bannedHeaders, key) >= 0) {
+                headers[i].key = "Postman-" + headers[i].key;
+                headers[i].name = "Postman-" + headers[i].name;
+            }
+        }
+
+        return headers;
+    },
+
     //Send the current request
     send:function () {
-        //Show error
-        this.url = $('#url').val();
-        this.body.data = postman.currentRequest.body.getData();
+        // Set state as if change event of input handlers was called
+        pm.request.setUrlParamString(pm.request.getUrlEditorParams());
+        pm.request.headers = pm.request.getHeaderEditorParams();
+        $('#headers-keyvaleditor-actions-open .headers-count').html(pm.request.headers.length);
 
-        if (this.url === "") {
+        var i;
+        this.url = $('#url').val();
+        var url = this.url;
+        this.body.data = pm.request.body.getData();
+
+        if (url === "") {
             return;
         }
 
         var xhr = new XMLHttpRequest();
-        postman.currentRequest.xhr = xhr;
+        pm.request.xhr = xhr;
 
-        var url = this.url;
+        url = pm.request.encodeUrl(url);
+
+        var originalUrl = $('#url').val();
         var method = this.method.toUpperCase();
+
         var data = this.body.data;
         var originalData = data;
         var finalBodyData;
         var headers = this.headers;
 
-        postman.currentRequest.startTime = new Date().getTime();
+        if (pm.settings.get("usePostmanProxy") == true) {
+            headers = pm.request.prepareHeadersForProxy(headers);
+        }
 
-        var environment = postman.envManager.selectedEnv;
+        pm.request.startTime = new Date().getTime();
+
+        var environment = pm.envManager.selectedEnv;
         var envValues = [];
 
         if (environment !== null) {
@@ -1541,16 +1645,15 @@ postman.currentRequest = {
         }
 
         xhr.onreadystatechange = function (event) {
-            postman.currentRequest.response.load(event.target);
+            pm.request.response.load(event.target);
         };
 
-        var envManager = postman.envManager;
+        var envManager = pm.envManager;
         url = envManager.processString(url, envValues);
-        postman.currentRequest.url = url;
+        pm.request.url = url;
 
         url = ensureProperUrl(url);
         xhr.open(method, url, true);
-        var i;
 
         for (i = 0; i < headers.length; i++) {
             var header = headers[i];
@@ -1617,28 +1720,28 @@ postman.currentRequest = {
             xhr.send();
         }
 
-        if (postman.settings.get("autoSaveRequest")) {
-            postman.history.addRequest(url, method, postman.currentRequest.getPackedHeaders(), originalData, this.dataMode);
+        if (pm.settings.get("autoSaveRequest")) {
+            pm.history.addRequest(originalUrl, method, pm.request.getPackedHeaders(), originalData, this.dataMode);
         }
 
-        $('#submitRequest').button("loading");
+        $('#submit-request').button("loading");
         this.response.clear();
     }
 };
 
-postman.helpers = {
+pm.helpers = {
     init:function () {
-        $("#requestTypes .helper-tabs li").on("click", function () {
-            $("#requestTypes .helper-tabs li").removeClass("active");
+        $("#request-types .request-helper-tabs li").on("click", function () {
+            $("#request-types .request-helper-tabs li").removeClass("active");
             $(this).addClass("active");
             var type = $(this).attr('data-id');
-            postman.helpers.showRequestHelper(type);
+            pm.helpers.showRequestHelper(type);
         });
 
-        $('.requestHelper-submit').on("click", function () {
+        $('.request-helper-submit').on("click", function () {
             var type = $(this).attr('data-type');
-            $('#requestHelpers').css("display", "none");
-            postman.helpers.processRequestHelper(type);
+            $('#request-helpers').css("display", "none");
+            pm.helpers.processRequestHelper(type);
         });
 
 
@@ -1655,35 +1758,35 @@ postman.helpers = {
     },
 
     showRequestHelper:function (type) {
-        $("#requestTypes ul li").removeClass("active");
-        $('#requestTypes ul li[data-id=' + type + ']').addClass('active');
+        $("#request-types ul li").removeClass("active");
+        $('#request-types ul li[data-id=' + type + ']').addClass('active');
         if (type !== "normal") {
-            $('#requestHelpers').css("display", "block");
+            $('#request-helpers').css("display", "block");
         }
         else {
-            $('#requestHelpers').css("display", "none");
+            $('#request-helpers').css("display", "none");
         }
 
         if (type.toLowerCase() === 'oauth1') {
             this.oAuth1.generateHelper();
         }
 
-        $('.requestHelpers').css("display", "none");
-        $('#requestHelper-' + type).css("display", "block");
+        $('.request-helpers').css("display", "none");
+        $('#request-helper-' + type).css("display", "block");
         return false;
     },
 
     basic:{
         process:function () {
-            var headers = postman.currentRequest.headers;
+            var headers = pm.request.headers;
             var authHeaderKey = "Authorization";
             var pos = findPosition(headers, "key", authHeaderKey);
 
-            var username = $('#requestHelper-basicAuth-username').val();
-            var password = $('#requestHelper-basicAuth-password').val();
+            var username = $('#request-helper-basicAuth-username').val();
+            var password = $('#request-helper-basicAuth-password').val();
 
-            username = postman.envManager.convertString(username);
-            password = postman.envManager.convertString(password);
+            username = pm.envManager.convertString(username);
+            password = pm.envManager.convertString(password);
 
             var rawString = username + ":" + password;
             var encodedString = "Basic " + btoa(rawString);
@@ -1699,27 +1802,27 @@ postman.helpers = {
                 headers.push({key:authHeaderKey, name:authHeaderKey, value:encodedString});
             }
 
-            postman.currentRequest.headers = headers;
+            pm.request.headers = headers;
             $('#headers-keyvaleditor').keyvalueeditor('reset', headers);
-            postman.currentRequest.openHeaderEditor();
+            pm.request.openHeaderEditor();
         }
     },
 
     oAuth1:{
         generateHelper:function () {
-            $('#requestHelper-oauth1-timestamp').val(OAuth.timestamp());
-            $('#requestHelper-oauth1-nonce').val(OAuth.nonce(6));
+            $('#request-helper-oauth1-timestamp').val(OAuth.timestamp());
+            $('#request-helper-oauth1-nonce').val(OAuth.nonce(6));
         },
 
         generateSignature:function () {
             if ($('#url').val() === '') {
-                $('#requestHelpers').css("display", "block");
+                $('#request-helpers').css("display", "block");
                 alert('Please enter the URL first.');
                 return null;
             }
             var message = {
                 action:$('#url').val().trim(),
-                method:postman.currentRequest.method,
+                method:pm.request.method,
                 parameters:[]
             };
 
@@ -1727,7 +1830,7 @@ postman.helpers = {
             $('input.signatureParam').each(function () {
                 if ($(this).val() != '') {
                     var val = $(this).val();
-                    val = postman.envManager.convertString(val);
+                    val = pm.envManager.convertString(val);
                     message.parameters.push([$(this).attr('key'), val]);
                 }
             });
@@ -1741,7 +1844,7 @@ postman.helpers = {
             for (var i = 0; i < params.length; i++) {
                 var param = params[i];
                 if (param.key) {
-                    param.value = postman.envManager.convertString(param.value);
+                    param.value = pm.envManager.convertString(param.value);
                     message.parameters.push([param.key, param.value]);
                 }
             }
@@ -1749,11 +1852,11 @@ postman.helpers = {
             var accessor = {};
             if ($('input[key="oauth_consumer_secret"]').val() != '') {
                 accessor.consumerSecret = $('input[key="oauth_consumer_secret"]').val();
-                accessor.consumerSecret = postman.envManager.convertString(accessor.consumerSecret);
+                accessor.consumerSecret = pm.envManager.convertString(accessor.consumerSecret);
             }
             if ($('input[key="oauth_token_secret"]').val() != '') {
                 accessor.tokenSecret = $('input[key="oauth_token_secret"]').val();
-                accessor.tokenSecret = postman.envManager.convertString(accessor.tokenSecret);
+                accessor.tokenSecret = pm.envManager.convertString(accessor.tokenSecret);
             }
 
             return OAuth.SignatureMethod.sign(message, accessor);
@@ -1773,17 +1876,17 @@ postman.helpers = {
             $('input.signatureParam').each(function () {
                 if ($(this).val() != '') {
                     var val = $(this).val();
-                    val = postman.envManager.convertString(val);
+                    val = pm.envManager.convertString(val);
                     params.push({key:$(this).attr('key'), value:val});
                 }
             });
 
-            if (postman.currentRequest.method === "GET") {
+            if (pm.request.method === "GET") {
                 $('#url-keyvaleditor').keyvalueeditor('addParams', params);
-                postman.currentRequest.setUrlParamString(params);
-                postman.currentRequest.openUrlEditor();
+                pm.request.setUrlParamString(params);
+                pm.request.openUrlEditor();
             } else {
-                var dataMode = postman.currentRequest.body.getDataMode();
+                var dataMode = pm.request.body.getDataMode();
                 if (dataMode === 'urlencoded') {
                     $('#urlencoded-keyvaleditor').keyvalueeditor('addParams', params);
                 }
@@ -1791,18 +1894,18 @@ postman.helpers = {
                     $('#formdata-keyvaleditor').keyvalueeditor('addParams', params);
                 }
 
-                postman.currentRequest.setBodyParamString(params);
+                pm.request.setBodyParamString(params);
             }
         }
     }
 };
 
-postman.history = {
+pm.history = {
     requests:{},
 
     init:function () {
         $('.history-actions-delete').click(function () {
-            postman.history.clear();
+            pm.history.clear();
         });
     },
 
@@ -1818,7 +1921,7 @@ postman.history = {
         var index = -1;
         var method = request.method.toLowerCase();
 
-        if (postman.currentRequest.isMethodWithBody(method)) {
+        if (pm.request.isMethodWithBody(method)) {
             return -1;
         }
 
@@ -1849,19 +1952,17 @@ postman.history = {
     },
 
     getAllRequests:function () {
-        postman.indexedDB.getAllRequestItems(function (historyRequests) {
+        pm.indexedDB.getAllRequestItems(function (historyRequests) {
             var outAr = [];
             var count = historyRequests.length;
 
             if (count === 0) {
-                $('#messageNoHistoryTmpl').tmpl([
-                    {}
-                ]).appendTo('#sidebarSection-history');
+                $('#sidebar-section-history').append(Handlebars.templates.message_no_history({}));
             }
             else {
                 for (var i = 0; i < count; i++) {
                     var r = historyRequests[i];
-                    postman.urlCache.addUrl(r.url);
+                    pm.urlCache.addUrl(r.url);
 
                     var url = historyRequests[i].url;
 
@@ -1882,25 +1983,25 @@ postman.history = {
 
                 outAr.reverse();
 
-                $('#itemHistorySidebarRequest').tmpl(outAr).prependTo('#historyItems');
-                $('#historyItems').fadeIn();
+                $('#history-items').append(Handlebars.templates.history_sidebar_requests({"items":outAr}));
+                $('#history-items').fadeIn();
             }
 
-            postman.history.requests = historyRequests;
-            postman.layout.refreshScrollPanes();
+            pm.history.requests = historyRequests;
+            pm.layout.refreshScrollPanes();
         });
 
     },
 
     loadRequest:function (id) {
-        postman.indexedDB.getRequest(id, function (request) {
-            postman.currentRequest.loadRequestInEditor(request);
+        pm.indexedDB.getRequest(id, function (request) {
+            pm.request.loadRequestInEditor(request);
         });
     },
 
     addRequest:function (url, method, headers, data, dataMode) {
         var id = guid();
-        var maxHistoryCount = postman.settings.get("historyCount");
+        var maxHistoryCount = pm.settings.get("historyCount");
         var requests = this.requests;
         var requestsCount = this.requests.length;
 
@@ -1927,17 +2028,17 @@ postman.history = {
             this.deleteRequest(deletedId);
         }
 
-        postman.indexedDB.addRequest(historyRequest, function (request) {
-            postman.urlCache.addUrl(request.url);
-            postman.layout.sidebar.addRequest(request.url, request.method, id, "top");
-            postman.history.requests.push(request);
+        pm.indexedDB.addRequest(historyRequest, function (request) {
+            pm.urlCache.addUrl(request.url);
+            pm.layout.sidebar.addRequest(request.url, request.method, id, "top");
+            pm.history.requests.push(request);
         });
     },
 
 
     deleteRequest:function (id) {
-        postman.indexedDB.deleteRequest(id, function (request_id) {
-            var historyRequests = postman.history.requests;
+        pm.indexedDB.deleteRequest(id, function (request_id) {
+            var historyRequests = pm.history.requests;
             var k = -1;
             var len = historyRequests.length;
             for (var i = 0; i < len; i++) {
@@ -1951,18 +2052,18 @@ postman.history = {
                 historyRequests.splice(k, 1);
             }
 
-            postman.layout.sidebar.removeRequestFromHistory(request_id);
+            pm.layout.sidebar.removeRequestFromHistory(request_id);
         });
     },
 
     clear:function () {
-        postman.indexedDB.deleteHistory(function () {
-            $('#historyItems').html("");
+        pm.indexedDB.deleteHistory(function () {
+            $('#history-items').html("");
         });
     }
 };
 
-postman.collections = {
+pm.collections = {
     areLoaded:false,
     items:[],
 
@@ -1971,76 +2072,76 @@ postman.collections = {
     },
 
     addCollectionListeners:function () {
-        $('#collectionItems').on("mouseenter", ".sidebarCollection .sidebar-collection-head", function () {
+        $('#collection-items').on("mouseenter", ".sidebar-collection .sidebar-collection-head", function () {
             var actionsEl = jQuery('.collection-head-actions', this);
             actionsEl.css('display', 'block');
         });
 
-        $('#collectionItems').on("mouseleave", ".sidebarCollection .sidebar-collection-head", function () {
+        $('#collection-items').on("mouseleave", ".sidebar-collection .sidebar-collection-head", function () {
             var actionsEl = jQuery('.collection-head-actions', this);
             actionsEl.css('display', 'none');
         });
 
-        $('#collectionItems').on("click", ".sidebar-collection-head-name", function () {
+        $('#collection-items').on("click", ".sidebar-collection-head-name", function () {
             var id = $(this).attr('data-id');
-            postman.collections.toggleRequestList(id);
+            pm.collections.toggleRequestList(id);
         });
 
-        $('#collectionItems').on("click", ".collection-head-actions .label", function () {
+        $('#collection-items').on("click", ".collection-head-actions .label", function () {
             var id = $(this).parent().parent().parent().attr('data-id');
-            postman.collections.toggleRequestList(id);
+            pm.collections.toggleRequestList(id);
         });
 
-        $('#collectionItems').on("click", ".request-actions-delete", function () {
+        $('#collection-items').on("click", ".request-actions-delete", function () {
             var id = $(this).attr('data-id');
-            postman.collections.deleteCollectionRequest(id);
+            pm.collections.deleteCollectionRequest(id);
         });
 
-        $('#collectionItems').on("click", ".request-actions-load", function () {
+        $('#collection-items').on("click", ".request-actions-load", function () {
             var id = $(this).attr('data-id');
-            postman.collections.getCollectionRequest(id);
+            pm.collections.getCollectionRequest(id);
         });
 
-        $('#collectionItems').on("click", ".request-actions-edit", function () {
+        $('#collection-items').on("click", ".request-actions-edit", function () {
             var id = $(this).attr('data-id');
-            $('#formEditCollectionRequest .collection-request-id').val(id);
+            $('#form-edit-collection-request .collection-request-id').val(id);
 
-            postman.indexedDB.getCollectionRequest(id, function (req) {
-                $('#formEditCollectionRequest .collection-request-name').val(req.name);
-                $('#formEditCollectionRequest .collection-request-description').val(req.description);
-                $('#formModalEditCollectionRequest').modal('show');
+            pm.indexedDB.getCollectionRequest(id, function (req) {
+                $('#form-edit-collection-request .collection-request-name').val(req.name);
+                $('#form-edit-collection-request .collection-request-description').val(req.description);
+                $('#modal-edit-collection-request').modal('show');
             });
         });
 
-        $('#collectionItems').on("click", ".collection-actions-edit", function () {
+        $('#collection-items').on("click", ".collection-actions-edit", function () {
             var id = $(this).attr('data-id');
             var name = $(this).attr('data-name');
-            $('#formEditCollection .collection-id').val(id);
-            $('#formEditCollection .collection-name').val(name);
-            $('#formModalEditCollection').modal('show');
+            $('#form-edit-collection .collection-id').val(id);
+            $('#form-edit-collection .collection-name').val(name);
+            $('#modal-edit-collection').modal('show');
         });
 
-        $('#collectionItems').on("click", ".collection-actions-delete", function () {
+        $('#collection-items').on("click", ".collection-actions-delete", function () {
             var id = $(this).attr('data-id');
             var name = $(this).attr('data-name');
 
-            $('#modalDeleteCollectionYes').attr('data-id', id);
-            $('#modalDeleteCollectionName').html(name);
+            $('#modal-delete-collection-yes').attr('data-id', id);
+            $('#modal-delete-collection-name').html(name);
         });
 
-        $('#modalDeleteCollectionYes').on("click", function () {
+        $('#modal-delete-collection-yes').on("click", function () {
             var id = $(this).attr('data-id');
-            postman.collections.deleteCollection(id);
+            pm.collections.deleteCollection(id);
         });
 
         $('#import-collection-url-submit').on("click", function () {
             var url = $('#import-collection-url-input').val();
-            postman.collections.importCollectionFromUrl(url);
+            pm.collections.importCollectionFromUrl(url);
         });
 
-        $('#collectionItems').on("click", ".collection-actions-download", function () {
+        $('#collection-items').on("click", ".collection-actions-download", function () {
             var id = $(this).attr('data-id');
-            $("#modalShareCollection").modal("show");
+            $("#modal-share-collection").modal("show");
             $('#share-collection-get-link').attr("data-collection-id", id);
             $('#share-collection-download').attr("data-collection-id", id);
             $('#share-collection-link').css("display", "none");
@@ -2048,7 +2149,7 @@ postman.collections = {
 
         $('#share-collection-get-link').on("click", function () {
             var id = $(this).attr('data-collection-id');
-            postman.collections.uploadCollection(id, function (link) {
+            pm.collections.uploadCollection(id, function (link) {
                 $('#share-collection-link').css("display", "block");
                 $('#share-collection-link').html(link);
             });
@@ -2056,7 +2157,7 @@ postman.collections = {
 
         $('#share-collection-download').on("click", function () {
             var id = $(this).attr('data-collection-id');
-            postman.collections.saveCollection(id);
+            pm.collections.saveCollection(id);
         });
 
         var dropZone = document.getElementById('import-collection-dropzone');
@@ -2071,40 +2172,40 @@ postman.collections = {
             evt.preventDefault();
             var files = evt.dataTransfer.files; // FileList object.
 
-            postman.collections.importCollections(files);
-            $('#modalImportCollections').modal('hide');
+            pm.collections.importCollections(files);
+            $('#modal-import-collection').modal('hide');
         }, false);
 
         $('#collection-files-input').on('change', function (event) {
             var files = event.target.files;
-            postman.collections.importCollections(files);
+            pm.collections.importCollections(files);
+            $('#collection-files-input').val("");
         });
     },
 
     saveCollection:function (id) {
-        postman.indexedDB.getCollection(id, function (data) {
+        pm.indexedDB.getCollection(id, function (data) {
             var collection = data;
-            postman.indexedDB.getAllRequestsInCollection(id, function (data) {
+            pm.indexedDB.getAllRequestsInCollection(collection, function (collection, data) {
                 collection['requests'] = data;
                 var name = collection['name'] + ".json";
                 var type = "application/json";
                 var filedata = JSON.stringify(collection);
-                postman.filesystem.saveAndOpenFile(name, filedata, type, function () {
+                pm.filesystem.saveAndOpenFile(name, filedata, type, function () {
                 });
             });
         });
     },
 
     uploadCollection:function (id, callback) {
-        postman.indexedDB.getCollection(id, function (data) {
-            var collection = data;
-            postman.indexedDB.getAllRequestsInCollection(id, function (data) {
-                collection['requests'] = data;
+        pm.indexedDB.getCollection(id, function (c) {
+            pm.indexedDB.getAllRequestsInCollection(c, function (collection, requests) {
+                collection['requests'] = requests;
                 var name = collection['name'] + ".json";
                 var type = "application/json";
                 var filedata = JSON.stringify(collection);
 
-                var uploadUrl = postman.webUrl + '/collections';
+                var uploadUrl = pm.webUrl + '/collections';
                 $.ajax({
                     type:'POST',
                     url:uploadUrl,
@@ -2118,6 +2219,7 @@ postman.collections = {
         });
     },
 
+
     importCollections:function (files) {
         // Loop through the FileList
         for (var i = 0, f; f = files[i]; i++) {
@@ -2130,38 +2232,28 @@ postman.collections = {
                     var data = e.currentTarget.result;
                     var collection = JSON.parse(data);
                     collection.id = guid();
-                    postman.indexedDB.addCollection(collection, function (c) {
-                        $('#messageNoCollection').css("display", "none");
-                        $('#itemCollectionSelectorList').tmpl([collection]).appendTo('#selectCollection');
-                        $('#itemCollectionSidebarHead').tmpl([collection]).appendTo('#collectionItems');
-
-                        $('a[rel="tooltip"]').tooltip();
-
+                    pm.indexedDB.addCollection(collection, function (c) {
                         var message = {
                             name:collection.name,
                             action:"added"
                         };
 
-                        $('#messageCollectionAdded').tmpl([message]).appendTo('.modal-import-alerts');
+                        $('.modal-import-alerts').append(Handlebars.templates.message_collection_added());
 
+                        var requests = [];
                         for (var i = 0; i < collection.requests.length; i++) {
                             var request = collection.requests[i];
                             request.collectionId = collection.id;
                             request.id = guid();
 
-                            postman.indexedDB.addCollectionRequest(request, function (req) {
-                                var targetElement = "#collectionRequests-" + req.collectionId;
-                                postman.urlCache.addUrl(req.url);
-
-                                if (typeof req.name === "undefined") {
-                                    req.name = req.url;
-                                }
-
-                                req.name = limitStringLineWidth(req.name, 43);
-                                $('#itemCollectionSidebarRequest').tmpl([req]).appendTo(targetElement);
-                                postman.layout.refreshScrollPanes();
+                            pm.indexedDB.addCollectionRequest(request, function (req) {
                             });
+                            requests.push(request);
                         }
+
+                        collection.requests = requests;
+
+                        pm.collections.render(collection);
                     });
                 };
             })(f);
@@ -2175,77 +2267,66 @@ postman.collections = {
         $.get(url, function (data) {
             var collection = data;
             collection.id = guid();
-            postman.indexedDB.addCollection(collection, function (c) {
-                $('#messageNoCollection').css("display", "none");
-                $('#itemCollectionSelectorList').tmpl([collection]).appendTo('#selectCollection');
-                $('#itemCollectionSidebarHead').tmpl([collection]).appendTo('#collectionItems');
-
-                $('a[rel="tooltip"]').tooltip();
-
+            pm.indexedDB.addCollection(collection, function (c) {
                 var message = {
                     name:collection.name,
                     action:"added"
                 };
 
-                $('#messageCollectionAdded').tmpl([message]).appendTo('.modal-import-alerts');
+                $('.modal-import-alerts').append(Handlebars.templates.message_collection_added());
 
+                var requests = [];
                 for (var i = 0; i < collection.requests.length; i++) {
                     var request = collection.requests[i];
                     request.collectionId = collection.id;
                     request.id = guid();
 
-                    postman.indexedDB.addCollectionRequest(request, function (req) {
-                        var targetElement = "#collectionRequests-" + req.collectionId;
-                        postman.urlCache.addUrl(req.url);
-
-                        if (typeof req.name === "undefined") {
-                            req.name = req.url;
-                        }
-
-                        req.name = limitStringLineWidth(req.name, 43);
-                        $('#itemCollectionSidebarRequest').tmpl([req]).appendTo(targetElement);
-                        postman.layout.refreshScrollPanes();
+                    pm.indexedDB.addCollectionRequest(request, function (req) {
                     });
+                    requests.push(request);
                 }
+
+                collection.requests = requests;
+                pm.collections.render(collection);
             });
         });
     },
 
     getCollectionRequest:function (id) {
-        postman.indexedDB.getCollectionRequest(id, function (request) {
-            postman.currentRequest.isFromCollection = true;
-            postman.currentRequest.collectionRequestId = id;
-            postman.currentRequest.loadRequestInEditor(request, true);
+        pm.indexedDB.getCollectionRequest(id, function (request) {
+            pm.request.isFromCollection = true;
+            pm.request.collectionRequestId = id;
+            pm.request.loadRequestInEditor(request, true);
         });
     },
 
     openCollection:function (id) {
-        var target = "#collectionRequests-" + id;
+        var target = "#collection-requests-" + id;
         if ($(target).css("display") === "none") {
             $(target).slideDown(100, function () {
-                postman.layout.refreshScrollPanes();
+                pm.layout.refreshScrollPanes();
             });
         }
     },
 
     toggleRequestList:function (id) {
-        var target = "#collectionRequests-" + id;
+        var target = "#collection-requests-" + id;
         var label = "#collection-" + id + " .collection-head-actions .label";
         if ($(target).css("display") === "none") {
             $(target).slideDown(100, function () {
-                postman.layout.refreshScrollPanes();
+                pm.layout.refreshScrollPanes();
             });
         }
         else {
             $(target).slideUp(100, function () {
-                postman.layout.refreshScrollPanes();
+                pm.layout.refreshScrollPanes();
             });
         }
     },
 
     addCollection:function () {
-        var newCollection = $('#newCollectionBlank').val();
-        var copyFromCollection = $('#newCollectionCopyFrom').val();
+        var newCollection = $('#new-collection-blank').val();
+        var copyFromCollection = $('#new-collection-copy-from').val();
 
         var collection = new Collection();
 
@@ -2253,66 +2334,87 @@ postman.collections = {
             //Add the new collection and get guid
             collection.id = guid();
             collection.name = newCollection;
-            if (copyFromCollection && copyFromCollection != "_none") {
-                postman.indexedDB.getAllRequestsInCollection(copyFromCollection, function (data) {
-                    for (var i in data) {
-                        var collectionRequest = new CollectionRequest();
-                        collectionRequest.id = guid();
-                        collectionRequest.collectionId = collection.id;
-                        collectionRequest.headers = data[i].headers;
-                        collectionRequest.url = data[i].url;
-                        collectionRequest.method = data[i].method;
-                        collectionRequest.data = data[i].data;
-                        collectionRequest.dataMode = data[i].dataMode;
-                        collectionRequest.name = data[i].name;
-                        collectionRequest.description = data[i].description;
-                        collectionRequest.time = new Date().getTime();
-                        postman.indexedDB.addCollectionRequest(collectionRequest, function(req){});
-                    }
-                    postman.layout.refreshScrollPanes();
-                });
-            }
-            postman.indexedDB.addCollection(collection, function (collection) {
-                $('#messageNoCollection').css("display", "none");
-                postman.collections.getAllCollections();
-                postman.indexedDB.getAllRequestsInCollection(collection.id, function () {
-                });
+
+            pm.indexedDB.addCollection(collection, function (collection) {
+                // Copy collection requests if necessary
+                if (copyFromCollection && copyFromCollection != "_none") {
+                    pm.indexedDB.getCollection(copyFromCollection, function (data) {
+                        var collectionToCopy = data;
+                        pm.indexedDB.getAllRequestsInCollection(collectionToCopy, function (col, req) {
+                            var last = req.length - 1;
+                            var lastId = null;
+                            collection["requests"] = new Array();
+                            for (var i in req) {
+                                var newReq = new CollectionRequest();
+                                newReq.id = guid();
+                                newReq.collectionId = collection.id;
+                                newReq.headers = req[i].headers;
+                                newReq.url = req[i].url;
+                                newReq.method = req[i].method;
+                                newReq.data = req[i].data;
+                                newReq.dataMode = req[i].dataMode;
+                                newReq.name = req[i].name;
+                                newReq.description = req[i].description;
+                                newReq.time = new Date().getTime();
+                                // Add the new request to the collection object
+                                collection["requests"][i] = newReq;
+                                if (i == last) {
+                                    lastId = newReq.id;
+                                }
+                                // Save the new requests
+                                pm.indexedDB.addCollectionRequest(newReq, function(r){
+                                    // Render collection on the last request
+                                    if (r.id == lastId) {
+                                        pm.collections.render(collection);
+                                    }
+                                });
+                            } 
+                        });
+                    });
+                } else {
+                    pm.collections.render(collection);
+                }
             });
 
-            $('#newCollectionBlank').val("");
+            $('#new-collection-blank').val("");
+            $('#new-collection-copy-from').val("");
         }
 
-        $('#formModalNewCollection').modal('hide');
+        $('#modal-new-collection').modal('hide');
     },
 
     updateCollectionFromCurrentRequest:function () {
         var url = $('#url').val();
         var collectionRequest = new CollectionRequest();
-        collectionRequest.id = postman.currentRequest.collectionRequestId;
-        collectionRequest.headers = postman.currentRequest.getPackedHeaders();
+        collectionRequest.id = pm.request.collectionRequestId;
+        collectionRequest.headers = pm.request.getPackedHeaders();
         collectionRequest.url = url;
-        collectionRequest.method = postman.currentRequest.method;
-        collectionRequest.data = postman.currentRequest.body.getData();
-        collectionRequest.dataMode = postman.currentRequest.dataMode;
+        collectionRequest.method = pm.request.method;
+        collectionRequest.data = pm.request.body.getData();
+        collectionRequest.dataMode = pm.request.dataMode;
         collectionRequest.time = new Date().getTime();
 
-        postman.indexedDB.getCollectionRequest(collectionRequest.id, function (req) {
+        pm.indexedDB.getCollectionRequest(collectionRequest.id, function (req) {
             collectionRequest.name = req.name;
             collectionRequest.description = req.description;
             collectionRequest.collectionId = req.collectionId;
+            $('#sidebar-request-' + req.id + " .request .label").removeClass('label-method-' + req.method);
 
-            postman.indexedDB.updateCollectionRequest(collectionRequest, function (request) {
-                postman.collections.getAllRequestsInCollection(collectionRequest.collectionId);
+            pm.indexedDB.updateCollectionRequest(collectionRequest, function (request) {
+                var requestName = limitStringLineWidth(request.name, 43);
+                $('#sidebar-request-' + request.id + " .request .request-name").html(requestName);
+                $('#sidebar-request-' + request.id + " .request .label").html(request.method);
+                $('#sidebar-request-' + request.id + " .request .label").addClass('label-method-' + request.method);
             });
         });
 
     },
 
     addRequestToCollection:function () {
-        var existingCollectionId = $('#selectCollection').val();
-        var newCollection = $("#newCollection").val();
-        var newRequestName = $('#newRequestName').val();
-        var newRequestDescription = $('#newRequestDescription').val();
+        var existingCollectionId = $('#select-collection').val();
+        var newCollection = $("#new-collection").val();
+        var newRequestName = $('#new-request-name').val();
+        var newRequestDescription = $('#new-request-description').val();
 
         var url = $('#url').val();
         if (newRequestName === "") {
@@ -2323,11 +2425,11 @@ postman.collections = {
 
         var collectionRequest = new CollectionRequest();
         collectionRequest.id = guid();
-        collectionRequest.headers = postman.currentRequest.getPackedHeaders();
+        collectionRequest.headers = pm.request.getPackedHeaders();
         collectionRequest.url = url;
-        collectionRequest.method = postman.currentRequest.method;
-        collectionRequest.data = postman.currentRequest.body.getData();
-        collectionRequest.dataMode = postman.currentRequest.dataMode;
+        collectionRequest.method = pm.request.method;
+        collectionRequest.data = pm.request.body.getData();
+        collectionRequest.dataMode = pm.request.dataMode;
         collectionRequest.name = newRequestName;
         collectionRequest.description = newRequestDescription;
         collectionRequest.time = new Date().getTime();
@@ -2336,30 +2438,34 @@ postman.collections = {
             //Add the new collection and get guid
             collection.id = guid();
             collection.name = newCollection;
-            postman.indexedDB.addCollection(collection, function (collection) {
-                $('#messageNoCollection').css("display", "none");
-                $('#newCollection').val("");
+            pm.indexedDB.addCollection(collection, function (collection) {
+                $('#sidebar-section-collections .empty-message').css("display", "none");
+                $('#new-collection').val("");
                 collectionRequest.collectionId = collection.id;
-                $('#itemCollectionSelectorList').tmpl([collection]).appendTo('#selectCollection');
-                $('#itemCollectionSidebarHead').tmpl([collection]).appendTo('#collectionItems');
+
+                $('#select-collection').append(Handlebars.templates.item_collection_selector_list(collection));
+                $('#collection-items').append(Handlebars.templates.item_collection_sidebar_head(collection));
+                $('#new-collection-copy-from').append(Handlebars.templates.item_collection_selector_list(collection));
+
                 $('a[rel="tooltip"]').tooltip();
-                postman.layout.refreshScrollPanes();
-                postman.indexedDB.addCollectionRequest(collectionRequest, function (req) {
-                    var targetElement = "#collectionRequests-" + req.collectionId;
-                    postman.urlCache.addUrl(req.url);
+                pm.layout.refreshScrollPanes();
+                pm.indexedDB.addCollectionRequest(collectionRequest, function (req) {
+                    var targetElement = "#collection-requests-" + req.collectionId;
+                    pm.urlCache.addUrl(req.url);
 
                     if (typeof req.name === "undefined") {
                         req.name = req.url;
                     }
                     req.name = limitStringLineWidth(req.name, 43);
 
-                    $('#itemCollectionSidebarRequest').tmpl([req]).appendTo(targetElement);
-                    postman.layout.refreshScrollPanes();
+                    $(targetElement).append(Handlebars.templates.item_collection_sidebar_request(req));
 
-                    postman.currentRequest.isFromCollection = true;
-                    postman.currentRequest.collectionRequestId = collectionRequest.id;
-                    $('#updateRequestInCollection').css("display", "inline-block");
-                    postman.collections.openCollection(collectionRequest.collectionId);
+                    pm.layout.refreshScrollPanes();
+
+                    pm.request.isFromCollection = true;
+                    pm.request.collectionRequestId = collectionRequest.id;
+                    $('#update-request-in-collection').css("display", "inline-block");
+                    pm.collections.openCollection(collectionRequest.collectionId);
                 });
             });
         }
@@ -2367,306 +2473,298 @@ postman.collections = {
             //Get guid of existing collection
             collection.id = existingCollectionId;
             collectionRequest.collectionId = collection.id;
-            postman.indexedDB.addCollectionRequest(collectionRequest, function (req) {
-                var targetElement = "#collectionRequests-" + req.collectionId;
-                postman.urlCache.addUrl(req.url);
+            pm.indexedDB.addCollectionRequest(collectionRequest, function (req) {
+                var targetElement = "#collection-requests-" + req.collectionId;
+                pm.urlCache.addUrl(req.url);
 
                 if (typeof req.name === "undefined") {
                     req.name = req.url;
                 }
                 req.name = limitStringLineWidth(req.name, 43);
 
-                $('#itemCollectionSidebarRequest').tmpl([req]).appendTo(targetElement);
-                postman.layout.refreshScrollPanes();
+                $(targetElement).append(Handlebars.templates.item_collection_sidebar_request(req));
+                pm.layout.refreshScrollPanes();
 
-                postman.currentRequest.isFromCollection = true;
-                postman.currentRequest.collectionRequestId = collectionRequest.id;
-                $('#updateRequestInCollection').css("display", "inline-block");
-                postman.collections.openCollection(collectionRequest.collectionId);
+                pm.request.isFromCollection = true;
+                pm.request.collectionRequestId = collectionRequest.id;
+                $('#update-request-in-collection').css("display", "inline-block");
+                pm.collections.openCollection(collectionRequest.collectionId);
             });
         }
 
-        postman.layout.sidebar.select("collections");
-        $('#requestHelp').css("display", "block");
-        $('#requestName').css("display", "block");
-        $('#requestDescription').css("display", "block");
-        $('#requestName').html(newRequestName);
-        $('#requestDescription').html(newRequestDescription);
-        $('#sidebarSelectors a[data-id="collections"]').tab('show');
+        pm.layout.sidebar.select("collections");
+
+        $('#request-meta').css("display", "block");
+        $('#request-name').css("display", "block");
+        $('#request-description').css("display", "block");
+        $('#request-name').html(newRequestName);
+        $('#request-description').html(newRequestDescription);
+        $('#sidebar-selectors a[data-id="collections"]').tab('show');
     },
 
     getAllCollections:function () {
-        $('#collectionItems').html("");
-        $('#selectCollection').html("<option>Select</option>");
-        $('#newCollectionCopyFrom').html("<option value=\"_none\">None</option>");
-        postman.indexedDB.getCollections(function (items) {
-            $('#messageNoCollection').css("display", "none");
-            postman.collections.items = items;
-            if (items.length == 0) {
-                //Replace this with showEmptyMessage
-                $('#messageNoCollectionTmpl').tmpl([
-                    {}
-                ]).appendTo('#sidebarSection-collections');
-            }
+        $('#collection-items').html("");
+        $('#select-collection').html("<option>Select</option>");
+        $('#new-collection-copy-from').html("<option value=\"_none\">None</option>");
 
-            $('#itemCollectionSelectorList').tmpl(items).appendTo('#selectCollection');
-            $('#itemCollectionSelectorList').tmpl(items).appendTo('#newCollectionCopyFrom');
-            $('#itemCollectionSidebarHead').tmpl(items).appendTo('#collectionItems');
-            $('a[rel="tooltip"]').tooltip();
+        pm.indexedDB.getCollections(function (items) {
+            pm.collections.items = items;
+            $('#sidebar-section-collections .empty-message').css("display", "none");
 
             var itemsLength = items.length;
             for (var i = 0; i < itemsLength; i++) {
-                postman.collections.getAllRequestsInCollection(items[i].id);
+                var collection = items[i];
+                pm.indexedDB.getAllRequestsInCollection(collection, function (collection, requests) {
+                    collection.requests = requests;
+                    pm.collections.render(collection);
+                });
             }
 
-            postman.collections.areLoaded = true;
-            postman.layout.refreshScrollPanes();
+            pm.collections.areLoaded = true;
+            pm.layout.refreshScrollPanes();
         });
     },
 
-    getAllRequestsInCollection:function (id) {
-        $('#collectionRequests-' + id).html("");
-        postman.indexedDB.getAllRequestsInCollection(id, function (requests) {
-            var targetElement = "#collectionRequests-" + id;
+    render:function (collection) {
+        $('#sidebar-section-collections .empty-message').css("display", "none");
+
+        var currentEl = $('#collection-' + collection.id);
+        if (currentEl) {
+            currentEl.remove();
+        }
+
+        $('#select-collection').append(Handlebars.templates.item_collection_selector_list(collection));
+        $('#new-collection-copy-from').append(Handlebars.templates.item_collection_selector_list(collection));
+        $('#collection-items').append(Handlebars.templates.item_collection_sidebar_head(collection));
+
+        $('a[rel="tooltip"]').tooltip();
+
+        if ("requests" in collection) {
+            var id = collection.id;
+            var requests = collection.requests;
+            var targetElement = "#collection-requests-" + id;
             var count = requests.length;
 
-            for (var i = 0; i < count; i++) {
-                postman.urlCache.addUrl(requests[i].url);
-                if (typeof requests[i].name === "undefined") {
-                    requests[i].name = requests[i].url;
-                }
-
-                requests[i].name = limitStringLineWidth(requests[i].name, 40);
-            }
-
-            //Sort requesta as A-Z order
-            requests.sort(sortfunction);
-
-            function sortfunction(a, b) {
-                var counter;
-                if (a.name.length > b.name.legnth)
-                    counter = b.name.length;
-                else
-                    counter = a.name.length;
-
-                for (var i = 0; i < counter; i++) {
-                    if (a.name[i] == b.name[i]) {
-                        continue;
-                    } else if (a.name[i] > b.name[i]) {
-                        return 1;
-                    } else {
-                        return -1;
+            if (count > 1) {
+                for (var i = 0; i < count; i++) {
+                    pm.urlCache.addUrl(requests[i].url);
+                    if (typeof requests[i].name === "undefined") {
+                        requests[i].name = requests[i].url;
                     }
+                    requests[i].name = limitStringLineWidth(requests[i].name, 40);
                 }
-                return 1;
+
+                //Sort requests as A-Z order
+                requests.sort(sortAlphabetical);
+                $(targetElement).append(Handlebars.templates.collection_sidebar({"items": requests}));
             }
 
-            $('#itemCollectionSidebarRequest').tmpl(requests).appendTo(targetElement);
-            postman.layout.refreshScrollPanes();
-        });
+        }
+
+        pm.layout.refreshScrollPanes();
     },
 
     deleteCollectionRequest:function (id) {
-        postman.indexedDB.deleteCollectionRequest(id, function () {
-            postman.layout.sidebar.removeRequestFromHistory(id);
+        pm.indexedDB.deleteCollectionRequest(id, function () {
+            pm.layout.sidebar.removeRequestFromHistory(id);
         });
     },
 
     deleteCollection:function (id) {
-        postman.indexedDB.deleteCollection(id, function () {
-            postman.layout.sidebar.removeCollection(id);
+        pm.indexedDB.deleteCollection(id, function () {
+            pm.layout.sidebar.removeCollection(id);
 
-            var target = '#selectCollection option[value="' + id + '"]';
+            var target = '#select-collection option[value="' + id + '"]';
+            $(target).remove();
+            target = '#new-collection-copy-from option[value="' + id + '"]';
             $(target).remove();
         });
     }
 };
 
-postman.layout = {
+pm.layout = {
     socialButtons:{
         "facebook":'<iframe src="http://www.facebook.com/plugins/like.php?href=https%3A%2F%2Fchrome.google.com%2Fwebstore%2Fdetail%2Ffdmmgilgnpjigdojojpjoooidkmcomcm&amp;send=false&amp;layout=button_count&amp;width=250&amp;show_faces=true&amp;action=like&amp;colorscheme=light&amp;font&amp;height=21&amp;appId=26438002524" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:250px; height:21px;" allowTransparency="true"></iframe>',
-        "twitter":'<a href="https://twitter.com/share" class="twitter-share-button" data-url="https://chrome.google.com/webstore/detail/fdmmgilgnpjigdojojpjoooidkmcomcm" data-text="I am using Postman to super-charge REST API testing and development!" data-count="horizontal" data-via="postmanclient">Tweet</a><script type="text/javascript" src="http://platform.twitter.com/widgets.js"></script>',
+        "twitter":'<a href="https://twitter.com/share" class="twitter-share-button" data-url="https://chrome.google.com/webstore/detail/fdmmgilgnpjigdojojpjoooidkmcomcm" data-text="I am using Postman to super-charge REST API testing and development!" data-count="horizontal" data-via="postmanclient">Tweet</a><script type="text/javascript" src="https://platform.twitter.com/widgets.js"></script>',
         "plusOne":'<script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script><g:plusone size="medium" href="https://chrome.google.com/webstore/detail/fdmmgilgnpjigdojojpjoooidkmcomcm"></g:plusone>'
     },
 
     init:function () {
-        $('#sidebarFooter').on("click", function () {
-            $('#modalSpreadTheWord').modal('show');
-            postman.layout.attachSocialButtons();
+        $('#sidebar-footer').on("click", function () {
+            $('#modal-spread-the-word').modal('show');
+            pm.layout.attachSocialButtons();
         });
 
-        $('#responseBodyToggle').on("click", function () {
-            postman.currentRequest.response.toggleBodySize();
+        $('#response-body-toggle').on("click", function () {
+            pm.request.response.toggleBodySize();
         });
 
-        $('#responseBodyLineWrapping').on("click", function () {
-            postman.editor.toggleLineWrapping();
+        $('#response-body-line-wrapping').on("click", function () {
+            pm.editor.toggleLineWrapping();
             return true;
         });
 
-        $('#responseOpenInNewWindow').on("click", function () {
-            var data = postman.currentRequest.response.text;
-            postman.currentRequest.response.openInNewWindow(data);
+        $('#response-open-in-new-window').on("click", function () {
+            var data = pm.request.response.text;
+            pm.request.response.openInNewWindow(data);
         });
 
 
-        $('#langFormat').on("click", "a", function () {
+        $('#response-formatting').on("click", "a", function () {
             var previewType = $(this).attr('data-type');
-            postman.currentRequest.response.changePreviewType(previewType);
+            pm.request.response.changePreviewType(previewType);
         });
 
         $('#response-language').on("click", "a", function () {
             var language = $(this).attr("data-mode");
-            postman.currentRequest.response.setMode(language);
+            pm.request.response.setMode(language);
         });
 
         this.sidebar.init();
 
-        postman.currentRequest.response.clear();
+        pm.request.response.clear();
 
-        $('#addNewCollectionLink').on("click", function() {
-            if (postman.collections.areLoaded === false) {
-                postman.collections.getAllCollections();
+        $('#collections-options-add').on("click", function() {
+            if (pm.collections.areLoaded === false) {
+                pm.collections.getAllCollections();
             }
         });
 
-        $('#addToCollection').on("click", function () {
-            if (postman.collections.areLoaded === false) {
-                postman.collections.getAllCollections();
+        $('#add-to-collection').on("click", function () {
+            if (pm.collections.areLoaded === false) {
+                pm.collections.getAllCollections();
             }
         });
 
-        $("#submitRequest").on("click", function () {
-            postman.currentRequest.send();
+        $("#submit-request").on("click", function () {
+            pm.request.send();
         });
 
-        $("#updateRequestInCollection").on("click", function () {
-            postman.collections.updateCollectionFromCurrentRequest();
+        $("#update-request-in-collection").on("click", function () {
+            pm.collections.updateCollectionFromCurrentRequest();
         });
 
-        $("#requestActionsReset").on("click", function () {
-            postman.currentRequest.startNew();
+        $("#request-actions-reset").on("click", function () {
+            pm.request.startNew();
         });
 
-        $('#requestMethodSelector').change(function () {
+        $('#request-method-selector').change(function () {
             var val = $(this).val();
-            postman.currentRequest.setMethod(val);
+            pm.request.setMethod(val);
         });
 
-        $('#sidebarSelectors li a').click(function () {
+        $('#sidebar-selectors li a').click(function () {
             var id = $(this).attr('data-id');
-            postman.layout.sidebar.select(id);
+            pm.layout.sidebar.select(id);
         });
 
         $('a[rel="tooltip"]').tooltip();
 
-        $('#formAddToCollection').submit(function () {
-            postman.collections.addRequestToCollection();
-            $('#formModalAddToCollection').modal('hide');
+        $('#form-add-to-collection').submit(function () {
+            pm.collections.addRequestToCollection();
+            $('#modal-add-to-collection').modal('hide');
             return false;
         });
 
-        $('#formModalAddToCollection .btn-primary').click(function () {
-            postman.collections.addRequestToCollection();
-            $('#formModalAddToCollection').modal('hide');
+        $('#modal-add-to-collection .btn-primary').click(function () {
+            pm.collections.addRequestToCollection();
+            $('#modal-add-to-collection').modal('hide');
         });
 
-        $('#formNewCollection').submit(function () {
-            postman.collections.addCollection();
+        $('#form-new-collection').submit(function () {
+            pm.collections.addCollection();
             return false;
         });
 
-        $('#formModalNewCollection .btn-primary').click(function () {
-            postman.collections.addCollection();
+        $('#modal-new-collection .btn-primary').click(function () {
+            pm.collections.addCollection();
             return false;
         });
 
-        $('#formModalEditCollection .btn-primary').click(function () {
-            var id = $('#formEditCollection .collection-id').val();
-            var name = $('#formEditCollection .collection-name').val();
+        $('#modal-edit-collection .btn-primary').click(function () {
+            var id = $('#form-edit-collection .collection-id').val();
+            var name = $('#form-edit-collection .collection-name').val();
 
-            postman.indexedDB.getCollection(id, function (collection) {
+            pm.indexedDB.getCollection(id, function (collection) {
                 collection.name = name;
-                postman.indexedDB.updateCollection(collection, function (collection) {
-                    postman.collections.getAllCollections();
+                pm.indexedDB.updateCollection(collection, function (collection) {
+                    $('#collection-' + collection.id + " .sidebar-collection-head-name").html(collection.name);
+                    $('#select-collection option[value="' + collection.id + '"]').html(collection.name);
+                    $('#new-collection-copy-from option[value="' + collection.id + '"]').html(collection.name);
                 });
             });
 
-            $('#formModalEditCollection').modal('hide');
+            $('#modal-edit-collection').modal('hide');
         });
 
-        $('#formModalEditCollectionRequest .btn-primary').click(function () {
-            var id = $('#formEditCollectionRequest .collection-request-id').val();
-            var name = $('#formEditCollectionRequest .collection-request-name').val();
-            var description = $('#formEditCollectionRequest .collection-request-description').val();
+        $('#modal-edit-collection-request .btn-primary').click(function () {
+            var id = $('#form-edit-collection-request .collection-request-id').val();
+            var name = $('#form-edit-collection-request .collection-request-name').val();
+            var description = $('#form-edit-collection-request .collection-request-description').val();
 
-            postman.indexedDB.getCollectionRequest(id, function (req) {
+            pm.indexedDB.getCollectionRequest(id, function (req) {
                 req.name = name;
                 req.description = description;
-                postman.indexedDB.updateCollectionRequest(req, function (newRequest) {
-                    postman.collections.getAllRequestsInCollection(req.collectionId);
-                    if (postman.currentRequest.collectionRequestId === req.id) {
-                        $('#requestName').html(req.name);
-                        $('#requestDescription').html(req.description);
+                pm.indexedDB.updateCollectionRequest(req, function (newRequest) {
+                    var requestName = limitStringLineWidth(req.name, 43);
+                    $('#sidebar-request-' + req.id + " .request .request-name").html(requestName);
+                    if (pm.request.collectionRequestId === req.id) {
+                        $('#request-name').html(req.name);
+                        $('#request-description').html(req.description);
                     }
-
-                    $('#formModalEditCollectionRequest').modal('hide');
+                    $('#modal-edit-collection-request').modal('hide');
                 });
             });
         });
 
         $(window).resize(function () {
-            postman.layout.setLayout();
+            pm.layout.setLayout();
         });
 
-        $('#respData').on("click", ".cm-link", function () {
+        $('#response-data').on("click", ".cm-link", function () {
             var link = $(this).html();
             var headers = $('#headers-keyvaleditor').keyvalueeditor('getValues');
-            postman.currentRequest.loadRequestFromLink(link, headers);
-        });
-
-        $('#spreadTheWord').click(function () {
-            postman.layout.attachSocialButtons();
+            pm.request.loadRequestFromLink(link, headers);
         });
 
         $('.response-tabs').on("click", "li", function () {
             var section = $(this).attr('data-section');
             if (section === "body") {
-                postman.currentRequest.response.showBody();
+                pm.request.response.showBody();
             }
             else if (section === "headers") {
-                postman.currentRequest.response.showHeaders();
+                pm.request.response.showHeaders();
             }
             else if (section === "cookies") {
-                postman.currentRequest.response.showCookies();
+                pm.request.response.showCookies();
             }
         });
 
-        $('#requestHelp').on("mouseenter", function () {
-            $('.requestHelpActions').css("display", "block");
+        $('#request-meta').on("mouseenter", function () {
+            $('.request-meta-actions').css("display", "block");
         });
 
-        $('#requestHelp').on("mouseleave", function () {
-            $('.requestHelpActions').css("display", "none");
+        $('#request-meta').on("mouseleave", function () {
+            $('.request-meta-actions').css("display", "none");
         });
 
         this.setLayout();
     },
 
     attachSocialButtons:function () {
-        var currentContent = $('#aboutPostmanTwitterButton').html();
+        var currentContent = $('#about-postman-twitter-button').html();
         if (currentContent === "" || !currentContent) {
-            $('#aboutPostmanTwitterButton').html(this.socialButtons.twitter);
+            $('#about-postman-twitter-button').html(this.socialButtons.twitter);
         }
 
-        currentContent = $('#aboutPostmanPlusOneButton').html();
+        currentContent = $('#about-postman-plus-one-button').html();
         if (currentContent === "" || !currentContent) {
-            $('#aboutPostmanPlusOneButton').html(this.socialButtons.plusOne);
+            $('#about-postman-plus-one-button').html(this.socialButtons.plusOne);
         }
 
-        currentContent = $('#aboutPostmanFacebookButton').html();
+        currentContent = $('#about-postman-facebook-button').html();
         if (currentContent === "" || !currentContent) {
-            $('#aboutPostmanFacebookButton').html(this.socialButtons.facebook);
+            $('#about-postman-facebook-button').html(this.socialButtons.facebook);
         }
     },
 
@@ -2696,74 +2794,74 @@ postman.layout = {
         animationDuration:250,
 
         minimizeSidebar:function () {
-            var animationDuration = postman.layout.sidebar.animationDuration;
-            $('#sidebarToggle').animate({left:"0"}, animationDuration);
+            var animationDuration = pm.layout.sidebar.animationDuration;
+            $('#sidebar-toggle').animate({left:"0"}, animationDuration);
             $('#sidebar').animate({width:"5px"}, animationDuration);
-            $('#sidebarFooter').css("display", "none");
+            $('#sidebar-footer').css("display", "none");
             $('#sidebar div').animate({opacity:0}, animationDuration);
             var newMainWidth = $(document).width() - 5;
             $('#main').animate({width:newMainWidth + "px", "margin-left":"5px"}, animationDuration);
-            $('#sidebarToggle img').attr('src', 'img/tri_arrow_right.png');
+            $('#sidebar-toggle img').attr('src', 'img/tri_arrow_right.png');
         },
 
         maximizeSidebar:function () {
-            var animationDuration = postman.layout.sidebar.animationDuration;
-            $('#sidebarToggle').animate({left:"350px"}, animationDuration, function () {
-                $('#sidebarFooter').fadeIn();
+            var animationDuration = pm.layout.sidebar.animationDuration;
+            $('#sidebar-toggle').animate({left:"350px"}, animationDuration, function () {
+                $('#sidebar-footer').fadeIn();
             });
-            $('#sidebar').animate({width:postman.layout.sidebar.width + "px"}, animationDuration);
+            $('#sidebar').animate({width:pm.layout.sidebar.width + "px"}, animationDuration);
             $('#sidebar div').animate({opacity:1}, animationDuration);
-            $('#sidebarToggle img').attr('src', 'img/tri_arrow_left.png');
-            var newMainWidth = $(document).width() - postman.layout.sidebar.width;
-            $('#main').animate({width:newMainWidth + "px", "margin-left":postman.layout.sidebar.width + "px"}, animationDuration);
-            postman.layout.refreshScrollPanes();
+            $('#sidebar-toggle img').attr('src', 'img/tri_arrow_left.png');
+            var newMainWidth = $(document).width() - pm.layout.sidebar.width;
+            $('#main').animate({width:newMainWidth + "px", "margin-left":pm.layout.sidebar.width + "px"}, animationDuration);
+            pm.layout.refreshScrollPanes();
         },
 
         toggleSidebar:function () {
-            var isSidebarMaximized = postman.layout.sidebar.isSidebarMaximized;
+            var isSidebarMaximized = pm.layout.sidebar.isSidebarMaximized;
             if (isSidebarMaximized) {
-                postman.layout.sidebar.minimizeSidebar();
+                pm.layout.sidebar.minimizeSidebar();
             }
             else {
-                postman.layout.sidebar.maximizeSidebar();
+                pm.layout.sidebar.maximizeSidebar();
             }
 
-            postman.layout.sidebar.isSidebarMaximized = !isSidebarMaximized;
+            pm.layout.sidebar.isSidebarMaximized = !isSidebarMaximized;
         },
 
         init:function () {
-            $('#historyItems').on("click", ".request-actions-delete", function () {
+            $('#history-items').on("click", ".request-actions-delete", function () {
                 var request_id = $(this).attr('data-request-id');
-                postman.history.deleteRequest(request_id);
+                pm.history.deleteRequest(request_id);
             });
 
-            $('#historyItems').on("click", ".request", function () {
+            $('#history-items').on("click", ".request", function () {
                 var request_id = $(this).attr('data-request-id');
-                postman.history.loadRequest(request_id);
+                pm.history.loadRequest(request_id);
             });
 
-            $('#sidebarToggle').on("click", function () {
-                postman.layout.sidebar.toggleSidebar();
+            $('#sidebar-toggle').on("click", function () {
+                pm.layout.sidebar.toggleSidebar();
             });
 
-            postman.layout.sidebar.width = $('#sidebar').width() + 10;
+            pm.layout.sidebar.width = $('#sidebar').width() + 10;
 
             this.addRequestListeners();
         },
 
         select:function (section) {
-            if (postman.collections.areLoaded === false) {
-                postman.collections.getAllCollections();
+            if (pm.collections.areLoaded === false) {
+                pm.collections.getAllCollections();
             }
 
-            $('#sidebarSection-' + this.currentSection).css("display", "none");
-            $('#' + this.currentSection + 'Options').css("display", "none");
+            $('#sidebar-section-' + this.currentSection).css("display", "none");
+            $('#' + this.currentSection + '-options').css("display", "none");
 
             this.currentSection = section;
 
-            $('#sidebarSection-' + section).fadeIn();
-            $('#' + section + 'Options').css("display", "block");
-            postman.layout.refreshScrollPanes();
+            $('#sidebar-section-' + section).fadeIn();
+            $('#' + section + '-options').css("display", "block");
+            pm.layout.refreshScrollPanes();
             return true;
         },
 
@@ -2781,58 +2879,58 @@ postman.layout = {
             };
 
             if (position === 'top') {
-                $('#itemHistorySidebarRequest').tmpl([request]).prependTo('#historyItems');
+                $('#history-items').prepend(Handlebars.templates.item_history_sidebar_request(request));
             }
             else {
-                $('#itemHistorySidebarRequest').tmpl([request]).appendTo('#historyItems');
+                $('#history-items').append(Handlebars.templates.item_history_sidebar_request(request));
             }
 
-            $('#messageNoHistory').css("display", "none");
-            postman.layout.refreshScrollPanes();
+            $('#sidebar-section-history .empty-message').css("display", "none");
+            pm.layout.refreshScrollPanes();
         },
 
         addRequestListeners:function () {
-            $('#sidebarContainer').on("mouseenter", ".sidebarRequest", function () {
+            $('#sidebar-sections').on("mouseenter", ".sidebar-request", function () {
                 var actionsEl = jQuery('.request-actions', this);
                 actionsEl.css('display', 'block');
             });
 
-            $('#sidebarContainer').on("mouseleave", ".sidebarRequest", function () {
+            $('#sidebar-sections').on("mouseleave", ".sidebar-request", function () {
                 var actionsEl = jQuery('.request-actions', this);
                 actionsEl.css('display', 'none');
             });
         },
 
         emptyCollectionInSidebar:function (id) {
-            $('#collectionRequests-' + id).html("");
+            $('#collection-requests-' + id).html("");
         },
 
         removeRequestFromHistory:function (id, toAnimate) {
             if (toAnimate) {
-                $('#sidebarRequest-' + id).slideUp(100);
+                $('#sidebar-request-' + id).slideUp(100);
             }
             else {
-                $('#sidebarRequest-' + id).remove();
+                $('#sidebar-request-' + id).remove();
             }
 
-            if (postman.history.requests.length === 0) {
-                postman.history.showEmptyMessage();
+            if (pm.history.requests.length === 0) {
+                pm.history.showEmptyMessage();
             }
             else {
-                postman.history.hideEmptyMessage();
+                pm.history.hideEmptyMessage();
             }
 
-            postman.layout.refreshScrollPanes();
+            pm.layout.refreshScrollPanes();
         },
 
         removeCollection:function (id) {
             $('#collection-' + id).remove();
-            postman.layout.refreshScrollPanes();
+            pm.layout.refreshScrollPanes();
         }
     }
 };
 
-postman.indexedDB = {
+pm.indexedDB = {
     onerror:function (event, callback) {
         console.log(event);
     },
@@ -2841,8 +2939,8 @@ postman.indexedDB = {
         var request = indexedDB.open("postman", "POSTman request history");
         request.onsuccess = function (e) {
             var v = "0.47";
-            postman.indexedDB.db = e.target.result;
-            var db = postman.indexedDB.db;
+            pm.indexedDB.db = e.target.result;
+            var db = pm.indexedDB.db;
 
             //We can only create Object stores in a setVersion transaction
             if (v !== db.version) {
@@ -2878,8 +2976,8 @@ postman.indexedDB = {
 
                     var transaction = event.target.result;
                     transaction.oncomplete = function () {
-                        postman.history.getAllRequests();
-                        postman.envManager.getAllEnvironments();
+                        pm.history.getAllRequests();
+                        pm.envManager.getAllEnvironments();
                     };
                 };
 
@@ -2887,18 +2985,18 @@ postman.indexedDB = {
                 };
             }
             else {
-                postman.history.getAllRequests();
-                postman.envManager.getAllEnvironments();
+                pm.history.getAllRequests();
+                pm.envManager.getAllEnvironments();
             }
 
         };
 
-        request.onfailure = postman.indexedDB.onerror;
+        request.onfailure = pm.indexedDB.onerror;
     },
 
     addCollection:function (collection, callback) {
-        var db = postman.indexedDB.db;
-        var trans = db.transaction(["collections"], IDBTransaction.READ_WRITE);
+        var db = pm.indexedDB.db;
+        var trans = db.transaction(["collections"], "readwrite");
         var store = trans.objectStore("collections");
 
         var request = store.put({
@@ -2917,8 +3015,8 @@ postman.indexedDB = {
     },
 
     updateCollection:function (collection, callback) {
-        var db = postman.indexedDB.db;
-        var trans = db.transaction(["collections"], IDBTransaction.READ_WRITE);
+        var db = pm.indexedDB.db;
+        var trans = db.transaction(["collections"], "readwrite");
         var store = trans.objectStore("collections");
 
         var boundKeyRange = IDBKeyRange.only(collection.id);
@@ -2934,8 +3032,8 @@ postman.indexedDB = {
     },
 
     addCollectionRequest:function (req, callback) {
-        var db = postman.indexedDB.db;
-        var trans = db.transaction(["collection_requests"], IDBTransaction.READ_WRITE);
+        var db = pm.indexedDB.db;
+        var trans = db.transaction(["collection_requests"], "readwrite");
         var store = trans.objectStore("collection_requests");
 
         var collectionRequest = store.put({
@@ -2961,8 +3059,8 @@ postman.indexedDB = {
     },
 
     updateCollectionRequest:function (req, callback) {
-        var db = postman.indexedDB.db;
-        var trans = db.transaction(["collection_requests"], IDBTransaction.READ_WRITE);
+        var db = pm.indexedDB.db;
+        var trans = db.transaction(["collection_requests"], "readwrite");
         var store = trans.objectStore("collection_requests");
 
         var boundKeyRange = IDBKeyRange.only(req.id);
@@ -2978,8 +3076,8 @@ postman.indexedDB = {
     },
 
     getCollection:function (id, callback) {
-        var db = postman.indexedDB.db;
-        var trans = db.transaction(["collections"], IDBTransaction.READ_WRITE);
+        var db = pm.indexedDB.db;
+        var trans = db.transaction(["collections"], "readwrite");
         var store = trans.objectStore("collections");
 
         //Get everything in the store
@@ -2989,17 +3087,17 @@ postman.indexedDB = {
             var result = e.target.result;
             callback(result);
         };
-        cursorRequest.onerror = postman.indexedDB.onerror;
+        cursorRequest.onerror = pm.indexedDB.onerror;
     },
 
     getCollections:function (callback) {
-        var db = postman.indexedDB.db;
+        var db = pm.indexedDB.db;
 
         if (db == null) {
             return;
         }
 
-        var trans = db.transaction(["collections"], IDBTransaction.READ_WRITE);
+        var trans = db.transaction(["collections"], "readwrite");
         var store = trans.objectStore("collections");
 
         //Get everything in the store
@@ -3027,12 +3125,12 @@ postman.indexedDB = {
         };
     },
 
-    getAllRequestsInCollection:function (id, callback) {
-        var db = postman.indexedDB.db;
-        var trans = db.transaction(["collection_requests"], IDBTransaction.READ_WRITE);
+    getAllRequestsInCollection:function (collection, callback) {
+        var db = pm.indexedDB.db;
+        var trans = db.transaction(["collection_requests"], "readwrite");
 
         //Get everything in the store
-        var keyRange = IDBKeyRange.only(id);
+        var keyRange = IDBKeyRange.only(collection.id);
         var store = trans.objectStore("collection_requests");
 
         var index = store.index("collectionId");
@@ -3044,7 +3142,7 @@ postman.indexedDB = {
             var result = e.target.result;
 
             if (!result) {
-                callback(requests);
+                callback(collection, requests);
                 return;
             }
 
@@ -3054,12 +3152,12 @@ postman.indexedDB = {
             //This wil call onsuccess again and again until no more request is left
             result['continue']();
         };
-        cursorRequest.onerror = postman.indexedDB.onerror;
+        cursorRequest.onerror = pm.indexedDB.onerror;
     },
 
     addRequest:function (historyRequest, callback) {
-        var db = postman.indexedDB.db;
-        var trans = db.transaction(["requests"], IDBTransaction.READ_WRITE);
+        var db = pm.indexedDB.db;
+        var trans = db.transaction(["requests"], "readwrite");
         var store = trans.objectStore("requests");
         var request = store.put(historyRequest);
 
@@ -3073,8 +3171,8 @@ postman.indexedDB = {
     },
 
     getRequest:function (id, callback) {
-        var db = postman.indexedDB.db;
-        var trans = db.transaction(["requests"], IDBTransaction.READ_WRITE);
+        var db = pm.indexedDB.db;
+        var trans = db.transaction(["requests"], "readwrite");
         var store = trans.objectStore("requests");
 
         //Get everything in the store
@@ -3088,12 +3186,12 @@ postman.indexedDB = {
 
             callback(result);
         };
-        cursorRequest.onerror = postman.indexedDB.onerror;
+        cursorRequest.onerror = pm.indexedDB.onerror;
     },
 
     getCollectionRequest:function (id, callback) {
-        var db = postman.indexedDB.db;
-        var trans = db.transaction(["collection_requests"], IDBTransaction.READ_WRITE);
+        var db = pm.indexedDB.db;
+        var trans = db.transaction(["collection_requests"], "readwrite");
         var store = trans.objectStore("collection_requests");
 
         //Get everything in the store
@@ -3108,17 +3206,17 @@ postman.indexedDB = {
             callback(result);
             return result;
         };
-        cursorRequest.onerror = postman.indexedDB.onerror;
+        cursorRequest.onerror = pm.indexedDB.onerror;
     },
 
 
     getAllRequestItems:function (callback) {
-        var db = postman.indexedDB.db;
+        var db = pm.indexedDB.db;
         if (db == null) {
             return;
         }
 
-        var trans = db.transaction(["requests"], IDBTransaction.READ_WRITE);
+        var trans = db.transaction(["requests"], "readwrite");
         var store = trans.objectStore("requests");
 
         //Get everything in the store
@@ -3142,13 +3240,13 @@ postman.indexedDB = {
             result['continue']();
         };
 
-        cursorRequest.onerror = postman.indexedDB.onerror;
+        cursorRequest.onerror = pm.indexedDB.onerror;
     },
 
     deleteRequest:function (id, callback) {
         try {
-            var db = postman.indexedDB.db;
-            var trans = db.transaction(["requests"], IDBTransaction.READ_WRITE);
+            var db = pm.indexedDB.db;
+            var trans = db.transaction(["requests"], "readwrite");
             var store = trans.objectStore(["requests"]);
 
             var request = store['delete'](id);
@@ -3168,8 +3266,8 @@ postman.indexedDB = {
     },
 
     deleteHistory:function (callback) {
-        var db = postman.indexedDB.db;
-        var clearTransaction = db.transaction(["requests"], IDBTransaction.READ_WRITE);
+        var db = pm.indexedDB.db;
+        var clearTransaction = db.transaction(["requests"], "readwrite");
         var clearRequest = clearTransaction.objectStore(["requests"]).clear();
         clearRequest.onsuccess = function (event) {
             callback();
@@ -3177,8 +3275,8 @@ postman.indexedDB = {
     },
 
     deleteCollectionRequest:function (id, callback) {
-        var db = postman.indexedDB.db;
-        var trans = db.transaction(["collection_requests"], IDBTransaction.READ_WRITE);
+        var db = pm.indexedDB.db;
+        var trans = db.transaction(["collection_requests"], "readwrite");
         var store = trans.objectStore(["collection_requests"]);
 
         var request = store['delete'](id);
@@ -3193,8 +3291,8 @@ postman.indexedDB = {
     },
 
     deleteAllCollectionRequests:function (id) {
-        var db = postman.indexedDB.db;
-        var trans = db.transaction(["collection_requests"], IDBTransaction.READ_WRITE);
+        var db = pm.indexedDB.db;
+        var trans = db.transaction(["collection_requests"], "readwrite");
 
         //Get everything in the store
         var keyRange = IDBKeyRange.only(id);
@@ -3211,21 +3309,21 @@ postman.indexedDB = {
             }
 
             var request = result.value;
-            postman.collections.deleteCollectionRequest(request.id);
+            pm.collections.deleteCollectionRequest(request.id);
             result['continue']();
         };
-        cursorRequest.onerror = postman.indexedDB.onerror;
+        cursorRequest.onerror = pm.indexedDB.onerror;
     },
 
     deleteCollection:function (id, callback) {
-        var db = postman.indexedDB.db;
-        var trans = db.transaction(["collections"], IDBTransaction.READ_WRITE);
+        var db = pm.indexedDB.db;
+        var trans = db.transaction(["collections"], "readwrite");
         var store = trans.objectStore(["collections"]);
 
         var request = store['delete'](id);
 
         request.onsuccess = function () {
-            postman.indexedDB.deleteAllCollectionRequests(id);
+            pm.indexedDB.deleteAllCollectionRequests(id);
             callback(id);
         };
 
@@ -3236,8 +3334,8 @@ postman.indexedDB = {
 
     environments:{
         addEnvironment:function (environment, callback) {
-            var db = postman.indexedDB.db;
-            var trans = db.transaction(["environments"], IDBTransaction.READ_WRITE);
+            var db = pm.indexedDB.db;
+            var trans = db.transaction(["environments"], "readwrite");
             var store = trans.objectStore("environments");
             var request = store.put(environment);
 
@@ -3251,8 +3349,8 @@ postman.indexedDB = {
         },
 
         getEnvironment:function (id, callback) {
-            var db = postman.indexedDB.db;
-            var trans = db.transaction(["environments"], IDBTransaction.READ_WRITE);
+            var db = pm.indexedDB.db;
+            var trans = db.transaction(["environments"], "readwrite");
             var store = trans.objectStore("environments");
 
             //Get everything in the store
@@ -3262,12 +3360,12 @@ postman.indexedDB = {
                 var result = e.target.result;
                 callback(result);
             };
-            cursorRequest.onerror = postman.indexedDB.onerror;
+            cursorRequest.onerror = pm.indexedDB.onerror;
         },
 
         deleteEnvironment:function (id, callback) {
-            var db = postman.indexedDB.db;
-            var trans = db.transaction(["environments"], IDBTransaction.READ_WRITE);
+            var db = pm.indexedDB.db;
+            var trans = db.transaction(["environments"], "readwrite");
             var store = trans.objectStore(["environments"]);
 
             var request = store['delete'](id);
@@ -3282,12 +3380,12 @@ postman.indexedDB = {
         },
 
         getAllEnvironments:function (callback) {
-            var db = postman.indexedDB.db;
+            var db = pm.indexedDB.db;
             if (db == null) {
                 return;
             }
 
-            var trans = db.transaction(["environments"], IDBTransaction.READ_WRITE);
+            var trans = db.transaction(["environments"], "readwrite");
             var store = trans.objectStore("environments");
 
             //Get everything in the store
@@ -3311,12 +3409,12 @@ postman.indexedDB = {
                 result['continue']();
             };
 
-            cursorRequest.onerror = postman.indexedDB.onerror;
+            cursorRequest.onerror = pm.indexedDB.onerror;
         },
 
         updateEnvironment:function (environment, callback) {
-            var db = postman.indexedDB.db;
-            var trans = db.transaction(["environments"], IDBTransaction.READ_WRITE);
+            var db = pm.indexedDB.db;
+            var trans = db.transaction(["environments"], "readwrite");
             var store = trans.objectStore("environments");
 
             var boundKeyRange = IDBKeyRange.only(environment.id);
@@ -3333,17 +3431,18 @@ postman.indexedDB = {
     }
 };
 
-postman.envManager = {
+pm.envManager = {
     environments:[],
 
     globals:{},
     selectedEnv:null,
     selectedEnvironmentId:"",
+    action:null,
 
     quicklook:{
         init:function () {
-            postman.envManager.quicklook.refreshEnvironment(postman.envManager.selectedEnv);
-            postman.envManager.quicklook.refreshGlobals(postman.envManager.globals);
+            pm.envManager.quicklook.refreshEnvironment(pm.envManager.selectedEnv);
+            pm.envManager.quicklook.refreshGlobals(pm.envManager.globals);
         },
 
         removeEnvironmentData:function () {
@@ -3357,7 +3456,9 @@ postman.envManager = {
             }
             $('#environment-quicklook-environments h6').html(environment.name);
             $('#environment-quicklook-environments ul').html("");
-            $('#environment-quicklook-item').tmpl(environment.values).appendTo('#environment-quicklook-environments ul');
+            $('#environment-quicklook-environments ul').append(Handlebars.templates.environment_quicklook({
+                "items":environment.values
+            }));
         },
 
         refreshGlobals:function (globals) {
@@ -3366,7 +3467,9 @@ postman.envManager = {
             }
 
             $('#environment-quicklook-globals ul').html("");
-            $('#environment-quicklook-item').tmpl(globals).appendTo('#environment-quicklook-globals ul');
+            $('#environment-quicklook-globals ul').append(Handlebars.templates.environment_quicklook({
+                "items":globals
+            }));
         },
 
         toggleDisplay:function () {
@@ -3382,42 +3485,42 @@ postman.envManager = {
     },
 
     init:function () {
-        postman.envManager.initGlobals();
-        $('#itemEnvironmentList').tmpl(this.environments).appendTo('#environments-list');
+        pm.envManager.initGlobals();
+        $('#environment-list').append(Handlebars.templates.environment_list({"items":this.environments}));
 
         $('#environments-list').on("click", ".environment-action-delete", function () {
             var id = $(this).attr('data-id');
             $('a[rel="tooltip"]').tooltip('hide');
-            postman.envManager.deleteEnvironment(id);
+            pm.envManager.deleteEnvironment(id);
         });
 
         $('#environments-list').on("click", ".environment-action-edit", function () {
             var id = $(this).attr('data-id');
-            postman.envManager.showEditor(id);
+            pm.envManager.showEditor(id);
         });
 
         $('#environments-list').on("click", ".environment-action-download", function () {
             var id = $(this).attr('data-id');
-            postman.envManager.downloadEnvironment(id);
+            pm.envManager.downloadEnvironment(id);
         });
 
         $('.environment-action-back').on("click", function () {
-            postman.envManager.showSelector();
+            pm.envManager.showSelector();
         });
 
         $('#environment-selector').on("click", ".environment-list-item", function () {
             var id = $(this).attr('data-id');
-            var selectedEnv = postman.envManager.getEnvironmentFromId(id);
-            postman.envManager.selectedEnv = selectedEnv;
-            postman.settings.set("selectedEnvironmentId", selectedEnv.id);
-            postman.envManager.quicklook.refreshEnvironment(selectedEnv);
+            var selectedEnv = pm.envManager.getEnvironmentFromId(id);
+            pm.envManager.selectedEnv = selectedEnv;
+            pm.settings.set("selectedEnvironmentId", selectedEnv.id);
+            pm.envManager.quicklook.refreshEnvironment(selectedEnv);
             $('#environment-selector .environment-list-item-selected').html(selectedEnv.name);
         });
 
         $('#environment-selector').on("click", ".environment-list-item-noenvironment", function () {
-            postman.envManager.selectedEnv = null;
-            postman.settings.set("selectedEnvironmentId", "");
-            postman.envManager.quicklook.removeEnvironmentData();
+            pm.envManager.selectedEnv = null;
+            pm.settings.set("selectedEnvironmentId", "");
+            pm.envManager.quicklook.removeEnvironmentData();
             $('#environment-selector .environment-list-item-selected').html("No environment");
         });
 
@@ -3431,54 +3534,51 @@ postman.envManager = {
 
         $('#environment-files-input').on('change', function (event) {
             var files = event.target.files;
-            postman.envManager.importEnvironments(files);
+            pm.envManager.importEnvironments(files);
+            $('#environment-files-input').val("");
         });
 
         $('.environments-actions-add').on("click", function () {
-            postman.envManager.showEditor();
+            pm.envManager.showEditor();
         });
 
         $('.environments-actions-copy').on("click", function () {
-            postman.envManager.showCopier();
+            pm.envManager.showCopier();
         });
 
         $('.environments-actions-import').on('click', function () {
-            postman.envManager.showImporter();
+            pm.envManager.showImporter();
         });
 
         $('.environments-actions-manage-globals').on('click', function () {
-            postman.envManager.showGlobals();
+            pm.envManager.showGlobals();
         });
 
         $('.environments-actions-add-submit').on("click", function () {
-            var id = $('#environment-editor-id').val();
-            if (id === "0") {
-                postman.envManager.addEnvironment();
+            if (pm.envManager.action == "edit") {
+                var id = $('#environment-editor-id').val();
+                if (id === "0") {
+                    pm.envManager.addEnvironment();
+                }
+                else {
+                    pm.envManager.updateEnvironment();
+                }
+                
+                $('#environment-editor-name').val("");
+                $('#environment-keyvaleditor').keyvalueeditor('reset', []);
+            } else if (pm.envManager.action == "copy") {
+                pm.envManager.copyEnvironment();
+                $('#environment-copier-name').val("");
             }
-            else {
-                postman.envManager.updateEnvironment();
-            }
-
-            $('#environment-editor-name').val("");
-            $('#environment-keyvaleditor').keyvalueeditor('reset', []);
-
+            pm.envManager.action = null;
         });
 
         $('.environments-actions-add-back').on("click", function () {
-            postman.envManager.saveGlobals();
-            postman.envManager.showSelector();
+            pm.envManager.saveGlobals();
+            pm.envManager.showSelector();
             $('#environment-editor-name').val("");
+            $('#environment-copier-name').val("");
             $('#environment-keyvaleditor').keyvalueeditor('reset', []);
-        });
-
-        $('.environments-actions-copy-submit').on("click", function () {
-            postman.envManager.copyEnvironment();
-            $('#environment-copier-name').val("");
-        });
-
-        $('.environments-actions-copy-back').on("click", function () {
-            postman.envManager.showSelector();
-            $('#environment-copier-name').val("");
         });
 
         $('#environments-list-help-toggle').on("click", function () {
@@ -3501,12 +3601,12 @@ postman.envManager = {
 
         $('#environment-keyvaleditor').keyvalueeditor('init', params);
         $('#globals-keyvaleditor').keyvalueeditor('init', params);
-        $('#globals-keyvaleditor').keyvalueeditor('reset', postman.envManager.globals);
-        postman.envManager.quicklook.init();
+        $('#globals-keyvaleditor').keyvalueeditor('reset', pm.envManager.globals);
+        pm.envManager.quicklook.init();
     },
 
     getEnvironmentFromId:function (id) {
-        var environments = postman.envManager.environments;
+        var environments = pm.envManager.environments;
         var count = environments.length;
         for (var i = 0; i < count; i++) {
             var env = environments[i];
@@ -3529,7 +3629,7 @@ postman.envManager = {
             finalString = finalString.replace(patString, values[i].value);
         }
 
-        var globals = postman.envManager.globals;
+        var globals = pm.envManager.globals;
         count = globals.length;
         for (i = 0; i < count; i++) {
             patString = "{{" + globals[i].key + "}}";
@@ -3541,38 +3641,38 @@ postman.envManager = {
     },
 
     convertString:function (string) {
-        var environment = postman.envManager.selectedEnv;
+        var environment = pm.envManager.selectedEnv;
         var envValues = [];
 
         if (environment !== null) {
             envValues = environment.values;
         }
 
-        return postman.envManager.processString(string, envValues);
+        return pm.envManager.processString(string, envValues);
     },
 
     getAllEnvironments:function () {
-        postman.indexedDB.environments.getAllEnvironments(function (environments) {
+        pm.indexedDB.environments.getAllEnvironments(function (environments) {
             $('#environment-selector .dropdown-menu').html("");
             $('#environments-list tbody').html("");
             $('#environment-copier-from').html("");
-            postman.envManager.environments = environments;
-            $('#itemEnvironmentSelector').tmpl(environments).appendTo('#environment-selector .dropdown-menu');
-            $('#itemEnvironmentSelectorList').tmpl(environments).appendTo('#environment-copier-from');
-            $('#itemEnvironmentList').tmpl(environments).appendTo('#environments-list tbody');
-            $('#environmentSelectorActions').tmpl([
-                {}
-            ]).appendTo('#environment-selector .dropdown-menu');
+                                                                              
+            pm.envManager.environments = environments;
 
-            var selectedEnvId = postman.settings.get("selectedEnvironmentId");
-            var selectedEnv = postman.envManager.getEnvironmentFromId(selectedEnvId);
+            $('#environment-selector .dropdown-menu').append(Handlebars.templates.environment_selector({"items":environments}));
+            $('#environment-copier-from').append(Handlebars.templates.environment_selector_list({"items":environments}));
+            $('#environments-list tbody').append(Handlebars.templates.environment_list({"items":environments}));
+            $('#environment-selector .dropdown-menu').append(Handlebars.templates.environment_selector_actions());
+
+            var selectedEnvId = pm.settings.get("selectedEnvironmentId");
+            var selectedEnv = pm.envManager.getEnvironmentFromId(selectedEnvId);
             if (selectedEnv) {
-                postman.envManager.selectedEnv = selectedEnv;
-                postman.envManager.quicklook.refreshEnvironment(selectedEnv);
+                pm.envManager.selectedEnv = selectedEnv;
+                pm.envManager.quicklook.refreshEnvironment(selectedEnv);
                 $('#environment-selector .environment-list-item-selected').html(selectedEnv.name);
             }
             else {
-                postman.envManager.selectedEnv = null;
+                pm.envManager.selectedEnv = null;
                 $('#environment-selector .environment-list-item-selected').html("No environment");
             }
         })
@@ -3581,18 +3681,18 @@ postman.envManager = {
     initGlobals:function () {
         if ('globals' in localStorage) {
             var globalsString = localStorage['globals'];
-            postman.envManager.globals = JSON.parse(globalsString);
+            pm.envManager.globals = JSON.parse(globalsString);
         }
         else {
-            postman.envManager.globals = [];
+            pm.envManager.globals = [];
         }
 
     },
 
     saveGlobals:function () {
         var globals = $('#globals-keyvaleditor').keyvalueeditor('getValues');
-        postman.envManager.globals = globals;
-        postman.envManager.quicklook.refreshGlobals(globals);
+        pm.envManager.globals = globals;
+        pm.envManager.quicklook.refreshGlobals(globals);
         localStorage['globals'] = JSON.stringify(globals);
     },
 
@@ -3603,13 +3703,13 @@ postman.envManager = {
         $('#environment-importer').css("display", "none");
         $('#globals-editor').css("display", "none");
         $('.environments-actions-add-submit').css("display", "inline");
-        $('#modalEnvironments .modal-footer').css("display", "none");
-        $('#modalEnvironments .copier-footer').css("display", "none");
+        $('#modal-environments .modal-footer').css("display", "none");
     },
 
     showEditor:function (id) {
+        pm.envManager.action = "edit";
         if (id) {
-            var environment = postman.envManager.getEnvironmentFromId(id);
+            var environment = pm.envManager.getEnvironmentFromId(id);
             $('#environment-editor-name').val(environment.name);
             $('#environment-editor-id').val(id);
             $('#environment-keyvaleditor').keyvalueeditor('reset', environment.values);
@@ -3623,18 +3723,17 @@ postman.envManager = {
         $('#environment-copier').css("display", "none");
         $('#environment-importer').css("display", "none");
         $('#globals-editor').css("display", "none");
-        $('#modalEnvironments .modal-footer').css("display", "block");
-        $('#modalEnvironments .copier-footer').css("display", "none");
+        $('#modal-environments .modal-footer').css("display", "block");                              
     },
 
     showCopier:function () {
+        pm.envManager.action = "copy";
         $('#environments-list-wrapper').css("display", "none");
         $('#environment-editor').css("display", "none");
         $('#environment-copier').css("display", "block");
         $('#environment-importer').css("display", "none");
         $('#globals-editor').css("display", "none");
-        $('#modalEnvironments .modal-footer').css("display", "none");
-        $('#modalEnvironments .copier-footer').css("display", "block");
+        $('#modal-environments .modal-footer').css("display", "block");
     },
 
     showImporter:function () {
@@ -3644,8 +3743,7 @@ postman.envManager = {
         $('#globals-editor').css("display", "none");
         $('#environment-importer').css("display", "block");
         $('.environments-actions-add-submit').css("display", "none");
-        $('#modalEnvironments .modal-footer').css("display", "block");
-        $('#modalEnvironments .copier-footer').css("display", "none");
+        $('#modal-environments .modal-footer').css("display", "block");
     },
 
     showGlobals:function () {
@@ -3655,8 +3753,7 @@ postman.envManager = {
         $('#globals-editor').css("display", "block");
         $('#environment-importer').css("display", "none");
         $('.environments-actions-add-submit').css("display", "none");
-        $('#modalEnvironments .modal-footer').css("display", "block");
-        $('#modalEnvironments .copier-footer').css("display", "none");
+        $('#modal-environments .modal-footer').css("display", "block");
     },
 
     addEnvironment:function () {
@@ -3669,16 +3766,16 @@ postman.envManager = {
             timestamp:new Date().getTime()
         };
 
-        postman.indexedDB.environments.addEnvironment(environment, function () {
-            postman.envManager.getAllEnvironments();
-            postman.envManager.showSelector();
+        pm.indexedDB.environments.addEnvironment(environment, function () {
+            pm.envManager.getAllEnvironments();
+            pm.envManager.showSelector();
         });
     },
 
     copyEnvironment:function () {
         var name = $('#environment-copier-name').val();
         var from = $('#environment-copier-from').val();
-        var fromEnvironment = postman.envManager.getEnvironmentFromId(from);
+        var fromEnvironment = pm.envManager.getEnvironmentFromId(from);
         var environment = {
             id:guid(),
             name:name,
@@ -3686,9 +3783,9 @@ postman.envManager = {
             timestamp:new Date().getTime()
         };
 
-        postman.indexedDB.environments.addEnvironment(environment, function () {
-            postman.envManager.getAllEnvironments();
-            postman.envManager.showSelector();
+        pm.indexedDB.environments.addEnvironment(environment, function () {
+            pm.envManager.getAllEnvironments();
+            pm.envManager.showSelector();
         });
     },
 
@@ -3703,29 +3800,30 @@ postman.envManager = {
             timestamp:new Date().getTime()
         };
 
-        postman.indexedDB.environments.updateEnvironment(environment, function () {
-            postman.envManager.getAllEnvironments();
-            postman.envManager.showSelector();
+        pm.indexedDB.environments.updateEnvironment(environment, function () {
+            pm.envManager.getAllEnvironments();
+            pm.envManager.showSelector();
         });
     },
 
     deleteEnvironment:function (id) {
-        postman.indexedDB.environments.deleteEnvironment(id, function () {
-            postman.envManager.getAllEnvironments();
-            postman.envManager.showSelector();
+        pm.indexedDB.environments.deleteEnvironment(id, function () {
+            pm.envManager.getAllEnvironments();
+            pm.envManager.showSelector();
         });
     },
 
     downloadEnvironment:function (id) {
-        var env = postman.envManager.getEnvironmentFromId(id);
+        var env = pm.envManager.getEnvironmentFromId(id);
         var name = env.name + "-environment.json";
         var type = "application/json";
         var filedata = JSON.stringify(env);
-        postman.filesystem.saveAndOpenFile(name, filedata, type, function () {
+        pm.filesystem.saveAndOpenFile(name, filedata, type, function () {
         });
     },
 
     importEnvironments:function (files) {
+        console.log(files);
         // Loop through the FileList
         for (var i = 0, f; f = files[i]; i++) {
             var reader = new FileReader();
@@ -3737,15 +3835,15 @@ postman.envManager = {
                     var data = e.currentTarget.result;
                     var environment = JSON.parse(data);
 
-                    postman.indexedDB.environments.addEnvironment(environment, function () {
+                    pm.indexedDB.environments.addEnvironment(environment, function () {
                         //Add confirmation
                         var o = {
                             name:environment.name,
                             action:'added'
                         };
 
-                        $("#messageEnvironmentAdded").tmpl([o]).appendTo('#environment-importer-confirmations');
-                        postman.envManager.getAllEnvironments();
+                        $('#environment-importer-confirmations').append(Handlebars.templates.message_environment_added());
+                        pm.envManager.getAllEnvironments();
                     });
                 };
             })(f);
@@ -3758,9 +3856,9 @@ postman.envManager = {
 };
 
 $(document).ready(function () {
-    postman.init();
+    pm.init();
 });
 
 $(window).on("unload", function () {
-    postman.currentRequest.saveCurrentRequestToLocalStorage();
+    pm.request.saveCurrentRequestToLocalStorage();
 });

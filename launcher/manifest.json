@@ -1,0 +1,25 @@
+{
+  "manifest_version": 2,
+  "name":"Postman Launcher",
+  "version":"0.2",
+
+  "description":"Get to Postman in a snap",
+  "icons":{
+    "16":"icon_16.png",
+    "32":"icon_32.png",
+    "48":"icon_48.png",
+    "128":"icon_128.png"
+  },
+
+  "browser_action": {
+    "default_icon": "icon_16.png"
+  },
+
+  "background": {
+    "page": "background.html"
+  },
+
+  "permissions": ["management"],
+  "content_security_policy": "default-src 'self'; style-src 'self'; script-src 'self'; img-src 'http://www.google-analytics.com'",
+  "offline_enabled":true
+}

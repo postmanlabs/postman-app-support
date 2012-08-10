@@ -1,0 +1,26 @@
+<li id="collection-{{id}}" data-id="{{id}}" class="sidebar-collection">
+    <div class="sidebar-collection-head">
+        <div class="collection-head-actions">
+            <a href="javascript:void(0);"
+               data-placement="bottom"
+               rel="tooltip" data-original-title="Edit collection"
+               class="collection-actions-edit" data-id="{{id}}" data-name="{{name}}">
+                <img src="img/edit.png" style="vertical-align: middle;"/></a>
+            <a href="javascript:void(0);"
+               data-placement="bottom"
+               rel="tooltip" data-original-title="Share collection"
+               class="collection-actions-download" data-id="{{id}}">
+                <img src="img/share.png" style="vertical-align: middle;"/></a>
+            <a rel="tooltip" data-original-title="Delete collection"
+               data-name="{{name}}"
+               data-placement="bottom"
+               href="#modal-delete-collection" data-toggle="modal"
+               class="collection-actions-delete" data-id="{{id}}">
+                <img src="img/delete.png" style="vertical-align: middle;"/></a>
+        </div>
+        <div class="sidebar-collection-head-name" data-id="{{id}}">
+            {{name}}
+        </div>
+    </div>
+    <ul id="collection-requests-{{id}}" class="sidebar-collection-requests"></ul>
+</li>
