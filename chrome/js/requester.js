@@ -3626,7 +3626,7 @@ pm.envManager = {
         for (var i = 0; i < count; i++) {
             patString = "{{" + values[i].key + "}}";
             pattern = new RegExp(patString, 'g');
-            finalString = finalString.replace(patString, values[i].value);
+            finalString = finalString.replace(pattern, values[i].value);
         }
 
         var globals = pm.envManager.globals;
@@ -3634,7 +3634,7 @@ pm.envManager = {
         for (i = 0; i < count; i++) {
             patString = "{{" + globals[i].key + "}}";
             pattern = new RegExp(patString, 'g');
-            finalString = finalString.replace(patString, globals[i].value);
+            finalString = finalString.replace(pattern, globals[i].value);
         }
 
         return finalString;
