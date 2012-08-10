@@ -2545,7 +2545,7 @@ pm.collections = {
             var targetElement = "#collection-requests-" + id;
             var count = requests.length;
 
-            if (count > 1) {
+            if (count > 0) {
                 for (var i = 0; i < count; i++) {
                     pm.urlCache.addUrl(requests[i].url);
                     if (typeof requests[i].name === "undefined") {
