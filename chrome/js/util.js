@@ -77,10 +77,20 @@ function getUrlVars(url, associative) {
 
     for (var i = 0; i < hashes.length; i++) {
         equalLocation = hashes[i].indexOf('=');
-        element = {
-            "key":hashes[i].slice(0, equalLocation),
-            "value":hashes[i].slice(equalLocation + 1)
-        };
+
+        if (equalLocation !== -1) {
+            element = {
+                "key":hashes[i].slice(0, equalLocation),
+                "value":hashes[i].slice(equalLocation + 1)
+            };
+        }
+        else {
+            element = {
+                "key":hashes[i].slice(0, hashes[i].length),
+                "value":""
+            };
+        }
+
 
         (associative) ? (varsAssoc[element.key] = element.value) : (vars.push(element));
     }

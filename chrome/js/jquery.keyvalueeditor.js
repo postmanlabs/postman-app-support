@@ -106,7 +106,7 @@
         },
 
         getDeleteLink:function (state) {
-            return '<a href="javascript:void(0);" tabindex="-1" class="keyvalueeditor-delete">' + state.settings.deleteButton + '</a>';
+            return '<a tabindex="-1" class="keyvalueeditor-delete">' + state.settings.deleteButton + '</a>';
         },
 
 

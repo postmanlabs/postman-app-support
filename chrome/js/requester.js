@@ -72,8 +72,8 @@ var pm = {};
 pm.indexedDB = {};
 pm.indexedDB.db = null;
 pm.indexedDB.modes = {
-    readwrite: "readwrite",
-    readonly: "readonly"
+    readwrite:"readwrite",
+    readonly:"readonly"
 };
 
 pm.fs = {};
@@ -924,6 +924,11 @@ pm.request = {
                 $("#request-description").slideDown(100);
             }
         });
+
+        $('#url').keyup(function () {
+            var newRows = getUrlVars($('#url').val(), false);
+            $('#url-keyvaleditor').keyvalueeditor('reset', newRows);
+        });
     },
 
     getTotalTime:function () {
@@ -1567,8 +1572,11 @@ pm.request = {
         }
 
         var baseUrl = url.split("?")[0];
-        if(paramArr.length > 0) {
+        if (paramArr.length > 0) {
             $('#url').val(baseUrl + "?" + paramArr.join('&'));
+        }
+        else {
+            $('#url').val(baseUrl);
         }
     },
 
@@ -2517,7 +2525,7 @@ pm.collections = {
 
                 //Sort requests as A-Z order
                 requests.sort(sortAlphabetical);
-                $(targetElement).append(Handlebars.templates.collection_sidebar({"items": requests}));
+                $(targetElement).append(Handlebars.templates.collection_sidebar({"items":requests}));
             }
 
         }

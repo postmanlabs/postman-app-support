@@ -76,5 +76,9 @@ class InterceptingProxy(Proxy):
 factory = http.HTTPFactory()
 factory.protocol = InterceptingProxy
  
+port = 8000
+
 reactor.listenTCP(8000, factory)
 reactor.run()
+
+print "Listening on port %d" % port
