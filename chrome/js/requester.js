@@ -382,7 +382,7 @@ pm.editor = {
                     var matches;
                     if (matches = stream.match(/https?:\/\/[^\\'"\n\t\s]*(?=[<"'\n\t\s])/, false)) {
                         //Eat all characters before http link
-                        var m = stream.match(/.*(?=https?)/, true);
+                        var m = stream.match(/.*(?=https?:)/, true);
                         if (m) {
                             if (m[0].length > 0) {
                                 return null;
@@ -395,6 +395,7 @@ pm.editor = {
                             for (var i = 0; i < state.link.length; i++) {
                                 stream.next();
                             }
+                            state.link = "";
                             return "link";
                         }
 
@@ -2514,7 +2515,7 @@ pm.collections = {
             var targetElement = "#collection-requests-" + id;
             var count = requests.length;
 
-            if (count > 1) {
+            if (count > 0) {
                 for (var i = 0; i < count; i++) {
                     pm.urlCache.addUrl(requests[i].url);
                     if (typeof requests[i].name === "undefined") {
