@@ -485,7 +485,7 @@ pm.settings = {
 
         $('#retain-link-headers').change(function () {
             var val = $('#retain-link-headers').val();
-            if (val == "true") {
+            if (val === "true") {
                 pm.settings.set("retainLinkHeaders", true);
             }
             else {
@@ -1365,7 +1365,7 @@ pm.request = {
 
         if (pm.settings.get("retainLinkHeaders") === true) {
             if (headers) {
-                this.headers = headers;
+                pm.request.headers = headers;
             }
         }
 
