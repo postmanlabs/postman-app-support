@@ -1,0 +1,75 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+  "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>Jasmine Spec Runner</title>
+
+  <link rel="shortcut icon" type="image/png" href="lib/jasmine-1.2.0/jasmine_favicon.png">
+  <link rel="stylesheet" type="text/css" href="lib/jasmine-1.2.0/jasmine.css">
+  <script type="text/javascript" src="lib/jasmine-1.2.0/jasmine.js"></script>
+  <script type="text/javascript" src="lib/jasmine-1.2.0/jasmine-html.js"></script>
+
+  <!-- include source files here... -->
+  <script type="text/javascript" src="spec/UtilSpec.js"></script>
+
+  <!-- include spec files here... -->
+  <script type="text/javascript" src="../chrome/js/jquery.min.js"></script>
+  <script type="text/javascript" src="../chrome/js/underscore-min.js"></script>
+  <script type="text/javascript" src="../chrome/js/jquery-ui-1.8.16.custom.min.js"></script>
+  <script type="text/javascript" src="../chrome/js/dropbox/sha1.js"></script>
+  <script type="text/javascript" src="../chrome/js/dropbox/oauth.js"></script>
+  <script type="text/javascript" src="../chrome/js/util.js"></script>
+  <script type="text/javascript" src="../chrome/js/httpstatuscodes.js"></script>
+  <script type="text/javascript" src="../chrome/js/httpheaders.js"></script>
+  <script type="text/javascript" src="../chrome/codemirror/lib/codemirror.js"></script>
+  <script type="text/javascript" src="../chrome/codemirror/lib/util/formatting.js"></script>
+  <script type="text/javascript" src="../chrome/codemirror/lib/util/foldcode.js"></script>
+  <script type="text/javascript" src="../chrome/codemirror/mode/xmlpure/xmlpure.js"></script>
+  <script type="text/javascript" src="../chrome/codemirror/mode/javascript/javascript.js"></script>
+  <script type="text/javascript" src="../chrome/codemirror/mode/xml/xml.js"></script>
+  <script type="text/javascript" src="../chrome/codemirror/mode/htmlmixed/htmlmixed.js"></script>
+  <script type="text/javascript" src="../chrome/js/codemirror.overlayParser.js"></script>
+  <script type="text/javascript" src="../chrome/js/vkbeautify.js"></script>
+  <script type="text/javascript" src="../chrome/js/jquery.keyvalueeditor.js"></script>
+  <script type="text/javascript" src="../chrome/js/jquery.hotkeys.js"></script>
+  <script type="text/javascript" src="../chrome/js/jquery.mousewheel.js"></script>
+  <script type="text/javascript" src="../chrome/js/jquery.jscrollpane.js"></script>
+  <script type="text/javascript" src="../chrome/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="../chrome/js/handlebars.js"></script>
+  <script type="text/javascript" src="../chrome/js/templates.js"></script>
+  <script type="text/javascript" src="../chrome/js/requester.js"></script>
+
+  <script type="text/javascript">
+    (function() {
+      var jasmineEnv = jasmine.getEnv();
+      jasmineEnv.updateInterval = 1000;
+
+      var htmlReporter = new jasmine.HtmlReporter();
+
+      jasmineEnv.addReporter(htmlReporter);
+
+      jasmineEnv.specFilter = function(spec) {
+        return htmlReporter.specFilter(spec);
+      };
+
+      var currentWindowOnload = window.onload;
+
+      window.onload = function() {
+        if (currentWindowOnload) {
+          currentWindowOnload();
+        }
+        execJasmine();
+      };
+
+      function execJasmine() {
+        jasmineEnv.execute();
+      }
+
+    })();
+  </script>
+
+</head>
+
+<body>
+</body>
+</html>

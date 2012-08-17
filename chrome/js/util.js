@@ -1,11 +1,3 @@
-/**
- * Created by PyCharm.
- * User: ankit
- * Date: 29/12/11
- * Time: 2:59 AM
- * To change this template use File | Settings | File Templates.
- */
-
 function findPosition(list, key, value) {
     var listLength = list.length;
     var pos = -1;
