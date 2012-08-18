@@ -523,7 +523,7 @@ pm.settings = {
             pm.settings[key] = localStorage[key];
         }
         else {
-            if (defaultVal) {
+            if (defaultVal !== "undefined") {
                 pm.settings[key] = defaultVal;
                 localStorage[key] = defaultVal;
             }
