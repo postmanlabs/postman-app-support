@@ -2897,62 +2897,44 @@ pm.indexedDB = {
     },
 
     open:function () {
-        var request = indexedDB.open("postman", "POSTman request history");
-        request.onsuccess = function (e) {
-            var v = "0.47";
-            pm.indexedDB.db = e.target.result;
-            var db = pm.indexedDB.db;
+        var v = 9;
+        var request = indexedDB.open("postman", v);
+        request.onupgradeneeded = function (e) {
+            console.log(e);
+            console.log("Version changed");
 
-            //We can only create Object stores in a setVersion transaction
-            if (v !== db.version) {
-                var setVrequest = db.setVersion(v);
+            var db = e.target.result;
+            pm.indexedDB.db = db;
+            if (!db.objectStoreNames.contains("requests")) {
+                var requestStore = db.createObjectStore("requests", {keyPath:"id"});
+                requestStore.createIndex("timestamp", "timestamp", { unique:false});
 
-                setVrequest.onfailure = function (e) {
-                    console.log(e);
-                };
-
-                setVrequest.onsuccess = function (event) {
-                    //Only create if does not already exist
-                    if (!db.objectStoreNames.contains("requests")) {
-                        var requestStore = db.createObjectStore("requests", {keyPath:"id"});
-                        requestStore.createIndex("timestamp", "timestamp", { unique:false});
-
-                    }
-                    if (!db.objectStoreNames.contains("collections")) {
-                        var collectionsStore = db.createObjectStore("collections", {keyPath:"id"});
-                        collectionsStore.createIndex("timestamp", "timestamp", { unique:false});
-                    }
-
-                    if (!db.objectStoreNames.contains("collection_requests")) {
-                        var collectionRequestsStore = db.createObjectStore("collection_requests", {keyPath:"id"});
-                        collectionRequestsStore.createIndex("timestamp", "timestamp", { unique:false});
-                        collectionRequestsStore.createIndex("collectionId", "collectionId", { unique:false});
-                    }
-
-                    if (!db.objectStoreNames.contains("environments")) {
-                        var environmentsStore = db.createObjectStore("environments", {keyPath:"id"});
-                        environmentsStore.createIndex("timestamp", "timestamp", { unique:false});
-                        environmentsStore.createIndex("id", "id", { unique:false});
-                    }
-
-                    var transaction = event.target.result;
-                    transaction.oncomplete = function () {
-                        pm.history.getAllRequests();
-                        pm.envManager.getAllEnvironments();
-                    };
-                };
-
-                setVrequest.onupgradeneeded = function (evt) {
-                };
             }
-            else {
-                pm.history.getAllRequests();
-                pm.envManager.getAllEnvironments();
+            if (!db.objectStoreNames.contains("collections")) {
+                var collectionsStore = db.createObjectStore("collections", {keyPath:"id"});
+                collectionsStore.createIndex("timestamp", "timestamp", { unique:false});
             }
 
+            if (!db.objectStoreNames.contains("collection_requests")) {
+                var collectionRequestsStore = db.createObjectStore("collection_requests", {keyPath:"id"});
+                collectionRequestsStore.createIndex("timestamp", "timestamp", { unique:false});
+                collectionRequestsStore.createIndex("collectionId", "collectionId", { unique:false});
+            }
+
+            if (!db.objectStoreNames.contains("environments")) {
+                var environmentsStore = db.createObjectStore("environments", {keyPath:"id"});
+                environmentsStore.createIndex("timestamp", "timestamp", { unique:false});
+                environmentsStore.createIndex("id", "id", { unique:false});
+            }
         };
 
-        request.onfailure = pm.indexedDB.onerror;
+        request.onsuccess = function (e) {
+            pm.indexedDB.db = e.target.result;
+            pm.history.getAllRequests();
+            pm.envManager.getAllEnvironments();
+        };
+
+        request.onerror = pm.indexedDB.onerror;
     },
 
     addCollection:function (collection, callback) {
