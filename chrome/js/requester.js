@@ -1896,21 +1896,54 @@ pm.helpers = {
                 }
             });
 
-            if (pm.request.method === "GET") {
-                $('#url-keyvaleditor').keyvalueeditor('addParams', params);
-                pm.request.setUrlParamString(params);
-                pm.request.openUrlEditor();
-            } else {
-                var dataMode = pm.request.body.getDataMode();
-                if (dataMode === 'urlencoded') {
-                    $('#urlencoded-keyvaleditor').keyvalueeditor('addParams', params);
+            var addToHeader = $('#request-helper-oauth1-header').attr('checked') ? true : false;
+
+            if (addToHeader) {
+                var headers = pm.request.headers;
+                var authHeaderKey = "Authorization";
+                var pos = findPosition(headers, "key", authHeaderKey);
+
+                var rawString = "Oauth ";
+                var len = params.length;
+                for (var i = 0; i < len; i++) {
+                    console.log(params[i]);
+                    rawString += params[i].key + "=\"" + params[i].value + "\",";
                 }
-                else if (dataMode === 'params') {
-                    $('#formdata-keyvaleditor').keyvalueeditor('addParams', params);
+                rawString = rawString.substring(0, rawString.length - 1);
+
+                if (pos >= 0) {
+                    headers[pos] = {
+                        key:authHeaderKey,
+                        name:authHeaderKey,
+                        value:rawString
+                    };
+                }
+                else {
+                    headers.push({key:authHeaderKey, name:authHeaderKey, value:rawString});
                 }
 
-                pm.request.setBodyParamString(params);
+                pm.request.headers = headers;
+                $('#headers-keyvaleditor').keyvalueeditor('reset', headers);
+                pm.request.openHeaderEditor();
+            } else {
+                if (pm.request.method === "GET") {
+                    $('#url-keyvaleditor').keyvalueeditor('addParams', params);
+                    pm.request.setUrlParamString(params);
+                    pm.request.openUrlEditor();
+                } else {
+                    var dataMode = pm.request.body.getDataMode();
+                    if (dataMode === 'urlencoded') {
+                        $('#urlencoded-keyvaleditor').keyvalueeditor('addParams', params);
+                    }
+                    else if (dataMode === 'params') {
+                        $('#formdata-keyvaleditor').keyvalueeditor('addParams', params);
+                    }
+
+                    pm.request.setBodyParamString(params);
+                }
             }
+
+
         }
     }
 };
