@@ -512,6 +512,10 @@ pm.settings = {
             pm.settings.set("postmanProxyUrl", $('#postman-proxy-url').val());
         });
 
+        $('#variable-delimiter').change(function() {
+            pm.settings.set("variableDelimiter", $('#variable-delimiter').val());
+        });
+
         if (pm.settings.get("usePostmanProxy") == true) {
             $('#postman-proxy-url-container').css("display", "block");
         }
@@ -3663,8 +3667,15 @@ pm.envManager = {
         var finalString = string;
         var patString;
         var pattern;
+
+        var variableDelimiter = pm.settings.get("variableDelimiter");
+        var startDelimiter = variableDelimiter.substring(0, 2);
+        var endDelimiter = variableDelimiter.substring(variableDelimiter.length - 2);
+
+        console.log(startDelimiter, endDelimiter);
+
         for (var i = 0; i < count; i++) {
-            patString = "{{" + values[i].key + "}}";
+            patString = startDelimiter + values[i].key + endDelimiter;
             pattern = new RegExp(patString, 'g');
             finalString = finalString.replace(patString, values[i].value);
         }
@@ -3672,7 +3683,7 @@ pm.envManager = {
         var globals = pm.envManager.globals;
         count = globals.length;
         for (i = 0; i < count; i++) {
-            patString = "{{" + globals[i].key + "}}";
+            patString = startDelimiter + globals[i].key + endDelimiter;
             pattern = new RegExp(patString, 'g');
             finalString = finalString.replace(patString, globals[i].value);
         }
