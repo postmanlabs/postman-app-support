@@ -2929,7 +2929,70 @@ pm.indexedDB = {
         console.log(event);
     },
 
-    open:function () {
+    open_v21:function () {
+        console.log("Open v21");
+
+        var request = indexedDB.open("postman", "POSTman request history");
+        request.onsuccess = function (e) {
+            var v = "0.47";
+            pm.indexedDB.db = e.target.result;
+            var db = pm.indexedDB.db;
+
+            //We can only create Object stores in a setVersion transaction
+            if (v !== db.version) {
+                var setVrequest = db.setVersion(v);
+
+                setVrequest.onfailure = function (e) {
+                    console.log(e);
+                };
+
+                setVrequest.onsuccess = function (event) {
+                    //Only create if does not already exist
+                    if (!db.objectStoreNames.contains("requests")) {
+                        var requestStore = db.createObjectStore("requests", {keyPath:"id"});
+                        requestStore.createIndex("timestamp", "timestamp", { unique:false});
+
+                    }
+                    if (!db.objectStoreNames.contains("collections")) {
+                        var collectionsStore = db.createObjectStore("collections", {keyPath:"id"});
+                        collectionsStore.createIndex("timestamp", "timestamp", { unique:false});
+                    }
+
+                    if (!db.objectStoreNames.contains("collection_requests")) {
+                        var collectionRequestsStore = db.createObjectStore("collection_requests", {keyPath:"id"});
+                        collectionRequestsStore.createIndex("timestamp", "timestamp", { unique:false});
+                        collectionRequestsStore.createIndex("collectionId", "collectionId", { unique:false});
+                    }
+
+                    if (!db.objectStoreNames.contains("environments")) {
+                        var environmentsStore = db.createObjectStore("environments", {keyPath:"id"});
+                        environmentsStore.createIndex("timestamp", "timestamp", { unique:false});
+                        environmentsStore.createIndex("id", "id", { unique:false});
+                    }
+
+                    var transaction = event.target.result;
+                    transaction.oncomplete = function () {
+                        pm.history.getAllRequests();
+                        pm.envManager.getAllEnvironments();
+                    };
+                };
+
+                setVrequest.onupgradeneeded = function (evt) {
+                };
+            }
+            else {
+                pm.history.getAllRequests();
+                pm.envManager.getAllEnvironments();
+            }
+
+        };
+
+        request.onfailure = pm.indexedDB.onerror;
+    },
+
+    open_latest:function () {
+        console.log("Open latest");
+        
         var v = 9;
         var request = indexedDB.open("postman", v);
         request.onupgradeneeded = function (e) {
@@ -2968,6 +3031,15 @@ pm.indexedDB = {
         };
 
         request.onerror = pm.indexedDB.onerror;
+    },
+
+    open:function () {
+        if (parseInt(navigator.userAgent.match(/Chrom(e|ium)\/([0-9]+)\./)[2]) <= 21) {
+            pm.indexedDB.open_v21();
+        }
+        else {
+            pm.indexedDB.open_latest();
+        }
     },
 
     addCollection:function (collection, callback) {
