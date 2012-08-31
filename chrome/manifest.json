@@ -25,6 +25,6 @@
     ],
 
     "manifest_version": 2,
-    "content_security_policy": "default-src 'self'; connect-src *; script-src 'self' https://ssl.google-analytics.com https://platform.twitter.com https://apis.google.com; style-src 'self' blob: data: filesystem: 'unsafe-inline'; img-src *; frame-src 'self' http://www.facebook.com https://plusone.google.com https://platform.twitter.com blob: data: filesystem:; font-src '*' blob: data: filesystem:; media-src *;",
+    "content_security_policy": "default-src 'self'; connect-src *; script-src 'self' https://ssl.google-analytics.com https://platform.twitter.com https://apis.google.com; style-src 'self' blob: data: filesystem: 'unsafe-inline'; img-src *; frame-src * http://www.facebook.com https://plusone.google.com https://platform.twitter.com blob: data: filesystem:; font-src '*' blob: data: filesystem:; media-src *;",
     "offline_enabled":true
 }

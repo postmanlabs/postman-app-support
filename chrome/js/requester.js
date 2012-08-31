@@ -512,7 +512,7 @@ pm.settings = {
             pm.settings.set("postmanProxyUrl", $('#postman-proxy-url').val());
         });
 
-        $('#variable-delimiter').change(function() {
+        $('#variable-delimiter').change(function () {
             pm.settings.set("variableDelimiter", $('#variable-delimiter').val());
         });
 
@@ -974,16 +974,24 @@ pm.request = {
             if (newType === 'raw') {
                 $('#response-as-text').css("display", "block");
                 $('#response-as-code').css("display", "none");
+                $('#response-as-preview').css("display", "none");
                 $('#code-data-raw').val(this.text);
                 var codeDataWidth = $(document).width() - $('#sidebar').width() - 60;
                 $('#code-data-raw').css("width", codeDataWidth + "px");
                 $('#code-data-raw').css("height", "600px");
             }
-            else {
+            else if (newType === 'parsed') {
                 $('#response-as-text').css("display", "none");
                 $('#response-as-code').css("display", "block");
+                $('#response-as-preview').css("display", "none");
                 $('#code-data').css("display", "none");
                 pm.editor.codeMirror.refresh();
+            }
+            else if (newType === 'preview') {
+                $('#response-as-text').css("display", "none");
+                $('#response-as-code').css("display", "none");
+                $('#code-data').css("display", "none");
+                $('#response-as-preview').css("display", "block");
             }
         },
 
