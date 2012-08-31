@@ -1128,6 +1128,8 @@ pm.request = {
                         $('#response-formatting').css("display", "none");
                         $('#response-actions').css("display", "none");
                         $("#response-language").css("display", "none");
+                        $("#response-as-preview").css("display", "none");
+                        $("#response-pretty-modifiers").css("display", "none");
                         $("#response-as-image").html("<img src='" + imgLink + "'/>");
                     }
                 }
