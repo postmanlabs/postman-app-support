@@ -432,11 +432,19 @@ li .right {
     margin-bottom: 9px;
 }
 
-#request-url-container {
+#request-url-wrapper {
+    margin-right: -380px;
+    width: 100%;
     float: left;
-    min-width: 470px;
-    max-width: 1000px;
-    margin-right: 20px;
+}
+
+#request-url-container {
+    margin-right: 380px;
+}
+
+#request-modifiers {
+    width: 355px;
+    float: right;
 }
 
 #request-method-container {
@@ -698,7 +706,7 @@ li .right {
     margin-left: 300px;
     opacity: 1;
     display: none;
-    background: -webkit-linear-gradient(top, rgba(222,222,222,0.9) 0%,rgba(222,222,222,1) 100%);
+    background: -webkit-linear-gradient(top, rgba(222, 222, 222, 0.9) 0%, rgba(222, 222, 222, 1) 100%);
 }
 
 .request-actions img {

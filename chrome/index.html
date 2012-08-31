@@ -246,7 +246,7 @@
                             Refresh request
                         </a>
                         <label class="checkbox inline">
-                          <input type="checkbox" id="request-helper-oauth1-header"> Add to Header
+                            <input type="checkbox" id="request-helper-oauth1-header"> Add to Header
                         </label>
                     </div>
                 </div>
@@ -272,29 +272,34 @@
 </div>
 
 <div id="request-url" class="clearfix">
-    <div id="request-url-container">
-        <input type="text" name="url" id="url" tabindex="1" class="input-text-light"
-               placeholder="Enter request URL here"/>
+    <div id="request-url-wrapper">
+        <div id="request-url-container">
+            <input type="text" name="url" id="url" tabindex="1" class="input-text-light"
+                   placeholder="Enter request URL here"/>
+        </div>
     </div>
-    <div id="request-method-container">
-        <select id="request-method-selector">
-            <option value="GET" selected>GET</option>
-            <option value="POST">POST</option>
-            <option value="PUT">PUT</option>
-            <option value="PATCH">PATCH</option>
-            <option value="DELETE">DELETE</option>
-            <option value="HEAD">HEAD</option>
-            <option value="OPTIONS">OPTIONS</option>
-        </select>
+    <div id="request-modifiers">
+        <div id="request-method-container">
+            <select id="request-method-selector">
+                <option value="GET" selected>GET</option>
+                <option value="POST">POST</option>
+                <option value="PUT">PUT</option>
+                <option value="PATCH">PATCH</option>
+                <option value="DELETE">DELETE</option>
+                <option value="HEAD">HEAD</option>
+                <option value="OPTIONS">OPTIONS</option>
+            </select>
+        </div>
+        <div id="request-url-buttons-container">
+            <button class="btn btn-small" id="url-keyvaleditor-actions-open"><i
+                    class="icon-edit"></i> URL params
+            </button>
+            <button class="btn btn-small" id="headers-keyvaleditor-actions-open"><i
+                    class="icon-edit"></i> Headers (<span class="headers-count">0</span>)
+            </button>
+        </div>
     </div>
-    <div id="request-url-buttons-container">
-        <button class="btn btn-small" id="url-keyvaleditor-actions-open"><i
-                class="icon-edit"></i> URL params
-        </button>
-        <button class="btn btn-small" id="headers-keyvaleditor-actions-open"><i
-                class="icon-edit"></i> Headers (<span class="headers-count">0</span>)
-        </button>
-    </div>
+    <div class="clearfix"></div>
 </div>
 
 <div id="url-keyvaleditor-container" class="row" style="margin-left: 0px; display: none;">
