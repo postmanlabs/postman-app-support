@@ -220,6 +220,40 @@ pm.filesystem = {
             });
     },
 
+    renderResponsePreview:function (name, data, type, callback) {
+        name = encodeURI(name);
+        name = name.replace("/", "_");
+        pm.filesystem.removeFileIfExists(name, function () {
+            pm.filesystem.fs.root.getFile(name,
+                {create:true},
+                function (fileEntry) {
+                    fileEntry.createWriter(function (fileWriter) {
+
+                        fileWriter.onwriteend = function (e) {
+                            var properties = {
+                                url:fileEntry.toURL()
+                            };
+
+                            callback(properties.url);
+                        };
+
+                        fileWriter.onerror = function (e) {
+                            callback(false);
+                        };
+
+                        // Create a new Blob and write it to log.txt.
+                        var bb = new window.WebKitBlobBuilder(); // Note: window.WebKitBlobBuilder in Chrome 12.
+                        bb.append(data);
+                        fileWriter.write(bb.getBlob('text/plain'));
+
+                    }, pm.filesystem.errorHandler);
+
+
+                }, pm.filesystem.errorHandler
+            );
+        });
+    },
+
     saveAndOpenFile:function (name, data, type, callback) {
         name = encodeURI(name);
         name = name.replace("/", "_");
@@ -1100,6 +1134,10 @@ pm.request = {
 
                 var url = pm.request.url;
                 pm.request.response.loadCookies(url);
+
+                pm.filesystem.renderResponsePreview("response.html", pm.request.response.text, "html", function (response_url) {
+                    $("#response-as-preview iframe").attr("src", response_url);
+                });
             }
 
             pm.layout.setLayout();
@@ -1223,14 +1261,20 @@ pm.request = {
             if (format === "parsed") {
                 $('#response-as-code').css("display", "block");
                 $('#response-as-text').css("display", "none");
+                $('#response-as-preview').css("display", "none");
             }
-            else {
+            else if (format === "raw") {
                 $('#code-data-raw').val(this.text);
                 var codeDataWidth = $(document).width() - $('#sidebar').width() - 60;
                 $('#code-data-raw').css("width", codeDataWidth + "px");
                 $('#code-data-raw').css("height", "600px");
                 $('#response-as-code').css("display", "none");
                 $('#response-as-text').css("display", "block");
+            }
+            else if (format === "preview") {
+                $('#response-as-code').css("display", "none");
+                $('#response-as-text').css("display", "none");
+                $('#response-as-preview').css("display", "block");
             }
         },
 

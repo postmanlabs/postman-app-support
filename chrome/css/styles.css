@@ -1197,3 +1197,10 @@ li .right {
     height: auto !important;
     overflow: visible !important;
 }
+
+#response-as-preview iframe {
+    border: 0;
+    padding: 0;
+    width: 100%;
+    min-height: 600px;
+}
