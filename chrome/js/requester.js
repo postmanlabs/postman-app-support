@@ -1013,12 +1013,14 @@ pm.request = {
                 var codeDataWidth = $(document).width() - $('#sidebar').width() - 60;
                 $('#code-data-raw').css("width", codeDataWidth + "px");
                 $('#code-data-raw').css("height", "600px");
+                $('#response-pretty-modifiers').css("display", "none");
             }
             else if (newType === 'parsed') {
                 $('#response-as-text').css("display", "none");
                 $('#response-as-code').css("display", "block");
                 $('#response-as-preview').css("display", "none");
                 $('#code-data').css("display", "none");
+                $('#response-pretty-modifiers').css("display", "block");
                 pm.editor.codeMirror.refresh();
             }
             else if (newType === 'preview') {
@@ -1026,6 +1028,7 @@ pm.request = {
                 $('#response-as-code').css("display", "none");
                 $('#code-data').css("display", "none");
                 $('#response-as-preview').css("display", "block");
+                $('#response-pretty-modifiers').css("display", "none");
             }
         },
 
@@ -1262,6 +1265,7 @@ pm.request = {
                 $('#response-as-code').css("display", "block");
                 $('#response-as-text').css("display", "none");
                 $('#response-as-preview').css("display", "none");
+                $('#response-pretty-modifiers').css("display", "block");
             }
             else if (format === "raw") {
                 $('#code-data-raw').val(this.text);
@@ -1270,11 +1274,13 @@ pm.request = {
                 $('#code-data-raw').css("height", "600px");
                 $('#response-as-code').css("display", "none");
                 $('#response-as-text').css("display", "block");
+                $('#response-pretty-modifiers').css("display", "none");
             }
             else if (format === "preview") {
                 $('#response-as-code').css("display", "none");
                 $('#response-as-text').css("display", "none");
                 $('#response-as-preview').css("display", "block");
+                $('#response-pretty-modifiers').css("display", "none");
             }
         },
 

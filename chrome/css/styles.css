@@ -396,9 +396,13 @@ li .right {
     float: left;
 }
 
-#response-language {
-    margin: 17px 0 15px 10px;
+#response-body-line-wrapping {
     float: left;
+}
+
+#response-language {
+    float: left;
+    margin-left: 5px;
 }
 
 #request {
@@ -819,6 +823,12 @@ li .right {
 }
 
 #response-actions {
+    float: left;
+    margin-top: 17px;
+    margin-left: 10px;
+}
+
+#response-pretty-modifiers {
     float: left;
     margin-top: 17px;
     margin-left: 10px;
