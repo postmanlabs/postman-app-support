@@ -702,11 +702,12 @@ li .right {
 }
 
 .request-actions {
+    background: -webkit-linear-gradient(top, rgba(222, 222, 222, 0.9) 0%, rgba(222, 222, 222, 1) 100%);
+    display: none;
+    opacity: 1;
+    padding: 5px 0 5px 20px !important;
     position: absolute;
     margin-left: 300px;
-    opacity: 1;
-    display: none;
-    background: -webkit-linear-gradient(top, rgba(222, 222, 222, 0.9) 0%, rgba(222, 222, 222, 1) 100%);
 }
 
 .request-actions img {

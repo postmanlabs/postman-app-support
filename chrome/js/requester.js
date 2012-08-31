@@ -1380,7 +1380,8 @@ pm.request = {
     },
 
     isMethodWithBody:function (method) {
-        return $.inArray(method, this.methodsWithBody) >= 0;
+        method = method.toUpperCase();
+        return $.inArray(method, pm.request.methodsWithBody) >= 0;
     },
 
     packHeaders:function (headers) {
@@ -1974,6 +1975,8 @@ pm.history = {
     requestExists:function (request) {
         var index = -1;
         var method = request.method.toLowerCase();
+
+        console.log(method);
 
         if (pm.request.isMethodWithBody(method)) {
             return -1;
@@ -3671,8 +3674,6 @@ pm.envManager = {
         var variableDelimiter = pm.settings.get("variableDelimiter");
         var startDelimiter = variableDelimiter.substring(0, 2);
         var endDelimiter = variableDelimiter.substring(variableDelimiter.length - 2);
-
-        console.log(startDelimiter, endDelimiter);
 
         for (var i = 0; i < count; i++) {
             patString = startDelimiter + values[i].key + endDelimiter;
