@@ -2992,7 +2992,7 @@ pm.indexedDB = {
 
     open_latest:function () {
         console.log("Open latest");
-        
+
         var v = 9;
         var request = indexedDB.open("postman", v);
         request.onupgradeneeded = function (e) {

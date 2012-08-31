@@ -698,6 +698,7 @@ li .right {
     margin-left: 300px;
     opacity: 1;
     display: none;
+    background: -webkit-linear-gradient(top, rgba(222,222,222,0.9) 0%,rgba(222,222,222,1) 100%);
 }
 
 .request-actions img {
