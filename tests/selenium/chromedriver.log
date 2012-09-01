@@ -1,0 +1,62 @@
+[0.000][INFO]:      ChromeDriver 23.0.1240.0 /Users/asthana/Documents/www/chromedriver
+[0.949][FINE]:      Initializing session with capabilities {
+   "chrome.switches": [ "--load-extension=/Users/asthana/Documents/www/POSTMan-Chrome-Extension/chrome" ]
+}
+
+[0.950][INFO]:      Launching chrome: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --enable-logging --log-level=1 --disable-hang-monitor --disable-prompt-on-repost --dom-automation --full-memory-crash-report --no-default-browser-check --no-first-run --disable-background-networking --disable-sync --disable-translate --disable-web-resources --safebrowsing-disable-auto-update --safebrowsing-disable-download-protection --disable-client-side-phishing-detection --disable-component-update --disable-default-apps --use-mock-keychain --ignore-certificate-errors --load-extension=/Users/asthana/Documents/www/POSTMan-Chrome-Extension/chrome about:blank
+[1.936][INFO]:      Connected to Chrome successfully. Version: 21.0.1180.89
+[1.946][FINE]:      Command received (/session/5fe5e0ba9603a7d2216c0db4460eef71)
+[1.946][FINE]:      Command finished (/session/5fe5e0ba9603a7d2216c0db4460eef71) with response {
+   "sessionId": "5fe5e0ba9603a7d2216c0db4460eef71",
+   "status": 0,
+   "value": {
+      "acceptSslCerts": false,
+      "applicationCacheEnabled": false,
+      "browserConnectionEnabled": false,
+      "browserName": "chrome",
+      "chrome.chromedriverVersion": "23.0.1240.0",
+      "chrome.nativeEvents": false,
+      "cssSelectorsEnabled": true,
+      "databaseEnabled": false,
+      "handlesAlerts": true,
+      "javascriptEnabled": true,
+      "locationContextEnabled": false,
+      "nativeEvents": true,
+      "platform": "mac",
+      "rotatable": false,
+      "takesScreenshot": true,
+      "version": "21.0.1180.89",
+      "webStorageEnabled": true
+   }
+}
+
+[1.974][FINE]:      Command received (/session/5fe5e0ba9603a7d2216c0db4460eef71/url) with params {
+   "sessionId": "5fe5e0ba9603a7d2216c0db4460eef71",
+   "url": "chrome-extension://bgkigemnbmleogooeggblbgpphhhghoa/index.html"
+}
+
+[1.974][FINER]:     Waiting for all views to stop loading...
+[1.974][FINER]:     Done waiting for all views to stop loading
+[3.074][FINER]:     Waiting for all views to stop loading...
+[3.077][FINER]:     Done waiting for all views to stop loading
+[3.077][FINE]:      Command finished (/session/5fe5e0ba9603a7d2216c0db4460eef71/url) with response {
+   "sessionId": "5fe5e0ba9603a7d2216c0db4460eef71",
+   "status": 0,
+   "value": {
+
+   }
+}
+
+[3.082][FINE]:      Command received (/session/5fe5e0ba9603a7d2216c0db4460eef71/title)
+[3.082][FINER]:     Waiting for all views to stop loading...
+[3.090][FINER]:     Done waiting for all views to stop loading
+[3.347][FINER]:     Waiting for all views to stop loading...
+[3.348][FINER]:     Done waiting for all views to stop loading
+[3.348][FINE]:      Command finished (/session/5fe5e0ba9603a7d2216c0db4460eef71/title) with response {
+   "sessionId": "5fe5e0ba9603a7d2216c0db4460eef71",
+   "status": 0,
+   "value": "Postman"
+}
+
+[3.350][FINE]:      Command received (/session/5fe5e0ba9603a7d2216c0db4460eef71)
+[3.643][INFO]:      Chrome shutdown
