@@ -154,12 +154,12 @@ window.requestFileSystem = window.requestFileSystem || window.webkitRequestFileS
 
 pm.init = function () {
     Handlebars.partials = Handlebars.templates;
-    this.history.init();
-    this.collections.init();
-    this.settings.init();
-    this.layout.init();
-    this.editor.init();
-    this.request.init();
+    pm.history.init();
+    pm.collections.init();
+    pm.settings.init();
+    pm.layout.init();
+    pm.editor.init();
+    pm.request.init();
     this.urlCache.refreshAutoComplete();
     this.helpers.init();
     this.keymap.init();
@@ -496,7 +496,7 @@ pm.settings = {
         pm.settings.create("retainLinkHeaders", false);
         pm.settings.create("usePostmanProxy", false);
         pm.settings.create("proxyURL", "");
-        pm.settings.create("lastRequest");
+        pm.settings.create("lastRequest", "");
         pm.settings.create("variableDelimiter", "{{...}}");
 
         $('#history-count').val(pm.settings.get("historyCount"));
@@ -790,9 +790,10 @@ pm.request = {
             this.addListeners();
         }
 
-        if (pm.settings.get("lastRequest")) {
-            var lastRequest = JSON.parse(pm.settings.get("lastRequest"));
-            pm.request.loadRequestInEditor(lastRequest);
+        var lastRequest = pm.settings.get("lastRequest");
+        if (lastRequest !== "") {
+            var lastRequestParsed = JSON.parse(lastRequest);
+            pm.request.loadRequestInEditor(lastRequestParsed);
         }
     },
 
