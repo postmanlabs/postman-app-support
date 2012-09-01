@@ -1208,9 +1208,15 @@ li .right {
     overflow: visible !important;
 }
 
+#response-as-preview {
+    display: none;
+    margin-top: 5px;
+}
+
 #response-as-preview iframe {
     border: 0;
     padding: 0;
     width: 100%;
-    min-height: 600px;
+    min-height: 100%;
+    margin-top: 5px;
 }

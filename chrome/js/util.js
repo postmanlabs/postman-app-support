@@ -119,3 +119,17 @@ function getHeaderVars(data) {
 function valuesFollowingInputValue(value) {
     return $('input[value="' + value + '"] + input').val()
 }
+
+// http://stackoverflow.com/questions/6965107/converting-between-strings-and-arraybuffers
+function ab2str(buf) {
+    return String.fromCharCode.apply(null, new Uint16Array(buf));
+}
+
+function string2ArrayBuffer(string, callback) {
+    var bb = new Blob([string]);
+    var f = new FileReader();
+    f.onload = function(e) {
+        callback(e.target.result);
+    };
+    f.readAsArrayBuffer(bb);
+}

@@ -11,7 +11,7 @@ def test_indexed_db(browser):
     try:
         empty_message = browser.find_element_by_css_selector("#sidebar-section-history .empty-message")
         empty_message_found = True
-        print "Empty message found"
+        print "IndexedDB has loaded"
     except:
         empty_message_found = False
 
@@ -24,7 +24,6 @@ def main():
     capabilities = {'chrome.switches': ["--load-extension=/Users/asthana/Documents/www/POSTMan-Chrome-Extension/chrome"]}
     browser = webdriver.Remote(s.service_url, capabilities)
     
-
     load_postman(browser)
     test_title(browser)
     test_indexed_db(browser)

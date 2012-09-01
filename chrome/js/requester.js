@@ -160,11 +160,11 @@ pm.init = function () {
     pm.layout.init();
     pm.editor.init();
     pm.request.init();
-    this.urlCache.refreshAutoComplete();
-    this.helpers.init();
-    this.keymap.init();
-    this.envManager.init();
-    this.filesystem.init();
+    pm.urlCache.refreshAutoComplete();
+    pm.helpers.init();
+    pm.keymap.init();
+    pm.envManager.init();
+    pm.filesystem.init();
     pm.indexedDB.open();
     $(":input:first").focus();
 };
@@ -241,10 +241,15 @@ pm.filesystem = {
                             callback(false);
                         };
 
-                        // Create a new Blob and write it to log.txt.
-                        var bb = new window.WebKitBlobBuilder(); // Note: window.WebKitBlobBuilder in Chrome 12.
-                        bb.append(data);
-                        fileWriter.write(bb.getBlob('text/plain'));
+                        var blob;
+                        if (type == "pdf") {
+                            blob = new Blob([data], {type:'application/pdf'});
+                        }
+                        else {
+                            blob = new Blob([data], {type:'text/plain'});
+                        }
+                        fileWriter.write(blob);
+
 
                     }, pm.filesystem.errorHandler);
 
@@ -280,10 +285,14 @@ pm.filesystem = {
                             callback();
                         };
 
-                        // Create a new Blob and write it to log.txt.
-                        var bb = new window.WebKitBlobBuilder(); // Note: window.WebKitBlobBuilder in Chrome 12.
-                        bb.append(data);
-                        fileWriter.write(bb.getBlob('text/plain'));
+                        var blob;
+                        if (type == "pdf") {
+                            blob = new Blob([data], {type:'application/pdf'});
+                        }
+                        else {
+                            blob = new Blob([data], {type:'text/plain'});
+                        }
+                        fileWriter.write(blob);
 
                     }, pm.filesystem.errorHandler);
 
@@ -316,7 +325,7 @@ pm.keymap = {
                 $(event.target).blur();
             }
             else if (event.keyCode == 13) {
-                pm.request.send();
+                pm.request.send("text");
             }
 
             return true;
@@ -358,7 +367,7 @@ pm.keymap = {
         });
 
         $(document).bind('keydown', 'return', function () {
-            pm.request.send();
+            pm.request.send("text");
             return false;
         });
 
@@ -1083,7 +1092,14 @@ pm.request = {
                     'detail':httpStatusCodes[response.status]['detail']
                 };
 
-                this.text = response.responseText;
+                var responseData;
+                if (response.responseType == "arraybuffer") {
+                    responseData = response.response;
+                }
+                else {
+                    this.text = response.responseText;
+                }
+
                 pm.request.endTime = new Date().getTime();
 
                 var diff = pm.request.getTotalTime();
@@ -1111,6 +1127,8 @@ pm.request = {
 
                 pm.request.response.previewType = pm.settings.get("previewType");
 
+                var responsePreviewType = 'html';
+
                 if (!_.isUndefined(contentType) && !_.isNull(contentType)) {
                     if (contentType.search(/json/i) !== -1 || contentType.search(/javascript/i) !== -1) {
                         language = 'javascript';
@@ -1118,10 +1136,9 @@ pm.request = {
 
                     $('#language').val(language);
 
-                    if (contentType.search(/image/i) === -1) {
-                        this.setFormat(language, this.text, pm.settings.get("previewType"), true);
-                    }
-                    else {
+                    if (contentType.search(/image/i) >= 0) {
+                        responsePreviewType = 'image';
+
                         $('#response-as-code').css("display", "none");
                         $('#response-as-text').css("display", "none");
                         $('#response-as-image').css("display", "block");
@@ -1133,6 +1150,33 @@ pm.request = {
                         $("#response-pretty-modifiers").css("display", "none");
                         $("#response-as-image").html("<img src='" + imgLink + "'/>");
                     }
+                    else if (contentType.search(/pdf/i) >= 0 && response.responseType == "arraybuffer") {
+                        responsePreviewType = 'pdf';
+
+                        // Hide everything else
+                        $('#response-as-code').css("display", "none");
+                        $('#response-as-text').css("display", "none");
+                        $('#response-as-image').css("display", "none");
+                        $('#response-formatting').css("display", "none");
+                        $('#response-actions').css("display", "none");
+                        $("#response-language").css("display", "none");
+
+                        $("#response-as-preview").html("");
+                        $("#response-as-preview").css("display", "block");
+                        $("#response-pretty-modifiers").css("display", "none");
+                        pm.filesystem.renderResponsePreview("response.pdf", responseData, "pdf", function (response_url) {
+                            $("#response-as-preview").html("<iframe src='" + response_url + "'/>");
+                        });
+
+                    }
+                    else if (contentType.search(/pdf/i) >= 0 && response.responseType == "text") {
+                        pm.request.send("arraybuffer");
+                        return;
+                    }
+                    else {
+                        responsePreviewType = 'html';
+                        this.setFormat(language, this.text, pm.settings.get("previewType"), true);
+                    }
                 }
                 else {
                     this.setFormat(language, this.text, pm.settings.get("previewType"), true);
@@ -1141,9 +1185,14 @@ pm.request = {
                 var url = pm.request.url;
                 pm.request.response.loadCookies(url);
 
-                pm.filesystem.renderResponsePreview("response.html", pm.request.response.text, "html", function (response_url) {
-                    $("#response-as-preview iframe").attr("src", response_url);
-                });
+                if (responsePreviewType === "html") {
+                    $("#response-as-preview").html("");
+                    pm.filesystem.renderResponsePreview("response.html", pm.request.response.text, "html", function (response_url) {
+                        $("#response-as-preview").html("<iframe></iframe>");
+                        $("#response-as-preview iframe").attr("src", response_url);
+                    });
+                }
+
             }
 
             pm.layout.setLayout();
@@ -1151,7 +1200,15 @@ pm.request = {
 
         loadCookies:function (url) {
             chrome.cookies.getAll({url:url}, function (cookies) {
-                var count = cookies.length;
+                var count;
+                if (!cookies) {
+                    count = 0;
+                }
+                else {
+                    count = cookies.length;
+                }
+
+
                 if (count == 0) {
                     $("#response-tabs-cookies").html("Cookies");
                     $('#response-tabs-cookies').css("display", "none");
@@ -1686,7 +1743,7 @@ pm.request = {
     },
 
     //Send the current request
-    send:function () {
+    send:function (responseType) {
         // Set state as if change event of input handlers was called
         pm.request.setUrlParamString(pm.request.getUrlEditorParams());
         pm.request.headers = pm.request.getHeaderEditorParams();
@@ -1730,6 +1787,12 @@ pm.request = {
         xhr.onreadystatechange = function (event) {
             pm.request.response.load(event.target);
         };
+
+        if(!responseType) {
+            responseType = "text";
+        }
+
+        xhr.responseType = responseType;
 
         var envManager = pm.envManager;
         url = envManager.processString(url, envValues);
@@ -1797,7 +1860,6 @@ pm.request = {
                 }
                 finalBodyData = finalBodyData.substr(0, finalBodyData.length - 1);
             }
-
             xhr.send(finalBodyData);
         } else {
             xhr.send();
@@ -2702,7 +2764,7 @@ pm.layout = {
         });
 
         $("#submit-request").on("click", function () {
-            pm.request.send();
+            pm.request.send("text");
         });
 
         $("#update-request-in-collection").on("click", function () {
