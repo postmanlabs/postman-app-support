@@ -33,7 +33,16 @@ def test_get_basic(browser):
     if code_data_value.find("html") > 0:
         print "test_get_basic content test successful"
     else:
-        print "test_get_basic content test failed"        
+        print "test_get_basic content test failed"
+
+def test_delete_basic(browser):
+    pass
+
+def test_head_basic(browser):
+    pass
+
+def test_options_basic(browser):
+    pass
 
 def main():
     s = service.Service('/Users/asthana/Documents/www/chromedriver')  # Optional argument, if not specified will search path.
