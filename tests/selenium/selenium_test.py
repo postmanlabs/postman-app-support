@@ -4,9 +4,6 @@ from selenium.webdriver.support.select import Select
 import selenium.webdriver.chrome.service as service
 import inspect
 
-def load_postman(browser):
-    browser.get('chrome-extension://ljkndjhokjnonidfaggiacifldihhjmg/index.html')
-
 def set_url_field(browser, val):
     url_field = browser.find_element_by_id("url")
     url_field.clear()
@@ -19,19 +16,34 @@ def get_codemirror_value(browser):
     code_data_value = browser.execute_script("return arguments[0].innerHTML", code_data_textarea)
     return code_data_value
 
-class PostmanTestsRequests:
-    def __init__(self, b):
-        self.browser = b
+def PostmanTests:
+    def __init__(self):
+        s = service.Service('/Users/asthana/Documents/www/chromedriver')  # Optional argument, if not specified will search path.
+        s.start()
+    
+        capabilities = {'chrome.switches': ["--load-extension=/Users/asthana/Documents/www/postman/POSTMan-Chrome-Extension/chrome"]}
+        browser = webdriver.Remote(s.service_url, capabilities)        
+        
+        self.s = s
+        self.browser = browser
+        
+        load_postman()
 
+    def load_postman(self):
+        self.browser.get('chrome-extension://ljkndjhokjnonidfaggiacifldihhjmg/index.html')
+
+class PostmanTestsRequests(PostmanTests):
     def run(self):
-        self.test_title()
-        self.test_indexed_db()
-        self.test_get_basic()
-        self.test_delete_basic()
-        self.test_head_basic()
-        self.test_options_basic()
-        self.test_post_basic()
-        self.test_put_basic()
+        test_title()
+        test_indexed_db()
+        test_get_basic()
+        test_delete_basic()
+        test_head_basic()
+        test_options_basic()
+        test_post_basic()
+        test_put_basic()
+
+        self.browser.quit()
 
     def run_auto(self):
         methods = inspect.getmembers(self, predicate=inspect.ismethod)
@@ -147,19 +159,19 @@ class PostmanTestsRequests:
             print "test_put_basic content test failed"
             return False
 
-def main():
-    s = service.Service('/Users/asthana/Documents/www/chromedriver')  # Optional argument, if not specified will search path.
-    s.start()
-    
-    capabilities = {'chrome.switches': ["--load-extension=/Users/asthana/Documents/www/postman/POSTMan-Chrome-Extension/chrome"]}
-    browser = webdriver.Remote(s.service_url, capabilities)
-    
-    load_postman(browser)
-    
-    test_requests = PostmanTestsRequests(browser)
-    test_requests.run()
+class PostmanTestsHistory:
+    def __init__(self, browser):
+        self.browser = browser
 
-    browser.quit()
+    def run(self):
+        pass
+
+    def test_save_request_to_history(self):
+        pass
+        
+
+def main():   
+    PostmanTestsRequests(browser).run()
 
 if __name__ == "__main__":
     main()
