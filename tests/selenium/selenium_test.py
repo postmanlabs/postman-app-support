@@ -2,12 +2,10 @@ from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support.select import Select
 import selenium.webdriver.chrome.service as service
+import inspect
 
 def load_postman(browser):
     browser.get('chrome-extension://ljkndjhokjnonidfaggiacifldihhjmg/index.html')
-
-def test_title(browser):
-    assert "Postman" in browser.title
 
 def set_url_field(browser, val):
     url_field = browser.find_element_by_id("url")
@@ -21,123 +19,133 @@ def get_codemirror_value(browser):
     code_data_value = browser.execute_script("return arguments[0].innerHTML", code_data_textarea)
     return code_data_value
 
-def test_indexed_db(browser):
-    w = WebDriverWait(browser, 10)
-    w.until(lambda driver: browser.find_element_by_css_selector("#sidebar-section-history .empty-message"))
-    
-    print "test_indexed_db successful"
-    return True
+class PostmanTestsRequests:
+    def __init__(self, b):
+        self.browser = b
 
-def test_get_basic(browser):
-    set_url_field(browser, "http://httpbin.org/html")
-    
-    send_button = browser.find_element_by_id("submit-request")
-    send_button.click()
+    def run(self):
+        self.test_title()
+        self.test_indexed_db()
+        self.test_get_basic()
+        self.test_delete_basic()
+        self.test_head_basic()
+        self.test_options_basic()
+        self.test_post_basic()
+        self.test_put_basic()
 
-    code_data_value = get_codemirror_value(browser)    
+    def run_auto(self):
+        methods = inspect.getmembers(self, predicate=inspect.ismethod)
+        for method in methods:
+            name = method[0]
+            if name.find("test_") is 0:
+                method = getattr(PostmanTestsRequests, name)
+                method(self)
 
-    if code_data_value.find("html") > 0:
-        print "test_get_basic test successful"
+    def test_title(self):
+        assert "Postman" in self.browser.title
+
+    def test_indexed_db(self):
+        w = WebDriverWait(self.browser, 10)
+        w.until(lambda driver: self.browser.find_element_by_css_selector("#sidebar-section-history .empty-message"))
+
+        print "test_indexed_db successful"
         return True
-    else:
-        print "test_get_basic test failed"
-        return False
 
-def test_delete_basic(browser):
-    set_url_field(browser, "http://httpbin.org/delete")
+    def test_get_basic(self):
+        set_url_field(self.browser, "http://httpbin.org/html")
 
-    method_select = browser.find_element_by_id("request-method-selector")    
-    Select(method_select).select_by_value("DELETE")
+        send_button = self.browser.find_element_by_id("submit-request")
+        send_button.click()
 
-    send_button = browser.find_element_by_id("submit-request")
-    send_button.click()
-    
-    code_data_value = get_codemirror_value(browser)
+        code_data_value = get_codemirror_value(self.browser)    
 
-    if code_data_value.find("delete") > 0:
-        print "test_delete_basic content test successful"
+        if code_data_value.find("html") > 0:
+            print "test_get_basic test successful"
+            return True
+        else:
+            print "test_get_basic test failed"
+            return False
+
+    def test_delete_basic(self):
+        set_url_field(self.browser, "http://httpbin.org/delete")
+
+        method_select = self.browser.find_element_by_id("request-method-selector")    
+        Select(method_select).select_by_value("DELETE")
+
+        send_button = self.browser.find_element_by_id("submit-request")
+        send_button.click()
+
+        code_data_value = get_codemirror_value(self.browser)
+
+        if code_data_value.find("delete") > 0:
+            print "test_delete_basic content test successful"
+            return True
+        else:
+            print "test_delete_basic content test failed"
+            return False
+
         return True
-    else:
-        print "test_delete_basic content test failed"
-        return False
-
-    return True
 
 
-def test_head_basic(browser):
-    set_url_field(browser, "http://httpbin.org/html")
-    method_select = browser.find_element_by_id("request-method-selector")    
-    Select(method_select).select_by_value("HEAD")
-    send_button = browser.find_element_by_id("submit-request")
-    send_button.click()
-    code_data_value = get_codemirror_value(browser)
+    def test_head_basic(self):
+        set_url_field(self.browser, "http://httpbin.org/html")
+        method_select = self.browser.find_element_by_id("request-method-selector")    
+        Select(method_select).select_by_value("HEAD")
+        send_button = self.browser.find_element_by_id("submit-request")
+        send_button.click()
+        code_data_value = get_codemirror_value(self.browser)
 
-    if code_data_value.find("div") > 0:
-        print "test_head_basic content test successful"
-        return True
-    else:
-        print "test_head_basic content test failed"
-        return False
+        if code_data_value.find("div") > 0:
+            print "test_head_basic content test successful"
+            return True
+        else:
+            print "test_head_basic content test failed"
+            return False
 
-def test_options_basic(browser):
-    set_url_field(browser, "http://httpbin.org/html")
-    method_select = browser.find_element_by_id("request-method-selector")    
-    Select(method_select).select_by_value("OPTIONS")
-    send_button = browser.find_element_by_id("submit-request")
-    send_button.click()
-    code_data_value = get_codemirror_value(browser)
+    def test_options_basic(self):
+        set_url_field(self.browser, "http://httpbin.org/html")
+        method_select = self.browser.find_element_by_id("request-method-selector")    
+        Select(method_select).select_by_value("OPTIONS")
+        send_button = self.browser.find_element_by_id("submit-request")
+        send_button.click()
+        code_data_value = get_codemirror_value(self.browser)
 
-    if code_data_value.find("div") > 0:
-        print "test_options_basic content test successful"
-        return True
-    else:
-        print "test_options_basic content test failed"
-        return False
+        if code_data_value.find("div") > 0:
+            print "test_options_basic content test successful"
+            return True
+        else:
+            print "test_options_basic content test failed"
+            return False
 
-def test_post_basic(browser):
-    set_url_field(browser, "http://httpbin.org/post")
-    method_select = browser.find_element_by_id("request-method-selector")    
-    Select(method_select).select_by_value("POST")
-    send_button = browser.find_element_by_id("submit-request")
-    send_button.click()
-    code_data_value = get_codemirror_value(browser)
+    def test_post_basic(self):
+        set_url_field(self.browser, "http://httpbin.org/post")
+        method_select = self.browser.find_element_by_id("request-method-selector")    
+        Select(method_select).select_by_value("POST")
+        send_button = self.browser.find_element_by_id("submit-request")
+        send_button.click()
+        code_data_value = get_codemirror_value(self.browser)
 
-    if code_data_value.find("post") > 0:
-        print "test_post_basic content test successful"
-        return True
-    else:
-        print "test_post_basic content test failed"
-        return False
+        if code_data_value.find("post") > 0:
+            print "test_post_basic content test successful"
+            return True
+        else:
+            print "test_post_basic content test failed"
+            return False
 
-def test_post_basic(browser):
-    set_url_field(browser, "http://httpbin.org/post")
-    method_select = browser.find_element_by_id("request-method-selector")    
-    Select(method_select).select_by_value("POST")
-    send_button = browser.find_element_by_id("submit-request")
-    send_button.click()
-    code_data_value = get_codemirror_value(browser)
+    def test_put_basic(self):
+        set_url_field(self.browser, "http://httpbin.org/put")
+        method_select = self.browser.find_element_by_id("request-method-selector")    
+        Select(method_select).select_by_value("PUT")
+        send_button = self.browser.find_element_by_id("submit-request")
+        send_button.click()
+        code_data_value = get_codemirror_value(self.browser)
 
-    if code_data_value.find("post") > 0:
-        print "test_post_basic content test successful"
-        return True
-    else:
-        print "test_post_basic content test failed"
-        return False
-
-def test_put_basic(browser):
-    set_url_field(browser, "http://httpbin.org/put")
-    method_select = browser.find_element_by_id("request-method-selector")    
-    Select(method_select).select_by_value("PUT")
-    send_button = browser.find_element_by_id("submit-request")
-    send_button.click()
-    code_data_value = get_codemirror_value(browser)
-
-    if code_data_value.find("put") > 0:
-        print "test_put_basic content test successful"
-        return True
-    else:
-        print "test_put_basic content test failed"
-        return False
+        if code_data_value.find("put") > 0:
+            print "test_put_basic content test successful"
+            return True
+        else:
+            print "test_put_basic content test failed"
+            return False
 
 def main():
     s = service.Service('/Users/asthana/Documents/www/chromedriver')  # Optional argument, if not specified will search path.
@@ -147,14 +155,9 @@ def main():
     browser = webdriver.Remote(s.service_url, capabilities)
     
     load_postman(browser)
-    test_title(browser)
-    test_indexed_db(browser)
-    test_get_basic(browser)
-    test_delete_basic(browser)
-    test_head_basic(browser)
-    test_options_basic(browser)         
-    test_post_basic(browser)
-    test_put_basic(browser)
+    
+    test_requests = PostmanTestsRequests(browser)
+    test_requests.run()
 
     browser.quit()
 
