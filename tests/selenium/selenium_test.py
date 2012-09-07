@@ -184,16 +184,18 @@ class PostmanTestsHistory(PostmanTests):
         send_button.click()
         code_data_value = self.get_codemirror_value(self.browser)
 
-        if code_data_value.find("put") > 0:
-            self.print_success("test_save_request_to_history")
-            return True
+        if code_data_value.find("html") > 0:
+            first_history_item = self.browser.find_element_by_css_selector("#history-items li:nth-of-type(1) .request")
+            value = self.browser.execute_script("return arguments[0].innerHTML", first_history_item)
+            if value.find("http://httpbin.org/html?val=1") > 0:
+                self.print_success("test_save_request_to_history")
         else:
             self.print_failed("test_save_request_to_history")
             return False
         
 
 def main():
-    PostmanTestsRequests().run()
+    # PostmanTestsRequests().run()
     PostmanTestsHistory().run()
 
 if __name__ == "__main__":
