@@ -2,7 +2,7 @@
 .idea/
 design/
 screenshots/
-chromedriver.log
+test/selenium/chromedriver.log
 *.crx
 *.pem
 *.zip
