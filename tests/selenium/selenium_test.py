@@ -3,6 +3,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support.select import Select
 import selenium.webdriver.chrome.service as service
 import inspect
+import time
 
 class PostmanTests:
     def __init__(self):
@@ -174,6 +175,9 @@ class PostmanTestsHistory(PostmanTests):
         print "\nTesting history"
         print "---------------"
         self.test_save_request_to_history()
+        self.test_load_request_from_history()
+        self.test_delete_request_from_history()
+        self.test_clear_history()
         self.browser.quit()
 
     def test_save_request_to_history(self):
@@ -191,12 +195,105 @@ class PostmanTestsHistory(PostmanTests):
                 self.print_success("test_save_request_to_history")
         else:
             self.print_failed("test_save_request_to_history")
-            return False
-        
 
+    def test_load_request_from_history(self):
+        self.set_url_field(self.browser, "")
+        first_history_item = self.browser.find_element_by_css_selector("#history-items li:nth-of-type(1) .request")
+        first_history_item.click()
+
+        try:
+            w = WebDriverWait(self.browser, 10)    
+            w.until(lambda browser: self.browser.find_element_by_id("url").get_attribute("value") == "http://httpbin.org/html?val=1")
+            self.print_success("test_load_request_from_history")
+        except:
+            self.print_failed("test_load_request_from_history")
+
+    def test_delete_request_from_history(self):
+        first_history_item = self.browser.find_element_by_css_selector("#history-items li:nth-of-type(1) .request-actions .request-actions-delete")
+        first_history_item.click()
+
+        history_items = self.browser.find_elements_by_css_selector("#history-items li")
+
+        if len(history_items) == 0:
+            self.print_success("test_delete_request_from_history")
+        else:
+            self.print_failed("test_delete_request_from_history")
+
+    def test_clear_history(self):
+        self.set_url_field(self.browser, "http://httpbin.org/html?val=1")
+        method_select = self.browser.find_element_by_id("request-method-selector")    
+        Select(method_select).select_by_value("GET")
+        send_button = self.browser.find_element_by_id("submit-request")
+        send_button.click()
+
+        # Waits for the response
+        self.get_codemirror_value(self.browser)
+
+        self.set_url_field(self.browser, "http://httpbin.org/html?val=2")
+        method_select = self.browser.find_element_by_id("request-method-selector")    
+        Select(method_select).select_by_value("GET")
+        send_button = self.browser.find_element_by_id("submit-request")
+        send_button.click()
+
+        # Waits for the response
+        self.get_codemirror_value(self.browser)
+
+        clear_all_button = self.browser.find_element_by_css_selector("#history-options .history-actions-delete")
+        clear_all_button.click()
+
+        history_items = self.browser.find_elements_by_css_selector("#history-items li")
+
+        if len(history_items) == 0:
+            self.print_success("test_clear_history")
+        else:
+            self.print_failed("test_clear_history")
+        
+class PostmanTestsLayout(PostmanTests):
+    def run(self):
+        print "\nTesting layout"
+        print "---------------"
+        self.test_toggle_sidebar()
+        self.test_make_postman_better_modal()
+        self.browser.quit()
+
+    def test_toggle_sidebar(self):
+        sidebar_toggle = self.browser.find_element_by_id("sidebar-toggle")
+        sidebar_toggle.click()
+        time.sleep(1)
+
+        sidebar = self.browser.find_element_by_id("sidebar")
+        sidebar_style = sidebar.get_attribute("style")
+        if sidebar_style.find("5px") < 0:
+            self.print_failed("test_toggle_sidebar")
+        else:
+            sidebar_toggle.click()
+            time.sleep(1)
+            sidebar_style = sidebar.get_attribute("style")
+
+            if sidebar_style.find("350px") > 0:
+                self.print_success("test_toggle_sidebar")
+            else:
+                self.print_failed("test_toggle_sidebar")
+
+
+    def test_make_postman_better_modal(self):
+        sidebar_footer = self.browser.find_element_by_id("sidebar-footer")
+        sidebar_footer.click()
+        time.sleep(0.5)
+
+        modal = self.browser.find_element_by_id("modal-spread-the-word")
+        style = modal.get_attribute("style")
+        if style.find("block") > 0:
+            self.print_success("test_make_postman_better_modal")
+        else:
+            self.print_failed("test_make_postman_better_modal")
+
+        
+    
 def main():
     # PostmanTestsRequests().run()
-    PostmanTestsHistory().run()
+    # PostmanTestsHistory().run()
+    PostmanTestsLayout().run()
 
 if __name__ == "__main__":
     main()
