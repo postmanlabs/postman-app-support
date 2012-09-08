@@ -288,6 +288,46 @@ class PostmanTestsLayout(PostmanTests):
         else:
             self.print_failed("test_make_postman_better_modal")
 
+class PostmanTestsCollections(PostmanTests):
+    def run(self):
+        print "\nTesting collections"
+        print "---------------------"
+        self.test_switch_to_collections()
+        self.test_create_collection_with_modal()
+        self.test_create_collection_with_request()
+        self.test_add_request_to_existing_collection()
+        self.test_add_collection_request_to_existing_collection()
+        self.test_delete_collection_request()
+        self.test_delete_collection()
+        self.test_download_collection()
+        self.test_import_collection_from_url()
+
+    def test_switch_to_collections(self):
+        pass
+
+    def test_create_collection_with_modal(self):
+        pass
+
+    def test_create_collection_with_request(self):
+        pass
+
+    def test_add_request_to_existing_collection(self):
+        pass
+
+    def test_add_collection_request_to_existing_collection(self):
+        pass
+
+    def test_delete_collection_request(self):
+        pass
+
+    def test_delete_collection(self):
+        pass
+
+    def test_download_collection(self):
+        pass
+
+    def test_import_collection_from_url(self):
+        pass
         
     
 def main():
