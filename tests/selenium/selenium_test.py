@@ -1,6 +1,8 @@
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support.select import Select
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.common.keys import Keys
 import selenium.webdriver.chrome.service as service
 import inspect
 import time
@@ -299,7 +301,6 @@ class PostmanTestsCollections(PostmanTests):
         self.test_add_collection_request_to_existing_collection()
         self.test_delete_collection_request()
         self.test_delete_collection()
-        self.test_download_collection()
         self.test_import_collection_from_url()
         self.browser.quit()
 
@@ -366,28 +367,129 @@ class PostmanTestsCollections(PostmanTests):
         
 
     def test_add_request_to_existing_collection(self):
-        pass
+        self.set_url_field(self.browser, "http://httpbin.org/post")
+        method_select = self.browser.find_element_by_id("request-method-selector")    
+        Select(method_select).select_by_value("POST")
+
+        add_to_collection = self.browser.find_element_by_id("add-to-collection")
+        add_to_collection.click()
+
+        time.sleep(0.5)
+
+        select_collection = self.browser.find_element_by_id("select-collection")
+        Select(select_collection).select_by_index(1)
+
+        request_name = self.browser.find_element_by_id("new-request-name")
+        request_name.clear()
+        request_name.send_keys("New request")
+
+        submit_button = self.browser.find_element_by_css_selector("#modal-add-to-collection .modal-footer .btn-primary")
+        submit_button.click()
+        
+        time.sleep(0.5)
+
+        requests = self.browser.find_elements_by_css_selector("#collection-items li:nth-of-type(1) ul li")
+        
+        if len(requests) > 0:
+            self.print_success("test_add_request_to_existing_collection")
+        else:
+            self.print_failed("test_add_request_to_existing_collection")
 
     def test_add_collection_request_to_existing_collection(self):
-        pass
+        request = self.browser.find_element_by_css_selector("#collection-items li:nth-of-type(1) ul li:nth-of-type(1) .request a")
+        request.click()
+        time.sleep(0.5)
+
+        add_to_collection = self.browser.find_element_by_id("add-to-collection")
+        add_to_collection.click()
+
+        time.sleep(0.5)
+
+        select_collection = self.browser.find_element_by_id("select-collection")
+        Select(select_collection).select_by_index(2)
+
+        request_name = self.browser.find_element_by_id("new-request-name")
+        request_name.clear()
+        request_name.send_keys("New request")
+
+        submit_button = self.browser.find_element_by_css_selector("#modal-add-to-collection .modal-footer .btn-primary")
+        submit_button.click()
+        
+        time.sleep(0.5)
+
+        requests = self.browser.find_elements_by_css_selector("#collection-items li:nth-of-type(2) ul li")
+        
+        if len(requests) > 1:
+            self.print_success("test_add_collection_request_to_existing_collection")
+        else:
+            self.print_failed("test_add_collection_request_to_existing_collection")
+
 
     def test_delete_collection_request(self):
-        pass
+        request = self.browser.find_element_by_css_selector("#collection-items li:nth-of-type(1) ul li:nth-of-type(1) .request")
+        hov = ActionChains(self.browser).move_to_element(request)
+        hov.perform()
+
+        request_delete = self.browser.find_element_by_css_selector("#collection-items li:nth-of-type(1) ul li:nth-of-type(1) .request-actions .request-actions-delete")
+        request_delete.click()
+        time.sleep(0.5)
+
+        requests = self.browser.find_elements_by_css_selector("#collection-items li:nth-of-type(1) ul li")
+        
+        if len(requests) == 0:
+            self.print_success("test_delete_collection_request")
+        else:
+            self.print_failed("test_delete_collection_request")
 
     def test_delete_collection(self):
-        pass
+        collection = self.browser.find_element_by_css_selector("#collection-items li:nth-of-type(1)")
+        hov = ActionChains(self.browser).move_to_element(collection)
+        hov.perform()
 
-    def test_download_collection(self):
-        pass
+        collection_delete = self.browser.find_element_by_css_selector("#collection-items li:nth-of-type(1) .sidebar-collection-head .collection-head-actions .collection-actions-delete")
+        collection_delete.click()
+
+        time.sleep(1)
+
+        modal_collection_delete = self.browser.find_element_by_id("modal-delete-collection-yes")
+        modal_collection_delete.click()
+        time.sleep(1)
+
+        collection_items = self.browser.find_elements_by_css_selector("#collection-items li.sidebar-collection")
+
+        if len(collection_items) == 1:
+            self.print_success("test_delete_collection")
+        else:
+            self.print_failed("test_delete_collection")
 
     def test_import_collection_from_url(self):
-        pass
+        add_link = self.browser.find_element_by_css_selector("#collections-options a:nth-of-type(2)")
+        add_link.click()
+        time.sleep(0.5)
+
+        import_collection_url = self.browser.find_element_by_id("import-collection-url-input")
+        import_collection_url.clear()
+        import_collection_url.send_keys("http://www.getpostman.com/collections/2a")
+
+        time.sleep(0.5)
+
+        import_collection_submit = self.browser.find_element_by_id("import-collection-url-submit")
+        import_collection_submit.click()
+
+        time.sleep(3)
+
+        collection_items = self.browser.find_elements_by_css_selector("#collection-items li.sidebar-collection")
+
+        if len(collection_items) == 2:
+            self.print_success("test_import_collection_from_url")
+        else:
+            self.print_failed("test_import_collection_from_url")
         
     
 def main():
-    # PostmanTestsRequests().run()
-    # PostmanTestsHistory().run()
-    # PostmanTestsLayout().run()
+    PostmanTestsRequests().run()
+    PostmanTestsHistory().run()
+    PostmanTestsLayout().run()
     PostmanTestsCollections().run()
 
 if __name__ == "__main__":
