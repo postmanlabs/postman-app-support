@@ -484,13 +484,95 @@ class PostmanTestsCollections(PostmanTests):
             self.print_success("test_import_collection_from_url")
         else:
             self.print_failed("test_import_collection_from_url")
+
+class PostmanTestsEnvironments(PostmanTests):
+    def run(self):
+        print "\nTesting environments"
+        print "---------------------"
+        self.test_add_environment()
+        self.test_delete_environment()
+        self.test_edit_environment()
+        self.browser.quit()
+
+    def test_add_environment(self):
+        environment_selector = self.browser.find_element_by_id("environment-selector")
+        environment_selector.click()
+
+        time.sleep(0.1)
+
+        manage_env_link = self.browser.find_element_by_css_selector("#environment-selector .dropdown-menu li:last-child a")
+        manage_env_link.click()
+
+        time.sleep(1)
+
+        add_env_button = self.browser.find_element_by_css_selector("#environments-list-wrapper .toolbar .environments-actions-add")
+        add_env_button.click()
+        time.sleep(0.3)
+
+        environment_name = self.browser.find_element_by_id("environment-editor-name")
+        environment_name.clear()
+        environment_name.send_keys("Test environment")
+
+        first_key = self.browser.find_element_by_css_selector("#environment-keyvaleditor .keyvalueeditor-row:first-child .keyvalueeditor-key")
+        first_key.clear()
+        first_key.send_keys("Foo")
+
+        first_val = self.browser.find_element_by_css_selector("#environment-keyvaleditor .keyvalueeditor-row:first-child .keyvalueeditor-value")
+        first_val.clear()
+        first_val.send_keys("Bar")
+
+        submit_button = self.browser.find_element_by_css_selector("#modal-environments .environments-actions-add-submit")
+        submit_button.click()
+        time.sleep(0.3)
+
+        environments_list = self.browser.find_element_by_id("environments-list")
+        environments_list_value = self.browser.execute_script("return arguments[0].innerHTML", environments_list)
+
+        # Add another environment
+        add_env_button.click()
+        environment_name.clear()
+        environment_name.send_keys("Test another environment")
+
+        first_key = self.browser.find_element_by_css_selector("#environment-keyvaleditor .keyvalueeditor-row:first-child .keyvalueeditor-key")
+        first_key.clear()
+        first_key.send_keys("Foo 1")
+
+        first_val = self.browser.find_element_by_css_selector("#environment-keyvaleditor .keyvalueeditor-row:first-child .keyvalueeditor-value")
+        first_val.clear()
+        first_val.send_keys("Bar 1")
+
+        submit_button = self.browser.find_element_by_css_selector("#modal-environments .environments-actions-add-submit")
+        submit_button.click()
+        time.sleep(0.3)
+        
+        if environments_list_value.find("Test environment") > 0:
+            self.print_success("test_add_environment")
+        else:
+            self.print_failed("test_add_environment")
+        
+
+    def test_delete_environment(self):
+        delete_button = self.browser.find_element_by_css_selector("#environments-list tbody tr:first-child .environment-action-delete")
+        delete_button.click()
+        
+        environments_list = self.browser.find_element_by_id("environments-list")
+        environments_list_value = self.browser.execute_script("return arguments[0].innerHTML", environments_list)
+
+        if environments_list_value.find("Test environment") < 0:
+            self.print_success("test_delete_environment")
+        else:
+            self.print_failed("test_delete_environment")
+        
+    def test_edit_environment(self):
+        pass
         
     
 def main():
-    PostmanTestsRequests().run()
-    PostmanTestsHistory().run()
-    PostmanTestsLayout().run()
-    PostmanTestsCollections().run()
+    # PostmanTestsRequests().run()
+    # PostmanTestsHistory().run()
+    # PostmanTestsLayout().run()
+    # PostmanTestsCollections().run()
+    PostmanTestsEnvironments().run()
 
 if __name__ == "__main__":
     main()
