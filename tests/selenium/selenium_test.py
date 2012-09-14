@@ -492,6 +492,7 @@ class PostmanTestsEnvironments(PostmanTests):
         self.test_add_environment()
         self.test_delete_environment()
         self.test_edit_environment()
+        self.test_globals()
         self.browser.quit()
 
     def test_add_environment(self):
@@ -564,8 +565,74 @@ class PostmanTestsEnvironments(PostmanTests):
             self.print_failed("test_delete_environment")
         
     def test_edit_environment(self):
-        pass
+        edit_button = self.browser.find_element_by_css_selector("#environments-list tbody tr:first-child .environment-action-edit")
+        edit_button.click()
+
+        environment_name = self.browser.find_element_by_id("environment-editor-name")
+        environment_name.clear()
+        environment_name.send_keys("Test edited environment")
+
+        first_key = self.browser.find_element_by_css_selector("#environment-keyvaleditor .keyvalueeditor-row:first-child .keyvalueeditor-key")
+        first_key.clear()
+        first_key.send_keys("Foo 2")
+
+        first_val = self.browser.find_element_by_css_selector("#environment-keyvaleditor .keyvalueeditor-row:first-child .keyvalueeditor-value")
+        first_val.clear()
+        first_val.send_keys("Bar 2")
+
+        submit_button = self.browser.find_element_by_css_selector("#modal-environments .environments-actions-add-submit")
+        submit_button.click()
+        time.sleep(0.3)
+
+        environments_list = self.browser.find_element_by_id("environments-list")
+        environments_list_value = self.browser.execute_script("return arguments[0].innerHTML", environments_list)        
+
+        if environments_list_value.find("Test edited environment") > 0:
+            self.print_success("test_edit_environment")
+        else:
+            self.print_failed("test_edit_environment")
+
+
+    def test_globals(self):
+        manage_globals_button = self.browser.find_element_by_css_selector("#environments-list-wrapper .toolbar .environments-actions-manage-globals")
+        manage_globals_button.click()
+
+        first_key = self.browser.find_element_by_css_selector("#globals-keyvaleditor .keyvalueeditor-row:first-child .keyvalueeditor-key")
+        first_key.clear()
+        first_key.send_keys("Global Foo")
+
+        first_val = self.browser.find_element_by_css_selector("#globals-keyvaleditor .keyvalueeditor-row:first-child .keyvalueeditor-value")
+        first_val.clear()
+        first_val.send_keys("Global Bar") 
+
+        second_key = self.browser.find_element_by_css_selector("#globals-keyvaleditor .keyvalueeditor-row:nth-of-type(2) .keyvalueeditor-key")
+        second_key.clear()
+        second_key.send_keys("Global Foo 1")
+
+        second_val = self.browser.find_element_by_css_selector("#globals-keyvaleditor .keyvalueeditor-row:nth-of-type(2) .keyvalueeditor-value")
+        second_val.clear()
+        second_val.send_keys("Global Bar 2") 
+
+        submit_button = self.browser.find_element_by_css_selector("#modal-environments .environments-actions-add-back")
+        submit_button.click()
+        time.sleep(0.3)        
+
+        close_button = self.browser.find_element_by_css_selector("#modal-environments .modal-header .close")
+        close_button.click()
+
+        time.sleep(1)
+
+        quicklook = self.browser.find_element_by_id("environment-quicklook")
+        hov = ActionChains(self.browser).move_to_element(quicklook)
+        hov.perform()
         
+        contents = self.browser.find_element_by_id("environment-quicklook-content")
+        contents_value = self.browser.execute_script("return arguments[0].innerHTML", contents)
+
+        if contents_value.find("Global Foo") > 0 and contents_value.find("Global Bar") > 0:
+            self.print_success("test_globals")
+        else:
+            self.print_failed("test_globals")
     
 def main():
     # PostmanTestsRequests().run()
