@@ -3064,7 +3064,7 @@ pm.indexedDB = {
     open_v21:function () {
         console.log("Open v21");
 
-        var request = indexedDB.open("postman", "POSTman request history");
+        var request = indexedDB.open("postman");
         request.onsuccess = function (e) {
             var v = "0.47";
             pm.indexedDB.db = e.target.result;
