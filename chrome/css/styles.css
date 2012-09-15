@@ -613,10 +613,10 @@ li .right {
 }
 
 #modal-add-to-collection {
-    position: absolute;
+    position: fixed;
     top: 50%;
     left: 50%;
-    margin-top: -250px;
+    margin-top: -2000px;
     margin-left: -250px;
     display: none;
 }
@@ -626,7 +626,7 @@ li .right {
 }
 
 #modal-shortcuts {
-    position: absolute;
+    position: fixed;
     top: 50%;
     left: 50%;
     margin-top: -300px;
@@ -635,7 +635,7 @@ li .right {
 }
 
 #modal-spread-the-word {
-    position: absolute;
+    position: fixed;
     top: 50%;
     left: 50%;
     margin-top: -300px;
