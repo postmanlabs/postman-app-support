@@ -785,7 +785,24 @@ class PostmanTestsHelpers(PostmanTests):
         refresh_headers = self.browser.find_element_by_css_selector("#request-helper-oAuth1 .request-helper-submit")
         refresh_headers.click()
 
+        input_elements = self.browser.find_elements_by_css_selector("#url-keyvaleditor .keyvalueeditor-row")
         
+        found_oauth_signature = False
+        for element in input_elements:
+            value = self.browser.execute_script("return arguments[0].innerHTML", element)            
+
+            if value.find("oauth_signature") > 0:
+                found_oauth_signature = True
+                if value.find("tR3+Ty81lMeYAr/Fid0kMTYa/WM=") > 0:
+                    found_oauth_signature = True
+                else:
+                    found_oauth_signature = False
+    
+
+        if found_oauth_signature is True:
+            self.print_success("test_oauth1_plain_get")
+        else:
+            self.print_failed("test_oauth1_plain_get")        
 
     def test_oauth1_plain_post(self):
         pass

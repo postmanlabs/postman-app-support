@@ -1973,6 +1973,9 @@ pm.helpers = {
             }
 
             var processedUrl = pm.envManager.convertString($('#url').val()).trim();
+            if(processedUrl.indexOf('?') > 0) {
+                processedUrl = processedUrl.split("?")[0];
+            }
 
             var message = {
                 action:processedUrl,
@@ -1986,17 +1989,12 @@ pm.helpers = {
                     var val = $(this).val();
                     val = pm.envManager.convertString(val);
                     message.parameters.push([$(this).attr('key'), val]);
-                    console.log([$(this).attr('key'), val]);
                 }
             });
-
-            console.log(message.parameters);
 
             //Get parameters
             var urlParams = $('#url-keyvaleditor').keyvalueeditor('getValues');
             var bodyParams = $('#formdata-keyvaleditor').keyvalueeditor('getValues');
-
-            console.log(urlParams);
 
             var params = urlParams.concat(bodyParams);
 
@@ -2017,9 +2015,6 @@ pm.helpers = {
                 accessor.tokenSecret = $('input[key="oauth_token_secret"]').val();
                 accessor.tokenSecret = pm.envManager.convertString(accessor.tokenSecret);
             }
-
-            console.log(message, accessor);
-
             return OAuth.SignatureMethod.sign(message, accessor);
         },
 
