@@ -1685,6 +1685,7 @@ pm.request = {
     },
 
     setUrlParamString:function (params) {
+        console.log(params);
         this.url = $('#url').val();
         var url = this.url;
 
@@ -1704,6 +1705,8 @@ pm.request = {
         else {
             $('#url').val(baseUrl);
         }
+
+        console.log($('#url').val());
     },
 
     reset:function () {
@@ -1761,6 +1764,20 @@ pm.request = {
         var xhr = new XMLHttpRequest();
         pm.request.xhr = xhr;
 
+        url = ensureProperUrl(url);
+
+        var envManager = pm.envManager;
+        var environment = envManager.selectedEnv;
+        var envValues = [];
+
+        if (environment !== null) {
+            envValues = environment.values;
+        }
+
+        url = envManager.processString(url, envValues);
+        pm.request.url = url;
+
+        console.log(url);
         url = pm.request.encodeUrl(url);
 
         var originalUrl = $('#url').val();
@@ -1777,13 +1794,6 @@ pm.request = {
 
         pm.request.startTime = new Date().getTime();
 
-        var environment = pm.envManager.selectedEnv;
-        var envValues = [];
-
-        if (environment !== null) {
-            envValues = environment.values;
-        }
-
         xhr.onreadystatechange = function (event) {
             pm.request.response.load(event.target);
         };
@@ -1793,12 +1803,6 @@ pm.request = {
         }
 
         xhr.responseType = responseType;
-
-        var envManager = pm.envManager;
-        url = envManager.processString(url, envValues);
-        pm.request.url = url;
-
-        url = ensureProperUrl(url);
         xhr.open(method, url, true);
 
         for (i = 0; i < headers.length; i++) {
@@ -1960,13 +1964,18 @@ pm.helpers = {
         },
 
         generateSignature:function () {
+            //Make sure the URL is urlencoded properly
+            //Set the URL keyval editor as well. Other get params disappear when you click on URL params again
             if ($('#url').val() === '') {
                 $('#request-helpers').css("display", "block");
                 alert('Please enter the URL first.');
                 return null;
             }
+
+            var processedUrl = pm.envManager.convertString($('#url').val()).trim();
+
             var message = {
-                action:$('#url').val().trim(),
+                action:processedUrl,
                 method:pm.request.method,
                 parameters:[]
             };
@@ -1977,12 +1986,17 @@ pm.helpers = {
                     var val = $(this).val();
                     val = pm.envManager.convertString(val);
                     message.parameters.push([$(this).attr('key'), val]);
+                    console.log([$(this).attr('key'), val]);
                 }
             });
+
+            console.log(message.parameters);
 
             //Get parameters
             var urlParams = $('#url-keyvaleditor').keyvalueeditor('getValues');
             var bodyParams = $('#formdata-keyvaleditor').keyvalueeditor('getValues');
+
+            console.log(urlParams);
 
             var params = urlParams.concat(bodyParams);
 
@@ -2004,20 +2018,17 @@ pm.helpers = {
                 accessor.tokenSecret = pm.envManager.convertString(accessor.tokenSecret);
             }
 
+            console.log(message, accessor);
+
             return OAuth.SignatureMethod.sign(message, accessor);
         },
 
         process:function () {
             var params = [];
+            var urlParams = pm.request.getUrlEditorParams();
+            params = params.concat(urlParams);
 
             var signatureKey = "oauth_signature";
-            var signature = this.generateSignature();
-            if (signature == null) {
-                return;
-            }
-
-            params.push({key:signatureKey, value:signature});
-
             $('input.signatureParam').each(function () {
                 if ($(this).val() != '') {
                     var val = $(this).val();
@@ -2025,6 +2036,13 @@ pm.helpers = {
                     params.push({key:$(this).attr('key'), value:val});
                 }
             });
+
+            var signature = this.generateSignature();
+            if (signature == null) {
+                return;
+            }
+
+            params.push({key:signatureKey, value:signature});
 
             var addToHeader = $('#request-helper-oauth1-header').attr('checked') ? true : false;
 
@@ -2057,7 +2075,7 @@ pm.helpers = {
                 pm.request.openHeaderEditor();
             } else {
                 if (pm.request.method === "GET") {
-                    $('#url-keyvaleditor').keyvalueeditor('addParams', params);
+                    $('#url-keyvaleditor').keyvalueeditor('reset', params);
                     pm.request.setUrlParamString(params);
                     pm.request.openUrlEditor();
                 } else {

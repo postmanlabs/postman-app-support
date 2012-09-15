@@ -641,8 +641,8 @@ class PostmanTestsHelpers(PostmanTests):
     def run(self):
         print "\nTesting Helpers"
         print "---------------------"
-        self.test_basic_auth_plain()
-        self.test_basic_auth_environment()
+        # self.test_basic_auth_plain()
+        # self.test_basic_auth_environment()
         self.test_oauth1_plain_get()
         self.test_oauth1_plain_post()
         self.test_oauth1_plain_get_headers()
@@ -750,7 +750,42 @@ class PostmanTestsHelpers(PostmanTests):
             self.print_failed("test_basic_auth_environment")
 
     def test_oauth1_plain_get(self):
-        pass
+        oauth1_selector = self.browser.find_element_by_css_selector("#request-types .request-helper-tabs li:nth-of-type(3)")
+        oauth1_selector.click()
+
+        consumer_key = self.browser.find_element_by_id("request-helper-oauth1-consumerKey")      
+        consumer_secret = self.browser.find_element_by_id("request-helper-oauth1-consumerSecret")
+        token = self.browser.find_element_by_id("request-helper-oauth1-token")
+        token_secret = self.browser.find_element_by_id("request-helper-oauth1-tokenSecret")
+        timestamp = self.browser.find_element_by_id("request-helper-oauth1-timestamp")
+        nonce = self.browser.find_element_by_id("request-helper-oauth1-nonce")
+        version = self.browser.find_element_by_id("request-helper-oauth1-version")
+
+        # From OAuth example
+        self.set_url_field(self.browser, "http://photos.example.net/photos?size=original&file=vacation.jpg")
+
+        consumer_key.clear()
+        consumer_key.send_keys("dpf43f3p2l4k3l03")
+
+        nonce.clear()
+        nonce.send_keys("kllo9940pd9333jh")
+
+        timestamp.clear()
+        timestamp.send_keys("1191242096")
+
+        token.clear()
+        token.send_keys("nnch734d00sl2jdk")
+
+        consumer_secret.clear()
+        consumer_secret.send_keys("kd94hf93k423kf44")
+
+        token_secret.clear()
+        token_secret.send_keys("pfkkdhi9sl3r4s00")
+        
+        refresh_headers = self.browser.find_element_by_css_selector("#request-helper-oAuth1 .request-helper-submit")
+        refresh_headers.click()
+
+        
 
     def test_oauth1_plain_post(self):
         pass
