@@ -48,6 +48,12 @@ class PostmanTests:
         print "\nPostman loaded succesfully. IndexedDB opened"
         return True
 
+    def reset_request(self):
+        reset_button = self.browser.find_element_by_id("request-actions-reset")
+        reset_button.click()
+        time.sleep(0.5)
+
+
     def print_success(self, method_name):
         print "[PASSED] %s" % method_name
 
@@ -59,6 +65,7 @@ class PostmanTestsRequests(PostmanTests):
         print "\nTesting requests"
         print "---------------"
         self.test_get_basic()
+        self.test_get_only_key()
         self.test_delete_basic()
         self.test_head_basic()
         self.test_options_basic()
@@ -89,6 +96,21 @@ class PostmanTestsRequests(PostmanTests):
             return True
         else:
             self.print_failed("test_get_basic")
+            return False
+
+    def test_get_only_key(self):
+        self.set_url_field(self.browser, "http://httpbin.org/get?start")
+
+        send_button = self.browser.find_element_by_id("submit-request")
+        send_button.click()
+
+        code_data_value = self.get_codemirror_value(self.browser)    
+
+        if code_data_value.find("/get?start") > 0:
+            self.print_success("test_get_only_key")
+            return True
+        else:
+            self.print_failed("test_get_only_key")
             return False
 
     def test_delete_basic(self):
@@ -353,7 +375,9 @@ class PostmanTestsCollections(PostmanTests):
         new_collection_input = self.browser.find_element_by_id("new-collection")
         new_collection_input.clear()
         new_collection_input.send_keys("Existing request collection")
-        
+
+        time.sleep(1)
+
         submit_button = self.browser.find_element_by_css_selector("#modal-add-to-collection .modal-footer .btn-primary")
         submit_button.click()
         
@@ -532,6 +556,7 @@ class PostmanTestsEnvironments(PostmanTests):
         environments_list = self.browser.find_element_by_id("environments-list")
         environments_list_value = self.browser.execute_script("return arguments[0].innerHTML", environments_list)
 
+        add_env_button = self.browser.find_element_by_css_selector("#environments-list-wrapper .toolbar .environments-actions-add")
         # Add another environment
         add_env_button.click()
         environment_name.clear()
@@ -641,14 +666,14 @@ class PostmanTestsHelpers(PostmanTests):
     def run(self):
         print "\nTesting Helpers"
         print "---------------------"
-        # self.test_basic_auth_plain()
-        # self.test_basic_auth_environment()
+        self.test_basic_auth_plain()
+        self.test_basic_auth_environment()
         self.test_oauth1_plain_get()
-        self.test_oauth1_plain_post()
-        self.test_oauth1_plain_get_headers()
-        self.test_oauth1_plain_environment()
-        # self.browser.quit()
-        pass
+        self.test_oauth1_formdata_post()
+        self.test_oauth1_urlencoded_post()
+        self.test_oauth1_post_headers()
+        self.test_oauth1_post_environment()
+        self.browser.quit()
 
     def test_basic_auth_plain(self):
         basic_auth_selector = self.browser.find_element_by_css_selector("#request-types .request-helper-tabs li:nth-of-type(2)")
@@ -676,6 +701,8 @@ class PostmanTestsHelpers(PostmanTests):
 
 
     def test_basic_auth_environment(self):
+        self.reset_request()
+
         environment_selector = self.browser.find_element_by_id("environment-selector")
         environment_selector.click()
 
@@ -750,6 +777,8 @@ class PostmanTestsHelpers(PostmanTests):
             self.print_failed("test_basic_auth_environment")
 
     def test_oauth1_plain_get(self):
+        self.reset_request()
+
         oauth1_selector = self.browser.find_element_by_css_selector("#request-types .request-helper-tabs li:nth-of-type(3)")
         oauth1_selector.click()
 
@@ -804,21 +833,432 @@ class PostmanTestsHelpers(PostmanTests):
         else:
             self.print_failed("test_oauth1_plain_get")        
 
-    def test_oauth1_plain_post(self):
-        pass
-    
-    def test_oauth1_plain_get_headers(self):
-        pass
+    def test_oauth1_formdata_post(self):
+        self.reset_request()
 
-    def test_oauth1_plain_environment(self):
-        pass
+        method_select = self.browser.find_element_by_id("request-method-selector")    
+        Select(method_select).select_by_value("POST")
+
+        # From OAuth example
+        self.set_url_field(self.browser, "http://photos.example.net/photos")
+
+        first_formdata_key = self.browser.find_element_by_css_selector("#formdata-keyvaleditor .keyvalueeditor-row:nth-of-type(1) .keyvalueeditor-key")
+        first_formdata_key.clear()
+        first_formdata_key.send_keys("size")
+
+        first_formdata_value = self.browser.find_element_by_css_selector("#formdata-keyvaleditor .keyvalueeditor-row:nth-of-type(1) .keyvalueeditor-value")
+        first_formdata_value.clear()
+        first_formdata_value.send_keys("original")
+
+        second_formdata_key = self.browser.find_element_by_css_selector("#formdata-keyvaleditor .keyvalueeditor-row:nth-of-type(2) .keyvalueeditor-key")
+        second_formdata_key.clear()
+        second_formdata_key.send_keys("file")
+
+        second_formdata_value = self.browser.find_element_by_css_selector("#formdata-keyvaleditor .keyvalueeditor-row:nth-of-type(2) .keyvalueeditor-value")
+        second_formdata_value.clear()
+        second_formdata_value.send_keys("vacation.jpg")
+
+        oauth1_selector = self.browser.find_element_by_css_selector("#request-types .request-helper-tabs li:nth-of-type(3)")
+        oauth1_selector.click()
+
+        consumer_key = self.browser.find_element_by_id("request-helper-oauth1-consumerKey")      
+        consumer_secret = self.browser.find_element_by_id("request-helper-oauth1-consumerSecret")
+        token = self.browser.find_element_by_id("request-helper-oauth1-token")
+        token_secret = self.browser.find_element_by_id("request-helper-oauth1-tokenSecret")
+        timestamp = self.browser.find_element_by_id("request-helper-oauth1-timestamp")
+        nonce = self.browser.find_element_by_id("request-helper-oauth1-nonce")
+        version = self.browser.find_element_by_id("request-helper-oauth1-version")
+
+        consumer_key.clear()
+        consumer_key.send_keys("dpf43f3p2l4k3l03")
+
+        nonce.clear()
+        nonce.send_keys("kllo9940pd9333jh")
+
+        timestamp.clear()
+        timestamp.send_keys("1191242096")
+
+        token.clear()
+        token.send_keys("nnch734d00sl2jdk")
+
+        consumer_secret.clear()
+        consumer_secret.send_keys("kd94hf93k423kf44")
+
+        token_secret.clear()
+        token_secret.send_keys("pfkkdhi9sl3r4s00")
+        
+        refresh_headers = self.browser.find_element_by_css_selector("#request-helper-oAuth1 .request-helper-submit")
+        refresh_headers.click()
+
+        input_elements = self.browser.find_elements_by_css_selector("#formdata-keyvaleditor .keyvalueeditor-row")
+        
+        found_oauth_signature = False
+        for element in input_elements:
+            value = self.browser.execute_script("return arguments[0].innerHTML", element)            
+
+            if value.find("oauth_signature") > 0:
+                found_oauth_signature = True
+                if value.find("wPkvxykrw+BTdCcGqKr+3I+PsiM=") > 0:
+                    found_oauth_signature = True
+                else:
+                    found_oauth_signature = False
+    
+
+        if found_oauth_signature is True:
+            self.print_success("test_oauth1_formdata_post")
+        else:
+            self.print_failed("test_oauth1_formdata_post")
+
+    def test_oauth1_urlencoded_post(self):
+        self.reset_request()
+
+        method_select = self.browser.find_element_by_id("request-method-selector")    
+        Select(method_select).select_by_value("POST")
+
+        # Select urlencoded
+        self.browser.find_element_by_css_selector("#data-mode-selector a:nth-of-type(2)").click()
+
+        # From OAuth example
+        self.set_url_field(self.browser, "http://photos.example.net/photos")
+
+        first_formdata_key = self.browser.find_element_by_css_selector("#urlencoded-keyvaleditor .keyvalueeditor-row:nth-of-type(1) .keyvalueeditor-key")
+        first_formdata_key.clear()
+        first_formdata_key.send_keys("size")
+
+        first_formdata_value = self.browser.find_element_by_css_selector("#urlencoded-keyvaleditor .keyvalueeditor-row:nth-of-type(1) .keyvalueeditor-value")
+        first_formdata_value.clear()
+        first_formdata_value.send_keys("original")
+
+        second_formdata_key = self.browser.find_element_by_css_selector("#urlencoded-keyvaleditor .keyvalueeditor-row:nth-of-type(2) .keyvalueeditor-key")
+        second_formdata_key.clear()
+        second_formdata_key.send_keys("file")
+
+        second_formdata_value = self.browser.find_element_by_css_selector("#urlencoded-keyvaleditor .keyvalueeditor-row:nth-of-type(2) .keyvalueeditor-value")
+        second_formdata_value.clear()
+        second_formdata_value.send_keys("vacation.jpg")
+
+        oauth1_selector = self.browser.find_element_by_css_selector("#request-types .request-helper-tabs li:nth-of-type(3)")
+        oauth1_selector.click()
+
+        consumer_key = self.browser.find_element_by_id("request-helper-oauth1-consumerKey")      
+        consumer_secret = self.browser.find_element_by_id("request-helper-oauth1-consumerSecret")
+        token = self.browser.find_element_by_id("request-helper-oauth1-token")
+        token_secret = self.browser.find_element_by_id("request-helper-oauth1-tokenSecret")
+        timestamp = self.browser.find_element_by_id("request-helper-oauth1-timestamp")
+        nonce = self.browser.find_element_by_id("request-helper-oauth1-nonce")
+        version = self.browser.find_element_by_id("request-helper-oauth1-version")
+
+        consumer_key.clear()
+        consumer_key.send_keys("dpf43f3p2l4k3l03")
+
+        nonce.clear()
+        nonce.send_keys("kllo9940pd9333jh")
+
+        timestamp.clear()
+        timestamp.send_keys("1191242096")
+
+        token.clear()
+        token.send_keys("nnch734d00sl2jdk")
+
+        consumer_secret.clear()
+        consumer_secret.send_keys("kd94hf93k423kf44")
+
+        token_secret.clear()
+        token_secret.send_keys("pfkkdhi9sl3r4s00")
+        
+        refresh_headers = self.browser.find_element_by_css_selector("#request-helper-oAuth1 .request-helper-submit")
+        refresh_headers.click()
+
+        input_elements = self.browser.find_elements_by_css_selector("#urlencoded-keyvaleditor .keyvalueeditor-row")
+        
+        found_oauth_signature = False
+        for element in input_elements:
+            value = self.browser.execute_script("return arguments[0].innerHTML", element)            
+
+            if value.find("oauth_signature") > 0:
+                found_oauth_signature = True
+                if value.find("wPkvxykrw+BTdCcGqKr+3I+PsiM=") > 0:
+                    found_oauth_signature = True
+                else:
+                    found_oauth_signature = False
+    
+
+        if found_oauth_signature is True:
+            self.print_success("test_oauth1_urlencoded_post")
+        else:
+            self.print_failed("test_oauth1_urlencoded_post")
+    
+    def test_oauth1_post_headers(self):
+        self.reset_request()
+
+        method_select = self.browser.find_element_by_id("request-method-selector")    
+        Select(method_select).select_by_value("POST")
+
+        # From OAuth example
+        self.set_url_field(self.browser, "http://photos.example.net/photos")
+
+        first_formdata_key = self.browser.find_element_by_css_selector("#formdata-keyvaleditor .keyvalueeditor-row:nth-of-type(1) .keyvalueeditor-key")
+        first_formdata_key.clear()
+        first_formdata_key.send_keys("size")
+
+        first_formdata_value = self.browser.find_element_by_css_selector("#formdata-keyvaleditor .keyvalueeditor-row:nth-of-type(1) .keyvalueeditor-value")
+        first_formdata_value.clear()
+        first_formdata_value.send_keys("original")
+
+        second_formdata_key = self.browser.find_element_by_css_selector("#formdata-keyvaleditor .keyvalueeditor-row:nth-of-type(2) .keyvalueeditor-key")
+        second_formdata_key.clear()
+        second_formdata_key.send_keys("file")
+
+        second_formdata_value = self.browser.find_element_by_css_selector("#formdata-keyvaleditor .keyvalueeditor-row:nth-of-type(2) .keyvalueeditor-value")
+        second_formdata_value.clear()
+        second_formdata_value.send_keys("vacation.jpg")
+
+        oauth1_selector = self.browser.find_element_by_css_selector("#request-types .request-helper-tabs li:nth-of-type(3)")
+        oauth1_selector.click()
+
+        consumer_key = self.browser.find_element_by_id("request-helper-oauth1-consumerKey")      
+        consumer_secret = self.browser.find_element_by_id("request-helper-oauth1-consumerSecret")
+        token = self.browser.find_element_by_id("request-helper-oauth1-token")
+        token_secret = self.browser.find_element_by_id("request-helper-oauth1-tokenSecret")
+        timestamp = self.browser.find_element_by_id("request-helper-oauth1-timestamp")
+        nonce = self.browser.find_element_by_id("request-helper-oauth1-nonce")
+        version = self.browser.find_element_by_id("request-helper-oauth1-version")
+
+        consumer_key.clear()
+        consumer_key.send_keys("dpf43f3p2l4k3l03")
+
+        nonce.clear()
+        nonce.send_keys("kllo9940pd9333jh")
+
+        timestamp.clear()
+        timestamp.send_keys("1191242096")
+
+        token.clear()
+        token.send_keys("nnch734d00sl2jdk")
+
+        consumer_secret.clear()
+        consumer_secret.send_keys("kd94hf93k423kf44")
+
+        token_secret.clear()
+        token_secret.send_keys("pfkkdhi9sl3r4s00")
+        
+        add_to_header = self.browser.find_element_by_id("request-helper-oauth1-header")
+        add_to_header.click()
+
+        refresh_headers = self.browser.find_element_by_css_selector("#request-helper-oAuth1 .request-helper-submit")
+        refresh_headers.click()
+
+        input_elements = self.browser.find_elements_by_css_selector("#headers-keyvaleditor .keyvalueeditor-row")
+        
+        found_oauth_signature = False
+        for element in input_elements:
+            value = self.browser.execute_script("return arguments[0].innerHTML", element)            
+
+            if value.find("oauth_signature") > 0:
+                found_oauth_signature = True
+                if value.find("wPkvxykrw+BTdCcGqKr+3I+PsiM=") > 0:
+                    found_oauth_signature = True
+                else:
+                    found_oauth_signature = False
+    
+
+        if found_oauth_signature is True:
+            self.print_success("test_oauth1_post_headers")
+        else:
+            self.print_failed("test_oauth1_post_headers")
+
+    def test_oauth1_post_environment(self):
+        self.reset_request()
+
+        method_select = self.browser.find_element_by_id("request-method-selector")    
+        Select(method_select).select_by_value("POST")
+
+        # From OAuth example
+        self.set_url_field(self.browser, "{{url}}")
+
+
+        environment_selector = self.browser.find_element_by_id("environment-selector")
+        environment_selector.click()
+
+        time.sleep(0.1)
+
+        manage_env_link = self.browser.find_element_by_css_selector("#environment-selector .dropdown-menu li:last-child a")
+        manage_env_link.click()
+
+        time.sleep(1)
+
+        add_env_button = self.browser.find_element_by_css_selector("#environments-list-wrapper .toolbar .environments-actions-add")
+        add_env_button.click()
+        time.sleep(0.3)
+
+        environment_name = self.browser.find_element_by_id("environment-editor-name")
+        environment_name.clear()
+        environment_name.send_keys("Test oauth 1 environment")
+
+        first_key = self.browser.find_element_by_css_selector("#environment-keyvaleditor .keyvalueeditor-row:first-child .keyvalueeditor-key")
+        first_key.clear()
+        first_key.send_keys("consumer_key")
+
+        first_val = self.browser.find_element_by_css_selector("#environment-keyvaleditor .keyvalueeditor-row:first-child .keyvalueeditor-value")
+        first_val.clear()
+        first_val.send_keys("dpf43f3p2l4k3l03")
+
+        second_key = self.browser.find_element_by_css_selector("#environment-keyvaleditor .keyvalueeditor-row:nth-of-type(2) .keyvalueeditor-key")
+        second_key.clear()
+        second_key.send_keys("consumer_secret")
+
+        second_val = self.browser.find_element_by_css_selector("#environment-keyvaleditor .keyvalueeditor-row:nth-of-type(2) .keyvalueeditor-value")
+        second_val.clear()
+        second_val.send_keys("kd94hf93k423kf44")
+
+        third_key = self.browser.find_element_by_css_selector("#environment-keyvaleditor .keyvalueeditor-row:nth-of-type(3) .keyvalueeditor-key")
+        third_key.clear()
+        third_key.send_keys("token")
+
+        third_val = self.browser.find_element_by_css_selector("#environment-keyvaleditor .keyvalueeditor-row:nth-of-type(3) .keyvalueeditor-value")
+        third_val.clear()
+        third_val.send_keys("nnch734d00sl2jdk")
+
+        fourth_key = self.browser.find_element_by_css_selector("#environment-keyvaleditor .keyvalueeditor-row:nth-of-type(4) .keyvalueeditor-key")
+        fourth_key.clear()
+        fourth_key.send_keys("token_secret")
+
+        fourth_val = self.browser.find_element_by_css_selector("#environment-keyvaleditor .keyvalueeditor-row:nth-of-type(4) .keyvalueeditor-value")
+        fourth_val.clear()
+        fourth_val.send_keys("pfkkdhi9sl3r4s00")
+
+        fifth_key = self.browser.find_element_by_css_selector("#environment-keyvaleditor .keyvalueeditor-row:nth-of-type(5) .keyvalueeditor-key")
+        fifth_key.clear()
+        fifth_key.send_keys("nonce")
+
+        fifth_val = self.browser.find_element_by_css_selector("#environment-keyvaleditor .keyvalueeditor-row:nth-of-type(5) .keyvalueeditor-value")
+        fifth_val.clear()
+        fifth_val.send_keys("kllo9940pd9333jh")
+
+        sixth_key = self.browser.find_element_by_css_selector("#environment-keyvaleditor .keyvalueeditor-row:nth-of-type(6) .keyvalueeditor-key")
+        sixth_key.clear()
+        sixth_key.send_keys("timestamp")
+
+        sixth_val = self.browser.find_element_by_css_selector("#environment-keyvaleditor .keyvalueeditor-row:nth-of-type(6) .keyvalueeditor-value")
+        sixth_val.clear()
+        sixth_val.send_keys("1191242096")
+
+        seventh_key = self.browser.find_element_by_css_selector("#environment-keyvaleditor .keyvalueeditor-row:nth-of-type(7) .keyvalueeditor-key")
+        seventh_key.clear()
+        seventh_key.send_keys("url")
+
+        seventh_val = self.browser.find_element_by_css_selector("#environment-keyvaleditor .keyvalueeditor-row:nth-of-type(7) .keyvalueeditor-value")
+        seventh_val.clear()
+        seventh_val.send_keys("http://photos.example.net/photos")
+
+        eigth_key = self.browser.find_element_by_css_selector("#environment-keyvaleditor .keyvalueeditor-row:nth-of-type(8) .keyvalueeditor-key")
+        eigth_key.clear()
+        eigth_key.send_keys("file")
+
+        eigth_val = self.browser.find_element_by_css_selector("#environment-keyvaleditor .keyvalueeditor-row:nth-of-type(8) .keyvalueeditor-value")
+        eigth_val.clear()
+        eigth_val.send_keys("vacation.jpg")
+
+        ninth_key = self.browser.find_element_by_css_selector("#environment-keyvaleditor .keyvalueeditor-row:nth-of-type(9) .keyvalueeditor-key")
+        ninth_key.clear()
+        ninth_key.send_keys("size")
+
+        ninth_val = self.browser.find_element_by_css_selector("#environment-keyvaleditor .keyvalueeditor-row:nth-of-type(9) .keyvalueeditor-value")
+        ninth_val.clear()
+        ninth_val.send_keys("original")
+
+        submit_button = self.browser.find_element_by_css_selector("#modal-environments .environments-actions-add-submit")
+        submit_button.click()
+        time.sleep(0.3)
+
+        close_button = self.browser.find_element_by_css_selector("#modal-environments .modal-header .close")
+        close_button.click()
+
+        time.sleep(1)
+
+        environment_selector = self.browser.find_element_by_id("environment-selector")
+        environment_selector.click()
+
+        # Select the environment
+        manage_env_link = self.browser.find_element_by_css_selector("#environment-selector .dropdown-menu li:nth-of-type(2) a")
+        manage_env_link.click()
+
+        first_formdata_key = self.browser.find_element_by_css_selector("#formdata-keyvaleditor .keyvalueeditor-row:nth-of-type(1) .keyvalueeditor-key")
+        first_formdata_key.clear()
+        first_formdata_key.send_keys("size")
+
+        first_formdata_value = self.browser.find_element_by_css_selector("#formdata-keyvaleditor .keyvalueeditor-row:nth-of-type(1) .keyvalueeditor-value")
+        first_formdata_value.clear()
+        first_formdata_value.send_keys("{{size}}")
+
+        second_formdata_key = self.browser.find_element_by_css_selector("#formdata-keyvaleditor .keyvalueeditor-row:nth-of-type(2) .keyvalueeditor-key")
+        second_formdata_key.clear()
+        second_formdata_key.send_keys("file")
+
+        second_formdata_value = self.browser.find_element_by_css_selector("#formdata-keyvaleditor .keyvalueeditor-row:nth-of-type(2) .keyvalueeditor-value")
+        second_formdata_value.clear()
+        second_formdata_value.send_keys("{{file}}")
+
+        oauth1_selector = self.browser.find_element_by_css_selector("#request-types .request-helper-tabs li:nth-of-type(3)")
+        oauth1_selector.click()
+
+        consumer_key = self.browser.find_element_by_id("request-helper-oauth1-consumerKey")      
+        consumer_secret = self.browser.find_element_by_id("request-helper-oauth1-consumerSecret")
+        token = self.browser.find_element_by_id("request-helper-oauth1-token")
+        token_secret = self.browser.find_element_by_id("request-helper-oauth1-tokenSecret")
+        timestamp = self.browser.find_element_by_id("request-helper-oauth1-timestamp")
+        nonce = self.browser.find_element_by_id("request-helper-oauth1-nonce")
+        version = self.browser.find_element_by_id("request-helper-oauth1-version")
+
+        consumer_key.clear()
+        consumer_key.send_keys("{{consumer_key}}")
+
+        nonce.clear()
+        nonce.send_keys("{{nonce}}")
+
+        timestamp.clear()
+        timestamp.send_keys("{{timestamp}}")
+
+        token.clear()
+        token.send_keys("{{token}}")
+
+        token_secret.clear()
+        token_secret.send_keys("{{token_secret}}")
+
+        consumer_secret.clear()
+        consumer_secret.send_keys("{{consumer_secret}}")
+
+        add_to_header = self.browser.find_element_by_id("request-helper-oauth1-header")
+        add_to_header.click()
+
+        refresh_headers = self.browser.find_element_by_css_selector("#request-helper-oAuth1 .request-helper-submit")
+        refresh_headers.click()
+
+        input_elements = self.browser.find_elements_by_css_selector("#formdata-keyvaleditor .keyvalueeditor-row")
+        
+        found_oauth_signature = False
+        for element in input_elements:
+            value = self.browser.execute_script("return arguments[0].innerHTML", element)            
+
+            if value.find("oauth_signature") > 0:
+                found_oauth_signature = True
+                if value.find("wPkvxykrw+BTdCcGqKr+3I+PsiM=") > 0:
+                    found_oauth_signature = True
+                else:
+                    found_oauth_signature = False
+    
+
+        if found_oauth_signature is True:
+            self.print_success("test_oauth1_post_environment")
+        else:
+            self.print_failed("test_oauth1_post_environment")
 
 def main():
-    # PostmanTestsRequests().run()
-    # PostmanTestsHistory().run()
-    # PostmanTestsLayout().run()
-    # PostmanTestsCollections().run()
-    # PostmanTestsEnvironments().run()
+    PostmanTestsRequests().run()
+    PostmanTestsHistory().run()
+    PostmanTestsLayout().run()
+    PostmanTestsCollections().run()
+    PostmanTestsEnvironments().run()
     PostmanTestsHelpers().run()
 
 if __name__ == "__main__":

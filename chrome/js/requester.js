@@ -1685,7 +1685,6 @@ pm.request = {
     },
 
     setUrlParamString:function (params) {
-        console.log(params);
         this.url = $('#url').val();
         var url = this.url;
 
@@ -1703,7 +1702,7 @@ pm.request = {
             $('#url').val(baseUrl + "?" + paramArr.join('&'));
         }
         else {
-            $('#url').val(baseUrl);
+            $('#url').val(url);
         }
 
         console.log($('#url').val());
@@ -2009,7 +2008,14 @@ pm.helpers = {
 
             //Get parameters
             var urlParams = $('#url-keyvaleditor').keyvalueeditor('getValues');
-            var bodyParams = $('#formdata-keyvaleditor').keyvalueeditor('getValues');
+            var bodyParams = [];
+
+            if (pm.request.body.mode == "params") {
+                bodyParams = $('#formdata-keyvaleditor').keyvalueeditor('getValues');
+            }
+            else if (pm.request.body.mode == "urlencoded") {
+                bodyParams = $('#urlencoded-keyvaleditor').keyvalueeditor('getValues');
+            }
 
             var params = urlParams.concat(bodyParams);
 
@@ -2030,24 +2036,45 @@ pm.helpers = {
                 accessor.tokenSecret = $('input[key="oauth_token_secret"]').val();
                 accessor.tokenSecret = pm.envManager.convertString(accessor.tokenSecret);
             }
+
+            console.log("Final sent values", message, accessor);
+
             return OAuth.SignatureMethod.sign(message, accessor);
         },
 
         process:function () {
             var params = [];
             var urlParams = pm.request.getUrlEditorParams();
+            var bodyParams = [];
+
+            if (pm.request.body.mode == "params") {
+                bodyParams = $('#formdata-keyvaleditor').keyvalueeditor('getValues');
+            }
+            else if (pm.request.body.mode == "urlencoded") {
+                bodyParams = $('#urlencoded-keyvaleditor').keyvalueeditor('getValues');
+            }
+
+
             params = params.concat(urlParams);
+            params = params.concat(bodyParams);
 
             var signatureKey = "oauth_signature";
             $('input.signatureParam').each(function () {
                 if ($(this).val() != '') {
                     var val = $(this).val();
-                    val = pm.envManager.convertString(val);
                     params.push({key:$(this).attr('key'), value:val});
                 }
             });
 
+            console.log(params);
+
+            //Convert environment values
+            for (var i = 0, length = params.length; i < length; i++) {
+                params[i].value = pm.envManager.convertString(params[i].value);
+            }
+
             var signature = this.generateSignature();
+
             if (signature == null) {
                 return;
             }
@@ -2063,8 +2090,7 @@ pm.helpers = {
 
                 var rawString = "Oauth ";
                 var len = params.length;
-                for (var i = 0; i < len; i++) {
-                    console.log(params[i]);
+                for (i = 0; i < len; i++) {
                     rawString += params[i].key + "=\"" + params[i].value + "\",";
                 }
                 rawString = rawString.substring(0, rawString.length - 1);
@@ -2091,10 +2117,10 @@ pm.helpers = {
                 } else {
                     var dataMode = pm.request.body.getDataMode();
                     if (dataMode === 'urlencoded') {
-                        $('#urlencoded-keyvaleditor').keyvalueeditor('addParams', params);
+                        $('#urlencoded-keyvaleditor').keyvalueeditor('reset', params);
                     }
                     else if (dataMode === 'params') {
-                        $('#formdata-keyvaleditor').keyvalueeditor('addParams', params);
+                        $('#formdata-keyvaleditor').keyvalueeditor('reset', params);
                     }
 
                     pm.request.setBodyParamString(params);
