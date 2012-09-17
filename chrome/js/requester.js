@@ -1193,6 +1193,9 @@ pm.request = {
                     });
                 }
 
+                if(pm.request.method === "HEAD") {
+                    pm.request.response.showHeaders()
+                }
             }
 
             pm.layout.setLayout();
