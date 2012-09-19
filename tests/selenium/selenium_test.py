@@ -64,13 +64,13 @@ class PostmanTestsRequests(PostmanTests):
     def run(self):
         print "\nTesting requests"
         print "---------------"
-        #self.test_get_basic()
-        #self.test_get_only_key()
-        #self.test_delete_basic()
-        #self.test_head_basic()
-        #self.test_options_basic()
-        #self.test_post_basic()
-        #self.test_put_basic()
+        self.test_get_basic()
+        self.test_get_only_key()
+        self.test_delete_basic()
+        self.test_head_basic()
+        self.test_options_basic()
+        self.test_post_basic()
+        self.test_put_basic()
 
         self.init_environment()
         
@@ -80,7 +80,7 @@ class PostmanTestsRequests(PostmanTests):
         self.test_post_raw_environment()
         self.test_post_raw_json_environment()
 
-        # self.browser.quit()
+        self.browser.quit()
         print "---------------"
 
     def run_auto(self):
@@ -754,7 +754,7 @@ class PostmanTestsCollections(PostmanTests):
 
         modal_collection_delete = self.browser.find_element_by_id("modal-delete-collection-yes")
         modal_collection_delete.click()
-        time.sleep(1)
+        time.sleep(3)
 
         collection_items = self.browser.find_elements_by_css_selector("#collection-items li.sidebar-collection")
 

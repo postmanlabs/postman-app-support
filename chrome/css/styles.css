@@ -705,6 +705,10 @@ li .right {
     opacity: 1;
 }
 
+#history-items .request-actions {
+    margin-left: 287px;
+}
+
 .request-actions {
     background: -webkit-linear-gradient(top, rgba(222, 222, 222, 0.9) 0%, rgba(222, 222, 222, 1) 100%);
     display: none;

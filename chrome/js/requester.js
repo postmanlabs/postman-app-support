@@ -1193,7 +1193,7 @@ pm.request = {
                     });
                 }
 
-                if(pm.request.method === "HEAD") {
+                if (pm.request.method === "HEAD") {
                     pm.request.response.showHeaders()
                 }
             }
@@ -1705,10 +1705,15 @@ pm.request = {
             $('#url').val(baseUrl + "?" + paramArr.join('&'));
         }
         else {
-            $('#url').val(url);
-        }
+            //Has key/val pair
+            if(url.indexOf("?") > 0 && url.indexOf("=") > 0) {
+                $('#url').val(baseUrl);
+            }
+            else {
+                $('#url').val(url);
+            }
 
-        console.log($('#url').val());
+        }
     },
 
     reset:function () {
@@ -1766,8 +1771,6 @@ pm.request = {
         var xhr = new XMLHttpRequest();
         pm.request.xhr = xhr;
 
-        url = ensureProperUrl(url);
-
         var envManager = pm.envManager;
         var environment = envManager.selectedEnv;
         var envValues = [];
@@ -1777,9 +1780,10 @@ pm.request = {
         }
 
         url = envManager.processString(url, envValues);
+        url = ensureProperUrl(url);
+
         pm.request.url = url;
 
-        console.log(url);
         url = pm.request.encodeUrl(url);
 
         var originalUrl = $('#url').val();
@@ -2013,12 +2017,15 @@ pm.helpers = {
             var urlParams = $('#url-keyvaleditor').keyvalueeditor('getValues');
             var bodyParams = [];
 
-            if (pm.request.body.mode == "params") {
-                bodyParams = $('#formdata-keyvaleditor').keyvalueeditor('getValues');
+            if (pm.request.isMethodWithBody(pm.request.method)) {
+                if (pm.request.body.mode == "params") {
+                    bodyParams = $('#formdata-keyvaleditor').keyvalueeditor('getValues');
+                }
+                else if (pm.request.body.mode == "urlencoded") {
+                    bodyParams = $('#urlencoded-keyvaleditor').keyvalueeditor('getValues');
+                }
             }
-            else if (pm.request.body.mode == "urlencoded") {
-                bodyParams = $('#urlencoded-keyvaleditor').keyvalueeditor('getValues');
-            }
+
 
             var params = urlParams.concat(bodyParams);
 
@@ -2039,8 +2046,6 @@ pm.helpers = {
                 accessor.tokenSecret = $('input[key="oauth_token_secret"]').val();
                 accessor.tokenSecret = pm.envManager.convertString(accessor.tokenSecret);
             }
-
-            console.log("Final sent values", message, accessor);
 
             return OAuth.SignatureMethod.sign(message, accessor);
         },
@@ -2068,8 +2073,6 @@ pm.helpers = {
                     params.push({key:$(this).attr('key'), value:val});
                 }
             });
-
-            console.log(params);
 
             //Convert environment values
             for (var i = 0, length = params.length; i < length; i++) {
@@ -2155,8 +2158,6 @@ pm.history = {
     requestExists:function (request) {
         var index = -1;
         var method = request.method.toLowerCase();
-
-        console.log(method);
 
         if (pm.request.isMethodWithBody(method)) {
             return -1;
@@ -3119,7 +3120,6 @@ pm.indexedDB = {
     },
 
     open_v21:function () {
-        console.log("Open v21");
 
         var request = indexedDB.open("postman", "POSTman request history");
         request.onsuccess = function (e) {
@@ -3180,13 +3180,10 @@ pm.indexedDB = {
     },
 
     open_latest:function () {
-        console.log("Open latest");
 
         var v = 9;
         var request = indexedDB.open("postman", v);
         request.onupgradeneeded = function (e) {
-            console.log(e);
-            console.log("Version changed");
 
             var db = e.target.result;
             pm.indexedDB.db = db;
@@ -4020,7 +4017,6 @@ pm.envManager = {
     },
 
     importEnvironments:function (files) {
-        console.log(files);
         // Loop through the FileList
         for (var i = 0, f; f = files[i]; i++) {
             var reader = new FileReader();
