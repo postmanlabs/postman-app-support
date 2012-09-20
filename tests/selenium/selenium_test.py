@@ -5,7 +5,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
 import selenium.webdriver.chrome.service as service
 import inspect
-import time
+import time     
 
 class PostmanTests:
     def __init__(self):
@@ -1333,8 +1333,11 @@ class PostmanTestsHelpers(PostmanTests):
 
             if value.find("oauth_signature") > 0:
                 found_oauth_signature = True
-                if value.find("wPkvxykrw+BTdCcGqKr+3I+PsiM=") > 0:
-                    found_oauth_signature = True
+                if value.find("wPkvxykrw%2BBTdCcGqKr%2B3I%2BPsiM%3D") > 0:
+                    if value.find("realm") > 0:
+                        found_oauth_signature = True
+                    else:
+                        found_oauth_signature = False
                 else:
                     found_oauth_signature = False
     
@@ -1530,12 +1533,12 @@ class PostmanTestsHelpers(PostmanTests):
             self.print_failed("test_oauth1_post_environment")
 
 def main():
-    PostmanTestsHistory().run()
-    PostmanTestsCollections().run()
-    PostmanTestsEnvironments().run()
+    # PostmanTestsHistory().run()
+    # PostmanTestsCollections().run()
+    # PostmanTestsEnvironments().run()
     PostmanTestsHelpers().run()
-    PostmanTestsRequests().run()
-    PostmanTestsLayout().run()
+    # PostmanTestsRequests().run()
+    # PostmanTestsLayout().run()
 
 if __name__ == "__main__":
     main()

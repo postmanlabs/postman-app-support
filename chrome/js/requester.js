@@ -1706,7 +1706,7 @@ pm.request = {
         }
         else {
             //Has key/val pair
-            if(url.indexOf("?") > 0 && url.indexOf("=") > 0) {
+            if (url.indexOf("?") > 0 && url.indexOf("=") > 0) {
                 $('#url').val(baseUrl);
             }
             else {
@@ -2090,14 +2090,18 @@ pm.helpers = {
             var addToHeader = $('#request-helper-oauth1-header').attr('checked') ? true : false;
 
             if (addToHeader) {
+                var realm = pm.envManager.convertString($('#url').val()).trim();
+                if (realm.indexOf('?') > 0) {
+                    realm = realm.split("?")[0];
+                }
                 var headers = pm.request.headers;
                 var authHeaderKey = "Authorization";
                 var pos = findPosition(headers, "key", authHeaderKey);
 
-                var rawString = "Oauth ";
+                var rawString = "OAuth realm=\"" + realm + "\",";
                 var len = params.length;
                 for (i = 0; i < len; i++) {
-                    rawString += params[i].key + "=\"" + params[i].value + "\",";
+                    rawString += encodeURIComponent(params[i].key) + "=\"" + encodeURIComponent(params[i].value) + "\",";
                 }
                 rawString = rawString.substring(0, rawString.length - 1);
 
