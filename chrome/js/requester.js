@@ -633,25 +633,32 @@ pm.request = {
             $("#data").css("display", "none");
         },
 
-        getRawData:function() {
+        getRawData:function () {
             return pm.request.body.codeMirror.getValue();
         },
 
-        loadRawData: function(data) {
-            $('#body').val(data);
-            pm.request.body.codeMirror.setValue(data);
-            pm.request.body.codeMirror.refresh();
+        loadRawData:function (data) {
+            if (pm.request.body.codeMirror != false) {
+                pm.request.body.codeMirror.setValue(data);
+                pm.request.body.codeMirror.refresh();
+                CodeMirror.commands["goDocStart"](pm.request.body.codeMirror);
+            }
+            else {
+                console.log("CodeMirror not loaded");
+            }
+
         },
 
         initCodeMirrorEditor:function () {
+            console.log("Initializing codeMirror");
             var bodyTextarea = document.getElementById("body");
             pm.request.body.codeMirror = CodeMirror.fromTextArea(bodyTextarea,
-            {
-                mode:"javascript",
-                lineNumbers:true,
-                theme:'eclipse'
-            });
-            pm.request.body.codeMirror.refresh();
+                {
+                    mode:"javascript",
+                    lineNumbers:true,
+                    theme:'eclipse'
+                });
+            console.log("Initialized editor");
         },
 
         initFormDataEditor:function () {
@@ -1697,14 +1704,13 @@ pm.request = {
 
             $('#data').css("display", "block");
             this.body.data = request.data;
-
-            pm.request.body.loadRawData(request.data);
-
             var newBodyParams = getUrlVars(this.body.data, false);
             $('#formdata-keyvaleditor').keyvalueeditor('reset', newBodyParams);
             $('#urlencoded-keyvaleditor').keyvalueeditor('reset', newBodyParams);
 
             this.body.setDataMode(this.dataMode);
+            pm.request.body.loadRawData(request.data);
+
         }
         else {
             pm.request.body.loadRawData("");
@@ -1713,10 +1719,6 @@ pm.request = {
         }
 
         $('body').scrollTop(0);
-    },
-
-    setBodyParamString:function (params) {
-        pm.request.body.loadRawData(pm.request.getBodyParamString(params));
     },
 
     getBodyParamString:function (params) {
@@ -1832,8 +1834,7 @@ pm.request = {
 
         var originalUrl = $('#url').val();
         var method = this.method.toUpperCase();
-
-        var data = this.body.data;
+        var data = pm.request.body.getRawData();
         var originalData = data;
         var finalBodyData;
         var headers = this.headers;
@@ -2177,8 +2178,6 @@ pm.helpers = {
                     else if (dataMode === 'params') {
                         $('#formdata-keyvaleditor').keyvalueeditor('reset', params);
                     }
-
-                    pm.request.setBodyParamString(params);
                 }
             }
 

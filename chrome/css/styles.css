@@ -293,7 +293,7 @@ fieldset {
 #body-data-container {
     margin-top: 5px;
     margin-bottom: 10px;
-    max-width: 1000px;
+    max-width: 100%;
     display: none;
 }
 
