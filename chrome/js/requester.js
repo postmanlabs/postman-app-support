@@ -650,7 +650,6 @@ pm.request = {
         },
 
         initCodeMirrorEditor:function () {
-            console.log("Initializing codeMirror");
             var bodyTextarea = document.getElementById("body");
             pm.request.body.codeMirror = CodeMirror.fromTextArea(bodyTextarea,
                 {
@@ -658,7 +657,6 @@ pm.request = {
                     lineNumbers:true,
                     theme:'eclipse'
                 });
-            console.log("Initialized editor");
         },
 
         initFormDataEditor:function () {
@@ -3062,8 +3060,6 @@ pm.layout = {
 
     setLayout:function () {
         this.refreshScrollPanes();
-        var codeDataWidth = $(window).width() - $('#sidebar').width() - 40;
-        $('.CodeMirror').css("max-width", codeDataWidth + "px");
     },
 
     refreshScrollPanes:function () {

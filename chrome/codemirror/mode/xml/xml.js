@@ -30,7 +30,7 @@ CodeMirror.defineMode("xml", function(config, parserConfig) {
     },
     doNotIndent: {"pre": true},
     allowUnquoted: true,
-    allowMissing: false
+    allowMissing: true
   } : {
     autoSelfClosers: {},
     implicitlyClosed: {},
@@ -229,7 +229,7 @@ CodeMirror.defineMode("xml", function(config, parserConfig) {
       if (type == "endTag") { popContext(); return cont(); }
       setStyle = "error";
       return cont(arguments.callee);
-    }
+    };
   }
   function maybePopContext(nextTagName) {
     var parentTagName;
@@ -308,18 +308,11 @@ CodeMirror.defineMode("xml", function(config, parserConfig) {
       else return 0;
     },
 
-    compareStates: function(a, b) {
-      if (a.indented != b.indented || a.tokenize != b.tokenize) return false;
-      for (var ca = a.context, cb = b.context; ; ca = ca.prev, cb = cb.prev) {
-        if (!ca || !cb) return ca == cb;
-        if (ca.tagName != cb.tagName) return false;
-      }
-    },
-
     electricChars: "/"
   };
 });
 
+CodeMirror.defineMIME("text/xml", "xml");
 CodeMirror.defineMIME("application/xml", "xml");
 if (!CodeMirror.mimeModes.hasOwnProperty("text/html"))
   CodeMirror.defineMIME("text/html", {name: "xml", htmlMode: true});

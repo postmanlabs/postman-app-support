@@ -21,7 +21,7 @@
 .cm-s-ambiance .cm-bracket { color: #24C2C7; }
 .cm-s-ambiance .cm-tag { color: #fee4ff }
 .cm-s-ambiance .cm-attribute {  color: #9B859D; }
-.cm-s-ambiance .cm-header {color: #blue;}
+.cm-s-ambiance .cm-header {color: blue;}
 .cm-s-ambiance .cm-quote { color: #24C2C7; }
 .cm-s-ambiance .cm-hr { color: pink; }
 .cm-s-ambiance .cm-link { color: #F4C20B; }
@@ -42,7 +42,6 @@
 .cm-s-ambiance {
   line-height: 1.40em;
   font-family: Monaco, Menlo,"Andale Mono","lucida console","Courier New",monospace !important;
-  font-size: 12px;
   color: #E6E1DC;
   background-color: #202020;
   -webkit-box-shadow: inset 0 0 10px black;

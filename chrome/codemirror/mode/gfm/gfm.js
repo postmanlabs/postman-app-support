@@ -32,14 +32,14 @@ CodeMirror.defineMode("gfm", function(config, parserConfig) {
     
     return function (lang) {
       return modes[lang] ? CodeMirror.getMode(config, modes[lang]) : null;
-    }
+    };
   }());
 
   function markdown(stream, state) {
     // intercept fenced code blocks
     if (stream.sol() && stream.match(/^```([\w+#]*)/)) {
       // try switching mode
-      state.localMode = getMode(RegExp.$1)
+      state.localMode = getMode(RegExp.$1);
       if (state.localMode)
         state.localState = state.localMode.startState();
 
@@ -69,7 +69,7 @@ CodeMirror.defineMode("gfm", function(config, parserConfig) {
   function handleText(stream, mdState) {
     var match;
     if (stream.match(/^\w+:\/\/\S+/)) {
-      return 'linkhref';
+      return 'link';
     }
     if (stream.match(/^[^\[*\\<>` _][^\[*\\<>` ]*[^\[*\\<>` _]/)) {
       return mdMode.getType(mdState);
@@ -96,13 +96,55 @@ CodeMirror.defineMode("gfm", function(config, parserConfig) {
     },
 
     copyState: function(state) {
-      return {token: state.token, mode: state.mode, mdState: CodeMirror.copyState(mdMode, state.mdState),
+      return {token: state.token, mdState: CodeMirror.copyState(mdMode, state.mdState),
               localMode: state.localMode,
               localState: state.localMode ? CodeMirror.copyState(state.localMode, state.localState) : null};
     },
 
     token: function(stream, state) {
-      return state.token(stream, state);
+        /* Parse GFM double bracket links */
+        var ch;
+        if ((ch = stream.peek()) != undefined && ch == '[') {
+            stream.next(); // Advance the stream
+
+            /* Only handle double bracket links */
+            if ((ch = stream.peek()) == undefined || ch != '[') {
+                stream.backUp(1);
+                return state.token(stream, state);
+            } 
+
+            while ((ch = stream.next()) != undefined && ch != ']') {}
+
+            if (ch == ']' && (ch = stream.next()) != undefined && ch == ']') 
+                return 'link';
+
+            /* If we did not find the second ']' */
+            stream.backUp(1);
+        }
+
+        /* Match GFM latex formulas, as well as latex formulas within '$' */
+        if (stream.match(/^\$[^\$]+\$/)) {
+            return "string";
+        }
+
+        if (stream.match(/^\\\((.*?)\\\)/)) {
+            return "string";
+        }
+
+        if (stream.match(/^\$\$[^\$]+\$\$/)) {
+            return "string";
+        }
+        
+        if (stream.match(/^\\\[(.*?)\\\]/)) {
+            return "string";
+        }
+
+        return state.token(stream, state);
+    },
+
+    innerMode: function(state) {
+      if (state.token == markdown) return {state: state.mdState, mode: mdMode};
+      else return {state: state.localState, mode: state.localMode};
     }
-  }
+  };
 }, "markdown");

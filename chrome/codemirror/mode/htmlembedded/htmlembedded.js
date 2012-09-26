@@ -36,7 +36,7 @@ CodeMirror.defineMode("htmlembedded", function(config, parserConfig) {
           token :  parserConfig.startOpen ? scriptingDispatch : htmlDispatch,
           htmlState : htmlMixedMode.startState(),
           scriptState : scriptingMode.startState()
-          }
+      };
     },
 
     token: function(stream, state) {
@@ -55,12 +55,16 @@ CodeMirror.defineMode("htmlembedded", function(config, parserConfig) {
        token : state.token,
        htmlState : CodeMirror.copyState(htmlMixedMode, state.htmlState),
        scriptState : CodeMirror.copyState(scriptingMode, state.scriptState)
-       }
+      };
     },
     
+    electricChars: "/{}:",
 
-    electricChars: "/{}:"
-  }
+    innerMode: function(state) {
+      if (state.token == scriptingDispatch) return {state: state.scriptState, mode: scriptingMode};
+      else return {state: state.htmlState, mode: htmlMixedMode};
+    }
+  };
 }, "htmlmixed");
 
 CodeMirror.defineMIME("application/x-ejs", { name: "htmlembedded", scriptingModeSpec:"javascript"});

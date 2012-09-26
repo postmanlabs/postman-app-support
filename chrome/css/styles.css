@@ -293,7 +293,6 @@ fieldset {
 #body-data-container {
     margin-top: 5px;
     margin-bottom: 10px;
-    max-width: 100%;
     display: none;
 }
 
@@ -1224,6 +1223,10 @@ li .right {
 }
 
 /* CodeMirror overrides */
+#response .CodeMirror {
+    margin-left: -1px;
+}
+
 .CodeMirror pre {
     font-family: Consolas, "Andale Mono", monospace;
 }
