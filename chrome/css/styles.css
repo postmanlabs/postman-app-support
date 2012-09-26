@@ -272,7 +272,8 @@ fieldset {
 }
 
 #body {
-    height: 200px;
+    height: 150px;
+    width: 100%;
 }
 
 #response-status {
@@ -292,7 +293,7 @@ fieldset {
 #body-data-container {
     margin-top: 5px;
     margin-bottom: 10px;
-    width: 470px;
+    max-width: 1000px;
     display: none;
 }
 
@@ -1227,12 +1228,12 @@ li .right {
     font-family: Consolas, "Andale Mono", monospace;
 }
 
-.CodeMirror-gutter-text {
+#response .CodeMirror-gutter-text {
     cursor: pointer;
     padding-left: 1em !important;
 }
 
-.CodeMirror-scroll {
+#response .CodeMirror-scroll {
     height: auto !important;
     overflow: visible !important;
 }

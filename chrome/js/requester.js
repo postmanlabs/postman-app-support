@@ -619,8 +619,10 @@ pm.request = {
     body:{
         mode:"params",
         data:"",
+        codeMirror:false,
 
         init:function () {
+            this.initCodeMirrorEditor();
             this.initFormDataEditor();
             this.initUrlEncodedEditor();
         },
@@ -629,6 +631,27 @@ pm.request = {
             pm.request.body.closeFormDataEditor();
             pm.request.body.closeUrlEncodedEditor();
             $("#data").css("display", "none");
+        },
+
+        getRawData:function() {
+            return pm.request.body.codeMirror.getValue();
+        },
+
+        loadRawData: function(data) {
+            $('#body').val(data);
+            pm.request.body.codeMirror.setValue(data);
+            pm.request.body.codeMirror.refresh();
+        },
+
+        initCodeMirrorEditor:function () {
+            var bodyTextarea = document.getElementById("body");
+            pm.request.body.codeMirror = CodeMirror.fromTextArea(bodyTextarea,
+            {
+                mode:"javascript",
+                lineNumbers:true,
+                theme:'eclipse'
+            });
+            pm.request.body.codeMirror.refresh();
         },
 
         initFormDataEditor:function () {
@@ -760,7 +783,7 @@ pm.request = {
                 data = pm.request.getBodyParamString(newParams);
             }
             else if (mode === "raw") {
-                data = $('#body').val();
+                data = pm.request.body.getRawData();
             }
             else if (mode === "urlencoded") {
                 params = $('#urlencoded-keyvaleditor').keyvalueeditor('getValues');
@@ -1307,7 +1330,7 @@ pm.request = {
             }
 
             if (!pm.editor.codeMirror || forceCreate) {
-                $('.CodeMirror').remove();
+                $('#response .CodeMirror').remove();
                 pm.editor.codeMirror = CodeMirror.fromTextArea(codeDataArea,
                     {
                         mode:renderMode,
@@ -1356,6 +1379,8 @@ pm.request = {
                 $('#response-as-preview').css("display", "block");
                 $('#response-pretty-modifiers').css("display", "none");
             }
+
+
         },
 
         toggleBodySize:function () {
@@ -1470,7 +1495,7 @@ pm.request = {
     refreshLayout:function () {
         $('#url').val(this.url);
         $('#request-method-selector').val(this.method);
-        $('#body').val(pm.request.body.getData());
+        pm.request.body.loadRawData(pm.request.body.getData());
         $('#headers-keyvaleditor').keyvalueeditor('reset', this.headers);
         $('#headers-keyvaleditor-actions-open .headers-count').html(this.headers.length);
         $('#submit-request').button("reset");
@@ -1673,7 +1698,7 @@ pm.request = {
             $('#data').css("display", "block");
             this.body.data = request.data;
 
-            $('#body').val(request.data);
+            pm.request.body.loadRawData(request.data);
 
             var newBodyParams = getUrlVars(this.body.data, false);
             $('#formdata-keyvaleditor').keyvalueeditor('reset', newBodyParams);
@@ -1682,7 +1707,7 @@ pm.request = {
             this.body.setDataMode(this.dataMode);
         }
         else {
-            $('#body').val("");
+            pm.request.body.loadRawData("");
             $('#data').css("display", "none");
             pm.request.body.closeFormDataEditor();
         }
@@ -1691,7 +1716,7 @@ pm.request = {
     },
 
     setBodyParamString:function (params) {
-        $('#body').val(pm.request.getBodyParamString(params));
+        pm.request.body.loadRawData(pm.request.getBodyParamString(params));
     },
 
     getBodyParamString:function (params) {
@@ -2623,7 +2648,7 @@ pm.collections = {
 
             pm.indexedDB.updateCollectionRequest(collectionRequest, function (request) {
                 var requestName;
-                if(request.name == undefined) {
+                if (request.name == undefined) {
                     request.name = request.url;
                 }
 
@@ -2968,7 +2993,7 @@ pm.layout = {
                 req.description = description;
                 pm.indexedDB.updateCollectionRequest(req, function (newRequest) {
                     var requestName;
-                    if ("name" in req) {
+                    if (req.name != undefined) {
                         requestName = limitStringLineWidth(req.name, 43);
                     }
                     else {
