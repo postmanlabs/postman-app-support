@@ -1064,8 +1064,20 @@ pm.request = {
             this.mime = "";
             this.state.size = "normal";
             this.previewType = "parsed";
-
             $('#response').css("display", "none");
+        },
+
+        showScreen:function (screen) {
+            $("#response").css("display", "block");
+            var active_id = "#response-" + screen + "-container";
+            var all_ids = ["#response-waiting-container",
+                "#response-failed-container",
+                "#response-success-container"];
+            for (var i = 0; i < 3; i++) {
+                $(all_ids[i]).css("display", "none");
+            }
+
+            $(active_id).css("display", "block");
         },
 
         load:function (response) {
@@ -1074,16 +1086,14 @@ pm.request = {
                 if (response.status == 0) {
                     var errorUrl = pm.envManager.convertString(pm.request.url);
                     $('#connection-error-url').html(errorUrl);
-                    $('#modal-response-error').modal({
-                        keyboard:true,
-                        backdrop:"static"
-                    });
-
-                    $('#modal-response-error').modal('show');
+                    pm.request.response.showScreen("failed");
                     $('#submit-request').button("reset");
                     return false;
                 }
 
+                console.log("Everything went right");
+
+                pm.request.response.showScreen("success")
                 pm.request.response.showBody();
 
                 var responseCode = {
@@ -1199,6 +1209,7 @@ pm.request = {
             }
 
             pm.layout.setLayout();
+            return true;
         },
 
         loadCookies:function (url) {
@@ -1440,6 +1451,14 @@ pm.request = {
         $('#url').val();
         $('#url').focus();
         this.response.clear();
+    },
+
+    cancel:function () {
+        if (pm.request.xhr !== null) {
+            pm.request.xhr.abort();
+        }
+        
+        pm.request.response.clear();
     },
 
     setMethod:function (method) {
@@ -1895,7 +1914,8 @@ pm.request = {
         }
 
         $('#submit-request').button("loading");
-        this.response.clear();
+        pm.request.response.clear();
+        pm.request.response.showScreen("waiting");
     }
 };
 
@@ -2831,6 +2851,10 @@ pm.layout = {
 
         $("#update-request-in-collection").on("click", function () {
             pm.collections.updateCollectionFromCurrentRequest();
+        });
+
+        $("#cancel-request").on("click", function () {
+            pm.request.cancel();
         });
 
         $("#request-actions-reset").on("click", function () {

@@ -762,10 +762,6 @@ li .right {
     margin-bottom: 10px;
 }
 
-#responseAsIFrame {
-    display: none;
-}
-
 #response-as-text {
     display: none;
 }
@@ -1048,6 +1044,23 @@ li .right {
 #import-collection-dropzone h3 {
     font: 20pt bold "Helvetica";
     color: #BBB;
+}
+
+#response-failed-container {
+    display: none;
+}
+
+#response-waiting-container {
+    display: none;
+}
+
+#response-failed-container h3,
+#response-waiting-container h3 {
+    margin: 10px 0 10px 0;
+}
+
+#response-success-container {
+    display: none;
 }
 
 #response-top-bar {

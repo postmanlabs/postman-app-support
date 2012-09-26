@@ -950,7 +950,7 @@ class PostmanTestsHelpers(PostmanTests):
         self.test_oauth1_urlencoded_post()
         self.test_oauth1_post_headers()
         self.test_oauth1_post_environment()
-        self.browser.quit()
+        # self.browser.quit()
 
     def test_basic_auth_plain(self):
         basic_auth_selector = self.browser.find_element_by_css_selector("#request-types .request-helper-tabs li:nth-of-type(2)")
