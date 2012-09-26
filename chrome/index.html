@@ -370,6 +370,7 @@
     </div>
     <div id="response-failed-container">
         <h3>Could not get any response</h3>
+
         <p>
             This seems to be like an error connecting to <span id="connection-error-url"></span>.
             The response status was 0.<br/>
@@ -497,16 +498,16 @@
         <h3>Edit collection</h3>
     </div>
     <div class="modal-body">
-        <form class="form form-horizontal" id="form-edit-collection">
-            <div class="control-group">
-                <label class="control-label">Collection name</label>
+        <div id="edit-collection-details">
+            <form class="form form-horizontal" id="form-edit-collection">
+                <input type="hidden" name="collection-id" class="collection-id"/>
+                <input type="text" name="collection-name" class="medium clean-input collection-name"/>
+            </form>
+        </div>
 
-                <div class="controls">
-                    <input type="hidden" name="collection-id" class="collection-id"/>
-                    <input type="text" name="collection-name" class="medium collection-name clean-input"/>
-                </div>
-            </div>
-        </form>
+        <div id="edit-collection-requests">
+            <ul id="edit-collection-requests-list"></ul>
+        </div>
     </div>
     <div class="modal-footer">
         <a class="btn btn-primary">Edit</a>

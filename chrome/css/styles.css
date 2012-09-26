@@ -1237,3 +1237,8 @@ li .right {
     min-height: 100%;
     margin-top: 5px;
 }
+
+#form-edit-collection .collection-name {
+    font-size: 18px;
+    font-weight: bold;
+}
