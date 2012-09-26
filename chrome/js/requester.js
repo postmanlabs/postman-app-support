@@ -2778,8 +2778,45 @@ pm.collections = {
                 }
 
                 //Sort requests as A-Z order
-                requests.sort(sortAlphabetical);
+                if(!("order" in collection)) {
+                    console.log("Order does not exist");
+                    requests.sort(sortAlphabetical);
+                }
+                else {
+                    console.log("Order exists");
+                    var orderedRequests = []
+                    for(var j = 0, len = collection["order"].length; j < len; j++) {
+                        var element = _.find(requests, function(request){ return request.id == collection["order"][j]});
+                        orderedRequests.push(element);
+                    }
+
+                    requests = orderedRequests;
+                }
+
                 $(targetElement).append(Handlebars.templates.collection_sidebar({"items":requests}));
+                $(targetElement).sortable({
+                    update: function(event, ui) {
+                        var target_parent = $(event.target).parents(".sidebar-collection-requests");
+                        var target_parent_collection = $(event.target).parents(".sidebar-collection");
+                        var collection_id = $(target_parent_collection).attr("data-id");
+                        var collection_requests = $(target_parent).children("li");
+                        var count = collection_requests.length;
+                        var order = [];
+                        for(var i = 0; i < count; i++) {
+                            var li_id = $(collection_requests[i]).attr("id");
+                            var request_id = $("#" + li_id + " .request").attr("data-id");
+                            order.push(request_id);
+                        }
+
+                        pm.indexedDB.getCollection(collection_id, function(collection) {
+                            collection["order"] = order;
+                            pm.indexedDB.updateCollection(collection, function(collection) {
+                                console.log(collection, "Finished updating");
+                            });
+                        });
+
+                    }
+                });
             }
 
         }
