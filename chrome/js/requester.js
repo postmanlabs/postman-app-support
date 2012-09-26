@@ -1457,7 +1457,7 @@ pm.request = {
         if (pm.request.xhr !== null) {
             pm.request.xhr.abort();
         }
-        
+
         pm.request.response.clear();
     },
 
@@ -2727,16 +2727,22 @@ pm.collections = {
         $('#select-collection').html("<option>Select</option>");
         pm.indexedDB.getCollections(function (items) {
             pm.collections.items = items;
-            $('#sidebar-section-collections .empty-message').css("display", "none");
 
             var itemsLength = items.length;
-            for (var i = 0; i < itemsLength; i++) {
-                var collection = items[i];
-                pm.indexedDB.getAllRequestsInCollection(collection, function (collection, requests) {
-                    collection.requests = requests;
-                    pm.collections.render(collection);
-                });
+
+            if (itemsLength == 0) {
+                $('#sidebar-section-collections').append(Handlebars.templates.message_no_collection({}));
             }
+            else {
+                for (var i = 0; i < itemsLength; i++) {
+                    var collection = items[i];
+                    pm.indexedDB.getAllRequestsInCollection(collection, function (collection, requests) {
+                        collection.requests = requests;
+                        pm.collections.render(collection);
+                    });
+                }
+            }
+
 
             pm.collections.areLoaded = true;
             pm.layout.refreshScrollPanes();
