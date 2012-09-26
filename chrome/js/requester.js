@@ -1487,7 +1487,7 @@ pm.request = {
 
         if (this.name !== "") {
             $('#request-meta').css("display", "block");
-            $('#request-name').css("display", "block");
+            $('#request-name').css("display", "inline-block");
             if ($('#request-description').css("display") === "block") {
                 $('#request-description').css("display", "block");
             }
@@ -1632,7 +1632,7 @@ pm.request = {
             this.name = request.name;
             $('#request-meta').css("display", "block");
             $('#request-name').html(this.name);
-            $('#request-name').css("display", "block");
+            $('#request-name').css("display", "inline-block");
         }
         else {
             this.name = "";
@@ -2626,6 +2626,7 @@ pm.collections = {
                 $('#sidebar-request-' + request.id + " .request .request-name").html(requestName);
                 $('#sidebar-request-' + request.id + " .request .label").html(request.method);
                 $('#sidebar-request-' + request.id + " .request .label").addClass('label-method-' + request.method);
+                $("#request-last-saved-time").fadeIn("slow").delay(2000).fadeOut("slow");
             });
         });
 
@@ -2779,11 +2780,9 @@ pm.collections = {
 
                 //Sort requests as A-Z order
                 if(!("order" in collection)) {
-                    console.log("Order does not exist");
                     requests.sort(sortAlphabetical);
                 }
                 else {
-                    console.log("Order exists");
                     var orderedRequests = []
                     for(var j = 0, len = collection["order"].length; j < len; j++) {
                         var element = _.find(requests, function(request){ return request.id == collection["order"][j]});
@@ -2810,9 +2809,7 @@ pm.collections = {
 
                         pm.indexedDB.getCollection(collection_id, function(collection) {
                             collection["order"] = order;
-                            pm.indexedDB.updateCollection(collection, function(collection) {
-                                console.log(collection, "Finished updating");
-                            });
+                            pm.indexedDB.updateCollection(collection, function(collection) {});
                         });
 
                     }
@@ -2968,6 +2965,7 @@ pm.layout = {
                         $('#request-description').html(req.description);
                     }
                     $('#modal-edit-collection-request').modal('hide');
+                    $("#request-last-saved-time").fadeIn("slow").delay(2000).fadeOut("slow");
                 });
             });
         });
