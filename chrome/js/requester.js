@@ -2622,7 +2622,13 @@ pm.collections = {
             $('#sidebar-request-' + req.id + " .request .label").removeClass('label-method-' + req.method);
 
             pm.indexedDB.updateCollectionRequest(collectionRequest, function (request) {
-                var requestName = limitStringLineWidth(request.name, 43);
+                var requestName;
+                if(request.name == undefined) {
+                    request.name = request.url;
+                }
+
+                requestName = limitStringLineWidth(request.name, 43);
+
                 $('#sidebar-request-' + request.id + " .request .request-name").html(requestName);
                 $('#sidebar-request-' + request.id + " .request .label").html(request.method);
                 $('#sidebar-request-' + request.id + " .request .label").addClass('label-method-' + request.method);
@@ -2779,13 +2785,15 @@ pm.collections = {
                 }
 
                 //Sort requests as A-Z order
-                if(!("order" in collection)) {
+                if (!("order" in collection)) {
                     requests.sort(sortAlphabetical);
                 }
                 else {
                     var orderedRequests = []
-                    for(var j = 0, len = collection["order"].length; j < len; j++) {
-                        var element = _.find(requests, function(request){ return request.id == collection["order"][j]});
+                    for (var j = 0, len = collection["order"].length; j < len; j++) {
+                        var element = _.find(requests, function (request) {
+                            return request.id == collection["order"][j]
+                        });
                         orderedRequests.push(element);
                     }
 
@@ -2794,22 +2802,23 @@ pm.collections = {
 
                 $(targetElement).append(Handlebars.templates.collection_sidebar({"items":requests}));
                 $(targetElement).sortable({
-                    update: function(event, ui) {
+                    update:function (event, ui) {
                         var target_parent = $(event.target).parents(".sidebar-collection-requests");
                         var target_parent_collection = $(event.target).parents(".sidebar-collection");
                         var collection_id = $(target_parent_collection).attr("data-id");
                         var collection_requests = $(target_parent).children("li");
                         var count = collection_requests.length;
                         var order = [];
-                        for(var i = 0; i < count; i++) {
+                        for (var i = 0; i < count; i++) {
                             var li_id = $(collection_requests[i]).attr("id");
                             var request_id = $("#" + li_id + " .request").attr("data-id");
                             order.push(request_id);
                         }
 
-                        pm.indexedDB.getCollection(collection_id, function(collection) {
+                        pm.indexedDB.getCollection(collection_id, function (collection) {
                             collection["order"] = order;
-                            pm.indexedDB.updateCollection(collection, function(collection) {});
+                            pm.indexedDB.updateCollection(collection, function (collection) {
+                            });
                         });
 
                     }
@@ -2958,14 +2967,20 @@ pm.layout = {
                 req.name = name;
                 req.description = description;
                 pm.indexedDB.updateCollectionRequest(req, function (newRequest) {
-                    var requestName = limitStringLineWidth(req.name, 43);
+                    var requestName;
+                    if ("name" in req) {
+                        requestName = limitStringLineWidth(req.name, 43);
+                    }
+                    else {
+                        requestName = limitStringLineWidth(req.url, 43);
+                    }
+
                     $('#sidebar-request-' + req.id + " .request .request-name").html(requestName);
                     if (pm.request.collectionRequestId === req.id) {
                         $('#request-name').html(req.name);
                         $('#request-description').html(req.description);
                     }
                     $('#modal-edit-collection-request').modal('hide');
-                    $("#request-last-saved-time").fadeIn("slow").delay(2000).fadeOut("slow");
                 });
             });
         });
