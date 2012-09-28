@@ -625,6 +625,7 @@ pm.request = {
         init:function () {
             this.initFormDataEditor();
             this.initUrlEncodedEditor();
+            this.initEditorListeners();
         },
 
         hide:function () {
@@ -652,11 +653,27 @@ pm.request = {
             var bodyTextarea = document.getElementById("body");
             pm.request.body.codeMirror = CodeMirror.fromTextArea(bodyTextarea,
                 {
-                    mode:"javascript",
+                    mode:"htmlmixed",
                     lineNumbers:true,
                     theme:'eclipse'
                 });
             $("#request .CodeMirror-scroll").css("height", "200px");
+            pm.request.body.codeMirror.refresh();
+        },
+
+        setEditorMode:function (mode, mimeType) {
+            var displayMode = $("#body-editor-mode-selector a[data-mime-type='" + mimeType + "']").html();
+            $('#body-editor-mode-item-selected').html(displayMode);
+
+            if (mode === "javascript") {
+                pm.request.body.codeMirror.setOption("mode", {"name":"javascript", "json":true});
+            }
+            else {
+                pm.request.body.codeMirror.setOption("mode", mode);
+            }
+
+            pm.request.body.codeMirror.refresh();
+            pm.request.setHeaderValue("Content-Type", mimeType);
         },
 
         initFormDataEditor:function () {
@@ -693,6 +710,14 @@ pm.request = {
             };
 
             $(editorId).keyvalueeditor('init', params);
+        },
+
+        initEditorListeners:function () {
+            $('#body-editor-mode-selector .dropdown-menu').on("click", "a", function (event) {
+                var editorMode = $(event.target).attr("data-editor-mode");
+                var mimeType = $(event.target).attr("data-mime-type");
+                pm.request.body.setEditorMode(editorMode, mimeType);
+            });
         },
 
         openFormDataEditor:function () {
@@ -745,6 +770,7 @@ pm.request = {
             $('#data-mode-selector a').removeClass("active");
             $('#data-mode-selector a[data-mode="' + mode + '"]').addClass("active");
 
+            $("#body-editor-mode-selector").css("display", "none");
             if (mode === "params") {
                 pm.request.body.openFormDataEditor();
                 pm.request.body.closeUrlEncodedEditor();
@@ -758,6 +784,10 @@ pm.request = {
                 if (pm.request.body.isEditorInitialized === false) {
                     pm.request.body.initCodeMirrorEditor();
                 }
+                else {
+                    pm.request.body.codeMirror.refresh();
+                }
+                $("#body-editor-mode-selector").css("display", "block");
             }
             else if (mode === "urlencoded") {
                 pm.request.body.closeFormDataEditor();
@@ -855,9 +885,48 @@ pm.request = {
         var lastRequest = pm.settings.get("lastRequest");
         if (lastRequest !== "") {
             var lastRequestParsed = JSON.parse(lastRequest);
-            console.log(lastRequestParsed);
             pm.request.loadRequestInEditor(lastRequestParsed);
         }
+    },
+
+    setHeaderValue:function (key, value) {
+        var headers = pm.request.headers;
+        var origKey = key;
+        key = key.toLowerCase();
+        var found = false;
+        for (var i = 0, count = headers.length; i < count; i++) {
+            var headerKey = headers[i].key.toLowerCase();
+
+            if (headerKey === key) {
+                headers[i].value = value;
+                found = true;
+            }
+        }
+
+        var editorId = "#headers-keyvaleditor";
+        if (!found && value !== "text") {
+            var header = {
+                "key":origKey,
+                "value":value
+            };
+            headers.push(header);
+        }
+
+        $(editorId).keyvalueeditor('reset', headers);
+    },
+
+    getHeaderValue:function (key) {
+        var headers = pm.request.headers;
+        key = key.toLowerCase();
+        for (var i = 0, count = headers.length; i < count; i++) {
+            var headerKey = headers[i].key.toLowerCase();
+
+            if (headerKey === key) {
+                return headers[i].value;
+            }
+        }
+
+        return false;
     },
 
     getHeaderEditorParams:function () {
@@ -1708,7 +1777,6 @@ pm.request = {
 
         $('.request-meta-actions-togglesize').attr('data-action', 'minimize');
         $('.request-meta-actions-togglesize img').attr('src', 'img/circle_minus.png');
-
         $('#headers-keyvaleditor-actions-open .headers-count').html(this.headers.length);
 
         $('#url').val(this.url);
@@ -1731,6 +1799,27 @@ pm.request = {
         else {
             $('#data').css("display", "none");
         }
+
+        //Set raw body editor value if Content-Type is present
+        var contentType = pm.request.getHeaderValue("Content-Type");
+        var language;
+        if (contentType === false) {
+            language = 'text';
+            contentType = 'text';
+        }
+        else if (contentType.search(/json/i) !== -1 || contentType.search(/javascript/i) !== -1) {
+            language = 'javascript';
+        }
+        else if (contentType.search(/xml/i) !== -1 || contentType.search(/html/i) !== -1) {
+            language = 'xml';
+        }
+        else {
+            language = 'text';
+            contentType = 'text';
+        }
+
+        pm.request.body.setEditorMode(language, contentType);
+
 
         $('body').scrollTop(0);
     },

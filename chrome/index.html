@@ -267,6 +267,7 @@
         </a>
     </div>
     <h5 id="request-name"></h5><span id="request-last-saved-time">Saved</span>
+
     <p id="request-description"></p>
 </div>
 
@@ -320,11 +321,28 @@
 </div>
 
 <div id="data">
-    <div id="data-mode-selector" class="btn-group clearfix"
-         data-toggle="buttons-radio">
-        <a class="btn" data-mode="params">form-data</a>
-        <a class="btn" data-mode="urlencoded">x-www-form-urlencoded</a>
-        <a class="btn" data-mode="raw">raw</a>
+    <div class="clearfix">
+        <div id="data-mode-selector" class="btn-group clearfix"
+             data-toggle="buttons-radio">
+            <a class="btn" data-mode="params">form-data</a>
+            <a class="btn" data-mode="urlencoded">x-www-form-urlencoded</a>
+            <a class="btn" data-mode="raw">raw</a>
+        </div>
+        <div id="body-editor-mode-selector">
+            <div class="btn-group">
+                <a class="dropdown-toggle" data-toggle="dropdown">
+                    <span id="body-editor-mode-item-selected">Text</span>
+                    <span class="caret" style="margin-top: 8px;"></span>
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a data-editor-mode="text" data-mime-type="text">Text</a></li>
+                    <li><a data-editor-mode="javascript" data-mime-type="application/json">application/json</a></li>
+                    <li><a data-editor-mode="xml" data-mime-type="application/xml">application/xml</a></li>
+                    <li><a data-editor-mode="javascript" data-mime-type="text/json">text/json</a></li>
+                    <li><a data-editor-mode="xml" data-mime-type="text/xml">text/xml</a></li>
+                </ul>
+            </div>
+        </div>
     </div>
     <div id="body-data-containers">
         <div id="formdata-keyvaleditor-container" class="row" style="margin-left: 0;">

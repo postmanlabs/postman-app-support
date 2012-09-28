@@ -1258,3 +1258,15 @@ li .right {
     font-size: 18px;
     font-weight: bold;
 }
+
+#data-mode-selector {
+    float: left;
+}
+
+#body-editor-mode-selector {
+    display: none;
+    float: left;
+    font-size: 11px;
+    margin-top: 5px;
+    margin-left: 15px;
+}
