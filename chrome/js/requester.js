@@ -635,7 +635,12 @@ pm.request = {
         },
 
         getRawData:function () {
-            return pm.request.body.codeMirror.getValue();
+            if(pm.request.body.isEditorInitialized) {
+                return pm.request.body.codeMirror.getValue();
+            }
+            else {
+                return "";
+            }
         },
 
         loadRawData:function (data) {

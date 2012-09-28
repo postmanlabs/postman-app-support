@@ -291,6 +291,7 @@ fieldset {
 }
 
 #body-data-container {
+    border: solid thin #efefef;
     margin-top: 5px;
     margin-bottom: 10px;
     display: none;

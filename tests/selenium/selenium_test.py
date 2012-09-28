@@ -33,7 +33,7 @@ class PostmanTests:
 
     def get_codemirror_value(self, browser):
         w = WebDriverWait(browser, 10)    
-        w.until(lambda browser: browser.find_element_by_id("response").get_attribute("style").find("block") > 0)
+        w.until(lambda browser: browser.find_element_by_css_selector("response-success-container").get_attribute("style").find("block") > 0)
         code_data_textarea = browser.find_element_by_css_selector("#response-as-code .CodeMirror")
         code_data_value = browser.execute_script("return arguments[0].innerHTML", code_data_textarea)
         return code_data_value
@@ -1533,12 +1533,12 @@ class PostmanTestsHelpers(PostmanTests):
             self.print_failed("test_oauth1_post_environment")
 
 def main():
-    # PostmanTestsHistory().run()
-    # PostmanTestsCollections().run()
-    # PostmanTestsEnvironments().run()
+    PostmanTestsHistory().run()
+    PostmanTestsCollections().run()
+    PostmanTestsEnvironments().run()
     PostmanTestsHelpers().run()
-    # PostmanTestsRequests().run()
-    # PostmanTestsLayout().run()
+    PostmanTestsRequests().run()
+    PostmanTestsLayout().run()
 
 if __name__ == "__main__":
     main()
