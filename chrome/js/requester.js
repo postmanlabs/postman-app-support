@@ -3248,7 +3248,7 @@ pm.indexedDB = {
     },
 
     open:function () {
-        if (parseInt(navigator.userAgent.match(/Chrom(e|ium)\/([0-9]+)\./)[2]) <= 23) {
+        if (Math.floor(navigator.userAgent.match(/Chrom(e|ium)\/([0-9]+)\./)[2]) < 23) {
             pm.indexedDB.open_v21();
         }
         else {
