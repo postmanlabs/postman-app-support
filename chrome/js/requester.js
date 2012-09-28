@@ -619,10 +619,10 @@ pm.request = {
     body:{
         mode:"params",
         data:"",
+        isEditorInitialized:false,
         codeMirror:false,
 
         init:function () {
-            this.initCodeMirrorEditor();
             this.initFormDataEditor();
             this.initUrlEncodedEditor();
         },
@@ -638,18 +638,17 @@ pm.request = {
         },
 
         loadRawData:function (data) {
-            if (pm.request.body.codeMirror != false) {
-                pm.request.body.codeMirror.setValue(data);
-                pm.request.body.codeMirror.refresh();
-                CodeMirror.commands["goDocStart"](pm.request.body.codeMirror);
-            }
-            else {
-                console.log("CodeMirror not loaded");
-            }
+            var body = pm.request.body;
 
+            if (body.isEditorInitialized === true) {
+                console.log("Blah__" + data + "____");
+                body.codeMirror.setValue(data);
+                body.codeMirror.refresh();
+            }
         },
 
         initCodeMirrorEditor:function () {
+            pm.request.body.isEditorInitialized = true;
             var bodyTextarea = document.getElementById("body");
             pm.request.body.codeMirror = CodeMirror.fromTextArea(bodyTextarea,
                 {
@@ -657,6 +656,7 @@ pm.request = {
                     lineNumbers:true,
                     theme:'eclipse'
                 });
+            $("#request .CodeMirror-scroll").css("height", "200px");
         },
 
         initFormDataEditor:function () {
@@ -754,6 +754,10 @@ pm.request = {
                 pm.request.body.closeUrlEncodedEditor();
                 pm.request.body.closeFormDataEditor();
                 $('#body-data-container').css("display", "block");
+
+                if (pm.request.body.isEditorInitialized === false) {
+                    pm.request.body.initCodeMirrorEditor();
+                }
             }
             else if (mode === "urlencoded") {
                 pm.request.body.closeFormDataEditor();
@@ -805,8 +809,29 @@ pm.request = {
             }
 
             return data;
-        }
+        },
+
+        loadData:function (mode, data) {
+            var body = pm.request.body;
+            body.setDataMode(mode);
+
+            body.data = data;
+
+            var params;
+            if (mode === "params") {
+                params = getUrlVars(data, false);
+                $('#formdata-keyvaleditor').keyvalueeditor('reset', params);
+            }
+            else if (mode === "raw") {
+                body.loadRawData(data);
+            }
+            else if (mode === "urlencoded") {
+                params = getUrlVars(data, false);
+                $('#urlencoded-keyvaleditor').keyvalueeditor('reset', params);
+            }
+        },
     },
+
 
     init:function () {
         this.url = "";
@@ -830,6 +855,7 @@ pm.request = {
         var lastRequest = pm.settings.get("lastRequest");
         if (lastRequest !== "") {
             var lastRequestParsed = JSON.parse(lastRequest);
+            console.log(lastRequestParsed);
             pm.request.loadRequestInEditor(lastRequestParsed);
         }
     },
@@ -1699,21 +1725,11 @@ pm.request = {
 
         if (this.isMethodWithBody(this.method)) {
             this.dataMode = request.dataMode;
-
             $('#data').css("display", "block");
-            this.body.data = request.data;
-            var newBodyParams = getUrlVars(this.body.data, false);
-            $('#formdata-keyvaleditor').keyvalueeditor('reset', newBodyParams);
-            $('#urlencoded-keyvaleditor').keyvalueeditor('reset', newBodyParams);
-
-            this.body.setDataMode(this.dataMode);
-            pm.request.body.loadRawData(request.data);
-
+            pm.request.body.loadData(request.dataMode, request.data);
         }
         else {
-            pm.request.body.loadRawData("");
             $('#data').css("display", "none");
-            pm.request.body.closeFormDataEditor();
         }
 
         $('body').scrollTop(0);
