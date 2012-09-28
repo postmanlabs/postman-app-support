@@ -661,19 +661,21 @@ pm.request = {
             pm.request.body.codeMirror.refresh();
         },
 
-        setEditorMode:function (mode, mimeType) {
-            var displayMode = $("#body-editor-mode-selector a[data-mime-type='" + mimeType + "']").html();
+        setEditorMode:function (mode, language) {
+            var displayMode = $("#body-editor-mode-selector a[data-language='" + language + "']").html();
             $('#body-editor-mode-item-selected').html(displayMode);
 
-            if (mode === "javascript") {
-                pm.request.body.codeMirror.setOption("mode", {"name":"javascript", "json":true});
-            }
-            else {
-                pm.request.body.codeMirror.setOption("mode", mode);
+            if (pm.request.body.isEditorInitialized) {
+                if (mode === "javascript") {
+                    pm.request.body.codeMirror.setOption("mode", {"name":"javascript", "json":true});
+                }
+                else {
+                    pm.request.body.codeMirror.setOption("mode", mode);
+                }
+
+                pm.request.body.codeMirror.refresh();
             }
 
-            pm.request.body.codeMirror.refresh();
-            pm.request.setHeaderValue("Content-Type", mimeType);
         },
 
         initFormDataEditor:function () {
@@ -715,8 +717,8 @@ pm.request = {
         initEditorListeners:function () {
             $('#body-editor-mode-selector .dropdown-menu').on("click", "a", function (event) {
                 var editorMode = $(event.target).attr("data-editor-mode");
-                var mimeType = $(event.target).attr("data-mime-type");
-                pm.request.body.setEditorMode(editorMode, mimeType);
+                var language = $(event.target).attr("data-language");
+                pm.request.body.setEditorMode(editorMode, language);
             });
         },
 
@@ -897,7 +899,7 @@ pm.request = {
         for (var i = 0, count = headers.length; i < count; i++) {
             var headerKey = headers[i].key.toLowerCase();
 
-            if (headerKey === key) {
+            if (headerKey === key && value !== "text") {
                 headers[i].value = value;
                 found = true;
             }
@@ -1802,25 +1804,30 @@ pm.request = {
 
         //Set raw body editor value if Content-Type is present
         var contentType = pm.request.getHeaderValue("Content-Type");
+        var mode;
         var language;
         if (contentType === false) {
+            mode = 'text';
             language = 'text';
-            contentType = 'text';
         }
         else if (contentType.search(/json/i) !== -1 || contentType.search(/javascript/i) !== -1) {
-            language = 'javascript';
+            mode = 'javascript';
+            language = 'json';
         }
-        else if (contentType.search(/xml/i) !== -1 || contentType.search(/html/i) !== -1) {
+        else if (contentType.search(/xml/i) !== -1) {
+            mode = 'xml';
             language = 'xml';
+        }
+        else if (contentType.search(/html/i) !== -1) {
+            mode = 'xml';
+            language = 'html';
         }
         else {
             language = 'text';
             contentType = 'text';
         }
 
-        pm.request.body.setEditorMode(language, contentType);
-
-
+        pm.request.body.setEditorMode(mode, language);
         $('body').scrollTop(0);
     },
 
