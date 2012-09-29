@@ -635,7 +635,7 @@ pm.request = {
         },
 
         getRawData:function () {
-            if(pm.request.body.isEditorInitialized) {
+            if (pm.request.body.isEditorInitialized) {
                 return pm.request.body.codeMirror.getValue();
             }
             else {
@@ -1120,8 +1120,10 @@ pm.request = {
 
     response:{
         status:"",
+        responseCode:[],
         time:0,
         headers:[],
+        cookies:[],
         mime:"",
         text:"",
 
@@ -1222,8 +1224,6 @@ pm.request = {
                     return false;
                 }
 
-                console.log("Everything went right");
-
                 pm.request.response.showScreen("success")
                 pm.request.response.showBody();
 
@@ -1245,10 +1245,12 @@ pm.request = {
 
                 var diff = pm.request.getTotalTime();
 
+                pm.request.response.time = diff;
+                pm.request.response.responseCode = responseCode;
                 $('#response-status').html(Handlebars.templates.item_response_code(responseCode));
                 $('.response-code').popover();
 
-                //This sets loadHeders
+                //This sets pm.request.response.headers
                 this.loadHeaders(response.getAllResponseHeaders());
 
                 $('.response-tabs li[data-section="headers"]').html("Headers (" + this.headers.length + ")");
@@ -1324,6 +1326,8 @@ pm.request = {
                 }
 
                 var url = pm.request.url;
+
+                //Sets pm.request.response.cookies
                 pm.request.response.loadCookies(url);
 
                 if (responsePreviewType === "html") {
@@ -1338,7 +1342,7 @@ pm.request = {
                     pm.request.response.showHeaders()
                 }
 
-                if(pm.request.isFromCollection === true) {
+                if (pm.request.isFromCollection === true) {
                     $("#response-collection-request-actions").css("display", "block");
                 }
                 else {
@@ -1382,6 +1386,8 @@ pm.request = {
 
                     $('#response-cookies-items').html(Handlebars.templates.response_cookies({"items":cookies}));
                 }
+
+                pm.request.response.cookies = cookies;
             });
         },
 
@@ -2993,6 +2999,16 @@ pm.collections = {
             var target = '#select-collection option[value="' + id + '"]';
             $(target).remove();
         });
+    },
+
+    saveResponseAsExample:function (request_id, response) {
+        pm.indexedDB.getCollectionRequest(request_id, function (req) {
+            req.exampleResponse = response;
+            console.log(req);
+            pm.indexedDB.updateCollectionRequest(req, function (newRequest) {
+                console.log(newRequest);
+            });
+        });
     }
 };
 
@@ -3032,6 +3048,18 @@ pm.layout = {
         $('#response-language').on("click", "a", function () {
             var language = $(this).attr("data-mode");
             pm.request.response.setMode(language);
+        });
+
+        $('#response-example-save').on("click", function () {
+            var currentResponse = pm.request.response;
+            var response = {
+                "responseCode": currentResponse.responseCode,
+                "time": currentResponse.time,
+                "headers": currentResponse.headers,
+                "cookies": currentResponse.cookies,
+                "text": currentResponse.text
+            };
+            pm.collections.saveResponseAsExample(pm.request.collectionRequestId, response);
         });
 
         this.sidebar.init();
