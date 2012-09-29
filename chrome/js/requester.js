@@ -892,6 +892,7 @@ pm.request = {
         var lastRequest = pm.settings.get("lastRequest");
         if (lastRequest !== "") {
             var lastRequestParsed = JSON.parse(lastRequest);
+            pm.request.isFromCollection = false;
             pm.request.loadRequestInEditor(lastRequestParsed);
         }
     },
@@ -1336,6 +1337,13 @@ pm.request = {
                 if (pm.request.method === "HEAD") {
                     pm.request.response.showHeaders()
                 }
+
+                if(pm.request.isFromCollection === true) {
+                    $("#response-collection-request-actions").css("display", "block");
+                }
+                else {
+                    $("#response-collection-request-actions").css("display", "none");
+                }
             }
 
             pm.layout.setLayout();
@@ -1642,6 +1650,7 @@ pm.request = {
         this.url = link;
         this.method = "GET";
 
+        pm.request.isFromCollection = false;
         if (pm.settings.get("retainLinkHeaders") === true) {
             if (headers) {
                 pm.request.headers = headers;
@@ -2396,6 +2405,7 @@ pm.history = {
 
     loadRequest:function (id) {
         pm.indexedDB.getRequest(id, function (request) {
+            pm.request.isFromCollection = false;
             pm.request.loadRequestInEditor(request);
         });
     },
@@ -2884,6 +2894,7 @@ pm.collections = {
                     var collection = items[i];
                     pm.indexedDB.getAllRequestsInCollection(collection, function (collection, requests) {
                         collection.requests = requests;
+                        console.log(collection);
                         pm.collections.render(collection);
                     });
                 }
