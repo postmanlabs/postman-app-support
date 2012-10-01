@@ -33,11 +33,14 @@ class PostmanTests:
 
     def get_codemirror_value(self, browser):
         w = WebDriverWait(browser, 10)    
-        w.until(lambda browser: browser.find_element_by_css_selector("response-success-container").get_attribute("style").find("block") > 0)
+        w.until(lambda browser: browser.find_element_by_css_selector("#response-success-container").get_attribute("style").find("block") > 0)
         code_data_textarea = browser.find_element_by_css_selector("#response-as-code .CodeMirror")
         code_data_value = browser.execute_script("return arguments[0].innerHTML", code_data_textarea)
         return code_data_value
 
+    def set_code_mirror_raw_value(self, value):
+        code_data_value = self.browser.execute_script("return pm.request.body.loadRawData(arguments[0])", value)
+        
     def test_title(self):
         assert "Postman" in self.browser.title
 
@@ -427,9 +430,7 @@ class PostmanTestsRequests(PostmanTests):
         # Select urlencoded
         self.browser.find_element_by_css_selector("#data-mode-selector a:nth-of-type(3)").click()
 
-        raw = self.browser.find_element_by_id("body")
-        raw.clear()
-        raw.send_keys("{{Foo}}={{Name}}")
+        self.set_code_mirror_raw_value("{{Foo}}={{Name}}")
 
         send_button = self.browser.find_element_by_id("submit-request")
         send_button.click()
@@ -454,9 +455,7 @@ class PostmanTestsRequests(PostmanTests):
         # Select urlencoded
         self.browser.find_element_by_css_selector("#data-mode-selector a:nth-of-type(3)").click()
 
-        raw = self.browser.find_element_by_id("body")
-        raw.clear()
-        raw.send_keys("{\"{{Foo}}\":\"{{Name}}\"")
+        self.set_code_mirror_raw_value("{\"{{Foo}}\":\"{{Name}}\"")
 
         send_button = self.browser.find_element_by_id("submit-request")
         send_button.click()
