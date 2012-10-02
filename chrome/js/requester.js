@@ -2170,6 +2170,8 @@ pm.helpers = {
             }
 
             var processedUrl = pm.envManager.convertString($('#url').val()).trim();
+            processedUrl = ensureProperUrl(processedUrl);
+
             if (processedUrl.indexOf('?') > 0) {
                 processedUrl = processedUrl.split("?")[0];
             }
