@@ -3445,6 +3445,7 @@ pm.indexedDB = {
 
         var v = 9;
         var request = indexedDB.open("postman", v);
+        console.log("Open latest");
         request.onupgradeneeded = function (e) {
 
             var db = e.target.result;
@@ -3482,7 +3483,7 @@ pm.indexedDB = {
     },
 
     open:function () {
-        if (parseInt(navigator.userAgent.match(/Chrom(e|ium)\/([0-9]+)\./)[2]) <= 23) {
+        if (parseInt(navigator.userAgent.match(/Chrom(e|ium)\/([0-9]+)\./)[2]) < 23) {
             pm.indexedDB.open_v21();
         }
         else {
