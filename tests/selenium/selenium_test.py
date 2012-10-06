@@ -12,7 +12,9 @@ class PostmanTests:
         s = service.Service('/Users/asthana/Documents/www/chromedriver')  # Optional argument, if not specified will search path.
         s.start()
     
-        capabilities = {'chrome.switches': ["--load-extension=/Users/asthana/Documents/www/postman/POSTMan-Chrome-Extension/chrome"]}
+        capabilities = {
+            'chrome.switches': ["--load-extension=/Users/asthana/Documents/www/postman/POSTMan-Chrome-Extension/chrome"]
+            }
         browser = webdriver.Remote(s.service_url, capabilities)        
         
         self.s = s
@@ -33,7 +35,7 @@ class PostmanTests:
 
     def get_codemirror_value(self, browser):
         w = WebDriverWait(browser, 10)    
-        w.until(lambda browser: browser.find_element_by_id("response").get_attribute("style").find("block") > 0)
+        w.until(lambda browser: browser.find_element_by_css_selector("#response-success-container").get_attribute("style").find("block") > 0)
         code_data_textarea = browser.find_element_by_css_selector("#response-as-code .CodeMirror")
         code_data_value = browser.execute_script("return arguments[0].innerHTML", code_data_textarea)
         return code_data_value
@@ -80,7 +82,7 @@ class PostmanTestsRequests(PostmanTests):
         self.test_post_raw_environment()
         self.test_post_raw_json_environment()
 
-        self.browser.quit()
+        # self.browser.quit()
         print "---------------"
 
     def run_auto(self):
@@ -116,7 +118,7 @@ class PostmanTestsRequests(PostmanTests):
         send_button = self.browser.find_element_by_id("submit-request")
         send_button.click()
 
-        code_data_value = self.get_codemirror_value(self.browser)    
+        code_data_value = self.get_codemirror_value(self.browser)
 
         if code_data_value.find("/get?start") > 0:
             self.print_success("test_get_only_key")
@@ -947,10 +949,11 @@ class PostmanTestsHelpers(PostmanTests):
         self.test_basic_auth_environment()
         self.test_oauth1_plain_get()
         self.test_oauth1_formdata_post()
+        self.test_oauth1_formdata_post_missing_http()
         self.test_oauth1_urlencoded_post()
         self.test_oauth1_post_headers()
         self.test_oauth1_post_environment()
-        # self.browser.quit()
+        self.browser.quit()
 
     def test_basic_auth_plain(self):
         basic_auth_selector = self.browser.find_element_by_css_selector("#request-types .request-helper-tabs li:nth-of-type(2)")
@@ -1185,6 +1188,82 @@ class PostmanTestsHelpers(PostmanTests):
             self.print_success("test_oauth1_formdata_post")
         else:
             self.print_failed("test_oauth1_formdata_post")
+
+    def test_oauth1_formdata_post_missing_http(self):
+        self.reset_request()
+
+        method_select = self.browser.find_element_by_id("request-method-selector")    
+        Select(method_select).select_by_value("POST")
+
+        # From OAuth example
+        self.set_url_field(self.browser, "photos.example.net/photos")
+
+        first_formdata_key = self.browser.find_element_by_css_selector("#formdata-keyvaleditor .keyvalueeditor-row:nth-of-type(1) .keyvalueeditor-key")
+        first_formdata_key.clear()
+        first_formdata_key.send_keys("size")
+
+        first_formdata_value = self.browser.find_element_by_css_selector("#formdata-keyvaleditor .keyvalueeditor-row:nth-of-type(1) .keyvalueeditor-value")
+        first_formdata_value.clear()
+        first_formdata_value.send_keys("original")
+
+        second_formdata_key = self.browser.find_element_by_css_selector("#formdata-keyvaleditor .keyvalueeditor-row:nth-of-type(2) .keyvalueeditor-key")
+        second_formdata_key.clear()
+        second_formdata_key.send_keys("file")
+
+        second_formdata_value = self.browser.find_element_by_css_selector("#formdata-keyvaleditor .keyvalueeditor-row:nth-of-type(2) .keyvalueeditor-value")
+        second_formdata_value.clear()
+        second_formdata_value.send_keys("vacation.jpg")
+
+        oauth1_selector = self.browser.find_element_by_css_selector("#request-types .request-helper-tabs li:nth-of-type(3)")
+        oauth1_selector.click()
+
+        consumer_key = self.browser.find_element_by_id("request-helper-oauth1-consumerKey")      
+        consumer_secret = self.browser.find_element_by_id("request-helper-oauth1-consumerSecret")
+        token = self.browser.find_element_by_id("request-helper-oauth1-token")
+        token_secret = self.browser.find_element_by_id("request-helper-oauth1-tokenSecret")
+        timestamp = self.browser.find_element_by_id("request-helper-oauth1-timestamp")
+        nonce = self.browser.find_element_by_id("request-helper-oauth1-nonce")
+        version = self.browser.find_element_by_id("request-helper-oauth1-version")
+
+        consumer_key.clear()
+        consumer_key.send_keys("dpf43f3p2l4k3l03")
+
+        nonce.clear()
+        nonce.send_keys("kllo9940pd9333jh")
+
+        timestamp.clear()
+        timestamp.send_keys("1191242096")
+
+        token.clear()
+        token.send_keys("nnch734d00sl2jdk")
+
+        consumer_secret.clear()
+        consumer_secret.send_keys("kd94hf93k423kf44")
+
+        token_secret.clear()
+        token_secret.send_keys("pfkkdhi9sl3r4s00")
+        
+        refresh_headers = self.browser.find_element_by_css_selector("#request-helper-oAuth1 .request-helper-submit")
+        refresh_headers.click()
+
+        input_elements = self.browser.find_elements_by_css_selector("#formdata-keyvaleditor .keyvalueeditor-row")
+        
+        found_oauth_signature = False
+        for element in input_elements:
+            value = self.browser.execute_script("return arguments[0].innerHTML", element)            
+
+            if value.find("oauth_signature") > 0:
+                found_oauth_signature = True
+                if value.find("wPkvxykrw+BTdCcGqKr+3I+PsiM=") > 0:
+                    found_oauth_signature = True
+                else:
+                    found_oauth_signature = False
+    
+
+        if found_oauth_signature is True:
+            self.print_success("test_oauth1_formdata_post_missing_http")
+        else:
+            self.print_failed("test_oauth1_formdata_post_missing_http")
 
     def test_oauth1_urlencoded_post(self):
         self.reset_request()
@@ -1533,12 +1612,12 @@ class PostmanTestsHelpers(PostmanTests):
             self.print_failed("test_oauth1_post_environment")
 
 def main():
-    # PostmanTestsHistory().run()
-    # PostmanTestsCollections().run()
-    # PostmanTestsEnvironments().run()
+    PostmanTestsHistory().run()
+    PostmanTestsCollections().run()
+    PostmanTestsEnvironments().run()
     PostmanTestsHelpers().run()
-    # PostmanTestsRequests().run()
-    # PostmanTestsLayout().run()
+    PostmanTestsRequests().run()
+    PostmanTestsLayout().run()
 
 if __name__ == "__main__":
     main()
