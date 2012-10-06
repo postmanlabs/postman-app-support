@@ -8,4 +8,4 @@ tests/selenium/chromedriver.log
 *.zip
 #*
 .#*
-
+*.pyc
