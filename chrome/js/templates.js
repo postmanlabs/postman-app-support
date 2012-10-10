@@ -1,5 +1,23 @@
 (function() {
   var template = Handlebars.template, templates = Handlebars.templates = Handlebars.templates || {};
+templates['broadcasts'] = template(function (Handlebars,depth0,helpers,partials,data) {
+  helpers = helpers || Handlebars.helpers; partials = partials || Handlebars.partials;
+  var stack1, self=this;
+
+function program1(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n    ";
+  stack1 = depth0;
+  stack1 = self.invokePartial(partials.item_broadcast, 'item_broadcast', stack1, helpers, partials);;
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n";
+  return buffer;}
+
+  stack1 = depth0.items;
+  stack1 = helpers.each.call(depth0, stack1, {hash:{},inverse:self.noop,fn:self.program(1, program1, data)});
+  if(stack1 || stack1 === 0) { return stack1; }
+  else { return ''; }});
 templates['collection_selector_list'] = template(function (Handlebars,depth0,helpers,partials,data) {
   helpers = helpers || Handlebars.helpers; partials = partials || Handlebars.partials;
   var stack1, self=this;
@@ -114,6 +132,17 @@ function program1(depth0,data) {
   stack1 = helpers.each.call(depth0, stack1, {hash:{},inverse:self.noop,fn:self.program(1, program1, data)});
   if(stack1 || stack1 === 0) { return stack1; }
   else { return ''; }});
+templates['item_broadcast'] = template(function (Handlebars,depth0,helpers,partials,data) {
+  helpers = helpers || Handlebars.helpers;
+  var buffer = "", stack1, foundHelper, functionType="function", escapeExpression=this.escapeExpression;
+
+
+  buffer += "<li class=\"broadcast\">";
+  foundHelper = helpers.content;
+  if (foundHelper) { stack1 = foundHelper.call(depth0, {hash:{}}); }
+  else { stack1 = depth0.content; stack1 = typeof stack1 === functionType ? stack1() : stack1; }
+  buffer += escapeExpression(stack1) + "</li>";
+  return buffer;});
 templates['item_collection_selector_list'] = template(function (Handlebars,depth0,helpers,partials,data) {
   helpers = helpers || Handlebars.helpers;
   var buffer = "", stack1, foundHelper, functionType="function", escapeExpression=this.escapeExpression;

@@ -917,9 +917,14 @@ li .right {
     padding-bottom: 0;
 }
 
-.preferences {
+#broadcasts {
     float: right;
     margin-right: 25px;
+    margin-top: 5px;
+}
+
+.preferences {
+    float: right;
     margin-top: 5px;
     width: 60px;
 }
@@ -1276,4 +1281,44 @@ li .right {
     font-size: 11px;
     margin-top: 5px;
     margin-left: 15px;
+}
+
+#broadcasts-count {
+    border-radius: 2px;
+    color: white;
+    width: 20px;
+    display: inline-block;
+    text-align: center;
+    font-size: 14px;
+    margin-top: 2px;
+    vertical-align: middle;
+}
+
+.new-broadcasts {
+    background-color: #8b0000;
+}
+
+.no-new-broadcasts {
+    background-color: #d3d3d3;
+}
+
+#broadcasts .dropdown-menu {
+    position: absolute;
+    margin-top: 4px;
+    margin-left: -200px;
+    width: 250px;
+}
+
+#broadcasts .dropdown-menu li.broadcast {
+    padding: 10px;
+    border-bottom: #aaa solid thin;
+}
+#broadcasts .dropdown-menu li.broadcast:last-child {
+    padding: 10px;
+    border-bottom: #fff solid thin;
+}
+
+
+#broadcasts .dropdown-menu li {
+    margin-bottom: 5px;
 }
