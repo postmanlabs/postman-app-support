@@ -2899,7 +2899,13 @@ pm.collections = {
                 $('#sidebar-request-' + request.id + " .request .request-name").html(requestName);
                 $('#sidebar-request-' + request.id + " .request .label").html(request.method);
                 $('#sidebar-request-' + request.id + " .request .label").addClass('label-method-' + request.method);
-                $("#request-last-saved-time").fadeIn("slow").delay(2000).fadeOut("slow");
+                noty(
+                    {
+                        type: 'success',
+                        text: 'Saved request',
+                        layout: 'topRight',
+                        timeout: 750
+                    });
             });
         });
 
