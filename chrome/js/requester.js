@@ -465,13 +465,24 @@ pm.collections = {
                         $('.modal-import-alerts').append(Handlebars.templates.message_collection_added(message));
 
                         var requests = [];
-
-                        //TODO Replace old request IDs with new ones in the order field
                         
-                        for (var i = 0; i < collection.requests.length; i++) {
+                        var ordered = false;
+                        if("order" in collection) {
+                            ordered = true;
+                        }
+
+                        for (var i = 0; i < collection.requests.length; i++) {  
                             var request = collection.requests[i];
                             request.collectionId = collection.id;
-                            request.id = guid();
+                            var newId = guid();
+
+                            if(ordered) {
+                                var currentId = request.id;                                
+                                var loc = _.indexOf(collection["order"], currentId);    
+                                collection["order"][loc] = newId;
+                            }
+                            
+                            request.id = newId;
 
                             pm.indexedDB.addCollectionRequest(request, function (req) {
                             });
@@ -501,13 +512,25 @@ pm.collections = {
                 };
 
                 $('.modal-import-alerts').append(Handlebars.templates.message_collection_added(message));
+                
+                var ordered = false;
+                if("order" in collection) {
+                    ordered = true;
+                }
 
-                //TODO Replace old request IDs with new ones in the order field
                 var requests = [];
                 for (var i = 0; i < collection.requests.length; i++) {
                     var request = collection.requests[i];
                     request.collectionId = collection.id;
-                    request.id = guid();
+                    var newId = guid();
+
+                    if(ordered) {
+                        var currentId = request.id;                                
+                        var loc = _.indexOf(collection["order"], currentId);    
+                        collection["order"][loc] = newId;
+                    }
+                    
+                    request.id = newId;
 
                     pm.indexedDB.addCollectionRequest(request, function (req) {
                     });
@@ -773,8 +796,6 @@ pm.collections = {
 
                     requests = orderedRequests;
                 }
-
-                console.log(requests);
 
                 $(targetElement).append(Handlebars.templates.collection_sidebar({"items":requests}));
                 $(targetElement).sortable({
