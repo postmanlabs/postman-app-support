@@ -133,3 +133,10 @@ function string2ArrayBuffer(string, callback) {
     };
     f.readAsArrayBuffer(bb);
 }
+
+function find(collection, filter) {
+    for (var i = 0; i < filter.length; i++) {
+        if(filter(collection[i], i, collection)) return i;
+    }
+    return -1;
+}

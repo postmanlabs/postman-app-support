@@ -548,6 +548,18 @@ pm.collections = {
             pm.request.isFromCollection = true;
             pm.request.collectionRequestId = id;
             pm.request.loadRequestInEditor(request, true);
+
+            if(pm.settings.get("alwaysLoadSavedResponse") === true) {
+                console.log("Loading response");
+                pm.indexedDB.getAllResponsesForRequest(id, function(responses) {
+                    if(responses) {
+                        if(responses.length > 0) {
+                            var topResponse = responses[0];
+                            pm.request.response.render(topResponse);
+                        }
+                    }
+                });
+            }
         });
     },
 
@@ -3627,6 +3639,97 @@ pm.request = {
             $(active_id).css("display", "block");
         },
 
+        render:function (response) {
+            pm.request.response.showScreen("success");
+            $('#response-status').html(Handlebars.templates.item_response_code(response.responseCode));
+            $('.response-code').popover();
+
+            //This sets pm.request.response.headers
+            $("#response-headers").append(Handlebars.templates.response_headers({"items":response.headers}));
+
+            $('.response-tabs li[data-section="headers"]').html("Headers (" + response.headers.length + ")");
+            $("#response-data").css("display", "block");
+
+            $("#loader").css("display", "none");
+
+            $('#response-time .data').html(response.time + " ms");
+
+            var contentTypeIndexOf = find(response.headers, function (element, index, collection) {
+                return element.key === "Content-Type";
+            });
+
+            var contentType;
+            if(contentTypeIndexOf >= 0) {
+                contentType = response.headers[contentTypeIndexOf].value;
+            }
+
+            $('#response').css("display", "block");
+            $('#submit-request').button("reset");
+            $('#code-data').css("display", "block");
+
+            var language = 'html';
+
+            pm.request.response.previewType = pm.settings.get("previewType");
+
+            var responsePreviewType = 'html';
+
+            if (!_.isUndefined(contentType) && !_.isNull(contentType)) {
+                if (contentType.search(/json/i) !== -1 || contentType.search(/javascript/i) !== -1) {
+                    language = 'javascript';
+                }
+
+                $('#language').val(language);
+
+                if (contentType.search(/image/i) >= 0) {
+                    responsePreviewType = 'image';
+
+                    $('#response-as-code').css("display", "none");
+                    $('#response-as-text').css("display", "none");
+                    $('#response-as-image').css("display", "block");
+                    var imgLink = $('#url').val();
+                    $('#response-formatting').css("display", "none");
+                    $('#response-actions').css("display", "none");
+                    $("#response-language").css("display", "none");
+                    $("#response-as-preview").css("display", "none");
+                    $("#response-pretty-modifiers").css("display", "none");
+                    $("#response-as-image").html("<img src='" + imgLink + "'/>");
+                }
+                else {
+                    responsePreviewType = 'html';
+                    pm.request.response.setFormat(language, response.text, pm.settings.get("previewType"), true);
+                }
+            }
+            else {
+                pm.request.response.setFormat(language, response.text, pm.settings.get("previewType"), true);
+            }
+
+            pm.request.response.renderCookies(response.cookies);
+            if (responsePreviewType === "html") {
+                $("#response-as-preview").html("");
+                pm.filesystem.renderResponsePreview("response.html", response.text, "html", function (response_url) {
+                    $("#response-as-preview").html("<iframe></iframe>");
+                    $("#response-as-preview iframe").attr("src", response_url);
+                });
+            }
+
+            if (pm.request.method === "HEAD") {
+                pm.request.response.showHeaders()
+            }
+
+            if (pm.request.isFromCollection === true) {
+                $("#response-collection-request-actions").css("display", "block");
+            }
+            else {
+                $("#response-collection-request-actions").css("display", "none");
+            }
+
+            pm.request.response.time = response.time;
+            pm.request.response.cookies = response.cookies;
+            pm.request.response.headers = response.headers;
+            pm.request.response.text = response.text;
+            pm.request.response.responseCode = response.responseCode;
+        },
+
         load:function (response) {
             if (response.readyState == 4) {
                 //Something went wrong
@@ -3661,6 +3764,7 @@ pm.request = {
 
                 pm.request.response.time = diff;
                 pm.request.response.responseCode = responseCode;
+
                 $('#response-status').html(Handlebars.templates.item_response_code(responseCode));
                 $('.response-code').popover();
 
@@ -3768,40 +3872,44 @@ pm.request = {
             return true;
         },
 
+        renderCookies:function (cookies) {
+            var count = 0;
+            if (!cookies) {
+                count = 0;
+            }
+            else {
+                count = cookies.length;
+            }
+
+            if (count === 0) {
+                $("#response-tabs-cookies").html("Cookies");
+                $('#response-tabs-cookies').css("display", "none");
+            }
+            else {
+                $("#response-tabs-cookies").html("Cookies (" + count + ")");
+                $('#response-tabs-cookies').css("display", "block");
+                cookies = _.sortBy(cookies, function (cookie) {
+                    return cookie.name;
+                });
+
+                for (var i = 0; i < count; i++) {
+                    var cookie = cookies[i];
+                    if ("expirationDate" in cookie) {
+                        var date = new Date(cookie.expirationDate * 1000);
+                        cookies[i].expires = date.toUTCString();
+                    }
+                }
+
+                $('#response-cookies-items').html(Handlebars.templates.response_cookies({"items":cookies}));
+            }
+
+            pm.request.response.cookies = cookies;
+        },
+
         loadCookies:function (url) {
             chrome.cookies.getAll({url:url}, function (cookies) {
                 var count;
-                if (!cookies) {
-                    count = 0;
-                }
-                else {
-                    count = cookies.length;
-                }
-
-
-                if (count == 0) {
-                    $("#response-tabs-cookies").html("Cookies");
-                    $('#response-tabs-cookies').css("display", "none");
-                }
-                else {
-                    $("#response-tabs-cookies").html("Cookies (" + count + ")");
-                    $('#response-tabs-cookies').css("display", "block");
-                    cookies = _.sortBy(cookies, function (cookie) {
-                        return cookie.name;
-                    });
-
-                    for (var i = 0; i < count; i++) {
-                        var cookie = cookies[i];
-                        if ("expirationDate" in cookie) {
-                            var date = new Date(cookie.expirationDate * 1000);
-                            cookies[i].expires = date.toUTCString();
-                        }
-                    }
-
-                    $('#response-cookies-items').html(Handlebars.templates.response_cookies({"items":cookies}));
-                }
-
-                pm.request.response.cookies = cookies;
+                pm.request.response.renderCookies(cookies);
             });
         },
 
@@ -3900,7 +4008,7 @@ pm.request = {
                 $('#response-pretty-modifiers').css("display", "block");
             }
             else if (format === "raw") {
-                $('#code-data-raw').val(this.text);
+                $('#code-data-raw').val(response);
                 var codeDataWidth = $(document).width() - $('#sidebar').width() - 60;
                 $('#code-data-raw').css("width", codeDataWidth + "px");
                 $('#code-data-raw').css("height", "600px");
@@ -4409,7 +4517,7 @@ pm.request = {
 
         var rows, count, j;
         var row, key, value;
-        
+
         if (this.isMethodWithBody(method)) {
             if (this.dataMode === 'raw') {
                 data = envManager.processString(data, envValues);

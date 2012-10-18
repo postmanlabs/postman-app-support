@@ -258,6 +258,18 @@ pm.collections = {
             pm.request.isFromCollection = true;
             pm.request.collectionRequestId = id;
             pm.request.loadRequestInEditor(request, true);
+
+            if(pm.settings.get("alwaysLoadSavedResponse") === true) {
+                console.log("Loading response");
+                pm.indexedDB.getAllResponsesForRequest(id, function(responses) {
+                    if(responses) {
+                        if(responses.length > 0) {
+                            var topResponse = responses[0];
+                            pm.request.response.render(topResponse);
+                        }
+                    }
+                });
+            }
         });
     },
 
