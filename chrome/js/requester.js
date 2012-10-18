@@ -153,6 +153,7 @@ window.requestFileSystem = window.requestFileSystem || window.webkitRequestFileS
  */
 
 pm.init = function () {
+    console.log("Yay! Grunt works!");
     Handlebars.partials = Handlebars.templates;
     pm.history.init();
     pm.collections.init();
@@ -169,6 +170,14 @@ pm.init = function () {
     pm.broadcasts.init();
     $(":input:first").focus();
 };
+
+$(document).ready(function () {
+    pm.init();
+});
+
+$(window).on("unload", function () {
+    pm.request.saveCurrentRequestToLocalStorage();
+});
 
 pm.broadcasts = {
     init:function () {
@@ -279,6 +288,999 @@ pm.broadcasts = {
     }
 };
 
+pm.collections = {
+    areLoaded:false,
+    items:[],
+
+    init:function () {
+        this.addCollectionListeners();
+    },
+
+    addCollectionListeners:function () {
+        $('#collection-items').on("mouseenter", ".sidebar-collection .sidebar-collection-head", function () {
+            var actionsEl = jQuery('.collection-head-actions', this);
+            actionsEl.css('display', 'block');
+        });
+
+        $('#collection-items').on("mouseleave", ".sidebar-collection .sidebar-collection-head", function () {
+            var actionsEl = jQuery('.collection-head-actions', this);
+            actionsEl.css('display', 'none');
+        });
+
+        $('#collection-items').on("click", ".sidebar-collection-head-name", function () {
+            var id = $(this).attr('data-id');
+            pm.collections.toggleRequestList(id);
+        });
+
+        $('#collection-items').on("click", ".collection-head-actions .label", function () {
+            var id = $(this).parent().parent().parent().attr('data-id');
+            pm.collections.toggleRequestList(id);
+        });
+
+        $('#collection-items').on("click", ".request-actions-delete", function () {
+            var id = $(this).attr('data-id');
+            pm.collections.deleteCollectionRequest(id);
+        });
+
+        $('#collection-items').on("click", ".request-actions-load", function () {
+            var id = $(this).attr('data-id');
+            pm.collections.getCollectionRequest(id);
+        });
+
+        $('#collection-items').on("click", ".request-actions-edit", function () {
+            var id = $(this).attr('data-id');
+            $('#form-edit-collection-request .collection-request-id').val(id);
+
+            pm.indexedDB.getCollectionRequest(id, function (req) {
+                $('#form-edit-collection-request .collection-request-name').val(req.name);
+                $('#form-edit-collection-request .collection-request-description').val(req.description);
+                $('#modal-edit-collection-request').modal('show');
+            });
+        });
+
+        $('#collection-items').on("click", ".collection-actions-edit", function () {
+            var id = $(this).attr('data-id');
+            var name = $(this).attr('data-name');
+            $('#form-edit-collection .collection-id').val(id);
+            $('#form-edit-collection .collection-name').val(name);
+            $('#modal-edit-collection').modal('show');
+        });
+
+        $('#collection-items').on("click", ".collection-actions-delete", function () {
+            var id = $(this).attr('data-id');
+            var name = $(this).attr('data-name');
+
+            $('#modal-delete-collection-yes').attr('data-id', id);
+            $('#modal-delete-collection-name').html(name);
+        });
+
+        $('#modal-delete-collection-yes').on("click", function () {
+            var id = $(this).attr('data-id');
+            pm.collections.deleteCollection(id);
+        });
+
+        $('#import-collection-url-submit').on("click", function () {
+            var url = $('#import-collection-url-input').val();
+            pm.collections.importCollectionFromUrl(url);
+        });
+
+        $('#collection-items').on("click", ".collection-actions-download", function () {
+            var id = $(this).attr('data-id');
+            $("#modal-share-collection").modal("show");
+            $('#share-collection-get-link').attr("data-collection-id", id);
+            $('#share-collection-download').attr("data-collection-id", id);
+            $('#share-collection-link').css("display", "none");
+        });
+
+        $('#share-collection-get-link').on("click", function () {
+            var id = $(this).attr('data-collection-id');
+            pm.collections.uploadCollection(id, function (link) {
+                $('#share-collection-link').css("display", "block");
+                $('#share-collection-link').html(link);
+            });
+        });
+
+        $('#share-collection-download').on("click", function () {
+            var id = $(this).attr('data-collection-id');
+            pm.collections.saveCollection(id);
+        });
+
+        var dropZone = document.getElementById('import-collection-dropzone');
+        dropZone.addEventListener('dragover', function (evt) {
+            evt.stopPropagation();
+            evt.preventDefault();
+            evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
+        }, false);
+
+        dropZone.addEventListener('drop', function (evt) {
+            evt.stopPropagation();
+            evt.preventDefault();
+            var files = evt.dataTransfer.files; // FileList object.
+
+            pm.collections.importCollections(files);
+        }, false);
+
+        $('#collection-files-input').on('change', function (event) {
+            var files = event.target.files;
+            pm.collections.importCollections(files);
+            $('#collection-files-input').val("");
+        });
+    },
+
+    saveCollection:function (id) {
+        pm.indexedDB.getCollection(id, function (data) {
+            var collection = data;
+            pm.indexedDB.getAllRequestsInCollection(collection, function (collection, data) {
+                collection['requests'] = data;
+                var name = collection['name'] + ".json";
+                var type = "application/json";
+                var filedata = JSON.stringify(collection);
+                pm.filesystem.saveAndOpenFile(name, filedata, type, function () {
+                });
+            });
+        });
+    },
+
+    uploadCollection:function (id, callback) {
+        pm.indexedDB.getCollection(id, function (c) {
+            pm.indexedDB.getAllRequestsInCollection(c, function (collection, requests) {
+                collection['requests'] = requests;
+                var name = collection['name'] + ".json";
+                var type = "application/json";
+                var filedata = JSON.stringify(collection);
+
+                var uploadUrl = pm.webUrl + '/collections';
+                $.ajax({
+                    type:'POST',
+                    url:uploadUrl,
+                    data:filedata,
+                    success:function (data) {
+                        var link = data.link;
+                        callback(link);
+                    }
+                });
+            });
+        });
+    },
+
+
+    importCollections:function (files) {
+        // Loop through the FileList
+        for (var i = 0, f; f = files[i]; i++) {
+            var reader = new FileReader();
+
+            // Closure to capture the file information.
+            reader.onload = (function (theFile) {
+                return function (e) {
+                    // Render thumbnail.
+                    var data = e.currentTarget.result;
+                    var collection = JSON.parse(data);
+                    collection.id = guid();
+                    pm.indexedDB.addCollection(collection, function (c) {
+                        var message = {
+                            name:collection.name,
+                            action:"added"
+                        };
+
+                        $('.modal-import-alerts').append(Handlebars.templates.message_collection_added(message));
+
+                        var requests = [];
+
+                        //TODO Replace old request IDs with new ones in the order field
+                        
+                        for (var i = 0; i < collection.requests.length; i++) {
+                            var request = collection.requests[i];
+                            request.collectionId = collection.id;
+                            request.id = guid();
+
+                            pm.indexedDB.addCollectionRequest(request, function (req) {
+                            });
+                            requests.push(request);
+                        }
+
+                        collection.requests = requests;
+
+                        pm.collections.render(collection);
+                    });
+                };
+            })(f);
+
+            // Read in the image file as a data URL.
+            reader.readAsText(f);
+        }
+    },
+
+    importCollectionFromUrl:function (url) {
+        $.get(url, function (data) {
+            var collection = data;
+            collection.id = guid();
+            pm.indexedDB.addCollection(collection, function (c) {
+                var message = {
+                    name:collection.name,
+                    action:"added"
+                };
+
+                $('.modal-import-alerts').append(Handlebars.templates.message_collection_added(message));
+
+                //TODO Replace old request IDs with new ones in the order field
+                var requests = [];
+                for (var i = 0; i < collection.requests.length; i++) {
+                    var request = collection.requests[i];
+                    request.collectionId = collection.id;
+                    request.id = guid();
+
+                    pm.indexedDB.addCollectionRequest(request, function (req) {
+                    });
+                    requests.push(request);
+                }
+
+                collection.requests = requests;
+                pm.collections.render(collection);
+            });
+        });
+    },
+
+    getCollectionRequest:function (id) {
+        pm.indexedDB.getCollectionRequest(id, function (request) {
+            pm.request.isFromCollection = true;
+            pm.request.collectionRequestId = id;
+            pm.request.loadRequestInEditor(request, true);
+        });
+    },
+
+    openCollection:function (id) {
+        var target = "#collection-requests-" + id;
+        if ($(target).css("display") === "none") {
+            $(target).slideDown(100, function () {
+                pm.layout.refreshScrollPanes();
+            });
+        }
+    },
+
+    toggleRequestList:function (id) {
+        var target = "#collection-requests-" + id;
+        var label = "#collection-" + id + " .collection-head-actions .label";
+        if ($(target).css("display") === "none") {
+            $(target).slideDown(100, function () {
+                pm.layout.refreshScrollPanes();
+            });
+        }
+        else {
+            $(target).slideUp(100, function () {
+                pm.layout.refreshScrollPanes();
+            });
+        }
+    },
+
+    addCollection:function () {
+        var newCollection = $('#new-collection-blank').val();
+
+        var collection = new Collection();
+
+        if (newCollection) {
+            //Add the new collection and get guid
+            collection.id = guid();
+            collection.name = newCollection;
+            pm.indexedDB.addCollection(collection, function (collection) {
+                pm.collections.render(collection);
+            });
+
+            $('#new-collection-blank').val("");
+        }
+
+        $('#modal-new-collection').modal('hide');
+    },
+
+    updateCollectionFromCurrentRequest:function () {
+        var url = $('#url').val();
+        var collectionRequest = new CollectionRequest();
+        collectionRequest.id = pm.request.collectionRequestId;
+        collectionRequest.headers = pm.request.getPackedHeaders();
+        collectionRequest.url = url;
+        collectionRequest.method = pm.request.method;
+        collectionRequest.data = pm.request.body.getData();
+        collectionRequest.dataMode = pm.request.dataMode;
+        collectionRequest.time = new Date().getTime();
+
+        pm.indexedDB.getCollectionRequest(collectionRequest.id, function (req) {
+            collectionRequest.name = req.name;
+            collectionRequest.description = req.description;
+            collectionRequest.collectionId = req.collectionId;
+            $('#sidebar-request-' + req.id + " .request .label").removeClass('label-method-' + req.method);
+
+            pm.indexedDB.updateCollectionRequest(collectionRequest, function (request) {
+                var requestName;
+                if (request.name == undefined) {
+                    request.name = request.url;
+                }
+
+                requestName = limitStringLineWidth(request.name, 43);
+
+                $('#sidebar-request-' + request.id + " .request .request-name").html(requestName);
+                $('#sidebar-request-' + request.id + " .request .label").html(request.method);
+                $('#sidebar-request-' + request.id + " .request .label").addClass('label-method-' + request.method);
+                noty(
+                    {
+                        type: 'success',
+                        text: 'Saved request',
+                        layout: 'topRight',
+                        timeout: 750
+                    });
+            });
+        });
+
+    },
+
+    addRequestToCollection:function () {
+        var existingCollectionId = $('#select-collection').val();
+        var newCollection = $("#new-collection").val();
+        var newRequestName = $('#new-request-name').val();
+        var newRequestDescription = $('#new-request-description').val();
+
+        var url = $('#url').val();
+        if (newRequestName === "") {
+            newRequestName = url;
+        }
+
+        var collection = new Collection();
+
+        var collectionRequest = new CollectionRequest();
+        collectionRequest.id = guid();
+        collectionRequest.headers = pm.request.getPackedHeaders();
+        collectionRequest.url = url;
+        collectionRequest.method = pm.request.method;
+        collectionRequest.data = pm.request.body.getData();
+        collectionRequest.dataMode = pm.request.dataMode;
+        collectionRequest.name = newRequestName;
+        collectionRequest.description = newRequestDescription;
+        collectionRequest.time = new Date().getTime();
+
+        if (newCollection) {
+            //Add the new collection and get guid
+            collection.id = guid();
+            collection.name = newCollection;
+            pm.indexedDB.addCollection(collection, function (collection) {
+                $('#sidebar-section-collections .empty-message').css("display", "none");
+                $('#new-collection').val("");
+                collectionRequest.collectionId = collection.id;
+
+                $('#select-collection').append(Handlebars.templates.item_collection_selector_list(collection));
+                $('#collection-items').append(Handlebars.templates.item_collection_sidebar_head(collection));
+
+                $('a[rel="tooltip"]').tooltip();
+                pm.layout.refreshScrollPanes();
+                pm.indexedDB.addCollectionRequest(collectionRequest, function (req) {
+                    var targetElement = "#collection-requests-" + req.collectionId;
+                    pm.urlCache.addUrl(req.url);
+
+                    if (typeof req.name === "undefined") {
+                        req.name = req.url;
+                    }
+                    req.name = limitStringLineWidth(req.name, 43);
+
+                    $(targetElement).append(Handlebars.templates.item_collection_sidebar_request(req));
+
+                    pm.layout.refreshScrollPanes();
+
+                    pm.request.isFromCollection = true;
+                    pm.request.collectionRequestId = collectionRequest.id;
+                    $('#update-request-in-collection').css("display", "inline-block");
+                    pm.collections.openCollection(collectionRequest.collectionId);
+                });
+            });
+        }
+        else {
+            //Get guid of existing collection
+            collection.id = existingCollectionId;
+            collectionRequest.collectionId = collection.id;
+            pm.indexedDB.addCollectionRequest(collectionRequest, function (req) {
+                var targetElement = "#collection-requests-" + req.collectionId;
+                pm.urlCache.addUrl(req.url);
+
+                if (typeof req.name === "undefined") {
+                    req.name = req.url;
+                }
+                req.name = limitStringLineWidth(req.name, 43);
+
+                $(targetElement).append(Handlebars.templates.item_collection_sidebar_request(req));
+                pm.layout.refreshScrollPanes();
+
+                pm.request.isFromCollection = true;
+                pm.request.collectionRequestId = collectionRequest.id;
+                $('#update-request-in-collection').css("display", "inline-block");
+                pm.collections.openCollection(collectionRequest.collectionId);
+            });
+        }
+
+        pm.layout.sidebar.select("collections");
+
+        $('#request-meta').css("display", "block");
+        $('#request-name').css("display", "block");
+        $('#request-description').css("display", "block");
+        $('#request-name').html(newRequestName);
+        $('#request-description').html(newRequestDescription);
+        $('#sidebar-selectors a[data-id="collections"]').tab('show');
+    },
+
+    getAllCollections:function () {
+        $('#collection-items').html("");
+        $('#select-collection').html("<option>Select</option>");
+        pm.indexedDB.getCollections(function (items) {
+            pm.collections.items = items;
+
+            var itemsLength = items.length;
+
+            if (itemsLength == 0) {
+                $('#sidebar-section-collections').append(Handlebars.templates.message_no_collection({}));
+            }
+            else {
+                for (var i = 0; i < itemsLength; i++) {
+                    var collection = items[i];
+                    pm.indexedDB.getAllRequestsInCollection(collection, function (collection, requests) {
+                        collection.requests = requests;
+                        console.log(collection);
+                        pm.collections.render(collection);
+                    });
+                }
+            }
+
+
+            pm.collections.areLoaded = true;
+            pm.layout.refreshScrollPanes();
+        });
+    },
+
+    render:function (collection) {
+        $('#sidebar-section-collections .empty-message').css("display", "none");
+
+        var currentEl = $('#collection-' + collection.id);
+        if (currentEl) {
+            currentEl.remove();
+        }
+
+        $('#select-collection').append(Handlebars.templates.item_collection_selector_list(collection));
+        $('#collection-items').append(Handlebars.templates.item_collection_sidebar_head(collection));
+
+        $('a[rel="tooltip"]').tooltip();
+
+        if ("requests" in collection) {
+            var id = collection.id;
+            var requests = collection.requests;
+            var targetElement = "#collection-requests-" + id;
+            var count = requests.length;
+
+            if (count > 0) {
+                for (var i = 0; i < count; i++) {
+                    pm.urlCache.addUrl(requests[i].url);
+                    if (typeof requests[i].name === "undefined") {
+                        requests[i].name = requests[i].url;
+                    }
+                    requests[i].name = limitStringLineWidth(requests[i].name, 40);
+                }
+
+                //Sort requests as A-Z order
+                if (!("order" in collection)) {
+                    requests.sort(sortAlphabetical);
+                }
+                else {
+                    var orderedRequests = []
+                    for (var j = 0, len = collection["order"].length; j < len; j++) {
+                        var element = _.find(requests, function (request) {
+                            return request.id == collection["order"][j]
+                        });
+                        orderedRequests.push(element);
+                    }
+
+                    requests = orderedRequests;
+                }
+
+                console.log(requests);
+
+                $(targetElement).append(Handlebars.templates.collection_sidebar({"items":requests}));
+                $(targetElement).sortable({
+                    update:function (event, ui) {
+                        var target_parent = $(event.target).parents(".sidebar-collection-requests");
+                        var target_parent_collection = $(event.target).parents(".sidebar-collection");
+                        var collection_id = $(target_parent_collection).attr("data-id");
+                        var collection_requests = $(target_parent).children("li");
+                        var count = collection_requests.length;
+                        var order = [];
+                        for (var i = 0; i < count; i++) {
+                            var li_id = $(collection_requests[i]).attr("id");
+                            var request_id = $("#" + li_id + " .request").attr("data-id");
+                            order.push(request_id);
+                        }
+
+                        pm.indexedDB.getCollection(collection_id, function (collection) {
+                            collection["order"] = order;
+                            pm.indexedDB.updateCollection(collection, function (collection) {
+                            });
+                        });
+
+                    }
+                });
+            }
+
+        }
+
+        pm.layout.refreshScrollPanes();
+    },
+
+    deleteCollectionRequest:function (id) {
+        pm.indexedDB.deleteCollectionRequest(id, function () {
+            pm.layout.sidebar.removeRequestFromHistory(id);
+        });
+    },
+
+    deleteCollection:function (id) {
+        pm.indexedDB.deleteCollection(id, function () {
+            pm.layout.sidebar.removeCollection(id);
+
+            var target = '#select-collection option[value="' + id + '"]';
+            $(target).remove();
+        });
+    },
+
+    saveResponseAsExample:function (request_id, response) {
+        pm.indexedDB.getCollectionRequest(request_id, function (req) {
+            req.exampleResponse = response;
+            console.log(req);
+            pm.indexedDB.updateCollectionRequest(req, function (newRequest) {
+                console.log(newRequest);
+            });
+        });
+    }
+};
+pm.editor = {
+    mode:"html",
+    codeMirror:null,
+    charCount:0,
+
+    //Defines a links mode for CodeMirror
+    init:function () {
+        CodeMirror.defineMode("links", function (config, parserConfig) {
+            var linksOverlay = {
+                startState:function () {
+                    return { "link":"" }
+                },
+
+                token:function (stream, state) {
+                    if (stream.eatSpace()) {
+                        return null;
+                    }
+
+                    var matches;
+                    if (matches = stream.match(/https?:\/\/[^\\'"\n\t\s]*(?=[<"'\n\t\s])/, false)) {
+                        //Eat all characters before http link
+                        var m = stream.match(/.*(?=https?:)/, true);
+                        if (m) {
+                            if (m[0].length > 0) {
+                                return null;
+                            }
+                        }
+
+                        var match = matches[0];
+                        if (match != state.link) {
+                            state.link = matches[0];
+                            for (var i = 0; i < state.link.length; i++) {
+                                stream.next();
+                            }
+                            state.link = "";
+                            return "link";
+                        }
+
+                        stream.skipToEnd();
+                        return null;
+                    }
+
+                    stream.skipToEnd();
+                    return null;
+
+                }
+            };
+
+            return CodeMirror.overlayParser(CodeMirror.getMode(config, parserConfig.backdrop || pm.editor.mode), linksOverlay);
+        });
+    },
+
+    toggleLineWrapping:function () {
+        var lineWrapping = pm.editor.codeMirror.getOption("lineWrapping");
+        if (lineWrapping === true) {
+            $('#response-body-line-wrapping').removeClass("active");
+            lineWrapping = false;
+            pm.editor.codeMirror.setOption("lineWrapping", false);
+        }
+        else {
+            $('#response-body-line-wrapping').addClass("active");
+            lineWrapping = true;
+            pm.editor.codeMirror.setOption("lineWrapping", true);
+        }
+
+        pm.settings.set("lineWrapping", lineWrapping);
+    }
+};
+pm.envManager = {
+    environments:[],
+
+    globals:{},
+    selectedEnv:null,
+    selectedEnvironmentId:"",
+
+    quicklook:{
+        init:function () {
+            pm.envManager.quicklook.refreshEnvironment(pm.envManager.selectedEnv);
+            pm.envManager.quicklook.refreshGlobals(pm.envManager.globals);
+        },
+
+        removeEnvironmentData:function () {
+            $('#environment-quicklook-environments h6').html("No environment");
+            $('#environment-quicklook-environments ul').html("");
+        },
+
+        refreshEnvironment:function (environment) {
+            if (!environment) {
+                return;
+            }
+            $('#environment-quicklook-environments h6').html(environment.name);
+            $('#environment-quicklook-environments ul').html("");
+            $('#environment-quicklook-environments ul').append(Handlebars.templates.environment_quicklook({
+                "items":environment.values
+            }));
+        },
+
+        refreshGlobals:function (globals) {
+            if (!globals) {
+                return;
+            }
+
+            $('#environment-quicklook-globals ul').html("");
+            $('#environment-quicklook-globals ul').append(Handlebars.templates.environment_quicklook({
+                "items":globals
+            }));
+        },
+
+        toggleDisplay:function () {
+            var display = $('#environment-quicklook-content').css("display");
+
+            if (display == "none") {
+                $('#environment-quicklook-content').css("display", "block");
+            }
+            else {
+                $('#environment-quicklook-content').css("display", "none");
+            }
+        }
+    },
+
+    init:function () {
+        pm.envManager.initGlobals();
+        $('#environment-list').append(Handlebars.templates.environment_list({"items":this.environments}));
+
+        $('#environments-list').on("click", ".environment-action-delete", function () {
+            var id = $(this).attr('data-id');
+            $('a[rel="tooltip"]').tooltip('hide');
+            pm.envManager.deleteEnvironment(id);
+        });
+
+        $('#environments-list').on("click", ".environment-action-edit", function () {
+            var id = $(this).attr('data-id');
+            pm.envManager.showEditor(id);
+        });
+
+        $('#environments-list').on("click", ".environment-action-download", function () {
+            var id = $(this).attr('data-id');
+            pm.envManager.downloadEnvironment(id);
+        });
+
+        $('.environment-action-back').on("click", function () {
+            pm.envManager.showSelector();
+        });
+
+        $('#environment-selector').on("click", ".environment-list-item", function () {
+            var id = $(this).attr('data-id');
+            var selectedEnv = pm.envManager.getEnvironmentFromId(id);
+            pm.envManager.selectedEnv = selectedEnv;
+            pm.settings.set("selectedEnvironmentId", selectedEnv.id);
+            pm.envManager.quicklook.refreshEnvironment(selectedEnv);
+            $('#environment-selector .environment-list-item-selected').html(selectedEnv.name);
+        });
+
+        $('#environment-selector').on("click", ".environment-list-item-noenvironment", function () {
+            pm.envManager.selectedEnv = null;
+            pm.settings.set("selectedEnvironmentId", "");
+            pm.envManager.quicklook.removeEnvironmentData();
+            $('#environment-selector .environment-list-item-selected').html("No environment");
+        });
+
+        $('#environment-quicklook').on("mouseenter", function () {
+            $('#environment-quicklook-content').css("display", "block");
+        });
+
+        $('#environment-quicklook').on("mouseleave", function () {
+            $('#environment-quicklook-content').css("display", "none");
+        });
+
+        $('#environment-files-input').on('change', function (event) {
+            var files = event.target.files;
+            pm.envManager.importEnvironments(files);
+            $('#environment-files-input').val("");
+        });
+
+
+        $('.environments-actions-add').on("click", function () {
+            pm.envManager.showEditor();
+        });
+
+        $('.environments-actions-import').on('click', function () {
+            pm.envManager.showImporter();
+        });
+
+        $('.environments-actions-manage-globals').on('click', function () {
+            pm.envManager.showGlobals();
+        });
+
+        $('.environments-actions-add-submit').on("click", function () {
+            var id = $('#environment-editor-id').val();
+            if (id === "0") {
+                pm.envManager.addEnvironment();
+            }
+            else {
+                pm.envManager.updateEnvironment();
+            }
+
+            $('#environment-editor-name').val("");
+            $('#environment-keyvaleditor').keyvalueeditor('reset', []);
+
+        });
+
+        $('.environments-actions-add-back').on("click", function () {
+            pm.envManager.saveGlobals();
+            pm.envManager.showSelector();
+            $('#environment-editor-name').val("");
+            $('#environment-keyvaleditor').keyvalueeditor('reset', []);
+        });
+
+        $('#environments-list-help-toggle').on("click", function () {
+            var d = $('#environments-list-help-detail').css("display");
+            if (d === "none") {
+                $('#environments-list-help-detail').css("display", "inline");
+                $(this).html("Hide");
+            }
+            else {
+                $('#environments-list-help-detail').css("display", "none");
+                $(this).html("Tell me more");
+            }
+        });
+
+        var params = {
+            placeHolderKey:"Key",
+            placeHolderValue:"Value",
+            deleteButton:'<img class="deleteButton" src="img/delete.png">'
+        };
+
+        $('#environment-keyvaleditor').keyvalueeditor('init', params);
+        $('#globals-keyvaleditor').keyvalueeditor('init', params);
+        $('#globals-keyvaleditor').keyvalueeditor('reset', pm.envManager.globals);
+        pm.envManager.quicklook.init();
+    },
+
+    getEnvironmentFromId:function (id) {
+        var environments = pm.envManager.environments;
+        var count = environments.length;
+        for (var i = 0; i < count; i++) {
+            var env = environments[i];
+            if (id === env.id) {
+                return env;
+            }
+        }
+
+        return false;
+    },
+
+    processString:function (string, values) {
+        var count = values.length;
+        var finalString = string;
+        var patString;
+        var pattern;
+
+        var variableDelimiter = pm.settings.get("variableDelimiter");
+        var startDelimiter = variableDelimiter.substring(0, 2);
+        var endDelimiter = variableDelimiter.substring(variableDelimiter.length - 2);
+
+        for (var i = 0; i < count; i++) {
+            patString = startDelimiter + values[i].key + endDelimiter;
+            pattern = new RegExp(patString, 'g');
+            finalString = finalString.replace(patString, values[i].value);
+        }
+
+        var globals = pm.envManager.globals;
+        count = globals.length;
+        for (i = 0; i < count; i++) {
+            patString = startDelimiter + globals[i].key + endDelimiter;
+            pattern = new RegExp(patString, 'g');
+            finalString = finalString.replace(patString, globals[i].value);
+        }
+
+        return finalString;
+    },
+
+    convertString:function (string) {
+        var environment = pm.envManager.selectedEnv;
+        var envValues = [];
+
+        if (environment !== null) {
+            envValues = environment.values;
+        }
+
+        return pm.envManager.processString(string, envValues);
+    },
+
+    getAllEnvironments:function () {
+        pm.indexedDB.environments.getAllEnvironments(function (environments) {
+            $('#environment-selector .dropdown-menu').html("");
+            $('#environments-list tbody').html("");
+            pm.envManager.environments = environments;
+
+
+            $('#environment-selector .dropdown-menu').append(Handlebars.templates.environment_selector({"items":environments}));
+            $('#environments-list tbody').append(Handlebars.templates.environment_list({"items":environments}));
+            $('#environment-selector .dropdown-menu').append(Handlebars.templates.environment_selector_actions());
+
+            var selectedEnvId = pm.settings.get("selectedEnvironmentId");
+            var selectedEnv = pm.envManager.getEnvironmentFromId(selectedEnvId);
+            if (selectedEnv) {
+                pm.envManager.selectedEnv = selectedEnv;
+                pm.envManager.quicklook.refreshEnvironment(selectedEnv);
+                $('#environment-selector .environment-list-item-selected').html(selectedEnv.name);
+            }
+            else {
+                pm.envManager.selectedEnv = null;
+                $('#environment-selector .environment-list-item-selected').html("No environment");
+            }
+        })
+    },
+
+    initGlobals:function () {
+        if ('globals' in localStorage) {
+            var globalsString = localStorage['globals'];
+            pm.envManager.globals = JSON.parse(globalsString);
+        }
+        else {
+            pm.envManager.globals = [];
+        }
+
+    },
+
+    saveGlobals:function () {
+        var globals = $('#globals-keyvaleditor').keyvalueeditor('getValues');
+        pm.envManager.globals = globals;
+        pm.envManager.quicklook.refreshGlobals(globals);
+        localStorage['globals'] = JSON.stringify(globals);
+    },
+
+    showSelector:function () {
+        $('#environments-list-wrapper').css("display", "block");
+        $('#environment-editor').css("display", "none");
+        $('#environment-importer').css("display", "none");
+        $('#globals-editor').css("display", "none");
+        $('.environments-actions-add-submit').css("display", "inline");
+        $('#modal-environments .modal-footer').css("display", "none");
+    },
+
+    showEditor:function (id) {
+        if (id) {
+            var environment = pm.envManager.getEnvironmentFromId(id);
+            $('#environment-editor-name').val(environment.name);
+            $('#environment-editor-id').val(id);
+            $('#environment-keyvaleditor').keyvalueeditor('reset', environment.values);
+        }
+        else {
+            $('#environment-editor-id').val(0);
+        }
+
+        $('#environments-list-wrapper').css("display", "none");
+        $('#environment-editor').css("display", "block");
+        $('#globals-editor').css("display", "none");
+        $('#modal-environments .modal-footer').css("display", "block");
+    },
+
+    showImporter:function () {
+        $('#environments-list-wrapper').css("display", "none");
+        $('#environment-editor').css("display", "none");
+        $('#globals-editor').css("display", "none");
+        $('#environment-importer').css("display", "block");
+        $('.environments-actions-add-submit').css("display", "none");
+        $('#modal-environments .modal-footer').css("display", "block");
+    },
+
+    showGlobals:function () {
+        $('#environments-list-wrapper').css("display", "none");
+        $('#environment-editor').css("display", "none");
+        $('#globals-editor').css("display", "block");
+        $('#environment-importer').css("display", "none");
+        $('.environments-actions-add-submit').css("display", "none");
+        $('#modal-environments .modal-footer').css("display", "block");
+    },
+
+    addEnvironment:function () {
+        var name = $('#environment-editor-name').val();
+        var values = $('#environment-keyvaleditor').keyvalueeditor('getValues');
+        var environment = {
+            id:guid(),
+            name:name,
+            values:values,
+            timestamp:new Date().getTime()
+        };
+
+        pm.indexedDB.environments.addEnvironment(environment, function () {
+            pm.envManager.getAllEnvironments();
+            pm.envManager.showSelector();
+        });
+    },
+
+    updateEnvironment:function () {
+        var id = $('#environment-editor-id').val();
+        var name = $('#environment-editor-name').val();
+        var values = $('#environment-keyvaleditor').keyvalueeditor('getValues');
+        var environment = {
+            id:id,
+            name:name,
+            values:values,
+            timestamp:new Date().getTime()
+        };
+
+        pm.indexedDB.environments.updateEnvironment(environment, function () {
+            pm.envManager.getAllEnvironments();
+            pm.envManager.showSelector();
+        });
+    },
+
+    deleteEnvironment:function (id) {
+        pm.indexedDB.environments.deleteEnvironment(id, function () {
+            pm.envManager.getAllEnvironments();
+            pm.envManager.showSelector();
+        });
+    },
+
+    downloadEnvironment:function (id) {
+        var env = pm.envManager.getEnvironmentFromId(id);
+        var name = env.name + "-environment.json";
+        var type = "application/json";
+        var filedata = JSON.stringify(env);
+        pm.filesystem.saveAndOpenFile(name, filedata, type, function () {
+        });
+    },
+
+    importEnvironments:function (files) {
+        // Loop through the FileList
+        for (var i = 0, f; f = files[i]; i++) {
+            var reader = new FileReader();
+
+            // Closure to capture the file information.
+            reader.onload = (function (theFile) {
+                return function (e) {
+                    // Render thumbnail.
+                    var data = e.currentTarget.result;
+                    var environment = JSON.parse(data);
+
+                    pm.indexedDB.environments.addEnvironment(environment, function () {
+                        //Add confirmation
+                        var o = {
+                            name:environment.name,
+                            action:'added'
+                        };
+
+                        $('#environment-importer-confirmations').append(Handlebars.templates.message_environment_added(o));
+                        pm.envManager.getAllEnvironments();
+                    });
+                };
+            })(f);
+
+            // Read in the image file as a data URL.
+            reader.readAsText(f);
+        }
+    }
+
+};
 pm.filesystem = {
     fs:{},
 
@@ -413,7 +1415,962 @@ pm.filesystem = {
 
     }
 };
+pm.helpers = {
+    init:function () {
+        $("#request-types .request-helper-tabs li").on("click", function () {
+            $("#request-types .request-helper-tabs li").removeClass("active");
+            $(this).addClass("active");
+            var type = $(this).attr('data-id');
+            pm.helpers.showRequestHelper(type);
+        });
 
+        $('.request-helper-submit').on("click", function () {
+            var type = $(this).attr('data-type');
+            $('#request-helpers').css("display", "none");
+            pm.helpers.processRequestHelper(type);
+        });
+
+
+    },
+
+    processRequestHelper:function (type) {
+        if (type === 'basic') {
+            this.basic.process();
+        }
+        else if (type === 'oAuth1') {
+            this.oAuth1.process();
+        }
+        return false;
+    },
+
+    showRequestHelper:function (type) {
+        $("#request-types ul li").removeClass("active");
+        $('#request-types ul li[data-id=' + type + ']').addClass('active');
+        if (type !== "normal") {
+            $('#request-helpers').css("display", "block");
+        }
+        else {
+            $('#request-helpers').css("display", "none");
+        }
+
+        if (type.toLowerCase() === 'oauth1') {
+            this.oAuth1.generateHelper();
+        }
+
+        $('.request-helpers').css("display", "none");
+        $('#request-helper-' + type).css("display", "block");
+        return false;
+    },
+
+    basic:{
+        process:function () {
+            var headers = pm.request.headers;
+            var authHeaderKey = "Authorization";
+            var pos = findPosition(headers, "key", authHeaderKey);
+
+            var username = $('#request-helper-basicAuth-username').val();
+            var password = $('#request-helper-basicAuth-password').val();
+
+            username = pm.envManager.convertString(username);
+            password = pm.envManager.convertString(password);
+
+            var rawString = username + ":" + password;
+            var encodedString = "Basic " + btoa(rawString);
+
+            if (pos >= 0) {
+                headers[pos] = {
+                    key:authHeaderKey,
+                    name:authHeaderKey,
+                    value:encodedString
+                };
+            }
+            else {
+                headers.push({key:authHeaderKey, name:authHeaderKey, value:encodedString});
+            }
+
+            pm.request.headers = headers;
+            $('#headers-keyvaleditor').keyvalueeditor('reset', headers);
+            pm.request.openHeaderEditor();
+        }
+    },
+
+    oAuth1:{
+        generateHelper:function () {
+            $('#request-helper-oauth1-timestamp').val(OAuth.timestamp());
+            $('#request-helper-oauth1-nonce').val(OAuth.nonce(6));
+        },
+
+        generateSignature:function () {
+            //Make sure the URL is urlencoded properly
+            //Set the URL keyval editor as well. Other get params disappear when you click on URL params again
+            if ($('#url').val() === '') {
+                $('#request-helpers').css("display", "block");
+                alert('Please enter the URL first.');
+                return null;
+            }
+
+            var processedUrl = pm.envManager.convertString($('#url').val()).trim();
+            processedUrl = ensureProperUrl(processedUrl);
+
+            if (processedUrl.indexOf('?') > 0) {
+                processedUrl = processedUrl.split("?")[0];
+            }
+
+            var message = {
+                action:processedUrl,
+                method:pm.request.method,
+                parameters:[]
+            };
+
+            //all the fields defined by oauth
+            $('input.signatureParam').each(function () {
+                if ($(this).val() != '') {
+                    var val = $(this).val();
+                    val = pm.envManager.convertString(val);
+                    message.parameters.push([$(this).attr('key'), val]);
+                }
+            });
+
+            //Get parameters
+            var urlParams = $('#url-keyvaleditor').keyvalueeditor('getValues');
+            var bodyParams = [];
+
+            if (pm.request.isMethodWithBody(pm.request.method)) {
+                if (pm.request.body.mode == "params") {
+                    bodyParams = $('#formdata-keyvaleditor').keyvalueeditor('getValues');
+                }
+                else if (pm.request.body.mode == "urlencoded") {
+                    bodyParams = $('#urlencoded-keyvaleditor').keyvalueeditor('getValues');
+                }
+            }
+
+
+            var params = urlParams.concat(bodyParams);
+
+            for (var i = 0; i < params.length; i++) {
+                var param = params[i];
+                if (param.key) {
+                    param.value = pm.envManager.convertString(param.value);
+                    message.parameters.push([param.key, param.value]);
+                }
+            }
+
+            var accessor = {};
+            if ($('input[key="oauth_consumer_secret"]').val() != '') {
+                accessor.consumerSecret = $('input[key="oauth_consumer_secret"]').val();
+                accessor.consumerSecret = pm.envManager.convertString(accessor.consumerSecret);
+            }
+            if ($('input[key="oauth_token_secret"]').val() != '') {
+                accessor.tokenSecret = $('input[key="oauth_token_secret"]').val();
+                accessor.tokenSecret = pm.envManager.convertString(accessor.tokenSecret);
+            }
+
+            return OAuth.SignatureMethod.sign(message, accessor);
+        },
+
+        process:function () {
+            var params = [];
+            var urlParams = pm.request.getUrlEditorParams();
+            var bodyParams = [];
+
+            if (pm.request.body.mode == "params") {
+                bodyParams = $('#formdata-keyvaleditor').keyvalueeditor('getValues');
+            }
+            else if (pm.request.body.mode == "urlencoded") {
+                bodyParams = $('#urlencoded-keyvaleditor').keyvalueeditor('getValues');
+            }
+
+
+            params = params.concat(urlParams);
+            params = params.concat(bodyParams);
+
+            var signatureKey = "oauth_signature";
+            $('input.signatureParam').each(function () {
+                if ($(this).val() != '') {
+                    var val = $(this).val();
+                    params.push({key:$(this).attr('key'), value:val});
+                }
+            });
+
+            //Convert environment values
+            for (var i = 0, length = params.length; i < length; i++) {
+                params[i].value = pm.envManager.convertString(params[i].value);
+            }
+
+            var signature = this.generateSignature();
+
+            if (signature == null) {
+                return;
+            }
+
+            params.push({key:signatureKey, value:signature});
+
+            var addToHeader = $('#request-helper-oauth1-header').attr('checked') ? true : false;
+
+            if (addToHeader) {
+                var realm = pm.envManager.convertString($('#url').val()).trim();
+                if (realm.indexOf('?') > 0) {
+                    realm = realm.split("?")[0];
+                }
+                var headers = pm.request.headers;
+                var authHeaderKey = "Authorization";
+                var pos = findPosition(headers, "key", authHeaderKey);
+
+                var rawString = "OAuth realm=\"" + realm + "\",";
+                var len = params.length;
+                for (i = 0; i < len; i++) {
+                    rawString += encodeURIComponent(params[i].key) + "=\"" + encodeURIComponent(params[i].value) + "\",";
+                }
+                rawString = rawString.substring(0, rawString.length - 1);
+
+                if (pos >= 0) {
+                    headers[pos] = {
+                        key:authHeaderKey,
+                        name:authHeaderKey,
+                        value:rawString
+                    };
+                }
+                else {
+                    headers.push({key:authHeaderKey, name:authHeaderKey, value:rawString});
+                }
+
+                pm.request.headers = headers;
+                $('#headers-keyvaleditor').keyvalueeditor('reset', headers);
+                pm.request.openHeaderEditor();
+            } else {
+                if (pm.request.method === "GET") {
+                    $('#url-keyvaleditor').keyvalueeditor('reset', params);
+                    pm.request.setUrlParamString(params);
+                    pm.request.openUrlEditor();
+                } else {
+                    var dataMode = pm.request.body.getDataMode();
+                    if (dataMode === 'urlencoded') {
+                        $('#urlencoded-keyvaleditor').keyvalueeditor('reset', params);
+                    }
+                    else if (dataMode === 'params') {
+                        $('#formdata-keyvaleditor').keyvalueeditor('reset', params);
+                    }
+                }
+            }
+
+
+        }
+    }
+};
+pm.history = {
+    requests:{},
+
+    init:function () {
+        $('.history-actions-delete').click(function () {
+            pm.history.clear();
+        });
+    },
+
+    showEmptyMessage:function () {
+        $('#emptyHistoryMessage').css("display", "block");
+    },
+
+    hideEmptyMessage:function () {
+        $('#emptyHistoryMessage').css("display", "none");
+    },
+
+    requestExists:function (request) {
+        var index = -1;
+        var method = request.method.toLowerCase();
+
+        if (pm.request.isMethodWithBody(method)) {
+            return -1;
+        }
+
+        var requests = this.requests;
+        var len = requests.length;
+
+        for (var i = 0; i < len; i++) {
+            var r = requests[i];
+            if (r.url.length !== request.url.length ||
+                r.headers.length !== request.headers.length ||
+                r.method !== request.method) {
+                index = -1;
+            }
+            else {
+                if (r.url === request.url) {
+                    if (r.headers === request.headers) {
+                        index = i;
+                    }
+                }
+            }
+
+            if (index >= 0) {
+                break;
+            }
+        }
+
+        return index;
+    },
+
+    getAllRequests:function () {
+        pm.indexedDB.getAllRequestItems(function (historyRequests) {
+            var outAr = [];
+            var count = historyRequests.length;
+
+            if (count === 0) {
+                $('#sidebar-section-history').append(Handlebars.templates.message_no_history({}));
+            }
+            else {
+                for (var i = 0; i < count; i++) {
+                    var r = historyRequests[i];
+                    pm.urlCache.addUrl(r.url);
+
+                    var url = historyRequests[i].url;
+
+                    if (url.length > 80) {
+                        url = url.substring(0, 80) + "...";
+                    }
+                    url = limitStringLineWidth(url, 40);
+
+                    var request = {
+                        url:url,
+                        method:historyRequests[i].method,
+                        id:historyRequests[i].id,
+                        position:"top"
+                    };
+
+                    outAr.push(request);
+                }
+
+                outAr.reverse();
+
+                $('#history-items').append(Handlebars.templates.history_sidebar_requests({"items":outAr}));
+                $('#history-items').fadeIn();
+            }
+
+            pm.history.requests = historyRequests;
+            pm.layout.refreshScrollPanes();
+        });
+
+    },
+
+    loadRequest:function (id) {
+        pm.indexedDB.getRequest(id, function (request) {
+            pm.request.isFromCollection = false;
+            pm.request.loadRequestInEditor(request);
+        });
+    },
+
+    addRequest:function (url, method, headers, data, dataMode) {
+        var id = guid();
+        var maxHistoryCount = pm.settings.get("historyCount");
+        var requests = this.requests;
+        var requestsCount = this.requests.length;
+
+        if (requestsCount >= maxHistoryCount) {
+            //Delete the last request
+            var lastRequest = requests[requestsCount - 1];
+            this.deleteRequest(lastRequest.id);
+        }
+
+        var historyRequest = {
+            "id":id,
+            "url":url.toString(),
+            "method":method.toString(),
+            "headers":headers.toString(),
+            "data":data.toString(),
+            "dataMode":dataMode.toString(),
+            "timestamp":new Date().getTime()
+        };
+
+        var index = this.requestExists(historyRequest);
+
+        if (index >= 0) {
+            var deletedId = requests[index].id;
+            this.deleteRequest(deletedId);
+        }
+
+        pm.indexedDB.addRequest(historyRequest, function (request) {
+            pm.urlCache.addUrl(request.url);
+            pm.layout.sidebar.addRequest(request.url, request.method, id, "top");
+            pm.history.requests.push(request);
+        });
+    },
+
+
+    deleteRequest:function (id) {
+        pm.indexedDB.deleteRequest(id, function (request_id) {
+            var historyRequests = pm.history.requests;
+            var k = -1;
+            var len = historyRequests.length;
+            for (var i = 0; i < len; i++) {
+                if (historyRequests[i].id === request_id) {
+                    k = i;
+                    break;
+                }
+            }
+
+            if (k >= 0) {
+                historyRequests.splice(k, 1);
+            }
+
+            pm.layout.sidebar.removeRequestFromHistory(request_id);
+        });
+    },
+
+    clear:function () {
+        pm.indexedDB.deleteHistory(function () {
+            $('#history-items').html("");
+        });
+    }
+};
+pm.indexedDB = {
+    onerror:function (event, callback) {
+        console.log(event);
+    },
+
+    open_v21:function () {
+
+        var request = indexedDB.open("postman", "POSTman request history");
+        request.onsuccess = function (e) {
+            var v = "0.47";
+            pm.indexedDB.db = e.target.result;
+            var db = pm.indexedDB.db;
+
+            //We can only create Object stores in a setVersion transaction
+            if (v !== db.version) {
+                var setVrequest = db.setVersion(v);
+
+                setVrequest.onfailure = function (e) {
+                    console.log(e);
+                };
+
+                setVrequest.onsuccess = function (event) {
+                    //Only create if does not already exist
+                    if (!db.objectStoreNames.contains("requests")) {
+                        var requestStore = db.createObjectStore("requests", {keyPath:"id"});
+                        requestStore.createIndex("timestamp", "timestamp", { unique:false});
+
+                    }
+                    if (!db.objectStoreNames.contains("collections")) {
+                        var collectionsStore = db.createObjectStore("collections", {keyPath:"id"});
+                        collectionsStore.createIndex("timestamp", "timestamp", { unique:false});
+                    }
+
+                    if (!db.objectStoreNames.contains("collection_requests")) {
+                        var collectionRequestsStore = db.createObjectStore("collection_requests", {keyPath:"id"});
+                        collectionRequestsStore.createIndex("timestamp", "timestamp", { unique:false});
+                        collectionRequestsStore.createIndex("collectionId", "collectionId", { unique:false});
+                    }
+
+                    if (!db.objectStoreNames.contains("environments")) {
+                        var environmentsStore = db.createObjectStore("environments", {keyPath:"id"});
+                        environmentsStore.createIndex("timestamp", "timestamp", { unique:false});
+                        environmentsStore.createIndex("id", "id", { unique:false});
+                    }
+
+                    var transaction = event.target.result;
+                    transaction.oncomplete = function () {
+                        pm.history.getAllRequests();
+                        pm.envManager.getAllEnvironments();
+                    };
+                };
+
+                setVrequest.onupgradeneeded = function (evt) {
+                };
+            }
+            else {
+                pm.history.getAllRequests();
+                pm.envManager.getAllEnvironments();
+            }
+
+        };
+
+        request.onfailure = pm.indexedDB.onerror;
+    },
+
+    open_latest:function () {
+
+        var v = 9;
+        var request = indexedDB.open("postman", v);
+        console.log("Open latest");
+        request.onupgradeneeded = function (e) {
+
+            var db = e.target.result;
+            pm.indexedDB.db = db;
+            if (!db.objectStoreNames.contains("requests")) {
+                var requestStore = db.createObjectStore("requests", {keyPath:"id"});
+                requestStore.createIndex("timestamp", "timestamp", { unique:false});
+
+            }
+            if (!db.objectStoreNames.contains("collections")) {
+                var collectionsStore = db.createObjectStore("collections", {keyPath:"id"});
+                collectionsStore.createIndex("timestamp", "timestamp", { unique:false});
+            }
+
+            if (!db.objectStoreNames.contains("collection_requests")) {
+                var collectionRequestsStore = db.createObjectStore("collection_requests", {keyPath:"id"});
+                collectionRequestsStore.createIndex("timestamp", "timestamp", { unique:false});
+                collectionRequestsStore.createIndex("collectionId", "collectionId", { unique:false});
+            }
+
+            if (!db.objectStoreNames.contains("environments")) {
+                var environmentsStore = db.createObjectStore("environments", {keyPath:"id"});
+                environmentsStore.createIndex("timestamp", "timestamp", { unique:false});
+                environmentsStore.createIndex("id", "id", { unique:false});
+            }
+        };
+
+        request.onsuccess = function (e) {
+            pm.indexedDB.db = e.target.result;
+            pm.history.getAllRequests();
+            pm.envManager.getAllEnvironments();
+        };
+
+        request.onerror = pm.indexedDB.onerror;
+    },
+
+    open:function () {
+        if (parseInt(navigator.userAgent.match(/Chrom(e|ium)\/([0-9]+)\./)[2]) < 23) {
+            pm.indexedDB.open_v21();
+        }
+        else {
+            pm.indexedDB.open_latest();
+        }
+    },
+
+    addCollection:function (collection, callback) {
+        var db = pm.indexedDB.db;
+        var trans = db.transaction(["collections"], "readwrite");
+        var store = trans.objectStore("collections");
+
+        var request = store.put({
+            "id":collection.id,
+            "name":collection.name,
+            "timestamp":new Date().getTime()
+        });
+
+        request.onsuccess = function () {
+            callback(collection);
+        };
+
+        request.onerror = function (e) {
+            console.log(e.value);
+        };
+    },
+
+    updateCollection:function (collection, callback) {
+        var db = pm.indexedDB.db;
+        var trans = db.transaction(["collections"], "readwrite");
+        var store = trans.objectStore("collections");
+
+        var boundKeyRange = IDBKeyRange.only(collection.id);
+        var request = store.put(collection);
+
+        request.onsuccess = function (e) {
+            callback(collection);
+        };
+
+        request.onerror = function (e) {
+            console.log(e.value);
+        };
+    },
+
+    addCollectionRequest:function (req, callback) {
+        var db = pm.indexedDB.db;
+        var trans = db.transaction(["collection_requests"], "readwrite");
+        var store = trans.objectStore("collection_requests");
+
+        var collectionRequest = store.put({
+            "collectionId":req.collectionId,
+            "id":req.id,
+            "name":req.name,
+            "description":req.description,
+            "url":req.url.toString(),
+            "method":req.method.toString(),
+            "headers":req.headers.toString(),
+            "data":req.data.toString(),
+            "dataMode":req.dataMode.toString(),
+            "timestamp":req.timestamp
+        });
+
+        collectionRequest.onsuccess = function () {
+            callback(req);
+        };
+
+        collectionRequest.onerror = function (e) {
+            console.log(e.value);
+        };
+    },
+
+    updateCollectionRequest:function (req, callback) {
+        var db = pm.indexedDB.db;
+        var trans = db.transaction(["collection_requests"], "readwrite");
+        var store = trans.objectStore("collection_requests");
+
+        var boundKeyRange = IDBKeyRange.only(req.id);
+        var request = store.put(req);
+
+        request.onsuccess = function (e) {
+            callback(req);
+        };
+
+        request.onerror = function (e) {
+            console.log(e.value);
+        };
+    },
+
+    getCollection:function (id, callback) {
+        var db = pm.indexedDB.db;
+        var trans = db.transaction(["collections"], "readwrite");
+        var store = trans.objectStore("collections");
+
+        //Get everything in the store
+        var cursorRequest = store.get(id);
+
+        cursorRequest.onsuccess = function (e) {
+            var result = e.target.result;
+            callback(result);
+        };
+        cursorRequest.onerror = pm.indexedDB.onerror;
+    },
+
+    getCollections:function (callback) {
+        var db = pm.indexedDB.db;
+
+        if (db == null) {
+            return;
+        }
+
+        var trans = db.transaction(["collections"], "readwrite");
+        var store = trans.objectStore("collections");
+
+        //Get everything in the store
+        var keyRange = IDBKeyRange.lowerBound(0);
+        var cursorRequest = store.openCursor(keyRange);
+        var numCollections = 0;
+        var items = [];
+        cursorRequest.onsuccess = function (e) {
+            var result = e.target.result;
+            if (!result) {
+                callback(items);
+                return;
+            }
+
+            var collection = result.value;
+            numCollections++;
+
+            items.push(collection);
+
+            result['continue']();
+        };
+
+        cursorRequest.onerror = function (e) {
+            console.log(e);
+        };
+    },
+
+    getAllRequestsInCollection:function (collection, callback) {
+        var db = pm.indexedDB.db;
+        var trans = db.transaction(["collection_requests"], "readwrite");
+
+        //Get everything in the store
+        var keyRange = IDBKeyRange.only(collection.id);
+        var store = trans.objectStore("collection_requests");
+
+        var index = store.index("collectionId");
+        var cursorRequest = index.openCursor(keyRange);
+
+        var requests = [];
+
+        cursorRequest.onsuccess = function (e) {
+            var result = e.target.result;
+
+            if (!result) {
+                callback(collection, requests);
+                return;
+            }
+
+            var request = result.value;
+            requests.push(request);
+
+            //This wil call onsuccess again and again until no more request is left
+            result['continue']();
+        };
+        cursorRequest.onerror = pm.indexedDB.onerror;
+    },
+
+    addRequest:function (historyRequest, callback) {
+        var db = pm.indexedDB.db;
+        var trans = db.transaction(["requests"], "readwrite");
+        var store = trans.objectStore("requests");
+        var request = store.put(historyRequest);
+
+        request.onsuccess = function (e) {
+            callback(historyRequest);
+        };
+
+        request.onerror = function (e) {
+            console.log(e.value);
+        };
+    },
+
+    getRequest:function (id, callback) {
+        var db = pm.indexedDB.db;
+        var trans = db.transaction(["requests"], "readwrite");
+        var store = trans.objectStore("requests");
+
+        //Get everything in the store
+        var cursorRequest = store.get(id);
+
+        cursorRequest.onsuccess = function (e) {
+            var result = e.target.result;
+            if (!result) {
+                return;
+            }
+
+            callback(result);
+        };
+        cursorRequest.onerror = pm.indexedDB.onerror;
+    },
+
+    getCollectionRequest:function (id, callback) {
+        var db = pm.indexedDB.db;
+        var trans = db.transaction(["collection_requests"], "readwrite");
+        var store = trans.objectStore("collection_requests");
+
+        //Get everything in the store
+        var cursorRequest = store.get(id);
+
+        cursorRequest.onsuccess = function (e) {
+            var result = e.target.result;
+            if (!result) {
+                return;
+            }
+
+            callback(result);
+            return result;
+        };
+        cursorRequest.onerror = pm.indexedDB.onerror;
+    },
+
+
+    getAllRequestItems:function (callback) {
+        var db = pm.indexedDB.db;
+        if (db == null) {
+            return;
+        }
+
+        var trans = db.transaction(["requests"], "readwrite");
+        var store = trans.objectStore("requests");
+
+        //Get everything in the store
+        var keyRange = IDBKeyRange.lowerBound(0);
+        var index = store.index("timestamp");
+        var cursorRequest = index.openCursor(keyRange);
+        var historyRequests = [];
+
+        cursorRequest.onsuccess = function (e) {
+            var result = e.target.result;
+
+            if (!result) {
+                callback(historyRequests);
+                return;
+            }
+
+            var request = result.value;
+            historyRequests.push(request);
+
+            //This wil call onsuccess again and again until no more request is left
+            result['continue']();
+        };
+
+        cursorRequest.onerror = pm.indexedDB.onerror;
+    },
+
+    deleteRequest:function (id, callback) {
+        try {
+            var db = pm.indexedDB.db;
+            var trans = db.transaction(["requests"], "readwrite");
+            var store = trans.objectStore(["requests"]);
+
+            var request = store['delete'](id);
+
+            request.onsuccess = function () {
+                callback(id);
+            };
+
+            request.onerror = function (e) {
+                console.log(e);
+            };
+        }
+        catch (e) {
+            console.log(e);
+        }
+
+    },
+
+    deleteHistory:function (callback) {
+        var db = pm.indexedDB.db;
+        var clearTransaction = db.transaction(["requests"], "readwrite");
+        var clearRequest = clearTransaction.objectStore(["requests"]).clear();
+        clearRequest.onsuccess = function (event) {
+            callback();
+        };
+    },
+
+    deleteCollectionRequest:function (id, callback) {
+        var db = pm.indexedDB.db;
+        var trans = db.transaction(["collection_requests"], "readwrite");
+        var store = trans.objectStore(["collection_requests"]);
+
+        var request = store['delete'](id);
+
+        request.onsuccess = function (e) {
+            callback(id);
+        };
+
+        request.onerror = function (e) {
+            console.log(e);
+        };
+    },
+
+    deleteAllCollectionRequests:function (id) {
+        var db = pm.indexedDB.db;
+        var trans = db.transaction(["collection_requests"], "readwrite");
+
+        //Get everything in the store
+        var keyRange = IDBKeyRange.only(id);
+        var store = trans.objectStore("collection_requests");
+
+        var index = store.index("collectionId");
+        var cursorRequest = index.openCursor(keyRange);
+
+        cursorRequest.onsuccess = function (e) {
+            var result = e.target.result;
+
+            if (!result) {
+                return;
+            }
+
+            var request = result.value;
+            pm.collections.deleteCollectionRequest(request.id);
+            result['continue']();
+        };
+        cursorRequest.onerror = pm.indexedDB.onerror;
+    },
+
+    deleteCollection:function (id, callback) {
+        var db = pm.indexedDB.db;
+        var trans = db.transaction(["collections"], "readwrite");
+        var store = trans.objectStore(["collections"]);
+
+        var request = store['delete'](id);
+
+        request.onsuccess = function () {
+            pm.indexedDB.deleteAllCollectionRequests(id);
+            callback(id);
+        };
+
+        request.onerror = function (e) {
+            console.log(e);
+        };
+    },
+
+    environments:{
+        addEnvironment:function (environment, callback) {
+            var db = pm.indexedDB.db;
+            var trans = db.transaction(["environments"], "readwrite");
+            var store = trans.objectStore("environments");
+            var request = store.put(environment);
+
+            request.onsuccess = function (e) {
+                callback(environment);
+            };
+
+            request.onerror = function (e) {
+                console.log(e);
+            };
+        },
+
+        getEnvironment:function (id, callback) {
+            var db = pm.indexedDB.db;
+            var trans = db.transaction(["environments"], "readwrite");
+            var store = trans.objectStore("environments");
+
+            //Get everything in the store
+            var cursorRequest = store.get(id);
+
+            cursorRequest.onsuccess = function (e) {
+                var result = e.target.result;
+                callback(result);
+            };
+            cursorRequest.onerror = pm.indexedDB.onerror;
+        },
+
+        deleteEnvironment:function (id, callback) {
+            var db = pm.indexedDB.db;
+            var trans = db.transaction(["environments"], "readwrite");
+            var store = trans.objectStore(["environments"]);
+
+            var request = store['delete'](id);
+
+            request.onsuccess = function () {
+                callback(id);
+            };
+
+            request.onerror = function (e) {
+                console.log(e);
+            };
+        },
+
+        getAllEnvironments:function (callback) {
+            var db = pm.indexedDB.db;
+            if (db == null) {
+                return;
+            }
+
+            var trans = db.transaction(["environments"], "readwrite");
+            var store = trans.objectStore("environments");
+
+            //Get everything in the store
+            var keyRange = IDBKeyRange.lowerBound(0);
+            var index = store.index("timestamp");
+            var cursorRequest = index.openCursor(keyRange);
+            var environments = [];
+
+            cursorRequest.onsuccess = function (e) {
+                var result = e.target.result;
+
+                if (!result) {
+                    callback(environments);
+                    return;
+                }
+
+                var request = result.value;
+                environments.push(request);
+
+                //This wil call onsuccess again and again until no more request is left
+                result['continue']();
+            };
+
+            cursorRequest.onerror = pm.indexedDB.onerror;
+        },
+
+        updateEnvironment:function (environment, callback) {
+            var db = pm.indexedDB.db;
+            var trans = db.transaction(["environments"], "readwrite");
+            var store = trans.objectStore("environments");
+
+            var boundKeyRange = IDBKeyRange.only(environment.id);
+            var request = store.put(environment);
+
+            request.onsuccess = function (e) {
+                callback(environment);
+            };
+
+            request.onerror = function (e) {
+                console.log(e.value);
+            };
+        }
+    }
+};
 pm.keymap = {
     init:function () {
         var clearHistoryHandler = function () {
@@ -513,202 +2470,367 @@ pm.keymap = {
         });
     }
 };
+pm.layout = {
+    socialButtons:{
+        "facebook":'<iframe src="http://www.facebook.com/plugins/like.php?href=https%3A%2F%2Fchrome.google.com%2Fwebstore%2Fdetail%2Ffdmmgilgnpjigdojojpjoooidkmcomcm&amp;send=false&amp;layout=button_count&amp;width=250&amp;show_faces=true&amp;action=like&amp;colorscheme=light&amp;font&amp;height=21&amp;appId=26438002524" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:250px; height:21px;" allowTransparency="true"></iframe>',
+        "twitter":'<a href="https://twitter.com/share" class="twitter-share-button" data-url="https://chrome.google.com/webstore/detail/fdmmgilgnpjigdojojpjoooidkmcomcm" data-text="I am using Postman to super-charge REST API testing and development!" data-count="horizontal" data-via="postmanclient">Tweet</a><script type="text/javascript" src="https://platform.twitter.com/widgets.js"></script>',
+        "plusOne":'<script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script><g:plusone size="medium" href="https://chrome.google.com/webstore/detail/fdmmgilgnpjigdojojpjoooidkmcomcm"></g:plusone>'
+    },
 
-pm.editor = {
-    mode:"html",
-    codeMirror:null,
-    charCount:0,
-
-    //Defines a links mode for CodeMirror
     init:function () {
-        CodeMirror.defineMode("links", function (config, parserConfig) {
-            var linksOverlay = {
-                startState:function () {
-                    return { "link":"" }
-                },
+        $('#sidebar-footer').on("click", function () {
+            $('#modal-spread-the-word').modal('show');
+            pm.layout.attachSocialButtons();
+        });
 
-                token:function (stream, state) {
-                    if (stream.eatSpace()) {
-                        return null;
+        $('#response-body-toggle').on("click", function () {
+            pm.request.response.toggleBodySize();
+        });
+
+        $('#response-body-line-wrapping').on("click", function () {
+            pm.editor.toggleLineWrapping();
+            return true;
+        });
+
+        $('#response-open-in-new-window').on("click", function () {
+            var data = pm.request.response.text;
+            pm.request.response.openInNewWindow(data);
+        });
+
+
+        $('#response-formatting').on("click", "a", function () {
+            var previewType = $(this).attr('data-type');
+            pm.request.response.changePreviewType(previewType);
+        });
+
+        $('#response-language').on("click", "a", function () {
+            var language = $(this).attr("data-mode");
+            pm.request.response.setMode(language);
+        });
+
+        $('#response-example-save').on("click", function () {
+            var currentResponse = pm.request.response;
+            var response = {
+                "responseCode":currentResponse.responseCode,
+                "time":currentResponse.time,
+                "headers":currentResponse.headers,
+                "cookies":currentResponse.cookies,
+                "text":currentResponse.text
+            };
+            pm.collections.saveResponseAsExample(pm.request.collectionRequestId, response);
+        });
+
+        this.sidebar.init();
+
+        pm.request.response.clear();
+
+        $('#add-to-collection').on("click", function () {
+            if (pm.collections.areLoaded === false) {
+                pm.collections.getAllCollections();
+            }
+        });
+
+        $("#submit-request").on("click", function () {
+            pm.request.send("text");
+        });
+
+        $("#update-request-in-collection").on("click", function () {
+            pm.collections.updateCollectionFromCurrentRequest();
+        });
+
+        $("#cancel-request").on("click", function () {
+            pm.request.cancel();
+        });
+
+        $("#request-actions-reset").on("click", function () {
+            pm.request.startNew();
+        });
+
+        $('#request-method-selector').change(function () {
+            var val = $(this).val();
+            pm.request.setMethod(val);
+        });
+
+        $('#sidebar-selectors li a').click(function () {
+            var id = $(this).attr('data-id');
+            pm.layout.sidebar.select(id);
+        });
+
+        $('a[rel="tooltip"]').tooltip();
+
+        $('#form-add-to-collection').submit(function () {
+            pm.collections.addRequestToCollection();
+            $('#modal-add-to-collection').modal('hide');
+            return false;
+        });
+
+        $('#modal-add-to-collection .btn-primary').click(function () {
+            pm.collections.addRequestToCollection();
+            $('#modal-add-to-collection').modal('hide');
+        });
+
+        $('#form-new-collection').submit(function () {
+            pm.collections.addCollection();
+            return false;
+        });
+
+        $('#modal-new-collection .btn-primary').click(function () {
+            pm.collections.addCollection();
+            return false;
+        });
+
+        $('#modal-edit-collection .btn-primary').click(function () {
+            var id = $('#form-edit-collection .collection-id').val();
+            var name = $('#form-edit-collection .collection-name').val();
+
+            pm.indexedDB.getCollection(id, function (collection) {
+                collection.name = name;
+                pm.indexedDB.updateCollection(collection, function (collection) {
+                    $('#collection-' + collection.id + " .sidebar-collection-head-name").html(collection.name);
+                    $('#select-collection option[value="' + collection.id + '"]').html(collection.name);
+                });
+            });
+
+            $('#modal-edit-collection').modal('hide');
+        });
+
+        $('#modal-edit-collection-request .btn-primary').click(function () {
+            var id = $('#form-edit-collection-request .collection-request-id').val();
+            var name = $('#form-edit-collection-request .collection-request-name').val();
+            var description = $('#form-edit-collection-request .collection-request-description').val();
+
+            pm.indexedDB.getCollectionRequest(id, function (req) {
+                req.name = name;
+                req.description = description;
+                pm.indexedDB.updateCollectionRequest(req, function (newRequest) {
+                    var requestName;
+                    if (req.name != undefined) {
+                        requestName = limitStringLineWidth(req.name, 43);
+                    }
+                    else {
+                        requestName = limitStringLineWidth(req.url, 43);
                     }
 
-                    var matches;
-                    if (matches = stream.match(/https?:\/\/[^\\'"\n\t\s]*(?=[<"'\n\t\s])/, false)) {
-                        //Eat all characters before http link
-                        var m = stream.match(/.*(?=https?:)/, true);
-                        if (m) {
-                            if (m[0].length > 0) {
-                                return null;
-                            }
-                        }
-
-                        var match = matches[0];
-                        if (match != state.link) {
-                            state.link = matches[0];
-                            for (var i = 0; i < state.link.length; i++) {
-                                stream.next();
-                            }
-                            state.link = "";
-                            return "link";
-                        }
-
-                        stream.skipToEnd();
-                        return null;
+                    $('#sidebar-request-' + req.id + " .request .request-name").html(requestName);
+                    if (pm.request.collectionRequestId === req.id) {
+                        $('#request-name').html(req.name);
+                        $('#request-description').html(req.description);
                     }
+                    $('#modal-edit-collection-request').modal('hide');
+                });
+            });
+        });
 
-                    stream.skipToEnd();
-                    return null;
+        $(window).resize(function () {
+            pm.layout.setLayout();
+        });
 
-                }
+        $('#response-data').on("click", ".cm-link", function () {
+            var link = $(this).html();
+            var headers = $('#headers-keyvaleditor').keyvalueeditor('getValues');
+            pm.request.loadRequestFromLink(link, headers);
+        });
+
+        $('.response-tabs').on("click", "li", function () {
+            var section = $(this).attr('data-section');
+            if (section === "body") {
+                pm.request.response.showBody();
+            }
+            else if (section === "headers") {
+                pm.request.response.showHeaders();
+            }
+            else if (section === "cookies") {
+                pm.request.response.showCookies();
+            }
+        });
+
+        $('#request-meta').on("mouseenter", function () {
+            $('.request-meta-actions').css("display", "block");
+        });
+
+        $('#request-meta').on("mouseleave", function () {
+            $('.request-meta-actions').css("display", "none");
+        });
+
+        this.setLayout();
+    },
+
+    attachSocialButtons:function () {
+        var currentContent = $('#about-postman-twitter-button').html();
+        if (currentContent === "" || !currentContent) {
+            $('#about-postman-twitter-button').html(this.socialButtons.twitter);
+        }
+
+        currentContent = $('#about-postman-plus-one-button').html();
+        if (currentContent === "" || !currentContent) {
+            $('#about-postman-plus-one-button').html(this.socialButtons.plusOne);
+        }
+
+        currentContent = $('#about-postman-facebook-button').html();
+        if (currentContent === "" || !currentContent) {
+            $('#about-postman-facebook-button').html(this.socialButtons.facebook);
+        }
+    },
+
+    setLayout:function () {
+        this.refreshScrollPanes();
+    },
+
+    refreshScrollPanes:function () {
+        var newMainWidth = $('#container').width() - $('#sidebar').width();
+        $('#main').width(newMainWidth + "px");
+
+        if ($('#sidebar').width() > 100) {
+            $('#sidebar').jScrollPane({
+                mouseWheelSpeed:24
+            });
+        }
+
+    },
+
+    sidebar:{
+        currentSection:"history",
+        isSidebarMaximized:true,
+        sections:[ "history", "collections" ],
+        width:0,
+        animationDuration:250,
+
+        minimizeSidebar:function () {
+            var animationDuration = pm.layout.sidebar.animationDuration;
+            $('#sidebar-toggle').animate({left:"0"}, animationDuration);
+            $('#sidebar').animate({width:"5px"}, animationDuration);
+            $('#sidebar-footer').css("display", "none");
+            $('#sidebar div').animate({opacity:0}, animationDuration);
+            var newMainWidth = $(document).width() - 5;
+            $('#main').animate({width:newMainWidth + "px", "margin-left":"5px"}, animationDuration);
+            $('#sidebar-toggle img').attr('src', 'img/tri_arrow_right.png');
+        },
+
+        maximizeSidebar:function () {
+            var animationDuration = pm.layout.sidebar.animationDuration;
+            $('#sidebar-toggle').animate({left:"350px"}, animationDuration, function () {
+                $('#sidebar-footer').fadeIn();
+            });
+            $('#sidebar').animate({width:pm.layout.sidebar.width + "px"}, animationDuration);
+            $('#sidebar div').animate({opacity:1}, animationDuration);
+            $('#sidebar-toggle img').attr('src', 'img/tri_arrow_left.png');
+            var newMainWidth = $(document).width() - pm.layout.sidebar.width;
+            $('#main').animate({width:newMainWidth + "px", "margin-left":pm.layout.sidebar.width + "px"}, animationDuration);
+            pm.layout.refreshScrollPanes();
+        },
+
+        toggleSidebar:function () {
+            var isSidebarMaximized = pm.layout.sidebar.isSidebarMaximized;
+            if (isSidebarMaximized) {
+                pm.layout.sidebar.minimizeSidebar();
+            }
+            else {
+                pm.layout.sidebar.maximizeSidebar();
+            }
+
+            pm.layout.sidebar.isSidebarMaximized = !isSidebarMaximized;
+        },
+
+        init:function () {
+            $('#history-items').on("click", ".request-actions-delete", function () {
+                var request_id = $(this).attr('data-request-id');
+                pm.history.deleteRequest(request_id);
+            });
+
+            $('#history-items').on("click", ".request", function () {
+                var request_id = $(this).attr('data-request-id');
+                pm.history.loadRequest(request_id);
+            });
+
+            $('#sidebar-toggle').on("click", function () {
+                pm.layout.sidebar.toggleSidebar();
+            });
+
+            pm.layout.sidebar.width = $('#sidebar').width() + 10;
+
+            this.addRequestListeners();
+        },
+
+        select:function (section) {
+            if (pm.collections.areLoaded === false) {
+                pm.collections.getAllCollections();
+            }
+
+            $('#sidebar-section-' + this.currentSection).css("display", "none");
+            $('#' + this.currentSection + '-options').css("display", "none");
+
+            this.currentSection = section;
+
+            $('#sidebar-section-' + section).fadeIn();
+            $('#' + section + '-options').css("display", "block");
+            pm.layout.refreshScrollPanes();
+            return true;
+        },
+
+        addRequest:function (url, method, id, position) {
+            if (url.length > 80) {
+                url = url.substring(0, 80) + "...";
+            }
+            url = limitStringLineWidth(url, 40);
+
+            var request = {
+                url:url,
+                method:method,
+                id:id,
+                position:position
             };
 
-            return CodeMirror.overlayParser(CodeMirror.getMode(config, parserConfig.backdrop || pm.editor.mode), linksOverlay);
-        });
-    },
-
-    toggleLineWrapping:function () {
-        var lineWrapping = pm.editor.codeMirror.getOption("lineWrapping");
-        if (lineWrapping === true) {
-            $('#response-body-line-wrapping').removeClass("active");
-            lineWrapping = false;
-            pm.editor.codeMirror.setOption("lineWrapping", false);
-        }
-        else {
-            $('#response-body-line-wrapping').addClass("active");
-            lineWrapping = true;
-            pm.editor.codeMirror.setOption("lineWrapping", true);
-        }
-
-        pm.settings.set("lineWrapping", lineWrapping);
-    }
-};
-
-pm.urlCache = {
-    urls:[],
-    addUrl:function (url) {
-        if ($.inArray(url, this.urls) == -1) {
-            pm.urlCache.urls.push(url);
-            this.refreshAutoComplete();
-        }
-    },
-
-    refreshAutoComplete:function () {
-        $("#url").autocomplete({
-            source:pm.urlCache.urls,
-            delay:50
-        });
-    }
-};
-
-pm.settings = {
-    historyCount:50,
-    lastRequest:"",
-    autoSaveRequest:true,
-    selectedEnvironmentId:"",
-
-    init:function () {
-        pm.settings.create("historyCount", 100);
-        pm.settings.create("autoSaveRequest", true);
-        pm.settings.create("selectedEnvironmentId", true);
-        pm.settings.create("lineWrapping", true);
-        pm.settings.create("previewType", "parsed");
-        pm.settings.create("retainLinkHeaders", false);
-        pm.settings.create("usePostmanProxy", false);
-        pm.settings.create("proxyURL", "");
-        pm.settings.create("lastRequest", "");
-        pm.settings.create("variableDelimiter", "{{...}}");
-
-        $('#history-count').val(pm.settings.get("historyCount"));
-        $('#auto-save-request').val(pm.settings.get("autoSaveRequest") + "");
-        $('#retain-link-headers').val(pm.settings.get("retainLinkHeaders") + "");
-        $('#use-postman-proxy').val(pm.settings.get("usePostmanProxy") + "");
-        $('#postman-proxy-url').val(pm.settings.get("postmanProxyUrl"));
-        $('#variable-delimiter').val(pm.settings.get("variableDelimiter"));
-
-        $('#history-count').change(function () {
-            pm.settings.set("historyCount", $('#history-count').val());
-        });
-
-        $('#auto-save-request').change(function () {
-            var val = $('#auto-save-request').val();
-            if (val == "true") {
-                pm.settings.set("autoSaveRequest", true);
+            if (position === 'top') {
+                $('#history-items').prepend(Handlebars.templates.item_history_sidebar_request(request));
             }
             else {
-                pm.settings.set("autoSaveRequest", false);
+                $('#history-items').append(Handlebars.templates.item_history_sidebar_request(request));
             }
-        });
 
-        $('#retain-link-headers').change(function () {
-            var val = $('#retain-link-headers').val();
-            if (val === "true") {
-                pm.settings.set("retainLinkHeaders", true);
+            $('#sidebar-section-history .empty-message').css("display", "none");
+            pm.layout.refreshScrollPanes();
+        },
+
+        addRequestListeners:function () {
+            $('#sidebar-sections').on("mouseenter", ".sidebar-request", function () {
+                var actionsEl = jQuery('.request-actions', this);
+                actionsEl.css('display', 'block');
+            });
+
+            $('#sidebar-sections').on("mouseleave", ".sidebar-request", function () {
+                var actionsEl = jQuery('.request-actions', this);
+                actionsEl.css('display', 'none');
+            });
+        },
+
+        emptyCollectionInSidebar:function (id) {
+            $('#collection-requests-' + id).html("");
+        },
+
+        removeRequestFromHistory:function (id, toAnimate) {
+            if (toAnimate) {
+                $('#sidebar-request-' + id).slideUp(100);
             }
             else {
-                pm.settings.set("retainLinkHeaders", false);
+                $('#sidebar-request-' + id).remove();
             }
-        });
 
-        $('#use-postman-proxy').change(function () {
-            var val = $('#use-postman-proxy').val();
-            if (val == "true") {
-                pm.settings.set("usePostmanProxy", true);
-                $('#postman-proxy-url-container').css("display", "block");
+            if (pm.history.requests.length === 0) {
+                pm.history.showEmptyMessage();
             }
             else {
-                pm.settings.set("usePostmanProxy", false);
-                $('#postman-proxy-url-container').css("display", "none");
-            }
-        });
-
-        $('#postman-proxy-url').change(function () {
-            pm.settings.set("postmanProxyUrl", $('#postman-proxy-url').val());
-        });
-
-        $('#variable-delimiter').change(function () {
-            pm.settings.set("variableDelimiter", $('#variable-delimiter').val());
-        });
-
-        if (pm.settings.get("usePostmanProxy") == true) {
-            $('#postman-proxy-url-container').css("display", "block");
-        }
-        else {
-            $('#postman-proxy-url-container').css("display", "none");
-        }
-    },
-
-    create:function (key, defaultVal) {
-        if (localStorage[key]) {
-            pm.settings[key] = localStorage[key];
-        }
-        else {
-            if (defaultVal !== "undefined") {
-                pm.settings[key] = defaultVal;
-                localStorage[key] = defaultVal;
+                pm.history.hideEmptyMessage();
             }
 
-        }
-    },
+            pm.layout.refreshScrollPanes();
+        },
 
-    set:function (key, value) {
-        pm.settings[key] = value;
-        localStorage[key] = value;
-    },
-
-    get:function (key) {
-        var val = localStorage[key];
-        if (val === "true") {
-            return true;
-        }
-        else if (val === "false") {
-            return false;
-        }
-        else {
-            return localStorage[key];
+        removeCollection:function (id) {
+            $('#collection-' + id).remove();
+            pm.layout.refreshScrollPanes();
         }
     }
 };
-
 pm.request = {
     url:"",
     urlParams:{},
@@ -2184,2259 +4306,127 @@ pm.request = {
         pm.request.response.showScreen("waiting");
     }
 };
-
-pm.helpers = {
-    init:function () {
-        $("#request-types .request-helper-tabs li").on("click", function () {
-            $("#request-types .request-helper-tabs li").removeClass("active");
-            $(this).addClass("active");
-            var type = $(this).attr('data-id');
-            pm.helpers.showRequestHelper(type);
-        });
-
-        $('.request-helper-submit').on("click", function () {
-            var type = $(this).attr('data-type');
-            $('#request-helpers').css("display", "none");
-            pm.helpers.processRequestHelper(type);
-        });
-
-
-    },
-
-    processRequestHelper:function (type) {
-        if (type === 'basic') {
-            this.basic.process();
-        }
-        else if (type === 'oAuth1') {
-            this.oAuth1.process();
-        }
-        return false;
-    },
-
-    showRequestHelper:function (type) {
-        $("#request-types ul li").removeClass("active");
-        $('#request-types ul li[data-id=' + type + ']').addClass('active');
-        if (type !== "normal") {
-            $('#request-helpers').css("display", "block");
-        }
-        else {
-            $('#request-helpers').css("display", "none");
-        }
-
-        if (type.toLowerCase() === 'oauth1') {
-            this.oAuth1.generateHelper();
-        }
-
-        $('.request-helpers').css("display", "none");
-        $('#request-helper-' + type).css("display", "block");
-        return false;
-    },
-
-    basic:{
-        process:function () {
-            var headers = pm.request.headers;
-            var authHeaderKey = "Authorization";
-            var pos = findPosition(headers, "key", authHeaderKey);
-
-            var username = $('#request-helper-basicAuth-username').val();
-            var password = $('#request-helper-basicAuth-password').val();
-
-            username = pm.envManager.convertString(username);
-            password = pm.envManager.convertString(password);
-
-            var rawString = username + ":" + password;
-            var encodedString = "Basic " + btoa(rawString);
-
-            if (pos >= 0) {
-                headers[pos] = {
-                    key:authHeaderKey,
-                    name:authHeaderKey,
-                    value:encodedString
-                };
-            }
-            else {
-                headers.push({key:authHeaderKey, name:authHeaderKey, value:encodedString});
-            }
-
-            pm.request.headers = headers;
-            $('#headers-keyvaleditor').keyvalueeditor('reset', headers);
-            pm.request.openHeaderEditor();
-        }
-    },
-
-    oAuth1:{
-        generateHelper:function () {
-            $('#request-helper-oauth1-timestamp').val(OAuth.timestamp());
-            $('#request-helper-oauth1-nonce').val(OAuth.nonce(6));
-        },
-
-        generateSignature:function () {
-            //Make sure the URL is urlencoded properly
-            //Set the URL keyval editor as well. Other get params disappear when you click on URL params again
-            if ($('#url').val() === '') {
-                $('#request-helpers').css("display", "block");
-                alert('Please enter the URL first.');
-                return null;
-            }
-
-            var processedUrl = pm.envManager.convertString($('#url').val()).trim();
-            processedUrl = ensureProperUrl(processedUrl);
-
-            if (processedUrl.indexOf('?') > 0) {
-                processedUrl = processedUrl.split("?")[0];
-            }
-
-            var message = {
-                action:processedUrl,
-                method:pm.request.method,
-                parameters:[]
-            };
-
-            //all the fields defined by oauth
-            $('input.signatureParam').each(function () {
-                if ($(this).val() != '') {
-                    var val = $(this).val();
-                    val = pm.envManager.convertString(val);
-                    message.parameters.push([$(this).attr('key'), val]);
-                }
-            });
-
-            //Get parameters
-            var urlParams = $('#url-keyvaleditor').keyvalueeditor('getValues');
-            var bodyParams = [];
-
-            if (pm.request.isMethodWithBody(pm.request.method)) {
-                if (pm.request.body.mode == "params") {
-                    bodyParams = $('#formdata-keyvaleditor').keyvalueeditor('getValues');
-                }
-                else if (pm.request.body.mode == "urlencoded") {
-                    bodyParams = $('#urlencoded-keyvaleditor').keyvalueeditor('getValues');
-                }
-            }
-
-
-            var params = urlParams.concat(bodyParams);
-
-            for (var i = 0; i < params.length; i++) {
-                var param = params[i];
-                if (param.key) {
-                    param.value = pm.envManager.convertString(param.value);
-                    message.parameters.push([param.key, param.value]);
-                }
-            }
-
-            var accessor = {};
-            if ($('input[key="oauth_consumer_secret"]').val() != '') {
-                accessor.consumerSecret = $('input[key="oauth_consumer_secret"]').val();
-                accessor.consumerSecret = pm.envManager.convertString(accessor.consumerSecret);
-            }
-            if ($('input[key="oauth_token_secret"]').val() != '') {
-                accessor.tokenSecret = $('input[key="oauth_token_secret"]').val();
-                accessor.tokenSecret = pm.envManager.convertString(accessor.tokenSecret);
-            }
-
-            return OAuth.SignatureMethod.sign(message, accessor);
-        },
-
-        process:function () {
-            var params = [];
-            var urlParams = pm.request.getUrlEditorParams();
-            var bodyParams = [];
-
-            if (pm.request.body.mode == "params") {
-                bodyParams = $('#formdata-keyvaleditor').keyvalueeditor('getValues');
-            }
-            else if (pm.request.body.mode == "urlencoded") {
-                bodyParams = $('#urlencoded-keyvaleditor').keyvalueeditor('getValues');
-            }
-
-
-            params = params.concat(urlParams);
-            params = params.concat(bodyParams);
-
-            var signatureKey = "oauth_signature";
-            $('input.signatureParam').each(function () {
-                if ($(this).val() != '') {
-                    var val = $(this).val();
-                    params.push({key:$(this).attr('key'), value:val});
-                }
-            });
-
-            //Convert environment values
-            for (var i = 0, length = params.length; i < length; i++) {
-                params[i].value = pm.envManager.convertString(params[i].value);
-            }
-
-            var signature = this.generateSignature();
-
-            if (signature == null) {
-                return;
-            }
-
-            params.push({key:signatureKey, value:signature});
-
-            var addToHeader = $('#request-helper-oauth1-header').attr('checked') ? true : false;
-
-            if (addToHeader) {
-                var realm = pm.envManager.convertString($('#url').val()).trim();
-                if (realm.indexOf('?') > 0) {
-                    realm = realm.split("?")[0];
-                }
-                var headers = pm.request.headers;
-                var authHeaderKey = "Authorization";
-                var pos = findPosition(headers, "key", authHeaderKey);
-
-                var rawString = "OAuth realm=\"" + realm + "\",";
-                var len = params.length;
-                for (i = 0; i < len; i++) {
-                    rawString += encodeURIComponent(params[i].key) + "=\"" + encodeURIComponent(params[i].value) + "\",";
-                }
-                rawString = rawString.substring(0, rawString.length - 1);
-
-                if (pos >= 0) {
-                    headers[pos] = {
-                        key:authHeaderKey,
-                        name:authHeaderKey,
-                        value:rawString
-                    };
-                }
-                else {
-                    headers.push({key:authHeaderKey, name:authHeaderKey, value:rawString});
-                }
-
-                pm.request.headers = headers;
-                $('#headers-keyvaleditor').keyvalueeditor('reset', headers);
-                pm.request.openHeaderEditor();
-            } else {
-                if (pm.request.method === "GET") {
-                    $('#url-keyvaleditor').keyvalueeditor('reset', params);
-                    pm.request.setUrlParamString(params);
-                    pm.request.openUrlEditor();
-                } else {
-                    var dataMode = pm.request.body.getDataMode();
-                    if (dataMode === 'urlencoded') {
-                        $('#urlencoded-keyvaleditor').keyvalueeditor('reset', params);
-                    }
-                    else if (dataMode === 'params') {
-                        $('#formdata-keyvaleditor').keyvalueeditor('reset', params);
-                    }
-                }
-            }
-
-
-        }
-    }
-};
-
-pm.history = {
-    requests:{},
-
-    init:function () {
-        $('.history-actions-delete').click(function () {
-            pm.history.clear();
-        });
-    },
-
-    showEmptyMessage:function () {
-        $('#emptyHistoryMessage').css("display", "block");
-    },
-
-    hideEmptyMessage:function () {
-        $('#emptyHistoryMessage').css("display", "none");
-    },
-
-    requestExists:function (request) {
-        var index = -1;
-        var method = request.method.toLowerCase();
-
-        if (pm.request.isMethodWithBody(method)) {
-            return -1;
-        }
-
-        var requests = this.requests;
-        var len = requests.length;
-
-        for (var i = 0; i < len; i++) {
-            var r = requests[i];
-            if (r.url.length !== request.url.length ||
-                r.headers.length !== request.headers.length ||
-                r.method !== request.method) {
-                index = -1;
-            }
-            else {
-                if (r.url === request.url) {
-                    if (r.headers === request.headers) {
-                        index = i;
-                    }
-                }
-            }
-
-            if (index >= 0) {
-                break;
-            }
-        }
-
-        return index;
-    },
-
-    getAllRequests:function () {
-        pm.indexedDB.getAllRequestItems(function (historyRequests) {
-            var outAr = [];
-            var count = historyRequests.length;
-
-            if (count === 0) {
-                $('#sidebar-section-history').append(Handlebars.templates.message_no_history({}));
-            }
-            else {
-                for (var i = 0; i < count; i++) {
-                    var r = historyRequests[i];
-                    pm.urlCache.addUrl(r.url);
-
-                    var url = historyRequests[i].url;
-
-                    if (url.length > 80) {
-                        url = url.substring(0, 80) + "...";
-                    }
-                    url = limitStringLineWidth(url, 40);
-
-                    var request = {
-                        url:url,
-                        method:historyRequests[i].method,
-                        id:historyRequests[i].id,
-                        position:"top"
-                    };
-
-                    outAr.push(request);
-                }
-
-                outAr.reverse();
-
-                $('#history-items').append(Handlebars.templates.history_sidebar_requests({"items":outAr}));
-                $('#history-items').fadeIn();
-            }
-
-            pm.history.requests = historyRequests;
-            pm.layout.refreshScrollPanes();
-        });
-
-    },
-
-    loadRequest:function (id) {
-        pm.indexedDB.getRequest(id, function (request) {
-            pm.request.isFromCollection = false;
-            pm.request.loadRequestInEditor(request);
-        });
-    },
-
-    addRequest:function (url, method, headers, data, dataMode) {
-        var id = guid();
-        var maxHistoryCount = pm.settings.get("historyCount");
-        var requests = this.requests;
-        var requestsCount = this.requests.length;
-
-        if (requestsCount >= maxHistoryCount) {
-            //Delete the last request
-            var lastRequest = requests[requestsCount - 1];
-            this.deleteRequest(lastRequest.id);
-        }
-
-        var historyRequest = {
-            "id":id,
-            "url":url.toString(),
-            "method":method.toString(),
-            "headers":headers.toString(),
-            "data":data.toString(),
-            "dataMode":dataMode.toString(),
-            "timestamp":new Date().getTime()
-        };
-
-        var index = this.requestExists(historyRequest);
-
-        if (index >= 0) {
-            var deletedId = requests[index].id;
-            this.deleteRequest(deletedId);
-        }
-
-        pm.indexedDB.addRequest(historyRequest, function (request) {
-            pm.urlCache.addUrl(request.url);
-            pm.layout.sidebar.addRequest(request.url, request.method, id, "top");
-            pm.history.requests.push(request);
-        });
-    },
-
-
-    deleteRequest:function (id) {
-        pm.indexedDB.deleteRequest(id, function (request_id) {
-            var historyRequests = pm.history.requests;
-            var k = -1;
-            var len = historyRequests.length;
-            for (var i = 0; i < len; i++) {
-                if (historyRequests[i].id === request_id) {
-                    k = i;
-                    break;
-                }
-            }
-
-            if (k >= 0) {
-                historyRequests.splice(k, 1);
-            }
-
-            pm.layout.sidebar.removeRequestFromHistory(request_id);
-        });
-    },
-
-    clear:function () {
-        pm.indexedDB.deleteHistory(function () {
-            $('#history-items').html("");
-        });
-    }
-};
-
-pm.collections = {
-    areLoaded:false,
-    items:[],
-
-    init:function () {
-        this.addCollectionListeners();
-    },
-
-    addCollectionListeners:function () {
-        $('#collection-items').on("mouseenter", ".sidebar-collection .sidebar-collection-head", function () {
-            var actionsEl = jQuery('.collection-head-actions', this);
-            actionsEl.css('display', 'block');
-        });
-
-        $('#collection-items').on("mouseleave", ".sidebar-collection .sidebar-collection-head", function () {
-            var actionsEl = jQuery('.collection-head-actions', this);
-            actionsEl.css('display', 'none');
-        });
-
-        $('#collection-items').on("click", ".sidebar-collection-head-name", function () {
-            var id = $(this).attr('data-id');
-            pm.collections.toggleRequestList(id);
-        });
-
-        $('#collection-items').on("click", ".collection-head-actions .label", function () {
-            var id = $(this).parent().parent().parent().attr('data-id');
-            pm.collections.toggleRequestList(id);
-        });
-
-        $('#collection-items').on("click", ".request-actions-delete", function () {
-            var id = $(this).attr('data-id');
-            pm.collections.deleteCollectionRequest(id);
-        });
-
-        $('#collection-items').on("click", ".request-actions-load", function () {
-            var id = $(this).attr('data-id');
-            pm.collections.getCollectionRequest(id);
-        });
-
-        $('#collection-items').on("click", ".request-actions-edit", function () {
-            var id = $(this).attr('data-id');
-            $('#form-edit-collection-request .collection-request-id').val(id);
-
-            pm.indexedDB.getCollectionRequest(id, function (req) {
-                $('#form-edit-collection-request .collection-request-name').val(req.name);
-                $('#form-edit-collection-request .collection-request-description').val(req.description);
-                $('#modal-edit-collection-request').modal('show');
-            });
-        });
-
-        $('#collection-items').on("click", ".collection-actions-edit", function () {
-            var id = $(this).attr('data-id');
-            var name = $(this).attr('data-name');
-            $('#form-edit-collection .collection-id').val(id);
-            $('#form-edit-collection .collection-name').val(name);
-            $('#modal-edit-collection').modal('show');
-        });
-
-        $('#collection-items').on("click", ".collection-actions-delete", function () {
-            var id = $(this).attr('data-id');
-            var name = $(this).attr('data-name');
-
-            $('#modal-delete-collection-yes').attr('data-id', id);
-            $('#modal-delete-collection-name').html(name);
-        });
-
-        $('#modal-delete-collection-yes').on("click", function () {
-            var id = $(this).attr('data-id');
-            pm.collections.deleteCollection(id);
-        });
-
-        $('#import-collection-url-submit').on("click", function () {
-            var url = $('#import-collection-url-input').val();
-            pm.collections.importCollectionFromUrl(url);
-        });
-
-        $('#collection-items').on("click", ".collection-actions-download", function () {
-            var id = $(this).attr('data-id');
-            $("#modal-share-collection").modal("show");
-            $('#share-collection-get-link').attr("data-collection-id", id);
-            $('#share-collection-download').attr("data-collection-id", id);
-            $('#share-collection-link').css("display", "none");
-        });
-
-        $('#share-collection-get-link').on("click", function () {
-            var id = $(this).attr('data-collection-id');
-            pm.collections.uploadCollection(id, function (link) {
-                $('#share-collection-link').css("display", "block");
-                $('#share-collection-link').html(link);
-            });
-        });
-
-        $('#share-collection-download').on("click", function () {
-            var id = $(this).attr('data-collection-id');
-            pm.collections.saveCollection(id);
-        });
-
-        var dropZone = document.getElementById('import-collection-dropzone');
-        dropZone.addEventListener('dragover', function (evt) {
-            evt.stopPropagation();
-            evt.preventDefault();
-            evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
-        }, false);
-
-        dropZone.addEventListener('drop', function (evt) {
-            evt.stopPropagation();
-            evt.preventDefault();
-            var files = evt.dataTransfer.files; // FileList object.
-
-            pm.collections.importCollections(files);
-        }, false);
-
-        $('#collection-files-input').on('change', function (event) {
-            var files = event.target.files;
-            pm.collections.importCollections(files);
-            $('#collection-files-input').val("");
-        });
-    },
-
-    saveCollection:function (id) {
-        pm.indexedDB.getCollection(id, function (data) {
-            var collection = data;
-            pm.indexedDB.getAllRequestsInCollection(collection, function (collection, data) {
-                collection['requests'] = data;
-                var name = collection['name'] + ".json";
-                var type = "application/json";
-                var filedata = JSON.stringify(collection);
-                pm.filesystem.saveAndOpenFile(name, filedata, type, function () {
-                });
-            });
-        });
-    },
-
-    uploadCollection:function (id, callback) {
-        pm.indexedDB.getCollection(id, function (c) {
-            pm.indexedDB.getAllRequestsInCollection(c, function (collection, requests) {
-                collection['requests'] = requests;
-                var name = collection['name'] + ".json";
-                var type = "application/json";
-                var filedata = JSON.stringify(collection);
-
-                var uploadUrl = pm.webUrl + '/collections';
-                $.ajax({
-                    type:'POST',
-                    url:uploadUrl,
-                    data:filedata,
-                    success:function (data) {
-                        var link = data.link;
-                        callback(link);
-                    }
-                });
-            });
-        });
-    },
-
-
-    importCollections:function (files) {
-        // Loop through the FileList
-        for (var i = 0, f; f = files[i]; i++) {
-            var reader = new FileReader();
-
-            // Closure to capture the file information.
-            reader.onload = (function (theFile) {
-                return function (e) {
-                    // Render thumbnail.
-                    var data = e.currentTarget.result;
-                    var collection = JSON.parse(data);
-                    collection.id = guid();
-                    pm.indexedDB.addCollection(collection, function (c) {
-                        var message = {
-                            name:collection.name,
-                            action:"added"
-                        };
-
-                        $('.modal-import-alerts').append(Handlebars.templates.message_collection_added(message));
-
-                        var requests = [];
-
-                        //TODO Replace old request IDs with new ones in the order field
-                        
-                        for (var i = 0; i < collection.requests.length; i++) {
-                            var request = collection.requests[i];
-                            request.collectionId = collection.id;
-                            request.id = guid();
-
-                            pm.indexedDB.addCollectionRequest(request, function (req) {
-                            });
-                            requests.push(request);
-                        }
-
-                        collection.requests = requests;
-
-                        pm.collections.render(collection);
-                    });
-                };
-            })(f);
-
-            // Read in the image file as a data URL.
-            reader.readAsText(f);
-        }
-    },
-
-    importCollectionFromUrl:function (url) {
-        $.get(url, function (data) {
-            var collection = data;
-            collection.id = guid();
-            pm.indexedDB.addCollection(collection, function (c) {
-                var message = {
-                    name:collection.name,
-                    action:"added"
-                };
-
-                $('.modal-import-alerts').append(Handlebars.templates.message_collection_added(message));
-
-                //TODO Replace old request IDs with new ones in the order field
-                var requests = [];
-                for (var i = 0; i < collection.requests.length; i++) {
-                    var request = collection.requests[i];
-                    request.collectionId = collection.id;
-                    request.id = guid();
-
-                    pm.indexedDB.addCollectionRequest(request, function (req) {
-                    });
-                    requests.push(request);
-                }
-
-                collection.requests = requests;
-                pm.collections.render(collection);
-            });
-        });
-    },
-
-    getCollectionRequest:function (id) {
-        pm.indexedDB.getCollectionRequest(id, function (request) {
-            pm.request.isFromCollection = true;
-            pm.request.collectionRequestId = id;
-            pm.request.loadRequestInEditor(request, true);
-        });
-    },
-
-    openCollection:function (id) {
-        var target = "#collection-requests-" + id;
-        if ($(target).css("display") === "none") {
-            $(target).slideDown(100, function () {
-                pm.layout.refreshScrollPanes();
-            });
-        }
-    },
-
-    toggleRequestList:function (id) {
-        var target = "#collection-requests-" + id;
-        var label = "#collection-" + id + " .collection-head-actions .label";
-        if ($(target).css("display") === "none") {
-            $(target).slideDown(100, function () {
-                pm.layout.refreshScrollPanes();
-            });
-        }
-        else {
-            $(target).slideUp(100, function () {
-                pm.layout.refreshScrollPanes();
-            });
-        }
-    },
-
-    addCollection:function () {
-        var newCollection = $('#new-collection-blank').val();
-
-        var collection = new Collection();
-
-        if (newCollection) {
-            //Add the new collection and get guid
-            collection.id = guid();
-            collection.name = newCollection;
-            pm.indexedDB.addCollection(collection, function (collection) {
-                pm.collections.render(collection);
-            });
-
-            $('#new-collection-blank').val("");
-        }
-
-        $('#modal-new-collection').modal('hide');
-    },
-
-    updateCollectionFromCurrentRequest:function () {
-        var url = $('#url').val();
-        var collectionRequest = new CollectionRequest();
-        collectionRequest.id = pm.request.collectionRequestId;
-        collectionRequest.headers = pm.request.getPackedHeaders();
-        collectionRequest.url = url;
-        collectionRequest.method = pm.request.method;
-        collectionRequest.data = pm.request.body.getData();
-        collectionRequest.dataMode = pm.request.dataMode;
-        collectionRequest.time = new Date().getTime();
-
-        pm.indexedDB.getCollectionRequest(collectionRequest.id, function (req) {
-            collectionRequest.name = req.name;
-            collectionRequest.description = req.description;
-            collectionRequest.collectionId = req.collectionId;
-            $('#sidebar-request-' + req.id + " .request .label").removeClass('label-method-' + req.method);
-
-            pm.indexedDB.updateCollectionRequest(collectionRequest, function (request) {
-                var requestName;
-                if (request.name == undefined) {
-                    request.name = request.url;
-                }
-
-                requestName = limitStringLineWidth(request.name, 43);
-
-                $('#sidebar-request-' + request.id + " .request .request-name").html(requestName);
-                $('#sidebar-request-' + request.id + " .request .label").html(request.method);
-                $('#sidebar-request-' + request.id + " .request .label").addClass('label-method-' + request.method);
-                noty(
-                    {
-                        type: 'success',
-                        text: 'Saved request',
-                        layout: 'topRight',
-                        timeout: 750
-                    });
-            });
-        });
-
-    },
-
-    addRequestToCollection:function () {
-        var existingCollectionId = $('#select-collection').val();
-        var newCollection = $("#new-collection").val();
-        var newRequestName = $('#new-request-name').val();
-        var newRequestDescription = $('#new-request-description').val();
-
-        var url = $('#url').val();
-        if (newRequestName === "") {
-            newRequestName = url;
-        }
-
-        var collection = new Collection();
-
-        var collectionRequest = new CollectionRequest();
-        collectionRequest.id = guid();
-        collectionRequest.headers = pm.request.getPackedHeaders();
-        collectionRequest.url = url;
-        collectionRequest.method = pm.request.method;
-        collectionRequest.data = pm.request.body.getData();
-        collectionRequest.dataMode = pm.request.dataMode;
-        collectionRequest.name = newRequestName;
-        collectionRequest.description = newRequestDescription;
-        collectionRequest.time = new Date().getTime();
-
-        if (newCollection) {
-            //Add the new collection and get guid
-            collection.id = guid();
-            collection.name = newCollection;
-            pm.indexedDB.addCollection(collection, function (collection) {
-                $('#sidebar-section-collections .empty-message').css("display", "none");
-                $('#new-collection').val("");
-                collectionRequest.collectionId = collection.id;
-
-                $('#select-collection').append(Handlebars.templates.item_collection_selector_list(collection));
-                $('#collection-items').append(Handlebars.templates.item_collection_sidebar_head(collection));
-
-                $('a[rel="tooltip"]').tooltip();
-                pm.layout.refreshScrollPanes();
-                pm.indexedDB.addCollectionRequest(collectionRequest, function (req) {
-                    var targetElement = "#collection-requests-" + req.collectionId;
-                    pm.urlCache.addUrl(req.url);
-
-                    if (typeof req.name === "undefined") {
-                        req.name = req.url;
-                    }
-                    req.name = limitStringLineWidth(req.name, 43);
-
-                    $(targetElement).append(Handlebars.templates.item_collection_sidebar_request(req));
-
-                    pm.layout.refreshScrollPanes();
-
-                    pm.request.isFromCollection = true;
-                    pm.request.collectionRequestId = collectionRequest.id;
-                    $('#update-request-in-collection').css("display", "inline-block");
-                    pm.collections.openCollection(collectionRequest.collectionId);
-                });
-            });
-        }
-        else {
-            //Get guid of existing collection
-            collection.id = existingCollectionId;
-            collectionRequest.collectionId = collection.id;
-            pm.indexedDB.addCollectionRequest(collectionRequest, function (req) {
-                var targetElement = "#collection-requests-" + req.collectionId;
-                pm.urlCache.addUrl(req.url);
-
-                if (typeof req.name === "undefined") {
-                    req.name = req.url;
-                }
-                req.name = limitStringLineWidth(req.name, 43);
-
-                $(targetElement).append(Handlebars.templates.item_collection_sidebar_request(req));
-                pm.layout.refreshScrollPanes();
-
-                pm.request.isFromCollection = true;
-                pm.request.collectionRequestId = collectionRequest.id;
-                $('#update-request-in-collection').css("display", "inline-block");
-                pm.collections.openCollection(collectionRequest.collectionId);
-            });
-        }
-
-        pm.layout.sidebar.select("collections");
-
-        $('#request-meta').css("display", "block");
-        $('#request-name').css("display", "block");
-        $('#request-description').css("display", "block");
-        $('#request-name').html(newRequestName);
-        $('#request-description').html(newRequestDescription);
-        $('#sidebar-selectors a[data-id="collections"]').tab('show');
-    },
-
-    getAllCollections:function () {
-        $('#collection-items').html("");
-        $('#select-collection').html("<option>Select</option>");
-        pm.indexedDB.getCollections(function (items) {
-            pm.collections.items = items;
-
-            var itemsLength = items.length;
-
-            if (itemsLength == 0) {
-                $('#sidebar-section-collections').append(Handlebars.templates.message_no_collection({}));
-            }
-            else {
-                for (var i = 0; i < itemsLength; i++) {
-                    var collection = items[i];
-                    pm.indexedDB.getAllRequestsInCollection(collection, function (collection, requests) {
-                        collection.requests = requests;
-                        console.log(collection);
-                        pm.collections.render(collection);
-                    });
-                }
-            }
-
-
-            pm.collections.areLoaded = true;
-            pm.layout.refreshScrollPanes();
-        });
-    },
-
-    render:function (collection) {
-        $('#sidebar-section-collections .empty-message').css("display", "none");
-
-        var currentEl = $('#collection-' + collection.id);
-        if (currentEl) {
-            currentEl.remove();
-        }
-
-        $('#select-collection').append(Handlebars.templates.item_collection_selector_list(collection));
-        $('#collection-items').append(Handlebars.templates.item_collection_sidebar_head(collection));
-
-        $('a[rel="tooltip"]').tooltip();
-
-        if ("requests" in collection) {
-            var id = collection.id;
-            var requests = collection.requests;
-            var targetElement = "#collection-requests-" + id;
-            var count = requests.length;
-
-            if (count > 0) {
-                for (var i = 0; i < count; i++) {
-                    pm.urlCache.addUrl(requests[i].url);
-                    if (typeof requests[i].name === "undefined") {
-                        requests[i].name = requests[i].url;
-                    }
-                    requests[i].name = limitStringLineWidth(requests[i].name, 40);
-                }
-
-                //Sort requests as A-Z order
-                if (!("order" in collection)) {
-                    requests.sort(sortAlphabetical);
-                }
-                else {
-                    var orderedRequests = []
-                    for (var j = 0, len = collection["order"].length; j < len; j++) {
-                        var element = _.find(requests, function (request) {
-                            return request.id == collection["order"][j]
-                        });
-                        orderedRequests.push(element);
-                    }
-
-                    requests = orderedRequests;
-                }
-
-                console.log(requests);
-
-                $(targetElement).append(Handlebars.templates.collection_sidebar({"items":requests}));
-                $(targetElement).sortable({
-                    update:function (event, ui) {
-                        var target_parent = $(event.target).parents(".sidebar-collection-requests");
-                        var target_parent_collection = $(event.target).parents(".sidebar-collection");
-                        var collection_id = $(target_parent_collection).attr("data-id");
-                        var collection_requests = $(target_parent).children("li");
-                        var count = collection_requests.length;
-                        var order = [];
-                        for (var i = 0; i < count; i++) {
-                            var li_id = $(collection_requests[i]).attr("id");
-                            var request_id = $("#" + li_id + " .request").attr("data-id");
-                            order.push(request_id);
-                        }
-
-                        pm.indexedDB.getCollection(collection_id, function (collection) {
-                            collection["order"] = order;
-                            pm.indexedDB.updateCollection(collection, function (collection) {
-                            });
-                        });
-
-                    }
-                });
-            }
-
-        }
-
-        pm.layout.refreshScrollPanes();
-    },
-
-    deleteCollectionRequest:function (id) {
-        pm.indexedDB.deleteCollectionRequest(id, function () {
-            pm.layout.sidebar.removeRequestFromHistory(id);
-        });
-    },
-
-    deleteCollection:function (id) {
-        pm.indexedDB.deleteCollection(id, function () {
-            pm.layout.sidebar.removeCollection(id);
-
-            var target = '#select-collection option[value="' + id + '"]';
-            $(target).remove();
-        });
-    },
-
-    saveResponseAsExample:function (request_id, response) {
-        pm.indexedDB.getCollectionRequest(request_id, function (req) {
-            req.exampleResponse = response;
-            console.log(req);
-            pm.indexedDB.updateCollectionRequest(req, function (newRequest) {
-                console.log(newRequest);
-            });
-        });
-    }
-};
-
-pm.layout = {
-    socialButtons:{
-        "facebook":'<iframe src="http://www.facebook.com/plugins/like.php?href=https%3A%2F%2Fchrome.google.com%2Fwebstore%2Fdetail%2Ffdmmgilgnpjigdojojpjoooidkmcomcm&amp;send=false&amp;layout=button_count&amp;width=250&amp;show_faces=true&amp;action=like&amp;colorscheme=light&amp;font&amp;height=21&amp;appId=26438002524" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:250px; height:21px;" allowTransparency="true"></iframe>',
-        "twitter":'<a href="https://twitter.com/share" class="twitter-share-button" data-url="https://chrome.google.com/webstore/detail/fdmmgilgnpjigdojojpjoooidkmcomcm" data-text="I am using Postman to super-charge REST API testing and development!" data-count="horizontal" data-via="postmanclient">Tweet</a><script type="text/javascript" src="https://platform.twitter.com/widgets.js"></script>',
-        "plusOne":'<script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script><g:plusone size="medium" href="https://chrome.google.com/webstore/detail/fdmmgilgnpjigdojojpjoooidkmcomcm"></g:plusone>'
-    },
-
-    init:function () {
-        $('#sidebar-footer').on("click", function () {
-            $('#modal-spread-the-word').modal('show');
-            pm.layout.attachSocialButtons();
-        });
-
-        $('#response-body-toggle').on("click", function () {
-            pm.request.response.toggleBodySize();
-        });
-
-        $('#response-body-line-wrapping').on("click", function () {
-            pm.editor.toggleLineWrapping();
-            return true;
-        });
-
-        $('#response-open-in-new-window').on("click", function () {
-            var data = pm.request.response.text;
-            pm.request.response.openInNewWindow(data);
-        });
-
-
-        $('#response-formatting').on("click", "a", function () {
-            var previewType = $(this).attr('data-type');
-            pm.request.response.changePreviewType(previewType);
-        });
-
-        $('#response-language').on("click", "a", function () {
-            var language = $(this).attr("data-mode");
-            pm.request.response.setMode(language);
-        });
-
-        $('#response-example-save').on("click", function () {
-            var currentResponse = pm.request.response;
-            var response = {
-                "responseCode":currentResponse.responseCode,
-                "time":currentResponse.time,
-                "headers":currentResponse.headers,
-                "cookies":currentResponse.cookies,
-                "text":currentResponse.text
-            };
-            pm.collections.saveResponseAsExample(pm.request.collectionRequestId, response);
-        });
-
-        this.sidebar.init();
-
-        pm.request.response.clear();
-
-        $('#add-to-collection').on("click", function () {
-            if (pm.collections.areLoaded === false) {
-                pm.collections.getAllCollections();
-            }
-        });
-
-        $("#submit-request").on("click", function () {
-            pm.request.send("text");
-        });
-
-        $("#update-request-in-collection").on("click", function () {
-            pm.collections.updateCollectionFromCurrentRequest();
-        });
-
-        $("#cancel-request").on("click", function () {
-            pm.request.cancel();
-        });
-
-        $("#request-actions-reset").on("click", function () {
-            pm.request.startNew();
-        });
-
-        $('#request-method-selector').change(function () {
-            var val = $(this).val();
-            pm.request.setMethod(val);
-        });
-
-        $('#sidebar-selectors li a').click(function () {
-            var id = $(this).attr('data-id');
-            pm.layout.sidebar.select(id);
-        });
-
-        $('a[rel="tooltip"]').tooltip();
-
-        $('#form-add-to-collection').submit(function () {
-            pm.collections.addRequestToCollection();
-            $('#modal-add-to-collection').modal('hide');
-            return false;
-        });
-
-        $('#modal-add-to-collection .btn-primary').click(function () {
-            pm.collections.addRequestToCollection();
-            $('#modal-add-to-collection').modal('hide');
-        });
-
-        $('#form-new-collection').submit(function () {
-            pm.collections.addCollection();
-            return false;
-        });
-
-        $('#modal-new-collection .btn-primary').click(function () {
-            pm.collections.addCollection();
-            return false;
-        });
-
-        $('#modal-edit-collection .btn-primary').click(function () {
-            var id = $('#form-edit-collection .collection-id').val();
-            var name = $('#form-edit-collection .collection-name').val();
-
-            pm.indexedDB.getCollection(id, function (collection) {
-                collection.name = name;
-                pm.indexedDB.updateCollection(collection, function (collection) {
-                    $('#collection-' + collection.id + " .sidebar-collection-head-name").html(collection.name);
-                    $('#select-collection option[value="' + collection.id + '"]').html(collection.name);
-                });
-            });
-
-            $('#modal-edit-collection').modal('hide');
-        });
-
-        $('#modal-edit-collection-request .btn-primary').click(function () {
-            var id = $('#form-edit-collection-request .collection-request-id').val();
-            var name = $('#form-edit-collection-request .collection-request-name').val();
-            var description = $('#form-edit-collection-request .collection-request-description').val();
-
-            pm.indexedDB.getCollectionRequest(id, function (req) {
-                req.name = name;
-                req.description = description;
-                pm.indexedDB.updateCollectionRequest(req, function (newRequest) {
-                    var requestName;
-                    if (req.name != undefined) {
-                        requestName = limitStringLineWidth(req.name, 43);
-                    }
-                    else {
-                        requestName = limitStringLineWidth(req.url, 43);
-                    }
-
-                    $('#sidebar-request-' + req.id + " .request .request-name").html(requestName);
-                    if (pm.request.collectionRequestId === req.id) {
-                        $('#request-name').html(req.name);
-                        $('#request-description').html(req.description);
-                    }
-                    $('#modal-edit-collection-request').modal('hide');
-                });
-            });
-        });
-
-        $(window).resize(function () {
-            pm.layout.setLayout();
-        });
-
-        $('#response-data').on("click", ".cm-link", function () {
-            var link = $(this).html();
-            var headers = $('#headers-keyvaleditor').keyvalueeditor('getValues');
-            pm.request.loadRequestFromLink(link, headers);
-        });
-
-        $('.response-tabs').on("click", "li", function () {
-            var section = $(this).attr('data-section');
-            if (section === "body") {
-                pm.request.response.showBody();
-            }
-            else if (section === "headers") {
-                pm.request.response.showHeaders();
-            }
-            else if (section === "cookies") {
-                pm.request.response.showCookies();
-            }
-        });
-
-        $('#request-meta').on("mouseenter", function () {
-            $('.request-meta-actions').css("display", "block");
-        });
-
-        $('#request-meta').on("mouseleave", function () {
-            $('.request-meta-actions').css("display", "none");
-        });
-
-        this.setLayout();
-    },
-
-    attachSocialButtons:function () {
-        var currentContent = $('#about-postman-twitter-button').html();
-        if (currentContent === "" || !currentContent) {
-            $('#about-postman-twitter-button').html(this.socialButtons.twitter);
-        }
-
-        currentContent = $('#about-postman-plus-one-button').html();
-        if (currentContent === "" || !currentContent) {
-            $('#about-postman-plus-one-button').html(this.socialButtons.plusOne);
-        }
-
-        currentContent = $('#about-postman-facebook-button').html();
-        if (currentContent === "" || !currentContent) {
-            $('#about-postman-facebook-button').html(this.socialButtons.facebook);
-        }
-    },
-
-    setLayout:function () {
-        this.refreshScrollPanes();
-    },
-
-    refreshScrollPanes:function () {
-        var newMainWidth = $('#container').width() - $('#sidebar').width();
-        $('#main').width(newMainWidth + "px");
-
-        if ($('#sidebar').width() > 100) {
-            $('#sidebar').jScrollPane({
-                mouseWheelSpeed:24
-            });
-        }
-
-    },
-
-    sidebar:{
-        currentSection:"history",
-        isSidebarMaximized:true,
-        sections:[ "history", "collections" ],
-        width:0,
-        animationDuration:250,
-
-        minimizeSidebar:function () {
-            var animationDuration = pm.layout.sidebar.animationDuration;
-            $('#sidebar-toggle').animate({left:"0"}, animationDuration);
-            $('#sidebar').animate({width:"5px"}, animationDuration);
-            $('#sidebar-footer').css("display", "none");
-            $('#sidebar div').animate({opacity:0}, animationDuration);
-            var newMainWidth = $(document).width() - 5;
-            $('#main').animate({width:newMainWidth + "px", "margin-left":"5px"}, animationDuration);
-            $('#sidebar-toggle img').attr('src', 'img/tri_arrow_right.png');
-        },
-
-        maximizeSidebar:function () {
-            var animationDuration = pm.layout.sidebar.animationDuration;
-            $('#sidebar-toggle').animate({left:"350px"}, animationDuration, function () {
-                $('#sidebar-footer').fadeIn();
-            });
-            $('#sidebar').animate({width:pm.layout.sidebar.width + "px"}, animationDuration);
-            $('#sidebar div').animate({opacity:1}, animationDuration);
-            $('#sidebar-toggle img').attr('src', 'img/tri_arrow_left.png');
-            var newMainWidth = $(document).width() - pm.layout.sidebar.width;
-            $('#main').animate({width:newMainWidth + "px", "margin-left":pm.layout.sidebar.width + "px"}, animationDuration);
-            pm.layout.refreshScrollPanes();
-        },
-
-        toggleSidebar:function () {
-            var isSidebarMaximized = pm.layout.sidebar.isSidebarMaximized;
-            if (isSidebarMaximized) {
-                pm.layout.sidebar.minimizeSidebar();
-            }
-            else {
-                pm.layout.sidebar.maximizeSidebar();
-            }
-
-            pm.layout.sidebar.isSidebarMaximized = !isSidebarMaximized;
-        },
-
-        init:function () {
-            $('#history-items').on("click", ".request-actions-delete", function () {
-                var request_id = $(this).attr('data-request-id');
-                pm.history.deleteRequest(request_id);
-            });
-
-            $('#history-items').on("click", ".request", function () {
-                var request_id = $(this).attr('data-request-id');
-                pm.history.loadRequest(request_id);
-            });
-
-            $('#sidebar-toggle').on("click", function () {
-                pm.layout.sidebar.toggleSidebar();
-            });
-
-            pm.layout.sidebar.width = $('#sidebar').width() + 10;
-
-            this.addRequestListeners();
-        },
-
-        select:function (section) {
-            if (pm.collections.areLoaded === false) {
-                pm.collections.getAllCollections();
-            }
-
-            $('#sidebar-section-' + this.currentSection).css("display", "none");
-            $('#' + this.currentSection + '-options').css("display", "none");
-
-            this.currentSection = section;
-
-            $('#sidebar-section-' + section).fadeIn();
-            $('#' + section + '-options').css("display", "block");
-            pm.layout.refreshScrollPanes();
-            return true;
-        },
-
-        addRequest:function (url, method, id, position) {
-            if (url.length > 80) {
-                url = url.substring(0, 80) + "...";
-            }
-            url = limitStringLineWidth(url, 40);
-
-            var request = {
-                url:url,
-                method:method,
-                id:id,
-                position:position
-            };
-
-            if (position === 'top') {
-                $('#history-items').prepend(Handlebars.templates.item_history_sidebar_request(request));
-            }
-            else {
-                $('#history-items').append(Handlebars.templates.item_history_sidebar_request(request));
-            }
-
-            $('#sidebar-section-history .empty-message').css("display", "none");
-            pm.layout.refreshScrollPanes();
-        },
-
-        addRequestListeners:function () {
-            $('#sidebar-sections').on("mouseenter", ".sidebar-request", function () {
-                var actionsEl = jQuery('.request-actions', this);
-                actionsEl.css('display', 'block');
-            });
-
-            $('#sidebar-sections').on("mouseleave", ".sidebar-request", function () {
-                var actionsEl = jQuery('.request-actions', this);
-                actionsEl.css('display', 'none');
-            });
-        },
-
-        emptyCollectionInSidebar:function (id) {
-            $('#collection-requests-' + id).html("");
-        },
-
-        removeRequestFromHistory:function (id, toAnimate) {
-            if (toAnimate) {
-                $('#sidebar-request-' + id).slideUp(100);
-            }
-            else {
-                $('#sidebar-request-' + id).remove();
-            }
-
-            if (pm.history.requests.length === 0) {
-                pm.history.showEmptyMessage();
-            }
-            else {
-                pm.history.hideEmptyMessage();
-            }
-
-            pm.layout.refreshScrollPanes();
-        },
-
-        removeCollection:function (id) {
-            $('#collection-' + id).remove();
-            pm.layout.refreshScrollPanes();
-        }
-    }
-};
-
-pm.indexedDB = {
-    onerror:function (event, callback) {
-        console.log(event);
-    },
-
-    open_v21:function () {
-
-        var request = indexedDB.open("postman", "POSTman request history");
-        request.onsuccess = function (e) {
-            var v = "0.47";
-            pm.indexedDB.db = e.target.result;
-            var db = pm.indexedDB.db;
-
-            //We can only create Object stores in a setVersion transaction
-            if (v !== db.version) {
-                var setVrequest = db.setVersion(v);
-
-                setVrequest.onfailure = function (e) {
-                    console.log(e);
-                };
-
-                setVrequest.onsuccess = function (event) {
-                    //Only create if does not already exist
-                    if (!db.objectStoreNames.contains("requests")) {
-                        var requestStore = db.createObjectStore("requests", {keyPath:"id"});
-                        requestStore.createIndex("timestamp", "timestamp", { unique:false});
-
-                    }
-                    if (!db.objectStoreNames.contains("collections")) {
-                        var collectionsStore = db.createObjectStore("collections", {keyPath:"id"});
-                        collectionsStore.createIndex("timestamp", "timestamp", { unique:false});
-                    }
-
-                    if (!db.objectStoreNames.contains("collection_requests")) {
-                        var collectionRequestsStore = db.createObjectStore("collection_requests", {keyPath:"id"});
-                        collectionRequestsStore.createIndex("timestamp", "timestamp", { unique:false});
-                        collectionRequestsStore.createIndex("collectionId", "collectionId", { unique:false});
-                    }
-
-                    if (!db.objectStoreNames.contains("environments")) {
-                        var environmentsStore = db.createObjectStore("environments", {keyPath:"id"});
-                        environmentsStore.createIndex("timestamp", "timestamp", { unique:false});
-                        environmentsStore.createIndex("id", "id", { unique:false});
-                    }
-
-                    var transaction = event.target.result;
-                    transaction.oncomplete = function () {
-                        pm.history.getAllRequests();
-                        pm.envManager.getAllEnvironments();
-                    };
-                };
-
-                setVrequest.onupgradeneeded = function (evt) {
-                };
-            }
-            else {
-                pm.history.getAllRequests();
-                pm.envManager.getAllEnvironments();
-            }
-
-        };
-
-        request.onfailure = pm.indexedDB.onerror;
-    },
-
-    open_latest:function () {
-
-        var v = 9;
-        var request = indexedDB.open("postman", v);
-        console.log("Open latest");
-        request.onupgradeneeded = function (e) {
-
-            var db = e.target.result;
-            pm.indexedDB.db = db;
-            if (!db.objectStoreNames.contains("requests")) {
-                var requestStore = db.createObjectStore("requests", {keyPath:"id"});
-                requestStore.createIndex("timestamp", "timestamp", { unique:false});
-
-            }
-            if (!db.objectStoreNames.contains("collections")) {
-                var collectionsStore = db.createObjectStore("collections", {keyPath:"id"});
-                collectionsStore.createIndex("timestamp", "timestamp", { unique:false});
-            }
-
-            if (!db.objectStoreNames.contains("collection_requests")) {
-                var collectionRequestsStore = db.createObjectStore("collection_requests", {keyPath:"id"});
-                collectionRequestsStore.createIndex("timestamp", "timestamp", { unique:false});
-                collectionRequestsStore.createIndex("collectionId", "collectionId", { unique:false});
-            }
-
-            if (!db.objectStoreNames.contains("environments")) {
-                var environmentsStore = db.createObjectStore("environments", {keyPath:"id"});
-                environmentsStore.createIndex("timestamp", "timestamp", { unique:false});
-                environmentsStore.createIndex("id", "id", { unique:false});
-            }
-        };
-
-        request.onsuccess = function (e) {
-            pm.indexedDB.db = e.target.result;
-            pm.history.getAllRequests();
-            pm.envManager.getAllEnvironments();
-        };
-
-        request.onerror = pm.indexedDB.onerror;
-    },
-
-    open:function () {
-        if (parseInt(navigator.userAgent.match(/Chrom(e|ium)\/([0-9]+)\./)[2]) < 23) {
-            pm.indexedDB.open_v21();
-        }
-        else {
-            pm.indexedDB.open_latest();
-        }
-    },
-
-    addCollection:function (collection, callback) {
-        var db = pm.indexedDB.db;
-        var trans = db.transaction(["collections"], "readwrite");
-        var store = trans.objectStore("collections");
-
-        var request = store.put({
-            "id":collection.id,
-            "name":collection.name,
-            "timestamp":new Date().getTime()
-        });
-
-        request.onsuccess = function () {
-            callback(collection);
-        };
-
-        request.onerror = function (e) {
-            console.log(e.value);
-        };
-    },
-
-    updateCollection:function (collection, callback) {
-        var db = pm.indexedDB.db;
-        var trans = db.transaction(["collections"], "readwrite");
-        var store = trans.objectStore("collections");
-
-        var boundKeyRange = IDBKeyRange.only(collection.id);
-        var request = store.put(collection);
-
-        request.onsuccess = function (e) {
-            callback(collection);
-        };
-
-        request.onerror = function (e) {
-            console.log(e.value);
-        };
-    },
-
-    addCollectionRequest:function (req, callback) {
-        var db = pm.indexedDB.db;
-        var trans = db.transaction(["collection_requests"], "readwrite");
-        var store = trans.objectStore("collection_requests");
-
-        var collectionRequest = store.put({
-            "collectionId":req.collectionId,
-            "id":req.id,
-            "name":req.name,
-            "description":req.description,
-            "url":req.url.toString(),
-            "method":req.method.toString(),
-            "headers":req.headers.toString(),
-            "data":req.data.toString(),
-            "dataMode":req.dataMode.toString(),
-            "timestamp":req.timestamp
-        });
-
-        collectionRequest.onsuccess = function () {
-            callback(req);
-        };
-
-        collectionRequest.onerror = function (e) {
-            console.log(e.value);
-        };
-    },
-
-    updateCollectionRequest:function (req, callback) {
-        var db = pm.indexedDB.db;
-        var trans = db.transaction(["collection_requests"], "readwrite");
-        var store = trans.objectStore("collection_requests");
-
-        var boundKeyRange = IDBKeyRange.only(req.id);
-        var request = store.put(req);
-
-        request.onsuccess = function (e) {
-            callback(req);
-        };
-
-        request.onerror = function (e) {
-            console.log(e.value);
-        };
-    },
-
-    getCollection:function (id, callback) {
-        var db = pm.indexedDB.db;
-        var trans = db.transaction(["collections"], "readwrite");
-        var store = trans.objectStore("collections");
-
-        //Get everything in the store
-        var cursorRequest = store.get(id);
-
-        cursorRequest.onsuccess = function (e) {
-            var result = e.target.result;
-            callback(result);
-        };
-        cursorRequest.onerror = pm.indexedDB.onerror;
-    },
-
-    getCollections:function (callback) {
-        var db = pm.indexedDB.db;
-
-        if (db == null) {
-            return;
-        }
-
-        var trans = db.transaction(["collections"], "readwrite");
-        var store = trans.objectStore("collections");
-
-        //Get everything in the store
-        var keyRange = IDBKeyRange.lowerBound(0);
-        var cursorRequest = store.openCursor(keyRange);
-        var numCollections = 0;
-        var items = [];
-        cursorRequest.onsuccess = function (e) {
-            var result = e.target.result;
-            if (!result) {
-                callback(items);
-                return;
-            }
-
-            var collection = result.value;
-            numCollections++;
-
-            items.push(collection);
-
-            result['continue']();
-        };
-
-        cursorRequest.onerror = function (e) {
-            console.log(e);
-        };
-    },
-
-    getAllRequestsInCollection:function (collection, callback) {
-        var db = pm.indexedDB.db;
-        var trans = db.transaction(["collection_requests"], "readwrite");
-
-        //Get everything in the store
-        var keyRange = IDBKeyRange.only(collection.id);
-        var store = trans.objectStore("collection_requests");
-
-        var index = store.index("collectionId");
-        var cursorRequest = index.openCursor(keyRange);
-
-        var requests = [];
-
-        cursorRequest.onsuccess = function (e) {
-            var result = e.target.result;
-
-            if (!result) {
-                callback(collection, requests);
-                return;
-            }
-
-            var request = result.value;
-            requests.push(request);
-
-            //This wil call onsuccess again and again until no more request is left
-            result['continue']();
-        };
-        cursorRequest.onerror = pm.indexedDB.onerror;
-    },
-
-    addRequest:function (historyRequest, callback) {
-        var db = pm.indexedDB.db;
-        var trans = db.transaction(["requests"], "readwrite");
-        var store = trans.objectStore("requests");
-        var request = store.put(historyRequest);
-
-        request.onsuccess = function (e) {
-            callback(historyRequest);
-        };
-
-        request.onerror = function (e) {
-            console.log(e.value);
-        };
-    },
-
-    getRequest:function (id, callback) {
-        var db = pm.indexedDB.db;
-        var trans = db.transaction(["requests"], "readwrite");
-        var store = trans.objectStore("requests");
-
-        //Get everything in the store
-        var cursorRequest = store.get(id);
-
-        cursorRequest.onsuccess = function (e) {
-            var result = e.target.result;
-            if (!result) {
-                return;
-            }
-
-            callback(result);
-        };
-        cursorRequest.onerror = pm.indexedDB.onerror;
-    },
-
-    getCollectionRequest:function (id, callback) {
-        var db = pm.indexedDB.db;
-        var trans = db.transaction(["collection_requests"], "readwrite");
-        var store = trans.objectStore("collection_requests");
-
-        //Get everything in the store
-        var cursorRequest = store.get(id);
-
-        cursorRequest.onsuccess = function (e) {
-            var result = e.target.result;
-            if (!result) {
-                return;
-            }
-
-            callback(result);
-            return result;
-        };
-        cursorRequest.onerror = pm.indexedDB.onerror;
-    },
-
-
-    getAllRequestItems:function (callback) {
-        var db = pm.indexedDB.db;
-        if (db == null) {
-            return;
-        }
-
-        var trans = db.transaction(["requests"], "readwrite");
-        var store = trans.objectStore("requests");
-
-        //Get everything in the store
-        var keyRange = IDBKeyRange.lowerBound(0);
-        var index = store.index("timestamp");
-        var cursorRequest = index.openCursor(keyRange);
-        var historyRequests = [];
-
-        cursorRequest.onsuccess = function (e) {
-            var result = e.target.result;
-
-            if (!result) {
-                callback(historyRequests);
-                return;
-            }
-
-            var request = result.value;
-            historyRequests.push(request);
-
-            //This wil call onsuccess again and again until no more request is left
-            result['continue']();
-        };
-
-        cursorRequest.onerror = pm.indexedDB.onerror;
-    },
-
-    deleteRequest:function (id, callback) {
-        try {
-            var db = pm.indexedDB.db;
-            var trans = db.transaction(["requests"], "readwrite");
-            var store = trans.objectStore(["requests"]);
-
-            var request = store['delete'](id);
-
-            request.onsuccess = function () {
-                callback(id);
-            };
-
-            request.onerror = function (e) {
-                console.log(e);
-            };
-        }
-        catch (e) {
-            console.log(e);
-        }
-
-    },
-
-    deleteHistory:function (callback) {
-        var db = pm.indexedDB.db;
-        var clearTransaction = db.transaction(["requests"], "readwrite");
-        var clearRequest = clearTransaction.objectStore(["requests"]).clear();
-        clearRequest.onsuccess = function (event) {
-            callback();
-        };
-    },
-
-    deleteCollectionRequest:function (id, callback) {
-        var db = pm.indexedDB.db;
-        var trans = db.transaction(["collection_requests"], "readwrite");
-        var store = trans.objectStore(["collection_requests"]);
-
-        var request = store['delete'](id);
-
-        request.onsuccess = function (e) {
-            callback(id);
-        };
-
-        request.onerror = function (e) {
-            console.log(e);
-        };
-    },
-
-    deleteAllCollectionRequests:function (id) {
-        var db = pm.indexedDB.db;
-        var trans = db.transaction(["collection_requests"], "readwrite");
-
-        //Get everything in the store
-        var keyRange = IDBKeyRange.only(id);
-        var store = trans.objectStore("collection_requests");
-
-        var index = store.index("collectionId");
-        var cursorRequest = index.openCursor(keyRange);
-
-        cursorRequest.onsuccess = function (e) {
-            var result = e.target.result;
-
-            if (!result) {
-                return;
-            }
-
-            var request = result.value;
-            pm.collections.deleteCollectionRequest(request.id);
-            result['continue']();
-        };
-        cursorRequest.onerror = pm.indexedDB.onerror;
-    },
-
-    deleteCollection:function (id, callback) {
-        var db = pm.indexedDB.db;
-        var trans = db.transaction(["collections"], "readwrite");
-        var store = trans.objectStore(["collections"]);
-
-        var request = store['delete'](id);
-
-        request.onsuccess = function () {
-            pm.indexedDB.deleteAllCollectionRequests(id);
-            callback(id);
-        };
-
-        request.onerror = function (e) {
-            console.log(e);
-        };
-    },
-
-    environments:{
-        addEnvironment:function (environment, callback) {
-            var db = pm.indexedDB.db;
-            var trans = db.transaction(["environments"], "readwrite");
-            var store = trans.objectStore("environments");
-            var request = store.put(environment);
-
-            request.onsuccess = function (e) {
-                callback(environment);
-            };
-
-            request.onerror = function (e) {
-                console.log(e);
-            };
-        },
-
-        getEnvironment:function (id, callback) {
-            var db = pm.indexedDB.db;
-            var trans = db.transaction(["environments"], "readwrite");
-            var store = trans.objectStore("environments");
-
-            //Get everything in the store
-            var cursorRequest = store.get(id);
-
-            cursorRequest.onsuccess = function (e) {
-                var result = e.target.result;
-                callback(result);
-            };
-            cursorRequest.onerror = pm.indexedDB.onerror;
-        },
-
-        deleteEnvironment:function (id, callback) {
-            var db = pm.indexedDB.db;
-            var trans = db.transaction(["environments"], "readwrite");
-            var store = trans.objectStore(["environments"]);
-
-            var request = store['delete'](id);
-
-            request.onsuccess = function () {
-                callback(id);
-            };
-
-            request.onerror = function (e) {
-                console.log(e);
-            };
-        },
-
-        getAllEnvironments:function (callback) {
-            var db = pm.indexedDB.db;
-            if (db == null) {
-                return;
-            }
-
-            var trans = db.transaction(["environments"], "readwrite");
-            var store = trans.objectStore("environments");
-
-            //Get everything in the store
-            var keyRange = IDBKeyRange.lowerBound(0);
-            var index = store.index("timestamp");
-            var cursorRequest = index.openCursor(keyRange);
-            var environments = [];
-
-            cursorRequest.onsuccess = function (e) {
-                var result = e.target.result;
-
-                if (!result) {
-                    callback(environments);
-                    return;
-                }
-
-                var request = result.value;
-                environments.push(request);
-
-                //This wil call onsuccess again and again until no more request is left
-                result['continue']();
-            };
-
-            cursorRequest.onerror = pm.indexedDB.onerror;
-        },
-
-        updateEnvironment:function (environment, callback) {
-            var db = pm.indexedDB.db;
-            var trans = db.transaction(["environments"], "readwrite");
-            var store = trans.objectStore("environments");
-
-            var boundKeyRange = IDBKeyRange.only(environment.id);
-            var request = store.put(environment);
-
-            request.onsuccess = function (e) {
-                callback(environment);
-            };
-
-            request.onerror = function (e) {
-                console.log(e.value);
-            };
-        }
-    }
-};
-
-pm.envManager = {
-    environments:[],
-
-    globals:{},
-    selectedEnv:null,
+pm.settings = {
+    historyCount:50,
+    lastRequest:"",
+    autoSaveRequest:true,
     selectedEnvironmentId:"",
 
-    quicklook:{
-        init:function () {
-            pm.envManager.quicklook.refreshEnvironment(pm.envManager.selectedEnv);
-            pm.envManager.quicklook.refreshGlobals(pm.envManager.globals);
-        },
-
-        removeEnvironmentData:function () {
-            $('#environment-quicklook-environments h6').html("No environment");
-            $('#environment-quicklook-environments ul').html("");
-        },
-
-        refreshEnvironment:function (environment) {
-            if (!environment) {
-                return;
-            }
-            $('#environment-quicklook-environments h6').html(environment.name);
-            $('#environment-quicklook-environments ul').html("");
-            $('#environment-quicklook-environments ul').append(Handlebars.templates.environment_quicklook({
-                "items":environment.values
-            }));
-        },
-
-        refreshGlobals:function (globals) {
-            if (!globals) {
-                return;
-            }
-
-            $('#environment-quicklook-globals ul').html("");
-            $('#environment-quicklook-globals ul').append(Handlebars.templates.environment_quicklook({
-                "items":globals
-            }));
-        },
-
-        toggleDisplay:function () {
-            var display = $('#environment-quicklook-content').css("display");
-
-            if (display == "none") {
-                $('#environment-quicklook-content').css("display", "block");
-            }
-            else {
-                $('#environment-quicklook-content').css("display", "none");
-            }
-        }
-    },
-
     init:function () {
-        pm.envManager.initGlobals();
-        $('#environment-list').append(Handlebars.templates.environment_list({"items":this.environments}));
+        pm.settings.create("historyCount", 100);
+        pm.settings.create("autoSaveRequest", true);
+        pm.settings.create("selectedEnvironmentId", true);
+        pm.settings.create("lineWrapping", true);
+        pm.settings.create("previewType", "parsed");
+        pm.settings.create("retainLinkHeaders", false);
+        pm.settings.create("usePostmanProxy", false);
+        pm.settings.create("proxyURL", "");
+        pm.settings.create("lastRequest", "");
+        pm.settings.create("variableDelimiter", "{{...}}");
 
-        $('#environments-list').on("click", ".environment-action-delete", function () {
-            var id = $(this).attr('data-id');
-            $('a[rel="tooltip"]').tooltip('hide');
-            pm.envManager.deleteEnvironment(id);
+        $('#history-count').val(pm.settings.get("historyCount"));
+        $('#auto-save-request').val(pm.settings.get("autoSaveRequest") + "");
+        $('#retain-link-headers').val(pm.settings.get("retainLinkHeaders") + "");
+        $('#use-postman-proxy').val(pm.settings.get("usePostmanProxy") + "");
+        $('#postman-proxy-url').val(pm.settings.get("postmanProxyUrl"));
+        $('#variable-delimiter').val(pm.settings.get("variableDelimiter"));
+
+        $('#history-count').change(function () {
+            pm.settings.set("historyCount", $('#history-count').val());
         });
 
-        $('#environments-list').on("click", ".environment-action-edit", function () {
-            var id = $(this).attr('data-id');
-            pm.envManager.showEditor(id);
-        });
-
-        $('#environments-list').on("click", ".environment-action-download", function () {
-            var id = $(this).attr('data-id');
-            pm.envManager.downloadEnvironment(id);
-        });
-
-        $('.environment-action-back').on("click", function () {
-            pm.envManager.showSelector();
-        });
-
-        $('#environment-selector').on("click", ".environment-list-item", function () {
-            var id = $(this).attr('data-id');
-            var selectedEnv = pm.envManager.getEnvironmentFromId(id);
-            pm.envManager.selectedEnv = selectedEnv;
-            pm.settings.set("selectedEnvironmentId", selectedEnv.id);
-            pm.envManager.quicklook.refreshEnvironment(selectedEnv);
-            $('#environment-selector .environment-list-item-selected').html(selectedEnv.name);
-        });
-
-        $('#environment-selector').on("click", ".environment-list-item-noenvironment", function () {
-            pm.envManager.selectedEnv = null;
-            pm.settings.set("selectedEnvironmentId", "");
-            pm.envManager.quicklook.removeEnvironmentData();
-            $('#environment-selector .environment-list-item-selected').html("No environment");
-        });
-
-        $('#environment-quicklook').on("mouseenter", function () {
-            $('#environment-quicklook-content').css("display", "block");
-        });
-
-        $('#environment-quicklook').on("mouseleave", function () {
-            $('#environment-quicklook-content').css("display", "none");
-        });
-
-        $('#environment-files-input').on('change', function (event) {
-            var files = event.target.files;
-            pm.envManager.importEnvironments(files);
-            $('#environment-files-input').val("");
-        });
-
-
-        $('.environments-actions-add').on("click", function () {
-            pm.envManager.showEditor();
-        });
-
-        $('.environments-actions-import').on('click', function () {
-            pm.envManager.showImporter();
-        });
-
-        $('.environments-actions-manage-globals').on('click', function () {
-            pm.envManager.showGlobals();
-        });
-
-        $('.environments-actions-add-submit').on("click", function () {
-            var id = $('#environment-editor-id').val();
-            if (id === "0") {
-                pm.envManager.addEnvironment();
+        $('#auto-save-request').change(function () {
+            var val = $('#auto-save-request').val();
+            if (val == "true") {
+                pm.settings.set("autoSaveRequest", true);
             }
             else {
-                pm.envManager.updateEnvironment();
+                pm.settings.set("autoSaveRequest", false);
             }
-
-            $('#environment-editor-name').val("");
-            $('#environment-keyvaleditor').keyvalueeditor('reset', []);
-
         });
 
-        $('.environments-actions-add-back').on("click", function () {
-            pm.envManager.saveGlobals();
-            pm.envManager.showSelector();
-            $('#environment-editor-name').val("");
-            $('#environment-keyvaleditor').keyvalueeditor('reset', []);
-        });
-
-        $('#environments-list-help-toggle').on("click", function () {
-            var d = $('#environments-list-help-detail').css("display");
-            if (d === "none") {
-                $('#environments-list-help-detail').css("display", "inline");
-                $(this).html("Hide");
+        $('#retain-link-headers').change(function () {
+            var val = $('#retain-link-headers').val();
+            if (val === "true") {
+                pm.settings.set("retainLinkHeaders", true);
             }
             else {
-                $('#environments-list-help-detail').css("display", "none");
-                $(this).html("Tell me more");
+                pm.settings.set("retainLinkHeaders", false);
             }
         });
 
-        var params = {
-            placeHolderKey:"Key",
-            placeHolderValue:"Value",
-            deleteButton:'<img class="deleteButton" src="img/delete.png">'
-        };
-
-        $('#environment-keyvaleditor').keyvalueeditor('init', params);
-        $('#globals-keyvaleditor').keyvalueeditor('init', params);
-        $('#globals-keyvaleditor').keyvalueeditor('reset', pm.envManager.globals);
-        pm.envManager.quicklook.init();
-    },
-
-    getEnvironmentFromId:function (id) {
-        var environments = pm.envManager.environments;
-        var count = environments.length;
-        for (var i = 0; i < count; i++) {
-            var env = environments[i];
-            if (id === env.id) {
-                return env;
-            }
-        }
-
-        return false;
-    },
-
-    processString:function (string, values) {
-        var count = values.length;
-        var finalString = string;
-        var patString;
-        var pattern;
-
-        var variableDelimiter = pm.settings.get("variableDelimiter");
-        var startDelimiter = variableDelimiter.substring(0, 2);
-        var endDelimiter = variableDelimiter.substring(variableDelimiter.length - 2);
-
-        for (var i = 0; i < count; i++) {
-            patString = startDelimiter + values[i].key + endDelimiter;
-            pattern = new RegExp(patString, 'g');
-            finalString = finalString.replace(patString, values[i].value);
-        }
-
-        var globals = pm.envManager.globals;
-        count = globals.length;
-        for (i = 0; i < count; i++) {
-            patString = startDelimiter + globals[i].key + endDelimiter;
-            pattern = new RegExp(patString, 'g');
-            finalString = finalString.replace(patString, globals[i].value);
-        }
-
-        return finalString;
-    },
-
-    convertString:function (string) {
-        var environment = pm.envManager.selectedEnv;
-        var envValues = [];
-
-        if (environment !== null) {
-            envValues = environment.values;
-        }
-
-        return pm.envManager.processString(string, envValues);
-    },
-
-    getAllEnvironments:function () {
-        pm.indexedDB.environments.getAllEnvironments(function (environments) {
-            $('#environment-selector .dropdown-menu').html("");
-            $('#environments-list tbody').html("");
-            pm.envManager.environments = environments;
-
-
-            $('#environment-selector .dropdown-menu').append(Handlebars.templates.environment_selector({"items":environments}));
-            $('#environments-list tbody').append(Handlebars.templates.environment_list({"items":environments}));
-            $('#environment-selector .dropdown-menu').append(Handlebars.templates.environment_selector_actions());
-
-            var selectedEnvId = pm.settings.get("selectedEnvironmentId");
-            var selectedEnv = pm.envManager.getEnvironmentFromId(selectedEnvId);
-            if (selectedEnv) {
-                pm.envManager.selectedEnv = selectedEnv;
-                pm.envManager.quicklook.refreshEnvironment(selectedEnv);
-                $('#environment-selector .environment-list-item-selected').html(selectedEnv.name);
+        $('#use-postman-proxy').change(function () {
+            var val = $('#use-postman-proxy').val();
+            if (val == "true") {
+                pm.settings.set("usePostmanProxy", true);
+                $('#postman-proxy-url-container').css("display", "block");
             }
             else {
-                pm.envManager.selectedEnv = null;
-                $('#environment-selector .environment-list-item-selected').html("No environment");
+                pm.settings.set("usePostmanProxy", false);
+                $('#postman-proxy-url-container').css("display", "none");
             }
-        })
-    },
+        });
 
-    initGlobals:function () {
-        if ('globals' in localStorage) {
-            var globalsString = localStorage['globals'];
-            pm.envManager.globals = JSON.parse(globalsString);
+        $('#postman-proxy-url').change(function () {
+            pm.settings.set("postmanProxyUrl", $('#postman-proxy-url').val());
+        });
+
+        $('#variable-delimiter').change(function () {
+            pm.settings.set("variableDelimiter", $('#variable-delimiter').val());
+        });
+
+        if (pm.settings.get("usePostmanProxy") == true) {
+            $('#postman-proxy-url-container').css("display", "block");
         }
         else {
-            pm.envManager.globals = [];
+            $('#postman-proxy-url-container').css("display", "none");
         }
-
     },
 
-    saveGlobals:function () {
-        var globals = $('#globals-keyvaleditor').keyvalueeditor('getValues');
-        pm.envManager.globals = globals;
-        pm.envManager.quicklook.refreshGlobals(globals);
-        localStorage['globals'] = JSON.stringify(globals);
-    },
-
-    showSelector:function () {
-        $('#environments-list-wrapper').css("display", "block");
-        $('#environment-editor').css("display", "none");
-        $('#environment-importer').css("display", "none");
-        $('#globals-editor').css("display", "none");
-        $('.environments-actions-add-submit').css("display", "inline");
-        $('#modal-environments .modal-footer').css("display", "none");
-    },
-
-    showEditor:function (id) {
-        if (id) {
-            var environment = pm.envManager.getEnvironmentFromId(id);
-            $('#environment-editor-name').val(environment.name);
-            $('#environment-editor-id').val(id);
-            $('#environment-keyvaleditor').keyvalueeditor('reset', environment.values);
+    create:function (key, defaultVal) {
+        if (localStorage[key]) {
+            pm.settings[key] = localStorage[key];
         }
         else {
-            $('#environment-editor-id').val(0);
+            if (defaultVal !== "undefined") {
+                pm.settings[key] = defaultVal;
+                localStorage[key] = defaultVal;
+            }
+
         }
-
-        $('#environments-list-wrapper').css("display", "none");
-        $('#environment-editor').css("display", "block");
-        $('#globals-editor').css("display", "none");
-        $('#modal-environments .modal-footer').css("display", "block");
     },
 
-    showImporter:function () {
-        $('#environments-list-wrapper').css("display", "none");
-        $('#environment-editor').css("display", "none");
-        $('#globals-editor').css("display", "none");
-        $('#environment-importer').css("display", "block");
-        $('.environments-actions-add-submit').css("display", "none");
-        $('#modal-environments .modal-footer').css("display", "block");
+    set:function (key, value) {
+        pm.settings[key] = value;
+        localStorage[key] = value;
     },
 
-    showGlobals:function () {
-        $('#environments-list-wrapper').css("display", "none");
-        $('#environment-editor').css("display", "none");
-        $('#globals-editor').css("display", "block");
-        $('#environment-importer').css("display", "none");
-        $('.environments-actions-add-submit').css("display", "none");
-        $('#modal-environments .modal-footer').css("display", "block");
-    },
-
-    addEnvironment:function () {
-        var name = $('#environment-editor-name').val();
-        var values = $('#environment-keyvaleditor').keyvalueeditor('getValues');
-        var environment = {
-            id:guid(),
-            name:name,
-            values:values,
-            timestamp:new Date().getTime()
-        };
-
-        pm.indexedDB.environments.addEnvironment(environment, function () {
-            pm.envManager.getAllEnvironments();
-            pm.envManager.showSelector();
-        });
-    },
-
-    updateEnvironment:function () {
-        var id = $('#environment-editor-id').val();
-        var name = $('#environment-editor-name').val();
-        var values = $('#environment-keyvaleditor').keyvalueeditor('getValues');
-        var environment = {
-            id:id,
-            name:name,
-            values:values,
-            timestamp:new Date().getTime()
-        };
-
-        pm.indexedDB.environments.updateEnvironment(environment, function () {
-            pm.envManager.getAllEnvironments();
-            pm.envManager.showSelector();
-        });
-    },
-
-    deleteEnvironment:function (id) {
-        pm.indexedDB.environments.deleteEnvironment(id, function () {
-            pm.envManager.getAllEnvironments();
-            pm.envManager.showSelector();
-        });
-    },
-
-    downloadEnvironment:function (id) {
-        var env = pm.envManager.getEnvironmentFromId(id);
-        var name = env.name + "-environment.json";
-        var type = "application/json";
-        var filedata = JSON.stringify(env);
-        pm.filesystem.saveAndOpenFile(name, filedata, type, function () {
-        });
-    },
-
-    importEnvironments:function (files) {
-        // Loop through the FileList
-        for (var i = 0, f; f = files[i]; i++) {
-            var reader = new FileReader();
-
-            // Closure to capture the file information.
-            reader.onload = (function (theFile) {
-                return function (e) {
-                    // Render thumbnail.
-                    var data = e.currentTarget.result;
-                    var environment = JSON.parse(data);
-
-                    pm.indexedDB.environments.addEnvironment(environment, function () {
-                        //Add confirmation
-                        var o = {
-                            name:environment.name,
-                            action:'added'
-                        };
-
-                        $('#environment-importer-confirmations').append(Handlebars.templates.message_environment_added(o));
-                        pm.envManager.getAllEnvironments();
-                    });
-                };
-            })(f);
-
-            // Read in the image file as a data URL.
-            reader.readAsText(f);
+    get:function (key) {
+        var val = localStorage[key];
+        if (val === "true") {
+            return true;
+        }
+        else if (val === "false") {
+            return false;
+        }
+        else {
+            return localStorage[key];
         }
     }
-
 };
+pm.urlCache = {
+    urls:[],
+    addUrl:function (url) {
+        if ($.inArray(url, this.urls) == -1) {
+            pm.urlCache.urls.push(url);
+            this.refreshAutoComplete();
+        }
+    },
 
-$(document).ready(function () {
-    pm.init();
-});
-
-$(window).on("unload", function () {
-    pm.request.saveCurrentRequestToLocalStorage();
-});
+    refreshAutoComplete:function () {
+        $("#url").autocomplete({
+            source:pm.urlCache.urls,
+            delay:50
+        });
+    }
+};
