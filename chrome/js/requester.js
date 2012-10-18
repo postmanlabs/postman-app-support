@@ -2105,7 +2105,7 @@ pm.request = {
 
         var rows, count, j;
         var row, key, value;
-
+        
         if (this.isMethodWithBody(method)) {
             if (this.dataMode === 'raw') {
                 data = envManager.processString(data, envValues);
@@ -2769,6 +2769,9 @@ pm.collections = {
                         $('.modal-import-alerts').append(Handlebars.templates.message_collection_added(message));
 
                         var requests = [];
+
+                        //TODO Replace old request IDs with new ones in the order field
+                        
                         for (var i = 0; i < collection.requests.length; i++) {
                             var request = collection.requests[i];
                             request.collectionId = collection.id;
@@ -2803,6 +2806,7 @@ pm.collections = {
 
                 $('.modal-import-alerts').append(Handlebars.templates.message_collection_added(message));
 
+                //TODO Replace old request IDs with new ones in the order field
                 var requests = [];
                 for (var i = 0; i < collection.requests.length; i++) {
                     var request = collection.requests[i];
@@ -3073,6 +3077,8 @@ pm.collections = {
 
                     requests = orderedRequests;
                 }
+
+                console.log(requests);
 
                 $(targetElement).append(Handlebars.templates.collection_sidebar({"items":requests}));
                 $(targetElement).sortable({
