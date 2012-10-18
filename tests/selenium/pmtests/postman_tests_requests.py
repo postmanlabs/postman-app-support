@@ -42,14 +42,14 @@ class PostmanTestsRequests(PostmanTests):
     def test_get_basic(self):
         self.reset_request()
 
-        self.set_url_field(self.browser, "http://localhost:5000/html")
+        self.set_url_field(self.browser, "http://localhost:5000/get")
 
         send_button = self.browser.find_element_by_id("submit-request")
         send_button.click()
 
         code_data_value = self.get_codemirror_value(self.browser)    
 
-        if code_data_value.find("html") > 0:
+        if code_data_value.find("get") > 0:
             self.print_success("test_get_basic")
             return True
         else:

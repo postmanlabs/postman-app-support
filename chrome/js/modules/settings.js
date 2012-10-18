@@ -12,6 +12,7 @@ pm.settings = {
         pm.settings.create("previewType", "parsed");
         pm.settings.create("retainLinkHeaders", false);
         pm.settings.create("usePostmanProxy", false);
+        pm.settings.create("alwaysLoadSavedResponse", true);
         pm.settings.create("proxyURL", "");
         pm.settings.create("lastRequest", "");
         pm.settings.create("variableDelimiter", "{{...}}");
@@ -20,6 +21,7 @@ pm.settings = {
         $('#auto-save-request').val(pm.settings.get("autoSaveRequest") + "");
         $('#retain-link-headers').val(pm.settings.get("retainLinkHeaders") + "");
         $('#use-postman-proxy').val(pm.settings.get("usePostmanProxy") + "");
+        $('#always-load-saved-response').val(pm.settings.get("alwaysLoadSavedResponse") + "");
         $('#postman-proxy-url').val(pm.settings.get("postmanProxyUrl"));
         $('#variable-delimiter').val(pm.settings.get("variableDelimiter"));
 
@@ -44,6 +46,16 @@ pm.settings = {
             }
             else {
                 pm.settings.set("retainLinkHeaders", false);
+            }
+        });
+
+        $('#always-load-saved-response').change(function () {
+            var val = $('#always-load-saved-response').val();
+            if (val === "true") {
+                pm.settings.set("alwaysLoadSavedResponse", true);
+            }
+            else {
+                pm.settings.set("alwaysLoadSavedResponse", false);
             }
         });
 

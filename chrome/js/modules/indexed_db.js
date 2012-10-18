@@ -7,7 +7,7 @@ pm.indexedDB = {
 
         var request = indexedDB.open("postman", "POSTman request history");
         request.onsuccess = function (e) {
-            var v = "0.47";
+            var v = "0.48";
             pm.indexedDB.db = e.target.result;
             var db = pm.indexedDB.db;
 
@@ -24,8 +24,8 @@ pm.indexedDB = {
                     if (!db.objectStoreNames.contains("requests")) {
                         var requestStore = db.createObjectStore("requests", {keyPath:"id"});
                         requestStore.createIndex("timestamp", "timestamp", { unique:false});
-
                     }
+
                     if (!db.objectStoreNames.contains("collections")) {
                         var collectionsStore = db.createObjectStore("collections", {keyPath:"id"});
                         collectionsStore.createIndex("timestamp", "timestamp", { unique:false});
@@ -35,6 +35,12 @@ pm.indexedDB = {
                         var collectionRequestsStore = db.createObjectStore("collection_requests", {keyPath:"id"});
                         collectionRequestsStore.createIndex("timestamp", "timestamp", { unique:false});
                         collectionRequestsStore.createIndex("collectionId", "collectionId", { unique:false});
+                    }
+
+                    if (!db.objectStoreNames.contains("collection_responses")) {
+                        var responseStore = db.createObjectStore("collection_responses", {keyPath:"id"});
+                        responseStore.createIndex("timestamp", "timestamp", { unique:false});
+                        responseStore.createIndex("collectionRequestId", "collectionRequestId", { unique:false});
                     }
 
                     if (!db.objectStoreNames.contains("environments")) {
@@ -65,7 +71,7 @@ pm.indexedDB = {
 
     open_latest:function () {
 
-        var v = 9;
+        var v = 10;
         var request = indexedDB.open("postman", v);
         console.log("Open latest");
         request.onupgradeneeded = function (e) {
@@ -75,8 +81,8 @@ pm.indexedDB = {
             if (!db.objectStoreNames.contains("requests")) {
                 var requestStore = db.createObjectStore("requests", {keyPath:"id"});
                 requestStore.createIndex("timestamp", "timestamp", { unique:false});
-
             }
+
             if (!db.objectStoreNames.contains("collections")) {
                 var collectionsStore = db.createObjectStore("collections", {keyPath:"id"});
                 collectionsStore.createIndex("timestamp", "timestamp", { unique:false});
@@ -86,6 +92,12 @@ pm.indexedDB = {
                 var collectionRequestsStore = db.createObjectStore("collection_requests", {keyPath:"id"});
                 collectionRequestsStore.createIndex("timestamp", "timestamp", { unique:false});
                 collectionRequestsStore.createIndex("collectionId", "collectionId", { unique:false});
+            }
+
+            if (!db.objectStoreNames.contains("collection_responses")) {
+                var responseStore = db.createObjectStore("collection_responses", {keyPath:"id"});
+                responseStore.createIndex("timestamp", "timestamp", { unique:false});
+                responseStore.createIndex("collectionRequestId", "collectionRequestId", { unique:false});
             }
 
             if (!db.objectStoreNames.contains("environments")) {
@@ -194,6 +206,60 @@ pm.indexedDB = {
         };
     },
 
+    storeSingleResponseForRequest:function (response, callback) {
+        pm.indexedDB.getAllResponsesForRequest(response.collectionRequestId, function(responses) {
+            console.log(responses);
+        });
+
+        pm.indexedDB.deleteAllRequestResponses(response.collectionRequestId, function () {
+            pm.indexedDB.addResponseForRequest(response, callback);
+        });
+    },
+
+    addResponseForRequest:function (response, callback) {
+        var db = pm.indexedDB.db;
+        var trans = db.transaction(["collection_responses"], "readwrite");
+        var store = trans.objectStore("collection_responses");
+
+        var collectionResponse = store.put({
+            "id":response.id,
+            "collectionRequestId":response.collectionRequestId,
+            "responseCode":response.responseCode,
+            "time":response.time,
+            "headers":response.headers,
+            "cookies":response.cookies,
+            "text":response.text,
+            "timestamp": new Date().getTime()
+
+        });
+
+        collectionResponse.onsuccess = function () {
+            console.log("Seems to have gone well");
+            callback(response);
+        };
+
+        collectionResponse.onerror = function (e) {
+            console.log(e.value);
+        };
+    },
+
+    updateResponseForRequest:function (response, callback) {
+        var db = pm.indexedDB.db;
+        var trans = db.transaction(["collection_responses"], "readwrite");
+        var store = trans.objectStore("collection_responses");
+
+        var boundKeyRange = IDBKeyRange.only(response.id);
+        var request = store.put(response);
+
+        request.onsuccess = function (e) {
+            callback(response);
+        };
+
+        request.onerror = function (e) {
+            console.log(e.value);
+        };
+    },
+
     getCollection:function (id, callback) {
         var db = pm.indexedDB.db;
         var trans = db.transaction(["collections"], "readwrite");
@@ -274,6 +340,36 @@ pm.indexedDB = {
         cursorRequest.onerror = pm.indexedDB.onerror;
     },
 
+    getAllResponsesForRequest:function (collectionRequestId, callback) {
+        var db = pm.indexedDB.db;
+        var trans = db.transaction(["collection_responses"], "readwrite");
+
+        //Get everything in the store
+        var keyRange = IDBKeyRange.only(collectionRequestId);
+        var store = trans.objectStore("collection_responses");
+
+        var index = store.index("collectionRequestId");
+        var cursorRequest = index.openCursor(keyRange);
+
+        var responses = [];
+
+        cursorRequest.onsuccess = function (e) {
+            var result = e.target.result;
+
+            if (!result) {
+                callback(responses);
+                return;
+            }
+
+            var response = result.value;
+            responses.push(response);
+
+            //This wil call onsuccess again and again until no more request is left
+            result['continue']();
+        };
+        cursorRequest.onerror = pm.indexedDB.onerror;
+    },
+
     addRequest:function (historyRequest, callback) {
         var db = pm.indexedDB.db;
         var trans = db.transaction(["requests"], "readwrite");
@@ -304,6 +400,26 @@ pm.indexedDB = {
             }
 
             callback(result);
+        };
+        cursorRequest.onerror = pm.indexedDB.onerror;
+    },
+
+    getCollectionResponse:function (id, callback) {
+        var db = pm.indexedDB.db;
+        var trans = db.transaction(["collection_responses"], "readwrite");
+        var store = trans.objectStore("collection_responses");
+
+        //Get everything in the store
+        var cursorRequest = store.get(id);
+
+        cursorRequest.onsuccess = function (e) {
+            var result = e.target.result;
+            if (!result) {
+                return;
+            }
+
+            callback(result);
+            return result;
         };
         cursorRequest.onerror = pm.indexedDB.onerror;
     },
@@ -381,7 +497,28 @@ pm.indexedDB = {
         catch (e) {
             console.log(e);
         }
+    },
 
+    deleteCollectionResponse:function (id, callback) {
+        try {
+            var db = pm.indexedDB.db;
+            var trans = db.transaction(["collection_responses"], "readwrite");
+            var store = trans.objectStore(["collection_responses"]);
+
+            var request = store['delete'](id);
+
+            request.onsuccess = function () {
+                console.log("Deleted");
+                callback(id);
+            };
+
+            request.onerror = function (e) {
+                console.log(e);
+            };
+        }
+        catch (e) {
+            console.log(e);
+        }
     },
 
     deleteHistory:function (callback) {
@@ -429,6 +566,32 @@ pm.indexedDB = {
 
             var request = result.value;
             pm.collections.deleteCollectionRequest(request.id);
+            result['continue']();
+        };
+        cursorRequest.onerror = pm.indexedDB.onerror;
+    },
+
+    deleteAllRequestResponses:function (id, callback) {
+        var db = pm.indexedDB.db;
+        var trans = db.transaction(["collection_responses"], "readwrite");
+
+        //Get everything in the store
+        var keyRange = IDBKeyRange.only(id);
+        var store = trans.objectStore("collection_responses");
+
+        var index = store.index("collectionRequestId");
+        var cursorRequest = index.openCursor(keyRange);
+
+        cursorRequest.onsuccess = function (e) {
+            var result = e.target.result;
+
+            if (!result) {
+                callback();
+                return;
+            }
+
+            var response = result.value;
+            pm.indexedDB.deleteCollectionResponse(response.id, function() {});
             result['continue']();
         };
         cursorRequest.onerror = pm.indexedDB.onerror;

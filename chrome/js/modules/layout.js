@@ -39,13 +39,15 @@ pm.layout = {
         $('#response-example-save').on("click", function () {
             var currentResponse = pm.request.response;
             var response = {
+                "id": guid(),
+                "collectionRequestId": pm.request.collectionRequestId,
                 "responseCode":currentResponse.responseCode,
                 "time":currentResponse.time,
                 "headers":currentResponse.headers,
                 "cookies":currentResponse.cookies,
                 "text":currentResponse.text
             };
-            pm.collections.saveResponseAsExample(pm.request.collectionRequestId, response);
+            pm.collections.saveResponseAsExample(response);
         });
 
         this.sidebar.init();

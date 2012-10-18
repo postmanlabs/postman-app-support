@@ -552,13 +552,9 @@ pm.collections = {
         });
     },
 
-    saveResponseAsExample:function (request_id, response) {
-        pm.indexedDB.getCollectionRequest(request_id, function (req) {
-            req.exampleResponse = response;
-            console.log(req);
-            pm.indexedDB.updateCollectionRequest(req, function (newRequest) {
-                console.log(newRequest);
-            });
+    saveResponseAsExample:function (response) {
+        pm.indexedDB.storeSingleResponseForRequest(response, function() {
+            console.log("Updated response store with ", response);
         });
     }
 };

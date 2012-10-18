@@ -19,17 +19,17 @@ class PostmanTestsHistory(PostmanTests):
         self.browser.quit()
 
     def test_save_request_to_history(self):
-        self.set_url_field(self.browser, "http://localhost:5000/html?val=1")
+        self.set_url_field(self.browser, "http://localhost:5000/get?val=1")
         method_select = self.browser.find_element_by_id("request-method-selector")    
         Select(method_select).select_by_value("GET")
         send_button = self.browser.find_element_by_id("submit-request")
         send_button.click()
         code_data_value = self.get_codemirror_value(self.browser)
 
-        if code_data_value.find("html") > 0:
+        if code_data_value.find("get") > 0:
             first_history_item = self.browser.find_element_by_css_selector("#history-items li:nth-of-type(1) .request")
             value = self.browser.execute_script("return arguments[0].innerHTML", first_history_item)
-            if value.find("http://localhost:5000/html?val=1") > 0:
+            if value.find("http://localhost:5000/get?val=1") > 0:
                 self.print_success("test_save_request_to_history")
         else:
             self.print_failed("test_save_request_to_history")
