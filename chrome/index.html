@@ -271,10 +271,14 @@
         </a>
     </div>
     <h5 id="request-name"></h5><span id="request-last-saved-time">Saved</span>
-    <p id="request-description"></p>
-    <div id="request-samples">
-        <h4>Sample responses</h4>
-        <table class="table table-striped table-bordered"></table>        
+
+    <div id="request-description-container">
+        <p id="request-description"></p>
+
+        <div id="request-samples">
+            <h4>Sample responses</h4>
+            <table class="table table-striped table-bordered"></table>
+        </div>
     </div>
 </div>
 
@@ -826,7 +830,7 @@
                         <option value="false">No</option>
                     </select>
                 </div>
-            </div>            
+            </div>
 
             <div class="control-group">
                 <label class="control-label" for="retain-link-headers">Retain headers on clicking on links</label>

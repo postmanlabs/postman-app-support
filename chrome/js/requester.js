@@ -3435,12 +3435,12 @@ pm.request = {
             if (action === "minimize") {
                 $(this).attr("data-action", "maximize");
                 $('.request-meta-actions-togglesize img').attr('src', 'img/circle_plus.png');
-                $("#request-description").slideUp(100);
+                $("#request-description-container").slideUp(100);
             }
             else {
                 $('.request-meta-actions-togglesize img').attr('src', 'img/circle_minus.png');
                 $(this).attr("data-action", "minimize");
-                $("#request-description").slideDown(100);
+                $("#request-description-container").slideDown(100);
             }
         });
 
