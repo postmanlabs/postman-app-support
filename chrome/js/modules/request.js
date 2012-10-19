@@ -1257,8 +1257,7 @@ pm.request = {
         }
     },
 
-    loadRequestInEditor:function (request, isFromCollection, isFromSample) {
-        console.log(request);
+    loadRequestInEditor:function (request, isFromCollection, isFromSample) {        
         pm.helpers.showRequestHelper("normal");
         this.url = request.url;
         this.body.data = request.body;
@@ -1289,6 +1288,8 @@ pm.request = {
                 $('#request-description').css("display", "none");
             }
 
+            $('#response-sample-save-form').css("display", "none");
+            $('#response-sample-save-start-container').css("display", "inline-block");
             $('.request-meta-actions-togglesize').attr('data-action', 'minimize');
             $('.request-meta-actions-togglesize img').attr('src', 'img/circle_minus.png');
         }

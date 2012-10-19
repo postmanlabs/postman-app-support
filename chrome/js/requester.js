@@ -2107,6 +2107,7 @@ pm.indexedDB = {
 
         var collectionResponse = store.put({
             "id":response.id,
+            "name":response.name,
             "collectionRequestId":response.collectionRequestId,
             "request": response.request,
             "responseCode":response.responseCode,
@@ -2734,9 +2735,19 @@ pm.layout = {
             pm.request.response.setMode(language);
         });
 
+        $('#response-sample-save-start').on("click", function() {
+            $('#response-sample-save-start-container').css("display", "none");
+            $('#response-sample-save-form').css("display", "inline-block");
+        });
+
+        $('#response-sample-cancel').on("click", function () {
+            $('#response-sample-save-start-container').css("display", "inline-block");
+            $('#response-sample-save-form').css("display", "none");
+        });
+
         $('#response-sample-save').on("click", function () {
             var url = $('#url').val();
-            
+
             var currentResponse = pm.request.response;                
             var request = new CollectionRequest();
             request.id = guid();
@@ -2747,9 +2758,11 @@ pm.layout = {
             request.dataMode = pm.request.dataMode;            
             request.time = new Date().getTime();
 
+            var name = $("#response-sample-name").val();
+
             var response = {
                 "id": guid(),
-                "name": "",
+                "name": name,
                 "collectionRequestId": pm.request.collectionRequestId,
                 "request": request,
                 "responseCode":currentResponse.responseCode,
@@ -2760,6 +2773,9 @@ pm.layout = {
             };
 
             pm.collections.saveResponseAsSample(response);
+
+            $('#response-sample-save-start-container').css("display", "inline-block");
+            $('#response-sample-save-form').css("display", "none");
         });
 
         this.sidebar.init();
@@ -4332,8 +4348,7 @@ pm.request = {
         }
     },
 
-    loadRequestInEditor:function (request, isFromCollection, isFromSample) {
-        console.log(request);
+    loadRequestInEditor:function (request, isFromCollection, isFromSample) {        
         pm.helpers.showRequestHelper("normal");
         this.url = request.url;
         this.body.data = request.body;
@@ -4364,6 +4379,8 @@ pm.request = {
                 $('#request-description').css("display", "none");
             }
 
+            $('#response-sample-save-form').css("display", "none");
+            $('#response-sample-save-start-container').css("display", "inline-block");
             $('.request-meta-actions-togglesize').attr('data-action', 'minimize');
             $('.request-meta-actions-togglesize img').attr('src', 'img/circle_minus.png');
         }

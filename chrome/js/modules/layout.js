@@ -36,9 +36,19 @@ pm.layout = {
             pm.request.response.setMode(language);
         });
 
+        $('#response-sample-save-start').on("click", function() {
+            $('#response-sample-save-start-container').css("display", "none");
+            $('#response-sample-save-form').css("display", "inline-block");
+        });
+
+        $('#response-sample-cancel').on("click", function () {
+            $('#response-sample-save-start-container').css("display", "inline-block");
+            $('#response-sample-save-form').css("display", "none");
+        });
+
         $('#response-sample-save').on("click", function () {
             var url = $('#url').val();
-            
+
             var currentResponse = pm.request.response;                
             var request = new CollectionRequest();
             request.id = guid();
@@ -49,9 +59,11 @@ pm.layout = {
             request.dataMode = pm.request.dataMode;            
             request.time = new Date().getTime();
 
+            var name = $("#response-sample-name").val();
+
             var response = {
                 "id": guid(),
-                "name": "",
+                "name": name,
                 "collectionRequestId": pm.request.collectionRequestId,
                 "request": request,
                 "responseCode":currentResponse.responseCode,
@@ -62,6 +74,9 @@ pm.layout = {
             };
 
             pm.collections.saveResponseAsSample(response);
+
+            $('#response-sample-save-start-container').css("display", "inline-block");
+            $('#response-sample-save-form').css("display", "none");
         });
 
         this.sidebar.init();
