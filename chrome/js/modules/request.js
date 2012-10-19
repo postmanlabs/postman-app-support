@@ -704,6 +704,8 @@ pm.request = {
             r.headers = response.headers;
             r.text = response.text;
             r.responseCode = response.responseCode;
+
+            $("#response-samples").css("display", "block");
         },
 
         load:function (response) {
@@ -1144,6 +1146,7 @@ pm.request = {
             $('#request-meta').css("display", "none");
             $('#request-name').css("display", "none");
             $('#request-description').css("display", "none");
+            $('#request-samples').css("display", "none");
         }
 
         $('.request-help-actions-togglesize a').attr('data-action', 'minimize');

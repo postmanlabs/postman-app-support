@@ -385,6 +385,11 @@ pm.collections = {
             pm.collections.saveCollection(id);
         });
 
+        $('#request-load-sample').on("click", function () {
+            var id = $('#request-load-sample').attr('data-collection-request-id');
+            pm.collections.loadResponse(id, true);
+        });
+
         var dropZone = document.getElementById('import-collection-dropzone');
         dropZone.addEventListener('dragover', function (evt) {
             evt.stopPropagation();
@@ -465,23 +470,23 @@ pm.collections = {
                         $('.modal-import-alerts').append(Handlebars.templates.message_collection_added(message));
 
                         var requests = [];
-                        
+
                         var ordered = false;
-                        if("order" in collection) {
+                        if ("order" in collection) {
                             ordered = true;
                         }
 
-                        for (var i = 0; i < collection.requests.length; i++) {  
+                        for (var i = 0; i < collection.requests.length; i++) {
                             var request = collection.requests[i];
                             request.collectionId = collection.id;
                             var newId = guid();
 
-                            if(ordered) {
-                                var currentId = request.id;                                
-                                var loc = _.indexOf(collection["order"], currentId);    
+                            if (ordered) {
+                                var currentId = request.id;
+                                var loc = _.indexOf(collection["order"], currentId);
                                 collection["order"][loc] = newId;
                             }
-                            
+
                             request.id = newId;
 
                             pm.indexedDB.addCollectionRequest(request, function (req) {
@@ -512,9 +517,9 @@ pm.collections = {
                 };
 
                 $('.modal-import-alerts').append(Handlebars.templates.message_collection_added(message));
-                
+
                 var ordered = false;
-                if("order" in collection) {
+                if ("order" in collection) {
                     ordered = true;
                 }
 
@@ -524,12 +529,12 @@ pm.collections = {
                     request.collectionId = collection.id;
                     var newId = guid();
 
-                    if(ordered) {
-                        var currentId = request.id;                                
-                        var loc = _.indexOf(collection["order"], currentId);    
+                    if (ordered) {
+                        var currentId = request.id;
+                        var loc = _.indexOf(collection["order"], currentId);
                         collection["order"][loc] = newId;
                     }
-                    
+
                     request.id = newId;
 
                     pm.indexedDB.addCollectionRequest(request, function (req) {
@@ -548,17 +553,30 @@ pm.collections = {
             pm.request.isFromCollection = true;
             pm.request.collectionRequestId = id;
             pm.request.loadRequestInEditor(request, true);
+            pm.collections.loadResponse(id, false);
+        });
+    },
 
-            if(pm.settings.get("alwaysLoadSavedResponse") === true) {
-                console.log("Loading response");
-                pm.indexedDB.getAllResponsesForRequest(id, function(responses) {
-                    if(responses) {
-                        if(responses.length > 0) {
-                            var topResponse = responses[0];
-                            pm.request.response.render(topResponse);
-                        }
+    loadResponse:function (id, forced) {
+        console.log(id, forced);
+        $("#request-load-sample").attr("data-collection-request-id", id);
+        pm.indexedDB.getAllResponsesForRequest(id, function (responses) {
+            if (responses) {
+                $("#request-samples").css("display", "block");
+                if (responses.length > 0) {
+                    var topResponse = responses[0];
+                    $("#request-samples").css("display", "block");
+                    if (pm.settings.get("alwaysLoadSavedResponse") === true || forced) {
+                        pm.request.response.render(topResponse);
                     }
-                });
+                }
+                else {
+                    $("#request-samples").css("display", "none");
+                }
+
+            }
+            else {
+                $("#request-samples").css("display", "none");
             }
         });
     },
@@ -636,10 +654,10 @@ pm.collections = {
                 $('#sidebar-request-' + request.id + " .request .label").addClass('label-method-' + request.method);
                 noty(
                     {
-                        type: 'success',
-                        text: 'Saved request',
-                        layout: 'topRight',
-                        timeout: 750
+                        type:'success',
+                        text:'Saved request',
+                        layout:'topRight',
+                        timeout:750
                     });
             });
         });
@@ -855,7 +873,7 @@ pm.collections = {
     },
 
     saveResponseAsExample:function (response) {
-        pm.indexedDB.storeSingleResponseForRequest(response, function() {
+        pm.indexedDB.storeSingleResponseForRequest(response, function () {
             console.log("Updated response store with ", response);
         });
     }
@@ -3731,6 +3749,8 @@ pm.request = {
             r.headers = response.headers;
             r.text = response.text;
             r.responseCode = response.responseCode;
+
+            $("#response-samples").css("display", "block");
         },
 
         load:function (response) {
@@ -4171,6 +4191,7 @@ pm.request = {
             $('#request-meta').css("display", "none");
             $('#request-name').css("display", "none");
             $('#request-description').css("display", "none");
+            $('#request-samples').css("display", "none");
         }
 
         $('.request-help-actions-togglesize a').attr('data-action', 'minimize');

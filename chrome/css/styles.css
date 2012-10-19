@@ -428,6 +428,11 @@ li .right {
     max-width: 800px;
 }
 
+#request-samples {
+    display: none;
+    margin-bottom: 5px;;
+}
+
 #response {
     display: none;
 }
