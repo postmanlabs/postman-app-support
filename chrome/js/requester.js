@@ -3723,14 +3723,18 @@ pm.request = {
                 $("#response-collection-request-actions").css("display", "none");
             }
 
-            pm.request.response.time = response.time;
-            pm.request.response.cookies = response.cookies;
-            pm.request.response.headers = response.headers;
-            pm.request.response.text = response.text;
-            pm.request.response.responseCode = response.responseCode;
+            $("#response-sample-status").css("display", "block");
+
+            var r = pm.request.response;
+            r.time = response.time;
+            r.cookies = response.cookies;
+            r.headers = response.headers;
+            r.text = response.text;
+            r.responseCode = response.responseCode;
         },
 
         load:function (response) {
+            $("#response-sample-status").css("display", "none");
             if (response.readyState == 4) {
                 //Something went wrong
                 if (response.status == 0) {

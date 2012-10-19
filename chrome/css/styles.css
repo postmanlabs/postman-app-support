@@ -303,11 +303,20 @@ fieldset {
     border-radius: 5px;
 }
 
-#response-time, #response-status {
+#response-time, #response-status, #response-sample-status {
     margin-top: 8px;
 }
 
-#response-time label, #response-status label {
+#response-time {
+    float: left;
+    margin-left: 10px;
+}
+
+#response-sample-status {
+    float: left;
+    margin-left: 10px;
+}
+#response-time label, #response-status label, #response-sample-status label {
     display: block;
     width: 120px;
 }
