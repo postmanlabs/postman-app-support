@@ -224,6 +224,7 @@ pm.indexedDB = {
         var collectionResponse = store.put({
             "id":response.id,
             "collectionRequestId":response.collectionRequestId,
+            "request": response.request,
             "responseCode":response.responseCode,
             "time":response.time,
             "headers":response.headers,

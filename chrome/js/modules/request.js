@@ -1257,13 +1257,42 @@ pm.request = {
         }
     },
 
-    loadRequestInEditor:function (request, isFromCollection) {
+    loadRequestInEditor:function (request, isFromCollection, isFromSample) {
+        console.log(request);
         pm.helpers.showRequestHelper("normal");
         this.url = request.url;
         this.body.data = request.body;
         this.method = request.method.toUpperCase();
 
         if (isFromCollection) {
+            $('#update-request-in-collection').css("display", "inline-block");
+
+            if (typeof request.name !== "undefined") {
+                this.name = request.name;
+                $('#request-meta').css("display", "block");
+                $('#request-name').html(this.name);
+                $('#request-name').css("display", "inline-block");
+            }
+            else {
+                this.name = "";
+                $('#request-meta').css("display", "none");
+                $('#request-name').css("display", "none");
+            }
+
+            if (typeof request.description !== "undefined") {
+                this.description = request.description;
+                $('#request-description').html(this.description);
+                $('#request-description').css("display", "block");
+            }
+            else {
+                this.description = "";
+                $('#request-description').css("display", "none");
+            }
+
+            $('.request-meta-actions-togglesize').attr('data-action', 'minimize');
+            $('.request-meta-actions-togglesize img').attr('src', 'img/circle_minus.png');
+        }
+        else if(isFromSample) {
             $('#update-request-in-collection').css("display", "inline-block");
         }
         else {
@@ -1276,31 +1305,7 @@ pm.request = {
         else {
             this.headers = [];
         }
-
-        if (typeof request.name !== "undefined") {
-            this.name = request.name;
-            $('#request-meta').css("display", "block");
-            $('#request-name').html(this.name);
-            $('#request-name').css("display", "inline-block");
-        }
-        else {
-            this.name = "";
-            $('#request-meta').css("display", "none");
-            $('#request-name').css("display", "none");
-        }
-
-        if (typeof request.description !== "undefined") {
-            this.description = request.description;
-            $('#request-description').html(this.description);
-            $('#request-description').css("display", "block");
-        }
-        else {
-            this.description = "";
-            $('#request-description').css("display", "none");
-        }
-
-        $('.request-meta-actions-togglesize').attr('data-action', 'minimize');
-        $('.request-meta-actions-togglesize img').attr('src', 'img/circle_minus.png');
+        
         $('#headers-keyvaleditor-actions-open .headers-count').html(this.headers.length);
 
         $('#url').val(this.url);

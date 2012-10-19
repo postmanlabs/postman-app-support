@@ -273,7 +273,8 @@
     <h5 id="request-name"></h5><span id="request-last-saved-time">Saved</span>
     <p id="request-description"></p>
     <div id="request-samples">
-        <a id="request-load-sample" data-collection-request-id="">See sample response</a>
+        <h4>Sample responses</h4>
+        <table class="table table-striped table-bordered"></table>        
     </div>
 </div>
 
@@ -458,8 +459,8 @@
                         <a class="btn"
                            rel="tooltip"
                            data-placement="bottom"
-                           data-original-title="Save response as example"
-                           id="response-example-save">
+                           data-original-title="Save sample response"
+                           id="response-sample-save">
                             <i class="icon-bookmark"></i>
                         </a>
                     </div>
@@ -804,18 +805,7 @@
                         <option value="false">No</option>
                     </select>
                 </div>
-            </div>
-
-            <div class="control-group">
-                <label class="control-label" for="always-load-saved-response">Always load saved response</label>
-
-                <div class="controls">
-                    <select class="medium" name="always-load-saved-response" id="always-load-saved-response">
-                        <option value="true">Yes</option>
-                        <option value="false">No</option>
-                    </select>
-                </div>
-            </div>
+            </div>            
 
             <div class="control-group">
                 <label class="control-label" for="retain-link-headers">Retain headers on clicking on links</label>

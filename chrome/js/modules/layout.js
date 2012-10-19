@@ -36,18 +36,32 @@ pm.layout = {
             pm.request.response.setMode(language);
         });
 
-        $('#response-example-save').on("click", function () {
-            var currentResponse = pm.request.response;
+        $('#response-sample-save').on("click", function () {
+            var url = $('#url').val();
+            
+            var currentResponse = pm.request.response;                
+            var request = new CollectionRequest();
+            request.id = guid();
+            request.headers = pm.request.getPackedHeaders();
+            request.url = url;
+            request.method = pm.request.method;
+            request.data = pm.request.body.getData();
+            request.dataMode = pm.request.dataMode;            
+            request.time = new Date().getTime();
+
             var response = {
                 "id": guid(),
+                "name": "",
                 "collectionRequestId": pm.request.collectionRequestId,
+                "request": request,
                 "responseCode":currentResponse.responseCode,
                 "time":currentResponse.time,
                 "headers":currentResponse.headers,
                 "cookies":currentResponse.cookies,
                 "text":currentResponse.text
             };
-            pm.collections.saveResponseAsExample(response);
+
+            pm.collections.saveResponseAsSample(response);
         });
 
         this.sidebar.init();

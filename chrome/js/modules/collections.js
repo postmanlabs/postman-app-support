@@ -88,16 +88,21 @@ pm.collections = {
                 $('#share-collection-link').css("display", "block");
                 $('#share-collection-link').html(link);
             });
-        });
+        });        
 
         $('#share-collection-download').on("click", function () {
             var id = $(this).attr('data-collection-id');
             pm.collections.saveCollection(id);
         });
 
-        $('#request-load-sample').on("click", function () {
-            var id = $('#request-load-sample').attr('data-collection-request-id');
-            pm.collections.loadResponse(id, true);
+        $('#request-samples').on("click", ".sample-response-name", function() {
+            var id = $(this).attr("data-id");
+            pm.collections.loadResponseInEditor(id);
+        });
+
+        $('#request-samples').on("click", ".sample-response-delete", function() {
+            var id = $(this).attr("data-id");
+            pm.collections.removeSampleResponse(id);
         });
 
         var dropZone = document.getElementById('import-collection-dropzone');
@@ -263,22 +268,18 @@ pm.collections = {
             pm.request.isFromCollection = true;
             pm.request.collectionRequestId = id;
             pm.request.loadRequestInEditor(request, true);
-            pm.collections.loadResponse(id, false);
+            pm.collections.loadAllResponsesForRequest(id, false);
         });
     },
 
-    loadResponse:function (id, forced) {
-        console.log(id, forced);
+    loadAllResponsesForRequest:function (id, forced) {        
         $("#request-load-sample").attr("data-collection-request-id", id);
         pm.indexedDB.getAllResponsesForRequest(id, function (responses) {
             if (responses) {
                 $("#request-samples").css("display", "block");
-                if (responses.length > 0) {
-                    var topResponse = responses[0];
-                    $("#request-samples").css("display", "block");
-                    if (pm.settings.get("alwaysLoadSavedResponse") === true || forced) {
-                        pm.request.response.render(topResponse);
-                    }
+                if (responses.length > 0) {                    
+                    $('#request-samples table').html("");
+                    $('#request-samples table').append(Handlebars.templates.sample_responses({"items": responses}));                    
                 }
                 else {
                     $("#request-samples").css("display", "none");
@@ -288,6 +289,21 @@ pm.collections = {
             else {
                 $("#request-samples").css("display", "none");
             }
+        });
+    },
+
+    loadResponseInEditor: function(id) {
+        pm.indexedDB.getCollectionResponse(id, function(response) {
+            console.log(response);
+            pm.request.loadRequestInEditor(response.request, false, true);
+            pm.request.response.render(response);
+        });
+    },
+
+    removeSampleResponse: function(id) {
+        pm.indexedDB.deleteCollectionResponse(id, function() {
+            console.log(id);
+            $('#request-samples table tr[data-id="' + id + '"]').remove();               
         });
     },
 
@@ -480,8 +496,7 @@ pm.collections = {
                 for (var i = 0; i < itemsLength; i++) {
                     var collection = items[i];
                     pm.indexedDB.getAllRequestsInCollection(collection, function (collection, requests) {
-                        collection.requests = requests;
-                        console.log(collection);
+                        collection.requests = requests;                        
                         pm.collections.render(collection);
                     });
                 }
@@ -582,9 +597,9 @@ pm.collections = {
         });
     },
 
-    saveResponseAsExample:function (response) {
-        pm.indexedDB.storeSingleResponseForRequest(response, function () {
-            console.log("Updated response store with ", response);
+    saveResponseAsSample:function (response) {
+        pm.indexedDB.addResponseForRequest(response, function () {
+            $('#request-samples table').append(Handlebars.templates.item_sample_response(response));
         });
     }
 };

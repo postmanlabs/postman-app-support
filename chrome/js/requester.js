@@ -378,16 +378,21 @@ pm.collections = {
                 $('#share-collection-link').css("display", "block");
                 $('#share-collection-link').html(link);
             });
-        });
+        });        
 
         $('#share-collection-download').on("click", function () {
             var id = $(this).attr('data-collection-id');
             pm.collections.saveCollection(id);
         });
 
-        $('#request-load-sample').on("click", function () {
-            var id = $('#request-load-sample').attr('data-collection-request-id');
-            pm.collections.loadResponse(id, true);
+        $('#request-samples').on("click", ".sample-response-name", function() {
+            var id = $(this).attr("data-id");
+            pm.collections.loadResponseInEditor(id);
+        });
+
+        $('#request-samples').on("click", ".sample-response-delete", function() {
+            var id = $(this).attr("data-id");
+            pm.collections.removeSampleResponse(id);
         });
 
         var dropZone = document.getElementById('import-collection-dropzone');
@@ -553,22 +558,18 @@ pm.collections = {
             pm.request.isFromCollection = true;
             pm.request.collectionRequestId = id;
             pm.request.loadRequestInEditor(request, true);
-            pm.collections.loadResponse(id, false);
+            pm.collections.loadAllResponsesForRequest(id, false);
         });
     },
 
-    loadResponse:function (id, forced) {
-        console.log(id, forced);
+    loadAllResponsesForRequest:function (id, forced) {        
         $("#request-load-sample").attr("data-collection-request-id", id);
         pm.indexedDB.getAllResponsesForRequest(id, function (responses) {
             if (responses) {
                 $("#request-samples").css("display", "block");
-                if (responses.length > 0) {
-                    var topResponse = responses[0];
-                    $("#request-samples").css("display", "block");
-                    if (pm.settings.get("alwaysLoadSavedResponse") === true || forced) {
-                        pm.request.response.render(topResponse);
-                    }
+                if (responses.length > 0) {                    
+                    $('#request-samples table').html("");
+                    $('#request-samples table').append(Handlebars.templates.sample_responses({"items": responses}));                    
                 }
                 else {
                     $("#request-samples").css("display", "none");
@@ -578,6 +579,21 @@ pm.collections = {
             else {
                 $("#request-samples").css("display", "none");
             }
+        });
+    },
+
+    loadResponseInEditor: function(id) {
+        pm.indexedDB.getCollectionResponse(id, function(response) {
+            console.log(response);
+            pm.request.loadRequestInEditor(response.request, false, true);
+            pm.request.response.render(response);
+        });
+    },
+
+    removeSampleResponse: function(id) {
+        pm.indexedDB.deleteCollectionResponse(id, function() {
+            console.log(id);
+            $('#request-samples table tr[data-id="' + id + '"]').remove();               
         });
     },
 
@@ -770,8 +786,7 @@ pm.collections = {
                 for (var i = 0; i < itemsLength; i++) {
                     var collection = items[i];
                     pm.indexedDB.getAllRequestsInCollection(collection, function (collection, requests) {
-                        collection.requests = requests;
-                        console.log(collection);
+                        collection.requests = requests;                        
                         pm.collections.render(collection);
                     });
                 }
@@ -872,9 +887,9 @@ pm.collections = {
         });
     },
 
-    saveResponseAsExample:function (response) {
-        pm.indexedDB.storeSingleResponseForRequest(response, function () {
-            console.log("Updated response store with ", response);
+    saveResponseAsSample:function (response) {
+        pm.indexedDB.addResponseForRequest(response, function () {
+            $('#request-samples table').append(Handlebars.templates.item_sample_response(response));
         });
     }
 };
@@ -2093,6 +2108,7 @@ pm.indexedDB = {
         var collectionResponse = store.put({
             "id":response.id,
             "collectionRequestId":response.collectionRequestId,
+            "request": response.request,
             "responseCode":response.responseCode,
             "time":response.time,
             "headers":response.headers,
@@ -2718,18 +2734,32 @@ pm.layout = {
             pm.request.response.setMode(language);
         });
 
-        $('#response-example-save').on("click", function () {
-            var currentResponse = pm.request.response;
+        $('#response-sample-save').on("click", function () {
+            var url = $('#url').val();
+            
+            var currentResponse = pm.request.response;                
+            var request = new CollectionRequest();
+            request.id = guid();
+            request.headers = pm.request.getPackedHeaders();
+            request.url = url;
+            request.method = pm.request.method;
+            request.data = pm.request.body.getData();
+            request.dataMode = pm.request.dataMode;            
+            request.time = new Date().getTime();
+
             var response = {
                 "id": guid(),
+                "name": "",
                 "collectionRequestId": pm.request.collectionRequestId,
+                "request": request,
                 "responseCode":currentResponse.responseCode,
                 "time":currentResponse.time,
                 "headers":currentResponse.headers,
                 "cookies":currentResponse.cookies,
                 "text":currentResponse.text
             };
-            pm.collections.saveResponseAsExample(response);
+
+            pm.collections.saveResponseAsSample(response);
         });
 
         this.sidebar.init();
@@ -4302,13 +4332,42 @@ pm.request = {
         }
     },
 
-    loadRequestInEditor:function (request, isFromCollection) {
+    loadRequestInEditor:function (request, isFromCollection, isFromSample) {
+        console.log(request);
         pm.helpers.showRequestHelper("normal");
         this.url = request.url;
         this.body.data = request.body;
         this.method = request.method.toUpperCase();
 
         if (isFromCollection) {
+            $('#update-request-in-collection').css("display", "inline-block");
+
+            if (typeof request.name !== "undefined") {
+                this.name = request.name;
+                $('#request-meta').css("display", "block");
+                $('#request-name').html(this.name);
+                $('#request-name').css("display", "inline-block");
+            }
+            else {
+                this.name = "";
+                $('#request-meta').css("display", "none");
+                $('#request-name').css("display", "none");
+            }
+
+            if (typeof request.description !== "undefined") {
+                this.description = request.description;
+                $('#request-description').html(this.description);
+                $('#request-description').css("display", "block");
+            }
+            else {
+                this.description = "";
+                $('#request-description').css("display", "none");
+            }
+
+            $('.request-meta-actions-togglesize').attr('data-action', 'minimize');
+            $('.request-meta-actions-togglesize img').attr('src', 'img/circle_minus.png');
+        }
+        else if(isFromSample) {
             $('#update-request-in-collection').css("display", "inline-block");
         }
         else {
@@ -4321,31 +4380,7 @@ pm.request = {
         else {
             this.headers = [];
         }
-
-        if (typeof request.name !== "undefined") {
-            this.name = request.name;
-            $('#request-meta').css("display", "block");
-            $('#request-name').html(this.name);
-            $('#request-name').css("display", "inline-block");
-        }
-        else {
-            this.name = "";
-            $('#request-meta').css("display", "none");
-            $('#request-name').css("display", "none");
-        }
-
-        if (typeof request.description !== "undefined") {
-            this.description = request.description;
-            $('#request-description').html(this.description);
-            $('#request-description').css("display", "block");
-        }
-        else {
-            this.description = "";
-            $('#request-description').css("display", "none");
-        }
-
-        $('.request-meta-actions-togglesize').attr('data-action', 'minimize');
-        $('.request-meta-actions-togglesize img').attr('src', 'img/circle_minus.png');
+        
         $('#headers-keyvaleditor-actions-open .headers-count').html(this.headers.length);
 
         $('#url').val(this.url);
@@ -4634,8 +4669,7 @@ pm.settings = {
         pm.settings.create("lineWrapping", true);
         pm.settings.create("previewType", "parsed");
         pm.settings.create("retainLinkHeaders", false);
-        pm.settings.create("usePostmanProxy", false);
-        pm.settings.create("alwaysLoadSavedResponse", true);
+        pm.settings.create("usePostmanProxy", false);        
         pm.settings.create("proxyURL", "");
         pm.settings.create("lastRequest", "");
         pm.settings.create("variableDelimiter", "{{...}}");
@@ -4644,7 +4678,6 @@ pm.settings = {
         $('#auto-save-request').val(pm.settings.get("autoSaveRequest") + "");
         $('#retain-link-headers').val(pm.settings.get("retainLinkHeaders") + "");
         $('#use-postman-proxy').val(pm.settings.get("usePostmanProxy") + "");
-        $('#always-load-saved-response').val(pm.settings.get("alwaysLoadSavedResponse") + "");
         $('#postman-proxy-url').val(pm.settings.get("postmanProxyUrl"));
         $('#variable-delimiter').val(pm.settings.get("variableDelimiter"));
 
@@ -4670,17 +4703,7 @@ pm.settings = {
             else {
                 pm.settings.set("retainLinkHeaders", false);
             }
-        });
-
-        $('#always-load-saved-response').change(function () {
-            var val = $('#always-load-saved-response').val();
-            if (val === "true") {
-                pm.settings.set("alwaysLoadSavedResponse", true);
-            }
-            else {
-                pm.settings.set("alwaysLoadSavedResponse", false);
-            }
-        });
+        });        
 
         $('#use-postman-proxy').change(function () {
             var val = $('#use-postman-proxy').val();

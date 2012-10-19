@@ -1332,7 +1332,15 @@ li .right {
     border-bottom: #fff solid thin;
 }
 
-
 #broadcasts .dropdown-menu li {
     margin-bottom: 5px;
+}
+
+#request-samples h4 {
+    font-size: 11px;
+    margin-bottom: 5px;
+}
+
+#request-samples table {
+    width: 400px;
 }
