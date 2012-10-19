@@ -14,6 +14,7 @@ pm.request = {
     startTime:0,
     endTime:0,
     xhr:null,
+    responses:[],
 
     body:{
         mode:"params",
@@ -632,7 +633,7 @@ pm.request = {
             });
 
             var contentType;
-            if(contentTypeIndexOf >= 0) {
+            if (contentTypeIndexOf >= 0) {
                 contentType = response.headers[contentTypeIndexOf].value;
             }
 
@@ -1257,7 +1258,7 @@ pm.request = {
         }
     },
 
-    loadRequestInEditor:function (request, isFromCollection, isFromSample) {        
+    loadRequestInEditor:function (request, isFromCollection, isFromSample) {
         pm.helpers.showRequestHelper("normal");
         this.url = request.url;
         this.body.data = request.body;
@@ -1292,8 +1293,28 @@ pm.request = {
             $('#response-sample-save-start-container').css("display", "inline-block");
             $('.request-meta-actions-togglesize').attr('data-action', 'minimize');
             $('.request-meta-actions-togglesize img').attr('src', 'img/circle_minus.png');
+
+            //Load sample
+            if ("responses" in request) {
+                pm.request.responses = request.responses;
+                if (request.responses) {
+                    $("#request-samples").css("display", "block");
+                    if (request.responses.length > 0) {
+                        $('#request-samples table').html("");
+                        $('#request-samples table').append(Handlebars.templates.sample_responses({"items":request.responses}));
+                    }
+                    else {
+                        $("#request-samples").css("display", "none");
+                    }
+
+                }
+                else {
+                    $("#request-samples").css("display", "none");
+                }
+            }
+
         }
-        else if(isFromSample) {
+        else if (isFromSample) {
             $('#update-request-in-collection').css("display", "inline-block");
         }
         else {
@@ -1306,7 +1327,7 @@ pm.request = {
         else {
             this.headers = [];
         }
-        
+
         $('#headers-keyvaleditor-actions-open .headers-count').html(this.headers.length);
 
         $('#url').val(this.url);

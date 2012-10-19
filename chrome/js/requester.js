@@ -297,37 +297,38 @@ pm.collections = {
     },
 
     addCollectionListeners:function () {
-        $('#collection-items').on("mouseenter", ".sidebar-collection .sidebar-collection-head", function () {
+        var $collection_items = $('#collection-items');
+        $collection_items.on("mouseenter", ".sidebar-collection .sidebar-collection-head", function () {
             var actionsEl = jQuery('.collection-head-actions', this);
             actionsEl.css('display', 'block');
         });
 
-        $('#collection-items').on("mouseleave", ".sidebar-collection .sidebar-collection-head", function () {
+        $collection_items.on("mouseleave", ".sidebar-collection .sidebar-collection-head", function () {
             var actionsEl = jQuery('.collection-head-actions', this);
             actionsEl.css('display', 'none');
         });
 
-        $('#collection-items').on("click", ".sidebar-collection-head-name", function () {
+        $collection_items.on("click", ".sidebar-collection-head-name", function () {
             var id = $(this).attr('data-id');
             pm.collections.toggleRequestList(id);
         });
 
-        $('#collection-items').on("click", ".collection-head-actions .label", function () {
+        $collection_items.on("click", ".collection-head-actions .label", function () {
             var id = $(this).parent().parent().parent().attr('data-id');
             pm.collections.toggleRequestList(id);
         });
 
-        $('#collection-items').on("click", ".request-actions-delete", function () {
+        $collection_items.on("click", ".request-actions-delete", function () {
             var id = $(this).attr('data-id');
             pm.collections.deleteCollectionRequest(id);
         });
 
-        $('#collection-items').on("click", ".request-actions-load", function () {
+        $collection_items.on("click", ".request-actions-load", function () {
             var id = $(this).attr('data-id');
             pm.collections.getCollectionRequest(id);
         });
 
-        $('#collection-items').on("click", ".request-actions-edit", function () {
+        $collection_items.on("click", ".request-actions-edit", function () {
             var id = $(this).attr('data-id');
             $('#form-edit-collection-request .collection-request-id').val(id);
 
@@ -338,7 +339,7 @@ pm.collections = {
             });
         });
 
-        $('#collection-items').on("click", ".collection-actions-edit", function () {
+        $collection_items.on("click", ".collection-actions-edit", function () {
             var id = $(this).attr('data-id');
             var name = $(this).attr('data-name');
             $('#form-edit-collection .collection-id').val(id);
@@ -346,7 +347,7 @@ pm.collections = {
             $('#modal-edit-collection').modal('show');
         });
 
-        $('#collection-items').on("click", ".collection-actions-delete", function () {
+        $collection_items.on("click", ".collection-actions-delete", function () {
             var id = $(this).attr('data-id');
             var name = $(this).attr('data-name');
 
@@ -364,7 +365,7 @@ pm.collections = {
             pm.collections.importCollectionFromUrl(url);
         });
 
-        $('#collection-items').on("click", ".collection-actions-download", function () {
+        $collection_items.on("click", ".collection-actions-download", function () {
             var id = $(this).attr('data-id');
             $("#modal-share-collection").modal("show");
             $('#share-collection-get-link').attr("data-collection-id", id);
@@ -378,19 +379,19 @@ pm.collections = {
                 $('#share-collection-link').css("display", "block");
                 $('#share-collection-link').html(link);
             });
-        });        
+        });
 
         $('#share-collection-download').on("click", function () {
             var id = $(this).attr('data-collection-id');
             pm.collections.saveCollection(id);
         });
 
-        $('#request-samples').on("click", ".sample-response-name", function() {
+        $('#request-samples').on("click", ".sample-response-name", function () {
             var id = $(this).attr("data-id");
             pm.collections.loadResponseInEditor(id);
         });
 
-        $('#request-samples').on("click", ".sample-response-delete", function() {
+        $('#request-samples').on("click", ".sample-response-delete", function () {
             var id = $(this).attr("data-id");
             pm.collections.removeSampleResponse(id);
         });
@@ -417,10 +418,20 @@ pm.collections = {
         });
     },
 
-    getCollectionData:function(id, callback) {
+    getCollectionData:function (id, callback) {
         pm.indexedDB.getCollection(id, function (data) {
             var collection = data;
             pm.indexedDB.getAllRequestsInCollection(collection, function (collection, data) {
+                var ids = [];
+                for (var i = 0, count = data.length; i < count; i++) {
+                    ids.push(data[i].id);
+                }
+                console.log(ids);
+
+                pm.indexedDB.getAllResponsesForCollection(ids, function (responses) {
+                    console.log(responses);
+                });
+
                 //Get all collection requests with one call
                 collection['requests'] = data;
                 var name = collection['name'] + ".json";
@@ -432,13 +443,14 @@ pm.collections = {
     },
 
     saveCollection:function (id) {
-        pm.collections.getCollectionData(id, function(name, type, filedata) {
-            pm.filesystem.saveAndOpenFile(name, filedata, type, function () {});
+        pm.collections.getCollectionData(id, function (name, type, filedata) {
+            pm.filesystem.saveAndOpenFile(name, filedata, type, function () {
+            });
         });
     },
 
     uploadCollection:function (id, callback) {
-        pm.collections.getCollectionData(id, function(name, type, filedata) {
+        pm.collections.getCollectionData(id, function (name, type, filedata) {
             var uploadUrl = pm.webUrl + '/collections';
             $.ajax({
                 type:'POST',
@@ -450,10 +462,10 @@ pm.collections = {
                 }
             });
 
-        });        
+        });
     },
 
-    importCollectionData: function(collection) {
+    importCollectionData:function (collection) {
         pm.indexedDB.addCollection(collection, function (c) {
             var message = {
                 name:collection.name,
@@ -482,10 +494,11 @@ pm.collections = {
 
                 request.id = newId;
 
-                pm.indexedDB.addCollectionRequest(request, function (req) {});
+                pm.indexedDB.addCollectionRequest(request, function (req) {
+                });
 
                 //Add response for the collection request
-                
+
                 requests.push(request);
             }
 
@@ -529,42 +542,36 @@ pm.collections = {
             pm.request.isFromCollection = true;
             pm.request.collectionRequestId = id;
             pm.request.loadRequestInEditor(request, true);
-            pm.collections.loadAllResponsesForRequest(id, false);
         });
     },
 
-    loadAllResponsesForRequest:function (id, forced) {        
-        $("#request-load-sample").attr("data-collection-request-id", id);
-        pm.indexedDB.getAllResponsesForRequest(id, function (responses) {
-            if (responses) {
-                $("#request-samples").css("display", "block");
-                if (responses.length > 0) {                    
-                    $('#request-samples table').html("");
-                    $('#request-samples table').append(Handlebars.templates.sample_responses({"items": responses}));                    
-                }
-                else {
-                    $("#request-samples").css("display", "none");
-                }
-
-            }
-            else {
-                $("#request-samples").css("display", "none");
-            }
+    loadResponseInEditor:function (id) {
+        var responses = pm.request.responses;
+        console.log(responses);
+        var responseIndex = find(responses, function (item, i, responses) {
+            return item.id === id;
         });
+
+        var response = responses[responseIndex];
+        pm.request.loadRequestInEditor(response.request, false, true);
+        pm.request.response.render(response);
     },
 
-    loadResponseInEditor: function(id) {
-        pm.indexedDB.getCollectionResponse(id, function(response) {
-            console.log(response);
-            pm.request.loadRequestInEditor(response.request, false, true);
-            pm.request.response.render(response);
+    removeSampleResponse:function (id) {
+        var responses = pm.request.responses;
+        var responseIndex = find(responses, function (item, i, responses) {
+            return item.id === id;
         });
-    },
 
-    removeSampleResponse: function(id) {
-        pm.indexedDB.deleteCollectionResponse(id, function() {
-            console.log(id);
-            $('#request-samples table tr[data-id="' + id + '"]').remove();               
+        var response = responses[responseIndex];
+        responses.splice(responseIndex, 1);
+
+        pm.indexedDB.getCollectionRequest(response.collectionRequestId, function (request) {
+            request["responses"] = responses;
+            pm.indexedDB.updateCollectionRequest(request, function () {
+                $('#request-samples table tr[data-id="' + response.id + '"]').remove();
+            });
+
         });
     },
 
@@ -757,7 +764,7 @@ pm.collections = {
                 for (var i = 0; i < itemsLength; i++) {
                     var collection = items[i];
                     pm.indexedDB.getAllRequestsInCollection(collection, function (collection, requests) {
-                        collection.requests = requests;                        
+                        collection.requests = requests;
                         pm.collections.render(collection);
                     });
                 }
@@ -802,7 +809,7 @@ pm.collections = {
                     requests.sort(sortAlphabetical);
                 }
                 else {
-                    var orderedRequests = []
+                    var orderedRequests = [];
                     for (var j = 0, len = collection["order"].length; j < len; j++) {
                         var element = _.find(requests, function (request) {
                             return request.id == collection["order"][j]
@@ -859,8 +866,27 @@ pm.collections = {
     },
 
     saveResponseAsSample:function (response) {
-        pm.indexedDB.addResponseForRequest(response, function () {
-            $('#request-samples table').append(Handlebars.templates.item_sample_response(response));
+        pm.indexedDB.getCollectionRequest(response.collectionRequestId, function (request) {
+            if ("responses" in request) {
+                request["responses"].push(response);
+            }
+            else {
+                request["responses"] = [response];
+            }
+
+            pm.indexedDB.updateCollectionRequest(request, function () {
+                noty(
+                    {
+                        type:'success',
+                        text:'Saved response',
+                        layout:'topRight',
+                        timeout:750
+                    });
+
+                $('#request-samples').css("display", "block");
+                $('#request-samples table').append(Handlebars.templates.item_sample_response(response));
+            });
+
         });
     }
 };
@@ -1862,7 +1888,7 @@ pm.indexedDB = {
 
         var request = indexedDB.open("postman", "POSTman request history");
         request.onsuccess = function (e) {
-            var v = "0.48";
+            var v = "0.49";
             pm.indexedDB.db = e.target.result;
             var db = pm.indexedDB.db;
 
@@ -1892,10 +1918,8 @@ pm.indexedDB = {
                         collectionRequestsStore.createIndex("collectionId", "collectionId", { unique:false});
                     }
 
-                    if (!db.objectStoreNames.contains("collection_responses")) {
-                        var responseStore = db.createObjectStore("collection_responses", {keyPath:"id"});
-                        responseStore.createIndex("timestamp", "timestamp", { unique:false});
-                        responseStore.createIndex("collectionRequestId", "collectionRequestId", { unique:false});
+                    if (db.objectStoreNames.contains("collection_responses")) {
+                        db.deleteObjectStore("collection_responses");                                
                     }
 
                     if (!db.objectStoreNames.contains("environments")) {
@@ -1926,7 +1950,7 @@ pm.indexedDB = {
 
     open_latest:function () {
 
-        var v = 10;
+        var v = 11;
         var request = indexedDB.open("postman", v);
         console.log("Open latest");
         request.onupgradeneeded = function (e) {
@@ -1949,10 +1973,8 @@ pm.indexedDB = {
                 collectionRequestsStore.createIndex("collectionId", "collectionId", { unique:false});
             }
 
-            if (!db.objectStoreNames.contains("collection_responses")) {
-                var responseStore = db.createObjectStore("collection_responses", {keyPath:"id"});
-                responseStore.createIndex("timestamp", "timestamp", { unique:false});
-                responseStore.createIndex("collectionRequestId", "collectionRequestId", { unique:false});
+            if (db.objectStoreNames.contains("collection_responses")) {
+                db.deleteObjectStore("collection_responses");                                
             }
 
             if (!db.objectStoreNames.contains("environments")) {
@@ -2032,7 +2054,8 @@ pm.indexedDB = {
             "headers":req.headers.toString(),
             "data":req.data.toString(),
             "dataMode":req.dataMode.toString(),
-            "timestamp":req.timestamp
+            "timestamp":req.timestamp,
+            "responses": []
         });
 
         collectionRequest.onsuccess = function () {
@@ -2059,63 +2082,7 @@ pm.indexedDB = {
         request.onerror = function (e) {
             console.log(e.value);
         };
-    },
-
-    storeSingleResponseForRequest:function (response, callback) {
-        pm.indexedDB.getAllResponsesForRequest(response.collectionRequestId, function(responses) {
-            console.log(responses);
-        });
-
-        pm.indexedDB.deleteAllRequestResponses(response.collectionRequestId, function () {
-            pm.indexedDB.addResponseForRequest(response, callback);
-        });
-    },
-
-    addResponseForRequest:function (response, callback) {
-        var db = pm.indexedDB.db;
-        var trans = db.transaction(["collection_responses"], "readwrite");
-        var store = trans.objectStore("collection_responses");
-
-        var collectionResponse = store.put({
-            "id":response.id,
-            "name":response.name,
-            "collectionRequestId":response.collectionRequestId,
-            "request": response.request,
-            "responseCode":response.responseCode,
-            "time":response.time,
-            "headers":response.headers,
-            "cookies":response.cookies,
-            "text":response.text,
-            "timestamp": new Date().getTime()
-
-        });
-
-        collectionResponse.onsuccess = function () {
-            console.log("Seems to have gone well");
-            callback(response);
-        };
-
-        collectionResponse.onerror = function (e) {
-            console.log(e.value);
-        };
-    },
-
-    updateResponseForRequest:function (response, callback) {
-        var db = pm.indexedDB.db;
-        var trans = db.transaction(["collection_responses"], "readwrite");
-        var store = trans.objectStore("collection_responses");
-
-        var boundKeyRange = IDBKeyRange.only(response.id);
-        var request = store.put(response);
-
-        request.onsuccess = function (e) {
-            callback(response);
-        };
-
-        request.onerror = function (e) {
-            console.log(e.value);
-        };
-    },
+    },    
 
     getCollection:function (id, callback) {
         var db = pm.indexedDB.db;
@@ -2195,37 +2162,7 @@ pm.indexedDB = {
             result['continue']();
         };
         cursorRequest.onerror = pm.indexedDB.onerror;
-    },
-
-    getAllResponsesForRequest:function (collectionRequestId, callback) {
-        var db = pm.indexedDB.db;
-        var trans = db.transaction(["collection_responses"], "readwrite");
-
-        //Get everything in the store
-        var keyRange = IDBKeyRange.only(collectionRequestId);
-        var store = trans.objectStore("collection_responses");
-
-        var index = store.index("collectionRequestId");
-        var cursorRequest = index.openCursor(keyRange);
-
-        var responses = [];
-
-        cursorRequest.onsuccess = function (e) {
-            var result = e.target.result;
-
-            if (!result) {
-                callback(responses);
-                return;
-            }
-
-            var response = result.value;
-            responses.push(response);
-
-            //This wil call onsuccess again and again until no more request is left
-            result['continue']();
-        };
-        cursorRequest.onerror = pm.indexedDB.onerror;
-    },
+    },    
 
     addRequest:function (historyRequest, callback) {
         var db = pm.indexedDB.db;
@@ -2257,26 +2194,6 @@ pm.indexedDB = {
             }
 
             callback(result);
-        };
-        cursorRequest.onerror = pm.indexedDB.onerror;
-    },
-
-    getCollectionResponse:function (id, callback) {
-        var db = pm.indexedDB.db;
-        var trans = db.transaction(["collection_responses"], "readwrite");
-        var store = trans.objectStore("collection_responses");
-
-        //Get everything in the store
-        var cursorRequest = store.get(id);
-
-        cursorRequest.onsuccess = function (e) {
-            var result = e.target.result;
-            if (!result) {
-                return;
-            }
-
-            callback(result);
-            return result;
         };
         cursorRequest.onerror = pm.indexedDB.onerror;
     },
@@ -2356,28 +2273,6 @@ pm.indexedDB = {
         }
     },
 
-    deleteCollectionResponse:function (id, callback) {
-        try {
-            var db = pm.indexedDB.db;
-            var trans = db.transaction(["collection_responses"], "readwrite");
-            var store = trans.objectStore(["collection_responses"]);
-
-            var request = store['delete'](id);
-
-            request.onsuccess = function () {
-                console.log("Deleted");
-                callback(id);
-            };
-
-            request.onerror = function (e) {
-                console.log(e);
-            };
-        }
-        catch (e) {
-            console.log(e);
-        }
-    },
-
     deleteHistory:function (callback) {
         var db = pm.indexedDB.db;
         var clearTransaction = db.transaction(["requests"], "readwrite");
@@ -2426,33 +2321,7 @@ pm.indexedDB = {
             result['continue']();
         };
         cursorRequest.onerror = pm.indexedDB.onerror;
-    },
-
-    deleteAllRequestResponses:function (id, callback) {
-        var db = pm.indexedDB.db;
-        var trans = db.transaction(["collection_responses"], "readwrite");
-
-        //Get everything in the store
-        var keyRange = IDBKeyRange.only(id);
-        var store = trans.objectStore("collection_responses");
-
-        var index = store.index("collectionRequestId");
-        var cursorRequest = index.openCursor(keyRange);
-
-        cursorRequest.onsuccess = function (e) {
-            var result = e.target.result;
-
-            if (!result) {
-                callback();
-                return;
-            }
-
-            var response = result.value;
-            pm.indexedDB.deleteCollectionResponse(response.id, function() {});
-            result['continue']();
-        };
-        cursorRequest.onerror = pm.indexedDB.onerror;
-    },
+    },    
 
     deleteCollection:function (id, callback) {
         var db = pm.indexedDB.db;
@@ -3076,6 +2945,7 @@ pm.request = {
     startTime:0,
     endTime:0,
     xhr:null,
+    responses:[],
 
     body:{
         mode:"params",
@@ -3694,7 +3564,7 @@ pm.request = {
             });
 
             var contentType;
-            if(contentTypeIndexOf >= 0) {
+            if (contentTypeIndexOf >= 0) {
                 contentType = response.headers[contentTypeIndexOf].value;
             }
 
@@ -4319,7 +4189,7 @@ pm.request = {
         }
     },
 
-    loadRequestInEditor:function (request, isFromCollection, isFromSample) {        
+    loadRequestInEditor:function (request, isFromCollection, isFromSample) {
         pm.helpers.showRequestHelper("normal");
         this.url = request.url;
         this.body.data = request.body;
@@ -4354,8 +4224,28 @@ pm.request = {
             $('#response-sample-save-start-container').css("display", "inline-block");
             $('.request-meta-actions-togglesize').attr('data-action', 'minimize');
             $('.request-meta-actions-togglesize img').attr('src', 'img/circle_minus.png');
+
+            //Load sample
+            if ("responses" in request) {
+                pm.request.responses = request.responses;
+                if (request.responses) {
+                    $("#request-samples").css("display", "block");
+                    if (request.responses.length > 0) {
+                        $('#request-samples table').html("");
+                        $('#request-samples table').append(Handlebars.templates.sample_responses({"items":request.responses}));
+                    }
+                    else {
+                        $("#request-samples").css("display", "none");
+                    }
+
+                }
+                else {
+                    $("#request-samples").css("display", "none");
+                }
+            }
+
         }
-        else if(isFromSample) {
+        else if (isFromSample) {
             $('#update-request-in-collection').css("display", "inline-block");
         }
         else {
@@ -4368,7 +4258,7 @@ pm.request = {
         else {
             this.headers = [];
         }
-        
+
         $('#headers-keyvaleditor-actions-open .headers-count').html(this.headers.length);
 
         $('#url').val(this.url);
