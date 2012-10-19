@@ -417,42 +417,83 @@ pm.collections = {
         });
     },
 
-    saveCollection:function (id) {
+    getCollectionData:function(id, callback) {
         pm.indexedDB.getCollection(id, function (data) {
             var collection = data;
             pm.indexedDB.getAllRequestsInCollection(collection, function (collection, data) {
+                //Get all collection requests with one call
                 collection['requests'] = data;
                 var name = collection['name'] + ".json";
                 var type = "application/json";
                 var filedata = JSON.stringify(collection);
-                pm.filesystem.saveAndOpenFile(name, filedata, type, function () {
-                });
+                callback(name, type, filedata);
             });
+        });
+    },
+
+    saveCollection:function (id) {
+        pm.collections.getCollectionData(id, function(name, type, filedata) {
+            pm.filesystem.saveAndOpenFile(name, filedata, type, function () {});
         });
     },
 
     uploadCollection:function (id, callback) {
-        pm.indexedDB.getCollection(id, function (c) {
-            pm.indexedDB.getAllRequestsInCollection(c, function (collection, requests) {
-                collection['requests'] = requests;
-                var name = collection['name'] + ".json";
-                var type = "application/json";
-                var filedata = JSON.stringify(collection);
-
-                var uploadUrl = pm.webUrl + '/collections';
-                $.ajax({
-                    type:'POST',
-                    url:uploadUrl,
-                    data:filedata,
-                    success:function (data) {
-                        var link = data.link;
-                        callback(link);
-                    }
-                });
+        pm.collections.getCollectionData(id, function(name, type, filedata) {
+            var uploadUrl = pm.webUrl + '/collections';
+            $.ajax({
+                type:'POST',
+                url:uploadUrl,
+                data:filedata,
+                success:function (data) {
+                    var link = data.link;
+                    callback(link);
+                }
             });
-        });
+
+        });        
     },
 
+    importCollectionData: function(collection) {
+        pm.indexedDB.addCollection(collection, function (c) {
+            var message = {
+                name:collection.name,
+                action:"added"
+            };
+
+            $('.modal-import-alerts').append(Handlebars.templates.message_collection_added(message));
+
+            var requests = [];
+
+            var ordered = false;
+            if ("order" in collection) {
+                ordered = true;
+            }
+
+            for (var i = 0; i < collection.requests.length; i++) {
+                var request = collection.requests[i];
+                request.collectionId = collection.id;
+                var newId = guid();
+
+                if (ordered) {
+                    var currentId = request.id;
+                    var loc = _.indexOf(collection["order"], currentId);
+                    collection["order"][loc] = newId;
+                }
+
+                request.id = newId;
+
+                pm.indexedDB.addCollectionRequest(request, function (req) {});
+
+                //Add response for the collection request
+                
+                requests.push(request);
+            }
+
+            collection.requests = requests;
+
+            pm.collections.render(collection);
+        });
+    },
 
     importCollections:function (files) {
         // Loop through the FileList
@@ -466,43 +507,7 @@ pm.collections = {
                     var data = e.currentTarget.result;
                     var collection = JSON.parse(data);
                     collection.id = guid();
-                    pm.indexedDB.addCollection(collection, function (c) {
-                        var message = {
-                            name:collection.name,
-                            action:"added"
-                        };
-
-                        $('.modal-import-alerts').append(Handlebars.templates.message_collection_added(message));
-
-                        var requests = [];
-
-                        var ordered = false;
-                        if ("order" in collection) {
-                            ordered = true;
-                        }
-
-                        for (var i = 0; i < collection.requests.length; i++) {
-                            var request = collection.requests[i];
-                            request.collectionId = collection.id;
-                            var newId = guid();
-
-                            if (ordered) {
-                                var currentId = request.id;
-                                var loc = _.indexOf(collection["order"], currentId);
-                                collection["order"][loc] = newId;
-                            }
-
-                            request.id = newId;
-
-                            pm.indexedDB.addCollectionRequest(request, function (req) {
-                            });
-                            requests.push(request);
-                        }
-
-                        collection.requests = requests;
-
-                        pm.collections.render(collection);
-                    });
+                    pm.collections.importCollectionData(collection);
                 };
             })(f);
 
@@ -515,41 +520,7 @@ pm.collections = {
         $.get(url, function (data) {
             var collection = data;
             collection.id = guid();
-            pm.indexedDB.addCollection(collection, function (c) {
-                var message = {
-                    name:collection.name,
-                    action:"added"
-                };
-
-                $('.modal-import-alerts').append(Handlebars.templates.message_collection_added(message));
-
-                var ordered = false;
-                if ("order" in collection) {
-                    ordered = true;
-                }
-
-                var requests = [];
-                for (var i = 0; i < collection.requests.length; i++) {
-                    var request = collection.requests[i];
-                    request.collectionId = collection.id;
-                    var newId = guid();
-
-                    if (ordered) {
-                        var currentId = request.id;
-                        var loc = _.indexOf(collection["order"], currentId);
-                        collection["order"][loc] = newId;
-                    }
-
-                    request.id = newId;
-
-                    pm.indexedDB.addCollectionRequest(request, function (req) {
-                    });
-                    requests.push(request);
-                }
-
-                collection.requests = requests;
-                pm.collections.render(collection);
-            });
+            pm.collections.importCollectionData(collection);
         });
     },
 
