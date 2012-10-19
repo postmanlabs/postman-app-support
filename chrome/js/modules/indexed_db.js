@@ -174,7 +174,7 @@ pm.indexedDB = {
             "data":req.data.toString(),
             "dataMode":req.dataMode.toString(),
             "timestamp":req.timestamp,
-            "responses": []
+            "responses": req.responses
         });
 
         collectionRequest.onsuccess = function () {

@@ -136,11 +136,6 @@ pm.collections = {
                 for (var i = 0, count = data.length; i < count; i++) {
                     ids.push(data[i].id);
                 }
-                console.log(ids);
-
-                pm.indexedDB.getAllResponsesForCollection(ids, function (responses) {
-                    console.log(responses);
-                });
 
                 //Get all collection requests with one call
                 collection['requests'] = data;
@@ -204,11 +199,18 @@ pm.collections = {
 
                 request.id = newId;
 
-                pm.indexedDB.addCollectionRequest(request, function (req) {
-                });
+                if ("responses" in request) {
+                    console.log("Modifying responses");
+                    console.log(request);
+                    var j, count;
+                    for (j = 0, count = request["responses"].length; j < count; j++) {
+                        request["responses"][j].id = guid();
+                        request["responses"][j].collectionRequestId = newId;
+                        console.log("Changed to " + newId);
+                    }
+                }
 
-                //Add response for the collection request
-
+                pm.indexedDB.addCollectionRequest(request, function (req) {});
                 requests.push(request);
             }
 
@@ -268,6 +270,8 @@ pm.collections = {
     },
 
     removeSampleResponse:function (id) {
+        console.log(id);
+        console.log(pm.request.responses);
         var responses = pm.request.responses;
         var responseIndex = find(responses, function (item, i, responses) {
             return item.id === id;
@@ -391,6 +395,7 @@ pm.collections = {
         collectionRequest.name = newRequestName;
         collectionRequest.description = newRequestDescription;
         collectionRequest.time = new Date().getTime();
+        collectionRequest.responses = pm.request.responses;
 
         if (newCollection) {
             //Add the new collection and get guid
@@ -577,13 +582,14 @@ pm.collections = {
 
     saveResponseAsSample:function (response) {
         pm.indexedDB.getCollectionRequest(response.collectionRequestId, function (request) {
-            if ("responses" in request) {
+            if ("responses" in request && request["responses"] !== undefined) {
                 request["responses"].push(response);
             }
             else {
                 request["responses"] = [response];
             }
 
+            pm.request.responses = request["responses"];
             pm.indexedDB.updateCollectionRequest(request, function () {
                 noty(
                     {

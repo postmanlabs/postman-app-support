@@ -426,11 +426,6 @@ pm.collections = {
                 for (var i = 0, count = data.length; i < count; i++) {
                     ids.push(data[i].id);
                 }
-                console.log(ids);
-
-                pm.indexedDB.getAllResponsesForCollection(ids, function (responses) {
-                    console.log(responses);
-                });
 
                 //Get all collection requests with one call
                 collection['requests'] = data;
@@ -494,11 +489,18 @@ pm.collections = {
 
                 request.id = newId;
 
-                pm.indexedDB.addCollectionRequest(request, function (req) {
-                });
+                if ("responses" in request) {
+                    console.log("Modifying responses");
+                    console.log(request);
+                    var j, count;
+                    for (j = 0, count = request["responses"].length; j < count; j++) {
+                        request["responses"][j].id = guid();
+                        request["responses"][j].collectionRequestId = newId;
+                        console.log("Changed to " + newId);
+                    }
+                }
 
-                //Add response for the collection request
-
+                pm.indexedDB.addCollectionRequest(request, function (req) {});
                 requests.push(request);
             }
 
@@ -558,6 +560,8 @@ pm.collections = {
     },
 
     removeSampleResponse:function (id) {
+        console.log(id);
+        console.log(pm.request.responses);
         var responses = pm.request.responses;
         var responseIndex = find(responses, function (item, i, responses) {
             return item.id === id;
@@ -681,6 +685,7 @@ pm.collections = {
         collectionRequest.name = newRequestName;
         collectionRequest.description = newRequestDescription;
         collectionRequest.time = new Date().getTime();
+        collectionRequest.responses = pm.request.responses;
 
         if (newCollection) {
             //Add the new collection and get guid
@@ -867,13 +872,14 @@ pm.collections = {
 
     saveResponseAsSample:function (response) {
         pm.indexedDB.getCollectionRequest(response.collectionRequestId, function (request) {
-            if ("responses" in request) {
+            if ("responses" in request && request["responses"] !== undefined) {
                 request["responses"].push(response);
             }
             else {
                 request["responses"] = [response];
             }
 
+            pm.request.responses = request["responses"];
             pm.indexedDB.updateCollectionRequest(request, function () {
                 noty(
                     {
@@ -2055,7 +2061,7 @@ pm.indexedDB = {
             "data":req.data.toString(),
             "dataMode":req.dataMode.toString(),
             "timestamp":req.timestamp,
-            "responses": []
+            "responses": req.responses
         });
 
         collectionRequest.onsuccess = function () {
@@ -4194,6 +4200,7 @@ pm.request = {
         this.url = request.url;
         this.body.data = request.body;
         this.method = request.method.toUpperCase();
+        console.log(request);
 
         if (isFromCollection) {
             $('#update-request-in-collection').css("display", "inline-block");
@@ -4228,22 +4235,29 @@ pm.request = {
             //Load sample
             if ("responses" in request) {
                 pm.request.responses = request.responses;
+                $("#request-samples").css("display", "block");
                 if (request.responses) {
-                    $("#request-samples").css("display", "block");
                     if (request.responses.length > 0) {
                         $('#request-samples table').html("");
                         $('#request-samples table').append(Handlebars.templates.sample_responses({"items":request.responses}));
                     }
                     else {
+                        $('#request-samples table').html("");
                         $("#request-samples").css("display", "none");
                     }
-
                 }
                 else {
+                    pm.request.responses = [];
+                    $('#request-samples table').html("");
                     $("#request-samples").css("display", "none");
                 }
-            }
 
+            }
+            else {
+                pm.request.responses = [];
+                $('#request-samples table').html("");
+                $("#request-samples").css("display", "none");
+            }
         }
         else if (isFromSample) {
             $('#update-request-in-collection').css("display", "inline-block");

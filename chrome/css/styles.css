@@ -1346,5 +1346,6 @@ li .right {
 }
 
 #request-samples table {
+    font-size: 11px;
     width: 400px;
 }

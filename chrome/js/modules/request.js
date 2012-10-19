@@ -1263,6 +1263,7 @@ pm.request = {
         this.url = request.url;
         this.body.data = request.body;
         this.method = request.method.toUpperCase();
+        console.log(request);
 
         if (isFromCollection) {
             $('#update-request-in-collection').css("display", "inline-block");
@@ -1297,22 +1298,29 @@ pm.request = {
             //Load sample
             if ("responses" in request) {
                 pm.request.responses = request.responses;
+                $("#request-samples").css("display", "block");
                 if (request.responses) {
-                    $("#request-samples").css("display", "block");
                     if (request.responses.length > 0) {
                         $('#request-samples table').html("");
                         $('#request-samples table').append(Handlebars.templates.sample_responses({"items":request.responses}));
                     }
                     else {
+                        $('#request-samples table').html("");
                         $("#request-samples").css("display", "none");
                     }
-
                 }
                 else {
+                    pm.request.responses = [];
+                    $('#request-samples table').html("");
                     $("#request-samples").css("display", "none");
                 }
-            }
 
+            }
+            else {
+                pm.request.responses = [];
+                $('#request-samples table').html("");
+                $("#request-samples").css("display", "none");
+            }
         }
         else if (isFromSample) {
             $('#update-request-in-collection').css("display", "inline-block");
