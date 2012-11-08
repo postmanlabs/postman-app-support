@@ -1481,6 +1481,11 @@ pm.filesystem = {
 
     }
 };
+pm.headerPresets = {
+    init: function() {
+
+    }
+};
 pm.helpers = {
     activeHelper: "normal",
 
@@ -1971,7 +1976,7 @@ pm.indexedDB = {
                     var transaction = event.target.result;
                     transaction.oncomplete = function () {
                         pm.history.getAllRequests();
-                        pm.envManager.getAllHeaderPresets();
+                        pm.envManager.getAllEnvironments();
                     };
                 };
 
@@ -3318,6 +3323,8 @@ pm.request = {
                 data = pm.request.getBodyParamString(newParams);
             }
 
+            console.log(data);
+
             return data;
         },
 
@@ -3329,14 +3336,14 @@ pm.request = {
 
             var params;
             if (mode === "params") {
-                params = getUrlVars(data, false);
+                params = getBodyVars(data, false);
                 $('#formdata-keyvaleditor').keyvalueeditor('reset', params);
             }
             else if (mode === "raw") {
                 body.loadRawData(data);
             }
             else if (mode === "urlencoded") {
-                params = getUrlVars(data, false);
+                params = getBodyVars(data, false);
                 $('#urlencoded-keyvaleditor').keyvalueeditor('reset', params);
             }
         }

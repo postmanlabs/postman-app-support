@@ -47,6 +47,48 @@ function guid() {
     return (S4() + S4() + "-" + S4() + "-" + S4() + "-" + S4() + "-" + S4() + S4() + S4());
 }
 
+function getBodyVars(url, associative) {
+    if (url === null) {
+        return [];
+    }
+
+    var equalLocation = url.indexOf('=');
+
+    if (equalLocation < 0) {
+        return [];
+    }
+
+    var vars = [], hash, varsAssoc = {};
+    var hashes = url.split('&');
+    var element;
+
+    for (var i = 0; i < hashes.length; i++) {
+        equalLocation = hashes[i].indexOf('=');
+
+        if (equalLocation !== -1) {
+            element = {
+                "key":hashes[i].slice(0, equalLocation),
+                "value":hashes[i].slice(equalLocation + 1)
+            };
+        }
+        else {
+            element = {
+                "key":hashes[i].slice(0, hashes[i].length),
+                "value":""
+            };
+        }
+
+
+        (associative) ? (varsAssoc[element.key] = element.value) : (vars.push(element));
+    }
+
+    if (associative) {
+        return varsAssoc;
+    } else {
+        return vars;
+    }
+}
+
 function getUrlVars(url, associative) {
     if (url === null) {
         return [];
@@ -128,7 +170,7 @@ function ab2str(buf) {
 function string2ArrayBuffer(string, callback) {
     var bb = new Blob([string]);
     var f = new FileReader();
-    f.onload = function(e) {
+    f.onload = function (e) {
         callback(e.target.result);
     };
     f.readAsArrayBuffer(bb);
@@ -136,7 +178,7 @@ function string2ArrayBuffer(string, callback) {
 
 function find(collection, filter) {
     for (var i = 0; i < filter.length; i++) {
-        if(filter(collection[i], i, collection)) return i;
+        if (filter(collection[i], i, collection)) return i;
     }
     return -1;
 }

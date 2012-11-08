@@ -57,7 +57,7 @@ pm.indexedDB = {
                     var transaction = event.target.result;
                     transaction.oncomplete = function () {
                         pm.history.getAllRequests();
-                        pm.envManager.getAllHeaderPresets();
+                        pm.envManager.getAllEnvironments();
                     };
                 };
 
