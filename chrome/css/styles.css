@@ -1336,6 +1336,10 @@ li .right {
     margin-bottom: 5px;
 }
 
+#response-sample-save-start-container {
+    display: none;
+}
+
 #response-sample-save-form {
     display: none;
 }

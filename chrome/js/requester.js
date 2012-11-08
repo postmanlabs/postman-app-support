@@ -1633,23 +1633,48 @@ pm.helpers = {
             return OAuth.SignatureMethod.sign(message, accessor);
         },
 
+        removeOAuthKeys:function (params) {
+            var i, count;
+            var oauthParams = [
+                "oauth_token",
+                "oauth_signature_method",
+                "oauth_timestamp",
+                "oauth_nonce",
+                "oauth_version",
+                "oauth_signature"
+            ];
+
+            var newParams = [];
+            var oauthIndexes = [];
+            for (i = 0, count = params.length; i < count; i++) {
+                var index = _.indexOf(oauthParams, params[i].key);
+                if (index < 0) {
+                    newParams.push(params[i]);
+                }
+            }
+
+            return newParams;
+        },
+
         process:function () {
+            var i, count, length;
             var params = [];
             var urlParams = pm.request.getUrlEditorParams();
             var bodyParams = [];
 
-            if (pm.request.body.mode == "params") {
+            if (pm.request.body.mode === "params") {
                 bodyParams = $('#formdata-keyvaleditor').keyvalueeditor('getValues');
             }
-            else if (pm.request.body.mode == "urlencoded") {
+            else if (pm.request.body.mode === "urlencoded") {
                 bodyParams = $('#urlencoded-keyvaleditor').keyvalueeditor('getValues');
             }
-
 
             params = params.concat(urlParams);
             params = params.concat(bodyParams);
 
+            params = pm.helpers.oAuth1.removeOAuthKeys(params);
             var signatureKey = "oauth_signature";
+
             $('input.signatureParam').each(function () {
                 if ($(this).val() != '') {
                     var val = $(this).val();
@@ -1658,7 +1683,7 @@ pm.helpers = {
             });
 
             //Convert environment values
-            for (var i = 0, length = params.length; i < length; i++) {
+            for (i = 0, length = params.length; i < length; i++) {
                 params[i].value = pm.envManager.convertString(params[i].value);
             }
 
@@ -2984,7 +3009,6 @@ pm.request = {
             var body = pm.request.body;
 
             if (body.isEditorInitialized === true) {
-                console.log("Blah__" + data + "____");
                 body.codeMirror.setValue(data);
                 body.codeMirror.refresh();
             }
@@ -4216,7 +4240,6 @@ pm.request = {
         this.url = request.url;
         this.body.data = request.body;
         this.method = request.method.toUpperCase();
-        console.log(request);
 
         if (isFromCollection) {
             $('#update-request-in-collection').css("display", "inline-block");
@@ -4244,7 +4267,10 @@ pm.request = {
             }
 
             $('#response-sample-save-form').css("display", "none");
-            $('#response-sample-save-start-container').css("display", "inline-block");
+
+            //Disabling this. Will enable after resolving indexedDB issues
+            //$('#response-sample-save-start-container').css("display", "inline-block");
+
             $('.request-meta-actions-togglesize').attr('data-action', 'minimize');
             $('.request-meta-actions-togglesize img').attr('src', 'img/circle_minus.png');
 

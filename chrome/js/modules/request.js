@@ -47,7 +47,6 @@ pm.request = {
             var body = pm.request.body;
 
             if (body.isEditorInitialized === true) {
-                console.log("Blah__" + data + "____");
                 body.codeMirror.setValue(data);
                 body.codeMirror.refresh();
             }
@@ -1279,7 +1278,6 @@ pm.request = {
         this.url = request.url;
         this.body.data = request.body;
         this.method = request.method.toUpperCase();
-        console.log(request);
 
         if (isFromCollection) {
             $('#update-request-in-collection').css("display", "inline-block");
@@ -1307,7 +1305,10 @@ pm.request = {
             }
 
             $('#response-sample-save-form').css("display", "none");
-            $('#response-sample-save-start-container').css("display", "inline-block");
+
+            //Disabling this. Will enable after resolving indexedDB issues
+            //$('#response-sample-save-start-container').css("display", "inline-block");
+
             $('.request-meta-actions-togglesize').attr('data-action', 'minimize');
             $('.request-meta-actions-togglesize img').attr('src', 'img/circle_minus.png');
 
