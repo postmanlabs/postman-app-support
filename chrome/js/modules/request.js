@@ -1493,7 +1493,6 @@ pm.request = {
         pm.request.headers = pm.request.getHeaderEditorParams();
 
         if(pm.helpers.activeHelper == "oauth1") {
-            console.log("Refreshing oauth1 request");
             pm.helpers.oAuth1.generateHelper();
             pm.helpers.oAuth1.process();
         }

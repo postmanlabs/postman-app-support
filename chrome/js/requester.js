@@ -759,10 +759,11 @@ pm.collections = {
         $('#select-collection').html("<option>Select</option>");
         pm.indexedDB.getCollections(function (items) {
             pm.collections.items = items;
+            pm.collections.items.sort(sortAlphabetical);
 
             var itemsLength = items.length;
 
-            if (itemsLength == 0) {
+            if (itemsLength === 0) {
                 $('#sidebar-section-collections').append(Handlebars.templates.message_no_collection({}));
             }
             else {
@@ -4456,7 +4457,6 @@ pm.request = {
         pm.request.headers = pm.request.getHeaderEditorParams();
 
         if(pm.helpers.activeHelper == "oauth1") {
-            console.log("Refreshing oauth1 request");
             pm.helpers.oAuth1.generateHelper();
             pm.helpers.oAuth1.process();
         }

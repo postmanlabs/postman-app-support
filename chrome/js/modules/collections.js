@@ -469,10 +469,11 @@ pm.collections = {
         $('#select-collection').html("<option>Select</option>");
         pm.indexedDB.getCollections(function (items) {
             pm.collections.items = items;
+            pm.collections.items.sort(sortAlphabetical);
 
             var itemsLength = items.length;
 
-            if (itemsLength == 0) {
+            if (itemsLength === 0) {
                 $('#sidebar-section-collections').append(Handlebars.templates.message_no_collection({}));
             }
             else {
