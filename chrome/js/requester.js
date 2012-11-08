@@ -3334,11 +3334,18 @@ pm.request = {
         $('#headers-keyvaleditor').keyvalueeditor('init', params);
 
         $('#headers-keyvaleditor-actions-close').on("click", function () {
+            $('#headers-keyvaleditor-actions-open').removeClass("active");
             pm.request.closeHeaderEditor();
         });
 
         $('#headers-keyvaleditor-actions-open').on("click", function () {
-            pm.request.openHeaderEditor();
+            var isDisplayed = $('#headers-keyvaleditor-container').css("display") === "block";
+            if (isDisplayed) {
+                pm.request.closeHeaderEditor();
+            }
+            else {
+                pm.request.openHeaderEditor();
+            }
         });
     },
 
@@ -3385,7 +3392,8 @@ pm.request = {
     },
 
     initializeUrlEditor:function () {
-        var editorId = "#url-keyvaleditor";
+        var editorId;
+        editorId = "#url-keyvaleditor";
 
         var params = {
             placeHolderKey:"URL Parameter Key",
@@ -3403,13 +3411,21 @@ pm.request = {
         $(editorId).keyvalueeditor('init', params);
 
         $('#url-keyvaleditor-actions-close').on("click", function () {
+            $('#url-keyvaleditor-actions-open').removeClass("active");
             pm.request.closeUrlEditor();
         });
 
         $('#url-keyvaleditor-actions-open').on("click", function () {
-            var newRows = getUrlVars($('#url').val(), false);
-            $(editorId).keyvalueeditor('reset', newRows);
-            pm.request.openUrlEditor();
+            var isDisplayed = $('#url-keyvaleditor-container').css("display") === "block";
+            if (isDisplayed) {
+                pm.request.closeUrlEditor();
+            }
+            else {
+                var newRows = getUrlVars($('#url').val(), false);
+                $(editorId).keyvalueeditor('reset', newRows);
+                pm.request.openUrlEditor();
+            }
+
         });
     },
 
@@ -4263,6 +4279,7 @@ pm.request = {
             $('#update-request-in-collection').css("display", "inline-block");
         }
         else {
+            $('#request-meta').css("display", "none");
             $('#update-request-in-collection').css("display", "none");
         }
 
