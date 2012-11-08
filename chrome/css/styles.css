@@ -1353,3 +1353,7 @@ li .right {
     font-size: 11px;
     width: 400px;
 }
+
+#header-presets-editor {
+    display: none;
+}
