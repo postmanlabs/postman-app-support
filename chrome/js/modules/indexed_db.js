@@ -1,4 +1,6 @@
 pm.indexedDB = {
+    TABLE_HEADER_PRESETS: "header_presets",
+
     onerror:function (event, callback) {
         console.log(event);
     },
@@ -7,7 +9,7 @@ pm.indexedDB = {
 
         var request = indexedDB.open("postman", "POSTman request history");
         request.onsuccess = function (e) {
-            var v = "0.49";
+            var v = "0.6";
             pm.indexedDB.db = e.target.result;
             var db = pm.indexedDB.db;
 
@@ -38,7 +40,7 @@ pm.indexedDB = {
                     }
 
                     if (db.objectStoreNames.contains("collection_responses")) {
-                        db.deleteObjectStore("collection_responses");                                
+                        db.deleteObjectStore("collection_responses");
                     }
 
                     if (!db.objectStoreNames.contains("environments")) {
@@ -47,10 +49,15 @@ pm.indexedDB = {
                         environmentsStore.createIndex("id", "id", { unique:false});
                     }
 
+                    if (!db.objectStoreNames.contains("header_presets")) {
+                        var requestStore = db.createObjectStore("header_presets", {keyPath:"id"});
+                        requestStore.createIndex("timestamp", "timestamp", { unique:false});
+                    }
+
                     var transaction = event.target.result;
                     transaction.oncomplete = function () {
                         pm.history.getAllRequests();
-                        pm.envManager.getAllEnvironments();
+                        pm.envManager.getAllHeaderPresets();
                     };
                 };
 
@@ -93,13 +100,18 @@ pm.indexedDB = {
             }
 
             if (db.objectStoreNames.contains("collection_responses")) {
-                db.deleteObjectStore("collection_responses");                                
+                db.deleteObjectStore("collection_responses");
             }
 
             if (!db.objectStoreNames.contains("environments")) {
                 var environmentsStore = db.createObjectStore("environments", {keyPath:"id"});
                 environmentsStore.createIndex("timestamp", "timestamp", { unique:false});
                 environmentsStore.createIndex("id", "id", { unique:false});
+            }
+
+            if (!db.objectStoreNames.contains("header_presets")) {
+                var requestStore = db.createObjectStore("header_presets", {keyPath:"id"});
+                requestStore.createIndex("timestamp", "timestamp", { unique:false});
             }
         };
 
@@ -174,7 +186,7 @@ pm.indexedDB = {
             "data":req.data.toString(),
             "dataMode":req.dataMode.toString(),
             "timestamp":req.timestamp,
-            "responses": req.responses
+            "responses":req.responses
         });
 
         collectionRequest.onsuccess = function () {
@@ -201,7 +213,7 @@ pm.indexedDB = {
         request.onerror = function (e) {
             console.log(e.value);
         };
-    },    
+    },
 
     getCollection:function (id, callback) {
         var db = pm.indexedDB.db;
@@ -281,7 +293,7 @@ pm.indexedDB = {
             result['continue']();
         };
         cursorRequest.onerror = pm.indexedDB.onerror;
-    },    
+    },
 
     addRequest:function (historyRequest, callback) {
         var db = pm.indexedDB.db;
@@ -440,7 +452,7 @@ pm.indexedDB = {
             result['continue']();
         };
         cursorRequest.onerror = pm.indexedDB.onerror;
-    },    
+    },
 
     deleteCollection:function (id, callback) {
         var db = pm.indexedDB.db;
@@ -549,6 +561,104 @@ pm.indexedDB = {
 
             request.onsuccess = function (e) {
                 callback(environment);
+            };
+
+            request.onerror = function (e) {
+                console.log(e.value);
+            };
+        }
+    },
+
+    headerPresets:{
+        addHeaderPreset:function (headerPreset, callback) {
+            var db = pm.indexedDB.db;
+            var trans = db.transaction([pm.indexedDB.TABLE_HEADER_PRESETS], "readwrite");
+            var store = trans.objectStore(pm.indexedDB.TABLE_HEADER_PRESETS);
+            var request = store.put(headerPreset);
+
+            request.onsuccess = function (e) {
+                callback(headerPreset);
+            };
+
+            request.onerror = function (e) {
+                console.log(e);
+            };
+        },
+
+        getHeaderPreset:function (id, callback) {
+            var db = pm.indexedDB.db;
+            var trans = db.transaction([pm.indexedDB.TABLE_HEADER_PRESETS], "readwrite");
+            var store = trans.objectStore(pm.indexedDB.TABLE_HEADER_PRESETS);
+
+            //Get everything in the store
+            var cursorRequest = store.get(id);
+
+            cursorRequest.onsuccess = function (e) {
+                var result = e.target.result;
+                callback(result);
+            };
+            cursorRequest.onerror = pm.indexedDB.onerror;
+        },
+
+        deleteHeaderPreset:function (id, callback) {
+            var db = pm.indexedDB.db;
+            var trans = db.transaction([pm.indexedDB.TABLE_HEADER_PRESETS], "readwrite");
+            var store = trans.objectStore([pm.indexedDB.TABLE_HEADER_PRESETS]);
+
+            var request = store['delete'](id);
+
+            request.onsuccess = function () {
+                callback(id);
+            };
+
+            request.onerror = function (e) {
+                console.log(e);
+            };
+        },
+
+        getAllHeaderPresets:function (callback) {
+            var db = pm.indexedDB.db;
+            if (db == null) {
+                return;
+            }
+
+            var trans = db.transaction([pm.indexedDB.TABLE_HEADER_PRESETS], "readwrite");
+            var store = trans.objectStore(pm.indexedDB.TABLE_HEADER_PRESETS);
+
+            //Get everything in the store
+            var keyRange = IDBKeyRange.lowerBound(0);
+            var index = store.index("timestamp");
+            var cursorRequest = index.openCursor(keyRange);
+            var headerPresets = [];
+
+            cursorRequest.onsuccess = function (e) {
+                var result = e.target.result;
+
+                if (!result) {
+                    callback(headerPresets);
+                    return;
+                }
+
+                var request = result.value;
+                headerPresets.push(request);
+
+                //This wil call onsuccess again and again until no more request is left
+                result['continue']();
+            };
+
+            cursorRequest.onerror = pm.indexedDB.onerror;
+        },
+
+        updateHeaderPreset:function (headerPreset, callback) {
+            var db = pm.indexedDB.db;
+            var trans = db.transaction([pm.indexedDB.TABLE_HEADER_PRESETS], "readwrite");
+            var store = trans.objectStore(pm.indexedDB.TABLE_HEADER_PRESETS);
+
+            var boundKeyRange = IDBKeyRange.only(headerPreset.id);
+            var request = store.put(headerPreset);
+
+            request.onsuccess = function (e) {
+                callback(headerPreset);
             };
 
             request.onerror = function (e) {

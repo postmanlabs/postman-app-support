@@ -265,7 +265,7 @@ pm.request = {
                 params = getUrlVars(data, false);
                 $('#urlencoded-keyvaleditor').keyvalueeditor('reset', params);
             }
-        },
+        }
     },
 
 
