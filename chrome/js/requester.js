@@ -1481,6 +1481,8 @@ pm.filesystem = {
     }
 };
 pm.helpers = {
+    activeHelper: "normal",
+
     init:function () {
         $("#request-types .request-helper-tabs li").on("click", function () {
             $("#request-types .request-helper-tabs li").removeClass("active");
@@ -1509,6 +1511,7 @@ pm.helpers = {
     },
 
     showRequestHelper:function (type) {
+        pm.helpers.activeHelper = type.toLowerCase();
         $("#request-types ul li").removeClass("active");
         $('#request-types ul li[data-id=' + type + ']').addClass('active');
         if (type !== "normal") {
@@ -1742,8 +1745,6 @@ pm.helpers = {
                     }
                 }
             }
-
-
         }
     }
 };
@@ -4453,6 +4454,13 @@ pm.request = {
         // Set state as if change event of input handlers was called
         pm.request.setUrlParamString(pm.request.getUrlEditorParams());
         pm.request.headers = pm.request.getHeaderEditorParams();
+
+        if(pm.helpers.activeHelper == "oauth1") {
+            console.log("Refreshing oauth1 request");
+            pm.helpers.oAuth1.generateHelper();
+            pm.helpers.oAuth1.process();
+        }
+
         $('#headers-keyvaleditor-actions-open .headers-count').html(pm.request.headers.length);
 
         var i;

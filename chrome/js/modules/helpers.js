@@ -1,4 +1,6 @@
 pm.helpers = {
+    activeHelper: "normal",
+
     init:function () {
         $("#request-types .request-helper-tabs li").on("click", function () {
             $("#request-types .request-helper-tabs li").removeClass("active");
@@ -27,6 +29,7 @@ pm.helpers = {
     },
 
     showRequestHelper:function (type) {
+        pm.helpers.activeHelper = type.toLowerCase();
         $("#request-types ul li").removeClass("active");
         $('#request-types ul li[data-id=' + type + ']').addClass('active');
         if (type !== "normal") {
@@ -260,8 +263,6 @@ pm.helpers = {
                     }
                 }
             }
-
-
         }
     }
 };
