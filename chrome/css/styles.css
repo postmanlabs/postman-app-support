@@ -1357,3 +1357,7 @@ li .right {
 #header-presets-editor {
     display: none;
 }
+
+#modal-header-presets .modal-footer {
+    display: none;
+}
