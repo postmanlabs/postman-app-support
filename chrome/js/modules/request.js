@@ -428,11 +428,13 @@ pm.request = {
     },
 
     openHeaderEditor:function () {
+        $('#headers-keyvaleditor-actions-open').addClass("active");
         var containerId = "#headers-keyvaleditor-container";
         $(containerId).css("display", "block");
     },
 
     closeHeaderEditor:function () {
+        $('#headers-keyvaleditor-actions-open').removeClass("active");
         var containerId = "#headers-keyvaleditor-container";
         $(containerId).css("display", "none");
     },
@@ -473,7 +475,6 @@ pm.request = {
         $(editorId).keyvalueeditor('init', params);
 
         $('#url-keyvaleditor-actions-close').on("click", function () {
-            $('#url-keyvaleditor-actions-open').removeClass("active");
             pm.request.closeUrlEditor();
         });
 
@@ -492,11 +493,13 @@ pm.request = {
     },
 
     openUrlEditor:function () {
+        $('#url-keyvaleditor-actions-open').addClass("active");
         var containerId = "#url-keyvaleditor-container";
         $(containerId).css("display", "block");
     },
 
     closeUrlEditor:function () {
+        $('#url-keyvaleditor-actions-open').removeClass("active");
         var containerId = "#url-keyvaleditor-container";
         $(containerId).css("display", "none");
     },
