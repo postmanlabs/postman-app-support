@@ -3888,10 +3888,18 @@ pm.request = {
                 pm.request.response.showScreen("success")
                 pm.request.response.showBody();
 
+                var responseCodeName;
+                if("statusText" in response) {
+                    responseCodeName = response.statusText;
+                }
+                else {
+                    responseCodeName = httpStatusCodes[response.status]['name'];
+                }
+
                 var responseCode = {
-                    'code':response.status,
-                    'name':httpStatusCodes[response.status]['name'],
-                    'detail':httpStatusCodes[response.status]['detail']
+                    'code': response.status,
+                    'name': responseCodeName,
+                    'detail': httpStatusCodes[response.status]['detail']
                 };
 
                 var responseData;
