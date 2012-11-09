@@ -175,6 +175,32 @@ pm.envManager = {
         return false;
     },
 
+    containsVariable:function (string, values) {
+        var variableDelimiter = pm.settings.get("variableDelimiter");
+        var startDelimiter = variableDelimiter.substring(0, 2);
+        var endDelimiter = variableDelimiter.substring(variableDelimiter.length - 2);
+        var patString = startDelimiter + "[^\r\n]*" + endDelimiter;
+        var pattern = new RegExp(patString, 'g');
+        var matches = string.match(pattern);
+        var count = values.length;
+        var variable;
+
+        if(matches === null) {
+            return false;
+        }
+
+        for(var i = 0; i < count; i++) {
+            variable = startDelimiter + values[i].key + endDelimiter;
+            console.log(variable, matches);
+            if(_.indexOf(matches, variable) >= 0) {
+                console.log("Found this");
+                return true;
+            }
+        }
+
+        return false;
+    },
+
     processString:function (string, values) {
         var count = values.length;
         var finalString = string;
@@ -199,7 +225,13 @@ pm.envManager = {
             finalString = finalString.replace(patString, globals[i].value);
         }
 
-        return finalString;
+        if (pm.envManager.containsVariable(finalString, values)) {
+            finalString = pm.envManager.processString(finalString, values);
+            return finalString;
+        }
+        else {
+            return finalString;
+        }
     },
 
     convertString:function (string) {
