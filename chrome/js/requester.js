@@ -1159,9 +1159,7 @@ pm.envManager = {
 
         for(var i = 0; i < count; i++) {
             variable = startDelimiter + values[i].key + endDelimiter;
-            console.log(variable, matches);
             if(_.indexOf(matches, variable) >= 0) {
-                console.log("Found this");
                 return true;
             }
         }
