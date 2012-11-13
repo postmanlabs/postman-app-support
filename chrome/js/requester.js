@@ -2014,6 +2014,7 @@ pm.helpers = {
             }
 
             var processedUrl = pm.envManager.convertString($('#url').val()).trim();
+            processedUrl = ensureProperUrl(processedUrl);
             if (processedUrl.indexOf('?') > 0) {
                 processedUrl = processedUrl.split("?")[0];
             }
@@ -3144,7 +3145,7 @@ pm.layout = {
 
 pm.indexedDB = {
     onerror:function (event, callback) {
-        console.log(event);
+        console.log("Somethign went wrong with indexedDB again!", event);
     },
 
     open_v21:function () {
@@ -3208,7 +3209,7 @@ pm.indexedDB = {
     },
 
     open_latest:function () {
-
+        console.log("Open latest");
         var v = 9;
         var request = indexedDB.open("postman", v);
         request.onupgradeneeded = function (e) {
@@ -3239,6 +3240,7 @@ pm.indexedDB = {
         };
 
         request.onsuccess = function (e) {
+            console.log("Success");
             pm.indexedDB.db = e.target.result;
             pm.history.getAllRequests();
             pm.envManager.getAllEnvironments();

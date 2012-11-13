@@ -643,6 +643,10 @@ li .right {
     display: none;
 }
 
+#modal-spread-the-word td {
+    padding-bottom: 2px;
+}
+
 #new-collection-container {
 }
 
@@ -1236,4 +1240,17 @@ li .right {
     width: 100%;
     min-height: 100%;
     margin-top: 5px;
+}
+
+.paypal-donate-form {
+    margin: auto;
+    width: 500px;
+}
+
+.paypal-donate-form table {
+    border: none;
+    margin-top: 5px;
+}
+.paypal-header {
+    border: none;
 }
