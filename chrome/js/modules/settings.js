@@ -11,6 +11,7 @@ pm.settings = {
         pm.settings.create("lineWrapping", true);
         pm.settings.create("previewType", "parsed");
         pm.settings.create("retainLinkHeaders", false);
+        pm.settings.create("sendNoCacheHeader", false);
         pm.settings.create("usePostmanProxy", false);        
         pm.settings.create("proxyURL", "");
         pm.settings.create("lastRequest", "");
