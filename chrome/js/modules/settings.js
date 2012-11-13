@@ -85,7 +85,6 @@ pm.settings = {
                 pm.settings[key] = defaultVal;
                 localStorage[key] = defaultVal;
             }
-
         }
     },
 
