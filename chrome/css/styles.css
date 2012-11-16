@@ -1245,6 +1245,7 @@ li .right {
 .paypal-donate-form {
     margin: auto;
     width: 500px;
+    margin-top: 5px;
 }
 
 .paypal-donate-form table {
