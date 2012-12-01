@@ -353,6 +353,19 @@ pm.request = {
         return newHeaders;
     },
 
+    onHeaderAutoCompleteItemSelect:function(item) {
+        console.log(item.type);
+        if(item.type == "preset") {
+            var preset = pm.headerPresets.getHeaderPreset(item.id);
+            if("headers" in preset) {
+                var headers = $('#headers-keyvaleditor').keyvalueeditor('getValues');
+                headers = headers.splice(0, headers.length - 1);
+                headers = _.union(headers, preset.headers);
+                $('#headers-keyvaleditor').keyvalueeditor('reset', headers);
+            }
+        }
+    },
+
     initializeHeaderEditor:function () {
         var params = {
             placeHolderKey:"Header",
@@ -364,7 +377,10 @@ pm.request = {
             onAddedParam:function () {
                 $("#headers-keyvaleditor .keyvalueeditor-key").catcomplete({
                     source:pm.headerPresets.presetsForAutoComplete,
-                    delay:50
+                    delay:50,
+                    select:function (event, item) {
+                        pm.request.onHeaderAutoCompleteItemSelect(item.item);
+                    }
                 });
             },
 
@@ -376,14 +392,20 @@ pm.request = {
             onFocusElement:function () {
                 $("#headers-keyvaleditor .keyvalueeditor-key").catcomplete({
                     source:pm.headerPresets.presetsForAutoComplete,
-                    delay:50
+                    delay:50,
+                    select:function (event, item) {
+                        pm.request.onHeaderAutoCompleteItemSelect(item.item);
+                    }
                 });
             },
 
             onBlurElement:function () {
                 $("#headers-keyvaleditor .keyvalueeditor-key").catcomplete({
                     source:pm.headerPresets.presetsForAutoComplete,
-                    delay:50
+                    delay:50,
+                    select:function (event, item) {
+                        pm.request.onHeaderAutoCompleteItemSelect(item.item);
+                    }
                 });
                 pm.request.headers = pm.request.getHeaderEditorParams();
                 $('#headers-keyvaleditor-actions-open .headers-count').html(pm.request.headers.length);

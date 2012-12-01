@@ -1513,7 +1513,7 @@ pm.filesystem = {
 };
 pm.headerPresets = {
     presets:[],
-    presetsForAutoComplete: [],
+    presetsForAutoComplete:[],
 
     init:function () {
         pm.headerPresets.loadPresets();
@@ -1553,11 +1553,7 @@ pm.headerPresets = {
 
         $("#header-presets-list").on("click", ".header-preset-action-edit", function () {
             var id = $(this).attr("data-id");
-            for (var i = 0, count = pm.headerPresets.presets.length; i < count; i++) {
-                if (pm.headerPresets.presets[i].id === id) break;
-            }
-
-            var preset = pm.headerPresets.presets[i];
+            var preset = pm.headerPresets.getHeaderPreset(id);
             $('#header-presets-editor-name').val(preset.name);
             $('#header-presets-editor-id').val(preset.id);
             $('#header-presets-keyvaleditor').keyvalueeditor('reset', preset.headers);
@@ -1598,6 +1594,15 @@ pm.headerPresets = {
         $("#header-presets-editor").css("display", "block");
     },
 
+    getHeaderPreset:function (id) {
+        for (var i = 0, count = pm.headerPresets.presets.length; i < count; i++) {
+            if (pm.headerPresets.presets[i].id === id) break;
+        }
+
+        var preset = pm.headerPresets.presets[i];
+        return preset;
+    },
+
     addHeaderPreset:function () {
         var name = $("#header-presets-editor-name").val();
         var headers = $("#header-presets-keyvaleditor").keyvalueeditor("getValues");
@@ -1636,15 +1641,15 @@ pm.headerPresets = {
         });
     },
 
-    getPresetsForAutoComplete:function() {
+    getPresetsForAutoComplete:function () {
         var list = [];
-        for(var i = 0, count = pm.headerPresets.presets.length; i < count; i++) {
+        for (var i = 0, count = pm.headerPresets.presets.length; i < count; i++) {
             var preset = pm.headerPresets.presets[i];
             var item = {
-                "id": preset.id,
-                "type": "preset",
-                "label": preset.name,
-                "category": "Header presets"
+                "id":preset.id,
+                "type":"preset",
+                "label":preset.name,
+                "category":"Header presets"
             };
 
             list.push(item);
@@ -1653,9 +1658,9 @@ pm.headerPresets = {
         return list;
     },
 
-    refreshAutoCompleteList:function() {
+    refreshAutoCompleteList:function () {
         var presets = pm.headerPresets.getPresetsForAutoComplete();
-        pm.headerPresets.presetsForAutoComplete = _.union(chromeHeaders, presets);
+        pm.headerPresets.presetsForAutoComplete = _.union(presets, chromeHeaders);
     }
 };
 pm.helpers = {
@@ -3611,6 +3616,19 @@ pm.request = {
         return newHeaders;
     },
 
+    onHeaderAutoCompleteItemSelect:function(item) {
+        console.log(item.type);
+        if(item.type == "preset") {
+            var preset = pm.headerPresets.getHeaderPreset(item.id);
+            if("headers" in preset) {
+                var headers = $('#headers-keyvaleditor').keyvalueeditor('getValues');
+                headers = headers.splice(0, headers.length - 1);
+                headers = _.union(headers, preset.headers);
+                $('#headers-keyvaleditor').keyvalueeditor('reset', headers);
+            }
+        }
+    },
+
     initializeHeaderEditor:function () {
         var params = {
             placeHolderKey:"Header",
@@ -3622,7 +3640,10 @@ pm.request = {
             onAddedParam:function () {
                 $("#headers-keyvaleditor .keyvalueeditor-key").catcomplete({
                     source:pm.headerPresets.presetsForAutoComplete,
-                    delay:50
+                    delay:50,
+                    select:function (event, item) {
+                        pm.request.onHeaderAutoCompleteItemSelect(item.item);
+                    }
                 });
             },
 
@@ -3634,14 +3655,20 @@ pm.request = {
             onFocusElement:function () {
                 $("#headers-keyvaleditor .keyvalueeditor-key").catcomplete({
                     source:pm.headerPresets.presetsForAutoComplete,
-                    delay:50
+                    delay:50,
+                    select:function (event, item) {
+                        pm.request.onHeaderAutoCompleteItemSelect(item.item);
+                    }
                 });
             },
 
             onBlurElement:function () {
                 $("#headers-keyvaleditor .keyvalueeditor-key").catcomplete({
                     source:pm.headerPresets.presetsForAutoComplete,
-                    delay:50
+                    delay:50,
+                    select:function (event, item) {
+                        pm.request.onHeaderAutoCompleteItemSelect(item.item);
+                    }
                 });
                 pm.request.headers = pm.request.getHeaderEditorParams();
                 $('#headers-keyvaleditor-actions-open .headers-count').html(pm.request.headers.length);
