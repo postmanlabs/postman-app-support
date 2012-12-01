@@ -1216,6 +1216,16 @@ li .right {
     margin-bottom: 10px;
 }
 
+#url-keyvaleditor-actions,
+#headers-keyvaleditor-actions {
+    width: 510px;
+}
+#url-keyvaleditor-actions-close,
+#headers-keyvaleditor-actions-close {
+    float: right;
+    margin-right: 31px;
+}
+
 #environments-list-help-detail {
     display: none;
 }
