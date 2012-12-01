@@ -164,7 +164,6 @@ pm.init = function () {
     pm.urlCache.refreshAutoComplete();
     pm.helpers.init();
     pm.keymap.init();
-    pm.headerPresets.init();
     pm.envManager.init();
     pm.filesystem.init();
     pm.indexedDB.open();
@@ -1543,8 +1542,11 @@ pm.headerPresets = {
     },
 
     loadPresets:function () {
+        console.log("Trying to load presets");
         pm.indexedDB.headerPresets.getAllHeaderPresets(function (items) {
             pm.headerPresets.presets = items;
+            console.log(items);
+            $('#header-presets-list').append(Handlebars.templates.header_preset_list({"items":items}));
         });
     },
 
@@ -2072,6 +2074,7 @@ pm.indexedDB = {
                     transaction.oncomplete = function () {
                         pm.history.getAllRequests();
                         pm.envManager.getAllEnvironments();
+                        pm.headerPresets.init();
                     };
                 };
 
@@ -2081,6 +2084,7 @@ pm.indexedDB = {
             else {
                 pm.history.getAllRequests();
                 pm.envManager.getAllEnvironments();
+                pm.headerPresets.init();
             }
 
         };
@@ -2133,6 +2137,7 @@ pm.indexedDB = {
             pm.indexedDB.db = e.target.result;
             pm.history.getAllRequests();
             pm.envManager.getAllEnvironments();
+            pm.headerPresets.init();
         };
 
         request.onerror = pm.indexedDB.onerror;
@@ -2632,7 +2637,9 @@ pm.indexedDB = {
 
         getAllHeaderPresets:function (callback) {
             var db = pm.indexedDB.db;
+            console.log("Get presets");
             if (db == null) {
+                console.log("Db is null");
                 return;
             }
 
@@ -2645,10 +2652,12 @@ pm.indexedDB = {
             var cursorRequest = index.openCursor(keyRange);
             var headerPresets = [];
 
+            console.log("Get presets");
             cursorRequest.onsuccess = function (e) {
                 var result = e.target.result;
 
                 if (!result) {
+                    console.log(headerPresets);
                     callback(headerPresets);
                     return;
                 }

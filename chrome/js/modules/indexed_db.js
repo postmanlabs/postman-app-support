@@ -58,6 +58,7 @@ pm.indexedDB = {
                     transaction.oncomplete = function () {
                         pm.history.getAllRequests();
                         pm.envManager.getAllEnvironments();
+                        pm.headerPresets.init();
                     };
                 };
 
@@ -67,6 +68,7 @@ pm.indexedDB = {
             else {
                 pm.history.getAllRequests();
                 pm.envManager.getAllEnvironments();
+                pm.headerPresets.init();
             }
 
         };
@@ -119,6 +121,7 @@ pm.indexedDB = {
             pm.indexedDB.db = e.target.result;
             pm.history.getAllRequests();
             pm.envManager.getAllEnvironments();
+            pm.headerPresets.init();
         };
 
         request.onerror = pm.indexedDB.onerror;
@@ -618,7 +621,9 @@ pm.indexedDB = {
 
         getAllHeaderPresets:function (callback) {
             var db = pm.indexedDB.db;
+            console.log("Get presets");
             if (db == null) {
+                console.log("Db is null");
                 return;
             }
 
@@ -631,10 +636,12 @@ pm.indexedDB = {
             var cursorRequest = index.openCursor(keyRange);
             var headerPresets = [];
 
+            console.log("Get presets");
             cursorRequest.onsuccess = function (e) {
                 var result = e.target.result;
 
                 if (!result) {
+                    console.log(headerPresets);
                     callback(headerPresets);
                     return;
                 }

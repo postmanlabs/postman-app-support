@@ -29,8 +29,11 @@ pm.headerPresets = {
     },
 
     loadPresets:function () {
+        console.log("Trying to load presets");
         pm.indexedDB.headerPresets.getAllHeaderPresets(function (items) {
             pm.headerPresets.presets = items;
+            console.log(items);
+            $('#header-presets-list').append(Handlebars.templates.header_preset_list({"items":items}));
         });
     },
 

@@ -164,7 +164,6 @@ pm.init = function () {
     pm.urlCache.refreshAutoComplete();
     pm.helpers.init();
     pm.keymap.init();
-    pm.headerPresets.init();
     pm.envManager.init();
     pm.filesystem.init();
     pm.indexedDB.open();
