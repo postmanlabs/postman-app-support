@@ -18,22 +18,44 @@ pm.headerPresets = {
         $(".header-presets-actions-add").on("click", function () {
             pm.headerPresets.showEditor();
         });
-        
+
         $(".header-presets-actions-back").on("click", function () {
             pm.headerPresets.showList();
         });
-        
-        $(".header-presets-actions-submit").on("click", function() {
-            pm.headerPresets.addHeaderPreset();
+
+        $(".header-presets-actions-submit").on("click", function () {
+            var id = $('#header-presets-editor-id').val();
+            if (id === "0") {
+                pm.headerPresets.addHeaderPreset();
+            }
+            else {
+                var name = $('#header-presets-editor-name').val();
+                var headers = $("#header-presets-keyvaleditor").keyvalueeditor("getValues");
+                pm.headerPresets.editHeaderPreset(id, name, headers);
+            }
+
+            pm.headerPresets.showList();
+        });
+
+        $("#header-presets-list").on("click", ".header-preset-action-edit", function () {
+            var id = $(this).attr("data-id");
+            for (var i = 0, count = pm.headerPresets.presets.length; i < count; i++) {
+                if (pm.headerPresets.presets[i].id === id) break;
+            }
+
+            var preset = pm.headerPresets.presets[i];
+            $('#header-presets-editor-name').val(preset.name);
+            $('#header-presets-editor-id').val(preset.id);
+            $('#header-presets-keyvaleditor').keyvalueeditor('reset', preset.headers);
+            pm.headerPresets.showEditor();
         });
     },
 
     loadPresets:function () {
-        console.log("Trying to load presets");
         pm.indexedDB.headerPresets.getAllHeaderPresets(function (items) {
             pm.headerPresets.presets = items;
-            console.log(items);
-            $('#header-presets-list').append(Handlebars.templates.header_preset_list({"items":items}));
+            $('#header-presets-list tbody').html("");
+            $('#header-presets-list tbody').append(Handlebars.templates.header_preset_list({"items":items}));
         });
     },
 
@@ -44,6 +66,10 @@ pm.headerPresets = {
     showList:function () {
         $("#header-presets-list-wrapper").css("display", "block");
         $("#header-presets-editor").css("display", "none");
+        $("#header-presets-editor-name").attr("value", "");
+        $("#header-presets-editor-id").attr("value", 0);
+        $('#header-presets-keyvaleditor').keyvalueeditor('reset', []);
+        $("#modal-header-presets .modal-footer").css("display", "none");
     },
 
     showEditor:function () {
@@ -52,21 +78,35 @@ pm.headerPresets = {
         $("#header-presets-editor").css("display", "block");
     },
 
-    addHeaderPreset: function() {
+    addHeaderPreset:function () {
         var name = $("#header-presets-editor-name").val();
         var headers = $("#header-presets-keyvaleditor").keyvalueeditor("getValues");
         var id = guid();
 
         var headerPreset = {
-            "id": id,
-            "name": name,
-            "headers": headers,
+            "id":id,
+            "name":name,
+            "headers":headers,
             "timestamp":new Date().getTime()
         };
 
-        pm.indexedDB.headerPresets.addHeaderPreset(headerPreset, function() {
-            console.log("Added succesfully");
+        pm.indexedDB.headerPresets.addHeaderPreset(headerPreset, function () {
+            $('#header-presets-list tbody').append(Handlebars.templates.item_header_preset_list(headerPreset));
         });
+    },
 
+    editHeaderPreset:function (id, name, headers) {
+        pm.indexedDB.headerPresets.getHeaderPreset(id, function (preset) {
+            var headerPreset = {
+                "id":id,
+                "name":name,
+                "headers":headers,
+                "timestamp":preset.timestamp
+            };
+
+            pm.indexedDB.headerPresets.updateHeaderPreset(headerPreset, function () {
+                pm.headerPresets.loadPresets();
+            });
+        });
     }
 };
