@@ -316,6 +316,7 @@ fieldset {
     float: left;
     margin-left: 10px;
 }
+
 #response-time label, #response-status label, #response-sample-status label {
     display: block;
     width: 120px;
@@ -1155,6 +1156,10 @@ li .right {
 }
 
 .ui-autocomplete {
+    max-height: 250px;
+    overflow-y: auto;
+    /* prevent horizontal scrollbar */
+    overflow-x: hidden;
     z-index: 300 !important;
 }
 
@@ -1220,6 +1225,7 @@ li .right {
 #headers-keyvaleditor-actions {
     width: 510px;
 }
+
 #url-keyvaleditor-actions-close,
 #headers-keyvaleditor-actions-close {
     float: right;
@@ -1337,6 +1343,7 @@ li .right {
     padding: 10px;
     border-bottom: #aaa solid thin;
 }
+
 #broadcasts .dropdown-menu li.broadcast:last-child {
     padding: 10px;
     border-bottom: #fff solid thin;
