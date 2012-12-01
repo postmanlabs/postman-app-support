@@ -363,7 +363,7 @@ pm.request = {
 
             onAddedParam:function () {
                 $("#headers-keyvaleditor .keyvalueeditor-key").catcomplete({
-                    source:chromeHeaders,
+                    source:pm.headerPresets.presetsForAutoComplete,
                     delay:50
                 });
             },
@@ -375,14 +375,14 @@ pm.request = {
 
             onFocusElement:function () {
                 $("#headers-keyvaleditor .keyvalueeditor-key").catcomplete({
-                    source:chromeHeaders,
+                    source:pm.headerPresets.presetsForAutoComplete,
                     delay:50
                 });
             },
 
             onBlurElement:function () {
                 $("#headers-keyvaleditor .keyvalueeditor-key").catcomplete({
-                    source:chromeHeaders,
+                    source:pm.headerPresets.presetsForAutoComplete,
                     delay:50
                 });
                 pm.request.headers = pm.request.getHeaderEditorParams();
@@ -745,7 +745,7 @@ pm.request = {
                 pm.request.response.showBody();
 
                 var responseCodeName;
-                if("statusText" in response) {
+                if ("statusText" in response) {
                     responseCodeName = response.statusText;
                 }
                 else {
@@ -753,9 +753,9 @@ pm.request = {
                 }
 
                 var responseCode = {
-                    'code': response.status,
-                    'name': responseCodeName,
-                    'detail': httpStatusCodes[response.status]['detail']
+                    'code':response.status,
+                    'name':responseCodeName,
+                    'detail':httpStatusCodes[response.status]['detail']
                 };
 
                 var responseData;
@@ -1502,7 +1502,7 @@ pm.request = {
         pm.request.setUrlParamString(pm.request.getUrlEditorParams());
         pm.request.headers = pm.request.getHeaderEditorParams();
 
-        if(pm.helpers.activeHelper == "oauth1") {
+        if (pm.helpers.activeHelper == "oauth1") {
             pm.helpers.oAuth1.generateHelper();
             pm.helpers.oAuth1.process();
         }

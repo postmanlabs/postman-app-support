@@ -1513,6 +1513,7 @@ pm.filesystem = {
 };
 pm.headerPresets = {
     presets:[],
+    presetsForAutoComplete: [],
 
     init:function () {
         pm.headerPresets.loadPresets();
@@ -1572,6 +1573,7 @@ pm.headerPresets = {
     loadPresets:function () {
         pm.indexedDB.headerPresets.getAllHeaderPresets(function (items) {
             pm.headerPresets.presets = items;
+            pm.headerPresets.refreshAutoCompleteList();
             $('#header-presets-list tbody').html("");
             $('#header-presets-list tbody').append(Handlebars.templates.header_preset_list({"items":items}));
         });
@@ -1609,7 +1611,7 @@ pm.headerPresets = {
         };
 
         pm.indexedDB.headerPresets.addHeaderPreset(headerPreset, function () {
-            $('#header-presets-list tbody').append(Handlebars.templates.item_header_preset_list(headerPreset));
+            pm.headerPresets.loadPresets();
         });
     },
 
@@ -1632,6 +1634,28 @@ pm.headerPresets = {
         pm.indexedDB.headerPresets.deleteHeaderPreset(id, function () {
             pm.headerPresets.loadPresets();
         });
+    },
+
+    getPresetsForAutoComplete:function() {
+        var list = [];
+        for(var i = 0, count = pm.headerPresets.presets.length; i < count; i++) {
+            var preset = pm.headerPresets.presets[i];
+            var item = {
+                "id": preset.id,
+                "type": "preset",
+                "label": preset.name,
+                "category": "Header presets"
+            };
+
+            list.push(item);
+        }
+
+        return list;
+    },
+
+    refreshAutoCompleteList:function() {
+        var presets = pm.headerPresets.getPresetsForAutoComplete();
+        pm.headerPresets.presetsForAutoComplete = _.union(chromeHeaders, presets);
     }
 };
 pm.helpers = {
@@ -3597,7 +3621,7 @@ pm.request = {
 
             onAddedParam:function () {
                 $("#headers-keyvaleditor .keyvalueeditor-key").catcomplete({
-                    source:chromeHeaders,
+                    source:pm.headerPresets.presetsForAutoComplete,
                     delay:50
                 });
             },
@@ -3609,14 +3633,14 @@ pm.request = {
 
             onFocusElement:function () {
                 $("#headers-keyvaleditor .keyvalueeditor-key").catcomplete({
-                    source:chromeHeaders,
+                    source:pm.headerPresets.presetsForAutoComplete,
                     delay:50
                 });
             },
 
             onBlurElement:function () {
                 $("#headers-keyvaleditor .keyvalueeditor-key").catcomplete({
-                    source:chromeHeaders,
+                    source:pm.headerPresets.presetsForAutoComplete,
                     delay:50
                 });
                 pm.request.headers = pm.request.getHeaderEditorParams();
@@ -3979,7 +4003,7 @@ pm.request = {
                 pm.request.response.showBody();
 
                 var responseCodeName;
-                if("statusText" in response) {
+                if ("statusText" in response) {
                     responseCodeName = response.statusText;
                 }
                 else {
@@ -3987,9 +4011,9 @@ pm.request = {
                 }
 
                 var responseCode = {
-                    'code': response.status,
-                    'name': responseCodeName,
-                    'detail': httpStatusCodes[response.status]['detail']
+                    'code':response.status,
+                    'name':responseCodeName,
+                    'detail':httpStatusCodes[response.status]['detail']
                 };
 
                 var responseData;
@@ -4736,7 +4760,7 @@ pm.request = {
         pm.request.setUrlParamString(pm.request.getUrlEditorParams());
         pm.request.headers = pm.request.getHeaderEditorParams();
 
-        if(pm.helpers.activeHelper == "oauth1") {
+        if (pm.helpers.activeHelper == "oauth1") {
             pm.helpers.oAuth1.generateHelper();
             pm.helpers.oAuth1.process();
         }

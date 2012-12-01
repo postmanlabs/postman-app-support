@@ -1,5 +1,6 @@
 pm.headerPresets = {
     presets:[],
+    presetsForAutoComplete: [],
 
     init:function () {
         pm.headerPresets.loadPresets();
@@ -59,6 +60,7 @@ pm.headerPresets = {
     loadPresets:function () {
         pm.indexedDB.headerPresets.getAllHeaderPresets(function (items) {
             pm.headerPresets.presets = items;
+            pm.headerPresets.refreshAutoCompleteList();
             $('#header-presets-list tbody').html("");
             $('#header-presets-list tbody').append(Handlebars.templates.header_preset_list({"items":items}));
         });
@@ -96,7 +98,7 @@ pm.headerPresets = {
         };
 
         pm.indexedDB.headerPresets.addHeaderPreset(headerPreset, function () {
-            $('#header-presets-list tbody').append(Handlebars.templates.item_header_preset_list(headerPreset));
+            pm.headerPresets.loadPresets();
         });
     },
 
@@ -119,5 +121,27 @@ pm.headerPresets = {
         pm.indexedDB.headerPresets.deleteHeaderPreset(id, function () {
             pm.headerPresets.loadPresets();
         });
+    },
+
+    getPresetsForAutoComplete:function() {
+        var list = [];
+        for(var i = 0, count = pm.headerPresets.presets.length; i < count; i++) {
+            var preset = pm.headerPresets.presets[i];
+            var item = {
+                "id": preset.id,
+                "type": "preset",
+                "label": preset.name,
+                "category": "Header presets"
+            };
+
+            list.push(item);
+        }
+
+        return list;
+    },
+
+    refreshAutoCompleteList:function() {
+        var presets = pm.headerPresets.getPresetsForAutoComplete();
+        pm.headerPresets.presetsForAutoComplete = _.union(chromeHeaders, presets);
     }
 };
