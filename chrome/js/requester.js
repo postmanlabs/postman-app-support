@@ -3536,7 +3536,7 @@ pm.request = {
             },
 
             onAddedParam:function () {
-                $("#headers-keyvaleditor .keyvalueeditor-key").autocomplete({
+                $("#headers-keyvaleditor .keyvalueeditor-key").catcomplete({
                     source:chromeHeaders,
                     delay:50
                 });
@@ -3548,14 +3548,14 @@ pm.request = {
             },
 
             onFocusElement:function () {
-                $("#headers-keyvaleditor .keyvalueeditor-key").autocomplete({
+                $("#headers-keyvaleditor .keyvalueeditor-key").catcomplete({
                     source:chromeHeaders,
                     delay:50
                 });
             },
 
             onBlurElement:function () {
-                $("#headers-keyvaleditor .keyvalueeditor-key").autocomplete({
+                $("#headers-keyvaleditor .keyvalueeditor-key").catcomplete({
                     source:chromeHeaders,
                     delay:50
                 });
@@ -4835,6 +4835,7 @@ pm.settings = {
         pm.settings.create("lineWrapping", true);
         pm.settings.create("previewType", "parsed");
         pm.settings.create("retainLinkHeaders", false);
+        pm.settings.create("sendNoCacheHeader", false);
         pm.settings.create("usePostmanProxy", false);        
         pm.settings.create("proxyURL", "");
         pm.settings.create("lastRequest", "");
@@ -4908,7 +4909,6 @@ pm.settings = {
                 pm.settings[key] = defaultVal;
                 localStorage[key] = defaultVal;
             }
-
         }
     },
 

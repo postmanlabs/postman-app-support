@@ -362,7 +362,7 @@ pm.request = {
             },
 
             onAddedParam:function () {
-                $("#headers-keyvaleditor .keyvalueeditor-key").autocomplete({
+                $("#headers-keyvaleditor .keyvalueeditor-key").catcomplete({
                     source:chromeHeaders,
                     delay:50
                 });
@@ -374,14 +374,14 @@ pm.request = {
             },
 
             onFocusElement:function () {
-                $("#headers-keyvaleditor .keyvalueeditor-key").autocomplete({
+                $("#headers-keyvaleditor .keyvalueeditor-key").catcomplete({
                     source:chromeHeaders,
                     delay:50
                 });
             },
 
             onBlurElement:function () {
-                $("#headers-keyvaleditor .keyvalueeditor-key").autocomplete({
+                $("#headers-keyvaleditor .keyvalueeditor-key").catcomplete({
                     source:chromeHeaders,
                     delay:50
                 });
