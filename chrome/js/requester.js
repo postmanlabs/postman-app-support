@@ -2773,20 +2773,28 @@ pm.indexedDB = {
 pm.keymap = {
     init:function () {
         var clearHistoryHandler = function () {
+            if(pm.layout.isModalOpen) return;
+
             pm.history.clear();
             return false;
         };
 
         var urlFocusHandler = function () {
+            if(pm.layout.isModalOpen) return;
+
             $('#url').focus();
             return false;
         };
 
         var newRequestHandler = function () {
+            if(pm.layout.isModalOpen) return;
+
             pm.request.startNew();
         };
 
         $('body').on('keydown', 'input', function (event) {
+            if(pm.layout.isModalOpen) return;
+
             if (event.keyCode === 27) {
                 $(event.target).blur();
             }
@@ -2798,6 +2806,8 @@ pm.keymap = {
         });
 
         $('body').on('keydown', 'textarea', function (event) {
+            if(pm.layout.isModalOpen) return;
+
             if (event.keyCode === 27) {
                 $(event.target).blur();
             }
@@ -2819,6 +2829,8 @@ pm.keymap = {
         });
 
         $(document).bind('keydown', 'e', function () {
+            if(pm.layout.isModalOpen) return;
+
             $('#modal-environments').modal({
                 keyboard:true,
                 backdrop:"static"
@@ -2827,17 +2839,23 @@ pm.keymap = {
 
 
         $(document).bind('keydown', 'h', function () {
+            if(pm.layout.isModalOpen) return;
+
             pm.request.openHeaderEditor();
             $('#headers-keyvaleditor div:first-child input:first-child').focus();
             return false;
         });
 
         $(document).bind('keydown', 'return', function () {
+            if(pm.layout.isModalOpen) return;
+
             pm.request.send("text");
             return false;
         });
 
         $(document).bind('keydown', 'p', function () {
+            if(pm.layout.isModalOpen) return;
+
             if (pm.request.isMethodWithBody(pm.request.method)) {
                 $('#formdata-keyvaleditor div:first-child input:first-child').focus();
                 return false;
@@ -2845,14 +2863,20 @@ pm.keymap = {
         });
 
         $(document).bind('keydown', 'f', function () {
+            if(pm.layout.isModalOpen) return;
+
             pm.request.response.toggleBodySize();
         });
 
         $(document).bind('keydown', 'shift+/', function () {
+            if(pm.layout.isModalOpen) return;
+
             $('#modal-shortcuts').modal('show');
         });
 
         $(document).bind('keydown', 'a', function () {
+            if(pm.layout.isModalOpen) return;
+            
             if (pm.collections.areLoaded === false) {
                 pm.collections.getAllCollections();
             }
@@ -2870,6 +2894,8 @@ pm.keymap = {
     }
 };
 pm.layout = {
+    isModalOpen:false,
+
     socialButtons:{
         "facebook":'<iframe src="http://www.facebook.com/plugins/like.php?href=https%3A%2F%2Fchrome.google.com%2Fwebstore%2Fdetail%2Ffdmmgilgnpjigdojojpjoooidkmcomcm&amp;send=false&amp;layout=button_count&amp;width=250&amp;show_faces=true&amp;action=like&amp;colorscheme=light&amp;font&amp;height=21&amp;appId=26438002524" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:250px; height:21px;" allowTransparency="true"></iframe>',
         "twitter":'<a href="https://twitter.com/share" class="twitter-share-button" data-url="https://chrome.google.com/webstore/detail/fdmmgilgnpjigdojojpjoooidkmcomcm" data-text="I am using Postman to super-charge REST API testing and development!" data-count="horizontal" data-via="postmanclient">Tweet</a><script type="text/javascript" src="https://platform.twitter.com/widgets.js"></script>',
@@ -2907,7 +2933,7 @@ pm.layout = {
             pm.request.response.setMode(language);
         });
 
-        $('#response-sample-save-start').on("click", function() {
+        $('#response-sample-save-start').on("click", function () {
             $('#response-sample-save-start-container').css("display", "none");
             $('#response-sample-save-form').css("display", "inline-block");
         });
@@ -2920,23 +2946,23 @@ pm.layout = {
         $('#response-sample-save').on("click", function () {
             var url = $('#url').val();
 
-            var currentResponse = pm.request.response;                
+            var currentResponse = pm.request.response;
             var request = new CollectionRequest();
             request.id = guid();
             request.headers = pm.request.getPackedHeaders();
             request.url = url;
             request.method = pm.request.method;
             request.data = pm.request.body.getData();
-            request.dataMode = pm.request.dataMode;            
+            request.dataMode = pm.request.dataMode;
             request.time = new Date().getTime();
 
             var name = $("#response-sample-name").val();
 
             var response = {
-                "id": guid(),
-                "name": name,
-                "collectionRequestId": pm.request.collectionRequestId,
-                "request": request,
+                "id":guid(),
+                "name":name,
+                "collectionRequestId":pm.request.collectionRequestId,
+                "request":request,
                 "responseCode":currentResponse.responseCode,
                 "time":currentResponse.time,
                 "headers":currentResponse.headers,
@@ -3016,6 +3042,8 @@ pm.layout = {
             pm.indexedDB.getCollection(id, function (collection) {
                 collection.name = name;
                 pm.indexedDB.updateCollection(collection, function (collection) {
+                    $('#form-edit-collection .collection-name').val("");
+                    $('#form-edit-collection .collection-id').val("");
                     $('#collection-' + collection.id + " .sidebar-collection-head-name").html(collection.name);
                     $('#select-collection option[value="' + collection.id + '"]').html(collection.name);
                 });
@@ -3082,23 +3110,137 @@ pm.layout = {
             $('.request-meta-actions').css("display", "none");
         });
 
+        this.attachModalHandlers();
         this.setLayout();
     },
 
+    onModalOpen:function () {
+        pm.layout.isModalOpen = true;
+    },
+
+    onModalClose:function () {
+        pm.layout.isModalOpen = true;
+    },
+
+    attachModalHandlers:function () {
+        $("#modal-new-collection").on("shown", function () {
+            $("#new-collection-blank").focus();
+            pm.layout.onModalOpen();
+        });
+
+        $("#modal-new-collection").on("hidden", function () {
+            pm.layout.onModalClose();
+        });
+
+        $("#modal-edit-collection").on("shown", function () {
+            $("#modal-edit-collection .collection-name").focus();
+            pm.layout.onModalOpen();
+        });
+
+        $("#modal-edit-collection").on("hidden", function () {
+            pm.layout.onModalClose();
+        });
+
+        $("#modal-edit-collection-request").on("shown", function () {
+            $("#modal-edit-collection-request .collection-request-name").focus();
+            pm.layout.onModalOpen();
+        });
+
+        $("#modal-edit-collection-request").on("hidden", function () {
+            pm.layout.onModalClose();
+        });
+
+        $("#modal-add-to-collection").on("shown", function () {
+            $("#select-collection").focus();
+            pm.layout.onModalOpen();
+        });
+
+        $("#modal-add-to-collection").on("hidden", function () {
+            pm.layout.onModalClose();
+        });
+
+        $("#modal-share-collection").on("shown", function () {
+            pm.layout.onModalOpen();
+        });
+
+        $("#modal-share-collection").on("hidden", function () {
+            pm.layout.onModalClose();
+        });
+
+        $("#modal-import-collection").on("shown", function () {
+            pm.layout.onModalOpen();
+        });
+
+        $("#modal-import-collection").on("hidden", function () {
+            pm.layout.onModalClose();
+        });
+
+        $("#modal-delete-collection").on("shown", function () {
+            pm.layout.onModalOpen();
+        });
+
+        $("#modal-delete-collection").on("hidden", function () {
+            pm.layout.onModalClose();
+        });
+
+        $("#modal-environments").on("shown", function () {
+            $('.environments-actions-add').focus();
+            pm.layout.onModalOpen();
+        });
+
+        $("#modal-environments").on("hidden", function () {
+            pm.layout.onModalClose();
+        });
+
+        $("#modal-header-presets").on("shown", function () {
+            $(".header-presets-actions-add").focus();
+            pm.layout.onModalOpen();
+        });
+
+        $("#modal-header-presets").on("hidden", function () {
+            pm.layout.onModalClose();
+        });
+
+        $("#modal-settings").on("shown", function () {
+            $("#history-count").focus();
+            pm.layout.onModalOpen();
+        });
+
+        $("#modal-settings").on("hidden", function () {
+            pm.layout.onModalClose();
+        });
+
+        $("#modal-spread-the-word").on("shown", function () {
+            pm.layout.onModalOpen();
+        });
+
+        $("#modal-spread-the-word").on("hidden", function () {
+            pm.layout.onModalClose();
+        });
+
+        $("#modal-shortcuts").on("shown", function () {
+            pm.layout.onModalOpen();
+        });
+
+        $("#modal-shortcuts").on("hidden", function () {
+            pm.layout.onModalClose();
+        });
+    },
+
     attachSocialButtons:function () {
-        var currentContent = $('#about-postman-twitter-button').html();
+        var currentContent = $("#about-postman-twitter-button").html();
         if (currentContent === "" || !currentContent) {
             $('#about-postman-twitter-button').html(this.socialButtons.twitter);
         }
 
-        currentContent = $('#about-postman-plus-one-button').html();
+        currentContent = $("#about-postman-plus-one-button").html();
         if (currentContent === "" || !currentContent) {
-            $('#about-postman-plus-one-button').html(this.socialButtons.plusOne);
+            $("#about-postman-plus-one-button").html(this.socialButtons.plusOne);
         }
 
         currentContent = $('#about-postman-facebook-button').html();
         if (currentContent === "" || !currentContent) {
-            $('#about-postman-facebook-button').html(this.socialButtons.facebook);
+            $("#about-postman-facebook-button").html(this.socialButtons.facebook);
         }
     },
 

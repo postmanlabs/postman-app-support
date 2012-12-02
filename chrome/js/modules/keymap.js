@@ -1,20 +1,28 @@
 pm.keymap = {
     init:function () {
         var clearHistoryHandler = function () {
+            if(pm.layout.isModalOpen) return;
+
             pm.history.clear();
             return false;
         };
 
         var urlFocusHandler = function () {
+            if(pm.layout.isModalOpen) return;
+
             $('#url').focus();
             return false;
         };
 
         var newRequestHandler = function () {
+            if(pm.layout.isModalOpen) return;
+
             pm.request.startNew();
         };
 
         $('body').on('keydown', 'input', function (event) {
+            if(pm.layout.isModalOpen) return;
+
             if (event.keyCode === 27) {
                 $(event.target).blur();
             }
@@ -26,6 +34,8 @@ pm.keymap = {
         });
 
         $('body').on('keydown', 'textarea', function (event) {
+            if(pm.layout.isModalOpen) return;
+
             if (event.keyCode === 27) {
                 $(event.target).blur();
             }
@@ -47,6 +57,8 @@ pm.keymap = {
         });
 
         $(document).bind('keydown', 'e', function () {
+            if(pm.layout.isModalOpen) return;
+
             $('#modal-environments').modal({
                 keyboard:true,
                 backdrop:"static"
@@ -55,17 +67,23 @@ pm.keymap = {
 
 
         $(document).bind('keydown', 'h', function () {
+            if(pm.layout.isModalOpen) return;
+
             pm.request.openHeaderEditor();
             $('#headers-keyvaleditor div:first-child input:first-child').focus();
             return false;
         });
 
         $(document).bind('keydown', 'return', function () {
+            if(pm.layout.isModalOpen) return;
+
             pm.request.send("text");
             return false;
         });
 
         $(document).bind('keydown', 'p', function () {
+            if(pm.layout.isModalOpen) return;
+
             if (pm.request.isMethodWithBody(pm.request.method)) {
                 $('#formdata-keyvaleditor div:first-child input:first-child').focus();
                 return false;
@@ -73,14 +91,20 @@ pm.keymap = {
         });
 
         $(document).bind('keydown', 'f', function () {
+            if(pm.layout.isModalOpen) return;
+
             pm.request.response.toggleBodySize();
         });
 
         $(document).bind('keydown', 'shift+/', function () {
+            if(pm.layout.isModalOpen) return;
+
             $('#modal-shortcuts').modal('show');
         });
 
         $(document).bind('keydown', 'a', function () {
+            if(pm.layout.isModalOpen) return;
+            
             if (pm.collections.areLoaded === false) {
                 pm.collections.getAllCollections();
             }
