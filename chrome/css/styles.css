@@ -140,14 +140,18 @@ fieldset {
 }
 
 .input-text-light {
-    border-style: none !important;
-    border-bottom: 1px solid #CCC !important;
-    box-shadow: none;
     border-radius: 0;
     min-height: 18px;
     width: 100% !important;
     padding: 5px;
     padding-left: 0px;
+
+    color: #333 !important;
+    border: none !important;
+    border-bottom: solid thin #ccc !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    outline: none !important;
 }
 
 .input-text-light:focus {
@@ -169,6 +173,7 @@ fieldset {
 #url {
     color: #333;
     border-radius: 0;
+    border-top: none;
 }
 
 #header {
@@ -463,7 +468,7 @@ li .right {
 }
 
 #request-modifiers {
-    width: 355px;
+    width: 363px;
     float: right;
 }
 
@@ -626,37 +631,6 @@ li .right {
 
 #import-collection-url-input {
     width: 90%;
-}
-
-#modal-add-to-collection {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    margin-top: -200px;
-    margin-left: -250px;
-    display: none;
-}
-
-#modal-add-to-collection label {
-    margin-right: 20px;
-}
-
-#modal-shortcuts {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    margin-top: -300px;
-    margin-left: -250px;
-    display: none;
-}
-
-#modal-spread-the-word {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    margin-top: -300px;
-    margin-left: -250px;
-    display: none;
 }
 
 #new-collection-container {
@@ -924,6 +898,7 @@ li .right {
     color: #555;
     font-size: 11px;
     max-width: 200px;
+    margin-left: 10px;
 }
 
 .request-helper-form-description h4 {
@@ -970,7 +945,6 @@ li .right {
 
 #environment-quicklook-wrapper {
     float: left;
-    margin-top: 2px;
 }
 
 #environment-quicklook-content {
@@ -984,6 +958,10 @@ li .right {
     margin-top: 30px;
     padding: 10px;
     z-index: 10;
+}
+
+#environment-quicklook-content h6 {
+    margin-top: 0;
 }
 
 #environment-quicklook-environments {
@@ -1384,4 +1362,12 @@ li .right {
 
 #modal-header-presets .modal-footer {
     display: none;
+}
+
+.modal .fade {
+    top: -50%;
+}
+
+.btn-group {
+    font-size: 12px;
 }

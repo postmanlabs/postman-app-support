@@ -146,6 +146,7 @@
             <form class="form form-horizontal">
                 <div class="control-group">
                     <label class="control-label">Username</label>
+
                     <div class="controls">
                         <input type="text" id="request-helper-basicAuth-username" class="clean-input"/>
                     </div>
@@ -160,7 +161,7 @@
                 <div class="control-group">
                     <div class="controls">
                         <a
-                                class="btn btn-small btn-secondary request-helper-submit"
+                                class="btn btn-secondary request-helper-submit"
                                 data-type="basic">Refresh headers</a>
                     </div>
                 </div>
@@ -243,7 +244,7 @@
                 </div>
                 <div class="control-group">
                     <div class="controls">
-                        <a class="btn btn-small btn-secondary request-helper-submit"
+                        <a class="btn btn-secondary request-helper-submit"
                            data-type="oAuth1">
                             Refresh request
                         </a>
@@ -300,11 +301,11 @@
             </select>
         </div>
         <div id="request-url-buttons-container">
-            <button class="btn btn-small"
+            <button class="btn"
                     id="url-keyvaleditor-actions-open"><i
                     class="icon-edit"></i> URL params
             </button>
-            <button class="btn btn-small"
+            <button class="btn"
                     id="headers-keyvaleditor-actions-open"><i
                     class="icon-edit"></i> Headers (<span class="headers-count">0</span>)
             </button>
@@ -317,7 +318,7 @@
     <div id="url-keyvaleditor"></div>
     <div id="url-keyvaleditor-actions">
         <input type="button" id="url-keyvaleditor-actions-close"
-               class="btn btn-small"
+               class="btn"
                value="Close"/>
     </div>
 </div>
@@ -326,10 +327,10 @@
     <div id="headers-keyvaleditor"></div>
     <div id="headers-keyvaleditor-actions">
         <input type="button" id="headers-keyvaleditor-actions-manage-presets"
-               class="btn btn-small"
+               class="btn"
                value="Manage presets"/>
         <input type="button" id="headers-keyvaleditor-actions-close"
-               class="btn btn-small"
+               class="btn "
                value="Close"/>
     </div>
 </div>
@@ -585,7 +586,7 @@
     <div class="modal-body">
         <form class="form-horizontal" id="form-edit-collection-request">
             <div class="control-group">
-                <label for="new-collection">Request name</label>
+                <label class="control-label" for="new-collection">Request name</label>
 
                 <div class="controls">
                     <div class="input">
@@ -595,7 +596,7 @@
                 </div>
             </div>
             <div class="control-group">
-                <label for="new-collection">Request description</label>
+                <label class="control-label" for="new-collection">Request description</label>
 
                 <div class="controls">
                     <div class="input">
@@ -619,7 +620,7 @@
     <div class="modal-body">
         <form class="form-horizontal" id="form-add-to-collection">
             <div class="control-group" id="select-collection-container">
-                <label for="select-collection">Existing collection</label>
+                <label class="control-label" for="select-collection">Existing collection</label>
 
                 <div class="controls">
                     <select name="select-collection" class="medium" id="select-collection">
@@ -628,7 +629,7 @@
                 </div>
             </div>
             <div class="control-group">
-                <label for="new-collection">or create a new one</label>
+                <label class="control-label" for="new-collection">or create a new one</label>
 
                 <div class="controls">
                     <div class="input">
@@ -637,7 +638,7 @@
                 </div>
             </div>
             <div class="control-group">
-                <label for="new-collection">Request name</label>
+                <label class="control-label" for="new-collection">Request name</label>
 
                 <div class="controls">
                     <div class="input">
@@ -646,7 +647,7 @@
                 </div>
             </div>
             <div class="control-group">
-                <label for="new-collection">Request description</label>
+                <label class="control-label" for="new-collection">Request description</label>
 
                 <div class="controls">
                     <div class="input">
@@ -764,13 +765,13 @@
             </p>
 
             <div class="toolbar">
-                <button class="btn btn-small environments-actions-add">
+                <button class="btn  environments-actions-add">
                     Add
                 </button>
-                <button class="btn btn-small environments-actions-import">
+                <button class="btn  environments-actions-import">
                     Import
                 </button>
-                <button class="btn btn-small environments-actions-manage-globals">
+                <button class="btn  environments-actions-manage-globals">
                     Globals
                 </button>
             </div>
@@ -820,7 +821,7 @@
             </p>
 
             <div class="toolbar">
-                <button class="btn btn-small header-presets-actions-add">
+                <button class="btn  header-presets-actions-add">
                     Add
                 </button>
             </div>
@@ -833,7 +834,8 @@
         <div id="header-presets-editor">
             <input type="text" name="header-presets-editor-name" id="header-presets-editor-name" class="clean-input"
                    placeholder="New preset name"/>
-            <input type="hidden" name="header-presets-editor-id" id="header-presets-editor-id" value="0" class="clean-input"/>
+            <input type="hidden" name="header-presets-editor-id" id="header-presets-editor-id" value="0"
+                   class="clean-input"/>
 
             <div id="header-presets-keyvaleditor"></div>
         </div>
