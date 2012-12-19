@@ -947,6 +947,14 @@ li .right {
     float: left;
 }
 
+#environment-selector-wrapper .btn-group {
+    font-size: 12px;
+}
+
+#enivronment-selector-wrapper .btn-group .dropdown-menu li a {
+    font-size: 10px !important;
+}
+
 #environment-quicklook-content {
     background: white;
     border: solid thin #ccc;
@@ -1364,10 +1372,16 @@ li .right {
     display: none;
 }
 
-.modal .fade {
-    top: -50%;
+/* Bootstrap overrides */
+
+.modal.fade {
+    top: -150%;
 }
 
-.btn-group {
+#environment-selector .btn-group a {
     font-size: 12px;
+}
+
+.label {
+    text-transform: uppercase;
 }

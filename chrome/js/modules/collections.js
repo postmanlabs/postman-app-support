@@ -520,38 +520,50 @@ pm.collections = {
                     requests[i].name = limitStringLineWidth(requests[i].name, 40);
                 }
 
+                console.log("Unsorted", requests);
+
                 //Sort requests as A-Z order
                 if (!("order" in collection)) {
                     requests.sort(sortAlphabetical);
                 }
                 else {
-                    var orderedRequests = [];
-                    for (var j = 0, len = collection["order"].length; j < len; j++) {
-                        var element = _.find(requests, function (request) {
-                            return request.id == collection["order"][j]
-                        });
-                        orderedRequests.push(element);
+                    if(collection["order"].length == requests.length) {
+                        var orderedRequests = [];                    
+                        for (var j = 0, len = collection["order"].length; j < len; j++) {
+                            var element = _.find(requests, function (request) {
+                                return request.id == collection["order"][j]
+                            });
+                            orderedRequests.push(element);
+                        }
+                        requests = orderedRequests;
                     }
-
-                    requests = orderedRequests;
                 }
+
+                console.log("Sorted", requests);
 
                 $(targetElement).append(Handlebars.templates.collection_sidebar({"items":requests}));
                 $(targetElement).sortable({
                     update:function (event, ui) {
                         var target_parent = $(event.target).parents(".sidebar-collection-requests");
+                        console.log("Target parent", target_parent);
                         var target_parent_collection = $(event.target).parents(".sidebar-collection");
+                        console.log("Target parent collection", target_parent_collection);
                         var collection_id = $(target_parent_collection).attr("data-id");
-                        var collection_requests = $(target_parent).children("li");
+                        var ul_id = $(target_parent.context).attr("id");
+                        console.log(ul_id);
+                        var collection_requests = $(target_parent.context).children("li");
                         var count = collection_requests.length;
                         var order = [];
+
+                        console.log(collection_requests.length);
+
                         for (var i = 0; i < count; i++) {
                             var li_id = $(collection_requests[i]).attr("id");
                             var request_id = $("#" + li_id + " .request").attr("data-id");
                             order.push(request_id);
                         }
 
-                        pm.indexedDB.getCollection(collection_id, function (collection) {
+                        pm.indexedDB.getCollection(collection_id, function (collection) {                            
                             collection["order"] = order;
                             pm.indexedDB.updateCollection(collection, function (collection) {
                             });
