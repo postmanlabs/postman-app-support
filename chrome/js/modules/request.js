@@ -1589,6 +1589,10 @@ pm.request = {
             }
         }
 
+        if(pm.settings.get("sendNoCacheHeader") === true) {
+            xhr.setRequestHeader("Cache-Control", "no-cache");                
+        }
+
         var rows, count, j;
         var row, key, value;
 
