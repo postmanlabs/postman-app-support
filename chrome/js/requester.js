@@ -834,18 +834,13 @@ pm.collections = {
                 $(targetElement).append(Handlebars.templates.collection_sidebar({"items":requests}));
                 $(targetElement).sortable({
                     update:function (event, ui) {
-                        var target_parent = $(event.target).parents(".sidebar-collection-requests");
-                        console.log("Target parent", target_parent);
-                        var target_parent_collection = $(event.target).parents(".sidebar-collection");
-                        console.log("Target parent collection", target_parent_collection);
+                        var target_parent = $(event.target).parents(".sidebar-collection-requests");                        
+                        var target_parent_collection = $(event.target).parents(".sidebar-collection");                        
                         var collection_id = $(target_parent_collection).attr("data-id");
-                        var ul_id = $(target_parent.context).attr("id");
-                        console.log(ul_id);
+                        var ul_id = $(target_parent.context).attr("id");                        
                         var collection_requests = $(target_parent.context).children("li");
                         var count = collection_requests.length;
                         var order = [];
-
-                        console.log(collection_requests.length);
 
                         for (var i = 0; i < count; i++) {
                             var li_id = $(collection_requests[i]).attr("id");
@@ -5100,7 +5095,7 @@ pm.settings = {
         pm.settings.create("lineWrapping", true);
         pm.settings.create("previewType", "parsed");
         pm.settings.create("retainLinkHeaders", false);
-        pm.settings.create("sendNoCacheHeader", false);
+        pm.settings.create("sendNoCacheHeader", true);
         pm.settings.create("usePostmanProxy", false);        
         pm.settings.create("proxyURL", "");
         pm.settings.create("lastRequest", "");
@@ -5109,6 +5104,7 @@ pm.settings = {
         $('#history-count').val(pm.settings.get("historyCount"));
         $('#auto-save-request').val(pm.settings.get("autoSaveRequest") + "");
         $('#retain-link-headers').val(pm.settings.get("retainLinkHeaders") + "");
+        $('#send-no-cache-header').val(pm.settings.get("sendNoCacheHeader") + "");
         $('#use-postman-proxy').val(pm.settings.get("usePostmanProxy") + "");
         $('#postman-proxy-url').val(pm.settings.get("postmanProxyUrl"));
         $('#variable-delimiter').val(pm.settings.get("variableDelimiter"));
@@ -5136,6 +5132,16 @@ pm.settings = {
                 pm.settings.set("retainLinkHeaders", false);
             }
         });        
+
+        $('#send-no-cache-header').change(function () {
+            var val = $('#send-no-cache-header').val();
+            if (val == "true") {
+                pm.settings.set("sendNoCacheHeader", true);
+            }
+            else {
+                pm.settings.set("sendNoCacheHeader", false);
+            }
+        });
 
         $('#use-postman-proxy').change(function () {
             var val = $('#use-postman-proxy').val();

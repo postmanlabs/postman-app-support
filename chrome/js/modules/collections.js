@@ -544,18 +544,13 @@ pm.collections = {
                 $(targetElement).append(Handlebars.templates.collection_sidebar({"items":requests}));
                 $(targetElement).sortable({
                     update:function (event, ui) {
-                        var target_parent = $(event.target).parents(".sidebar-collection-requests");
-                        console.log("Target parent", target_parent);
-                        var target_parent_collection = $(event.target).parents(".sidebar-collection");
-                        console.log("Target parent collection", target_parent_collection);
+                        var target_parent = $(event.target).parents(".sidebar-collection-requests");                        
+                        var target_parent_collection = $(event.target).parents(".sidebar-collection");                        
                         var collection_id = $(target_parent_collection).attr("data-id");
-                        var ul_id = $(target_parent.context).attr("id");
-                        console.log(ul_id);
+                        var ul_id = $(target_parent.context).attr("id");                        
                         var collection_requests = $(target_parent.context).children("li");
                         var count = collection_requests.length;
                         var order = [];
-
-                        console.log(collection_requests.length);
 
                         for (var i = 0; i < count; i++) {
                             var li_id = $(collection_requests[i]).attr("id");
