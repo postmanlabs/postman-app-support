@@ -10,3 +10,4 @@ tests/selenium/chromedriver.log
 #*
 .#*
 *.pyc
+tests/selenium/pmtests/*.pyc
