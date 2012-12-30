@@ -41,7 +41,7 @@ class PostmanTestsHistory(PostmanTests):
 
         try:
             w = WebDriverWait(self.browser, 10)    
-            w.until(lambda browser: self.browser.find_element_by_id("url").get_attribute("value") == "http://localhost:5000/html?val=1")
+            w.until(lambda browser: self.browser.find_element_by_id("url").get_attribute("value") == "http://localhost:5000/get?val=1")
             self.print_success("test_load_request_from_history")
         except:
             self.print_failed("test_load_request_from_history")
