@@ -12,14 +12,6 @@ a, a:hover {
     cursor: pointer;
 }
 
-/*Bootstrap overrides*/
-.pills li a {
-    font-size: 11px;
-    font-weight: bold;
-    border-radius: 5px;
-    padding: 0 7px;
-}
-
 #container {
     height: 100%;
     width: 100%;
@@ -969,7 +961,10 @@ li .right {
 }
 
 #environment-quicklook-content h6 {
-    margin-top: 0;
+    color: #888;
+    font-size: 12px;
+    margin-top: 3px;
+    margin-bottom: 5px
 }
 
 #environment-quicklook-environments {
@@ -1381,7 +1376,13 @@ li .right {
     display: none;
 }
 
-/* Bootstrap overrides */
+/*Bootstrap overrides*/
+.pills li a {
+    font-size: 11px;
+    font-weight: bold;
+    border-radius: 5px;
+    padding: 0 7px;
+}
 
 .modal.fade {
     top: -150%;
