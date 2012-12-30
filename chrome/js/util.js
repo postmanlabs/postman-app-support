@@ -117,6 +117,7 @@ function getUrlVars(url, associative) {
 
     if (quesLocation < 0) {
         quesLocation = -1;
+        return [];
     }
 
     var vars = [], hash, varsAssoc = {};
