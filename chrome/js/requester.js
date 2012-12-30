@@ -4030,14 +4030,27 @@ pm.request = {
         },
 
         loadHeaders:function (data) {
-            this.headers = pm.request.unpackResponseHeaders(data);
+            this.headers = pm.request.unpackResponseHeaders(data);            
+
+            if(pm.settings.get("usePostmanProxy") === true) {
+                var count = this.headers.length;
+                console.log(this.headers);
+                for(var i = 0; i < count; i++) {
+                    if(this.headers[i].key == "Postman-Location") {
+                        this.headers[i].key = "Location";
+                        this.headers[i].name = "Location";
+                        break;
+                    }                        
+                }
+            }
+
             $('#response-headers').html("");
             this.headers = _.sortBy(this.headers, function (header) {
                 return header.name;
             });
 
-            $("#response-headers").append(Handlebars.templates.response_headers({"items":this.headers}));
 
+            $("#response-headers").append(Handlebars.templates.response_headers({"items":this.headers}));
             $('.response-header-name').popover();
         },
 
