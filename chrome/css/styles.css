@@ -1332,8 +1332,13 @@ li .right {
 #broadcasts .dropdown-menu {
     position: absolute;
     margin-top: 4px;
-    margin-left: -200px;
+    margin-left: -230px;
     width: 250px;
+}
+
+#broadcasts .dropdown-menu div {
+    width: 200px;
+    white-space: pre-wrap;
 }
 
 #broadcasts .dropdown-menu li.broadcast {
@@ -1388,4 +1393,8 @@ li .right {
 
 .label {
     text-transform: uppercase;
+}
+
+.btn {
+    border-radius: 0;
 }
