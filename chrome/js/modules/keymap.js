@@ -33,7 +33,7 @@ pm.keymap = {
             return true;
         });
 
-        $('body').on('keydown', 'textarea', function (event) {
+        $('body').on('keydown', 'textarea', function (event) {            
             if(pm.layout.isModalOpen) return;
 
             if (event.keyCode === 27) {
@@ -51,7 +51,7 @@ pm.keymap = {
         $(document).bind('keydown', 'backspace', urlFocusHandler);
         $(document).bind('keydown', 'alt+n', newRequestHandler);
 
-        $(document).bind('keydown', 'q', function () {
+        $(document).bind('keydown', 'q', function () {            
             pm.envManager.quicklook.toggleDisplay();
             return false;
         });
@@ -96,8 +96,21 @@ pm.keymap = {
             pm.request.response.toggleBodySize();
         });
 
+        $(document).bind('keydown', 'esc', function () {
+            if(pm.layout.isModalOpen) {
+                var activeModal = pm.layout.activeModal;
+                if(activeModal !== "") {
+                    $(activeModal).modal("hide");
+                }
+            }
+        });
+
         $(document).bind('keydown', 'shift+/', function () {
             if(pm.layout.isModalOpen) return;
+
+            $('#modal-shortcuts').modal({
+                keyboard: true
+            });
 
             $('#modal-shortcuts').modal('show');
         });

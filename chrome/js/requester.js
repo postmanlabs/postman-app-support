@@ -2812,7 +2812,7 @@ pm.keymap = {
             return true;
         });
 
-        $('body').on('keydown', 'textarea', function (event) {
+        $('body').on('keydown', 'textarea', function (event) {            
             if(pm.layout.isModalOpen) return;
 
             if (event.keyCode === 27) {
@@ -2830,7 +2830,7 @@ pm.keymap = {
         $(document).bind('keydown', 'backspace', urlFocusHandler);
         $(document).bind('keydown', 'alt+n', newRequestHandler);
 
-        $(document).bind('keydown', 'q', function () {
+        $(document).bind('keydown', 'q', function () {            
             pm.envManager.quicklook.toggleDisplay();
             return false;
         });
@@ -2875,8 +2875,21 @@ pm.keymap = {
             pm.request.response.toggleBodySize();
         });
 
+        $(document).bind('keydown', 'esc', function () {
+            if(pm.layout.isModalOpen) {
+                var activeModal = pm.layout.activeModal;
+                if(activeModal !== "") {
+                    $(activeModal).modal("hide");
+                }
+            }
+        });
+
         $(document).bind('keydown', 'shift+/', function () {
             if(pm.layout.isModalOpen) return;
+
+            $('#modal-shortcuts').modal({
+                keyboard: true
+            });
 
             $('#modal-shortcuts').modal('show');
         });
@@ -2902,6 +2915,7 @@ pm.keymap = {
 };
 pm.layout = {
     isModalOpen:false,
+    activeModal: "",
 
     socialButtons:{
         "facebook":'<iframe src="http://www.facebook.com/plugins/like.php?href=https%3A%2F%2Fchrome.google.com%2Fwebstore%2Fdetail%2Ffdmmgilgnpjigdojojpjoooidkmcomcm&amp;send=false&amp;layout=button_count&amp;width=250&amp;show_faces=true&amp;action=like&amp;colorscheme=light&amp;font&amp;height=21&amp;appId=26438002524" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:250px; height:21px;" allowTransparency="true"></iframe>',
@@ -3121,18 +3135,20 @@ pm.layout = {
         this.setLayout();
     },
 
-    onModalOpen:function () {
+    onModalOpen:function (activeModal) {
+        pm.layout.activeModal = activeModal;
         pm.layout.isModalOpen = true;
     },
 
     onModalClose:function () {
-        pm.layout.isModalOpen = true;
+        pm.layout.activeModal = "";
+        pm.layout.isModalOpen = false;
     },
 
     attachModalHandlers:function () {
         $("#modal-new-collection").on("shown", function () {
             $("#new-collection-blank").focus();
-            pm.layout.onModalOpen();
+            pm.layout.onModalOpen("#modal-new-collection");
         });
 
         $("#modal-new-collection").on("hidden", function () {
@@ -3141,7 +3157,7 @@ pm.layout = {
 
         $("#modal-edit-collection").on("shown", function () {
             $("#modal-edit-collection .collection-name").focus();
-            pm.layout.onModalOpen();
+            pm.layout.onModalOpen("#modal-edit-collection");
         });
 
         $("#modal-edit-collection").on("hidden", function () {
@@ -3150,7 +3166,7 @@ pm.layout = {
 
         $("#modal-edit-collection-request").on("shown", function () {
             $("#modal-edit-collection-request .collection-request-name").focus();
-            pm.layout.onModalOpen();
+            pm.layout.onModalOpen("#modal-edit-collection-request");
         });
 
         $("#modal-edit-collection-request").on("hidden", function () {
@@ -3159,7 +3175,7 @@ pm.layout = {
 
         $("#modal-add-to-collection").on("shown", function () {
             $("#select-collection").focus();
-            pm.layout.onModalOpen();
+            pm.layout.onModalOpen("#modal-add-to-collection");
         });
 
         $("#modal-add-to-collection").on("hidden", function () {
@@ -3167,7 +3183,7 @@ pm.layout = {
         });
 
         $("#modal-share-collection").on("shown", function () {
-            pm.layout.onModalOpen();
+            pm.layout.onModalOpen("#modal-share-collection");
         });
 
         $("#modal-share-collection").on("hidden", function () {
@@ -3175,7 +3191,7 @@ pm.layout = {
         });
 
         $("#modal-import-collection").on("shown", function () {
-            pm.layout.onModalOpen();
+            pm.layout.onModalOpen("#modal-import-collection");
         });
 
         $("#modal-import-collection").on("hidden", function () {
@@ -3183,7 +3199,7 @@ pm.layout = {
         });
 
         $("#modal-delete-collection").on("shown", function () {
-            pm.layout.onModalOpen();
+            pm.layout.onModalOpen("#modal-delete-collection");
         });
 
         $("#modal-delete-collection").on("hidden", function () {
@@ -3192,7 +3208,7 @@ pm.layout = {
 
         $("#modal-environments").on("shown", function () {
             $('.environments-actions-add').focus();
-            pm.layout.onModalOpen();
+            pm.layout.onModalOpen("#modal-environments");
         });
 
         $("#modal-environments").on("hidden", function () {
@@ -3201,7 +3217,7 @@ pm.layout = {
 
         $("#modal-header-presets").on("shown", function () {
             $(".header-presets-actions-add").focus();
-            pm.layout.onModalOpen();
+            pm.layout.onModalOpen("#modal-header-presets");
         });
 
         $("#modal-header-presets").on("hidden", function () {
@@ -3210,7 +3226,7 @@ pm.layout = {
 
         $("#modal-settings").on("shown", function () {
             $("#history-count").focus();
-            pm.layout.onModalOpen();
+            pm.layout.onModalOpen("#modal-settings");
         });
 
         $("#modal-settings").on("hidden", function () {
@@ -3218,7 +3234,7 @@ pm.layout = {
         });
 
         $("#modal-spread-the-word").on("shown", function () {
-            pm.layout.onModalOpen();
+            pm.layout.onModalOpen("#modal-spread-the-word");
         });
 
         $("#modal-spread-the-word").on("hidden", function () {
@@ -3226,7 +3242,7 @@ pm.layout = {
         });
 
         $("#modal-shortcuts").on("shown", function () {
-            pm.layout.onModalOpen();
+            pm.layout.onModalOpen("#modal-shortcuts");
         });
 
         $("#modal-shortcuts").on("hidden", function () {
@@ -5070,10 +5086,11 @@ pm.request = {
                     row = rows[j];
                     value = row.valueElement.val();
                     value = envManager.processString(value, envValues);
-                    value = encodeURIComponent(value);
+                    value = encodeURIComponent(value);                    
                     value = value.replace(/%20/g, '+');
                     key = encodeURIComponent(row.keyElement.val());
                     key = key.replace(/%20/g, '+');
+                    console.log(key, value);
                     finalBodyData += key + "=" + value + "&";
                 }
 

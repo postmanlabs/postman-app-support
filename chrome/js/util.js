@@ -191,7 +191,6 @@ function string2ArrayBuffer(string, callback) {
 }
 
 function find(collection, filter) {
-    console.log(filter);
     for (var i = 0; i < filter.length; i++) {
         if (filter(collection[i], i, collection)) {
             console.log(i);

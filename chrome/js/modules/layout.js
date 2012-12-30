@@ -1,5 +1,6 @@
 pm.layout = {
     isModalOpen:false,
+    activeModal: "",
 
     socialButtons:{
         "facebook":'<iframe src="http://www.facebook.com/plugins/like.php?href=https%3A%2F%2Fchrome.google.com%2Fwebstore%2Fdetail%2Ffdmmgilgnpjigdojojpjoooidkmcomcm&amp;send=false&amp;layout=button_count&amp;width=250&amp;show_faces=true&amp;action=like&amp;colorscheme=light&amp;font&amp;height=21&amp;appId=26438002524" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:250px; height:21px;" allowTransparency="true"></iframe>',
@@ -219,18 +220,20 @@ pm.layout = {
         this.setLayout();
     },
 
-    onModalOpen:function () {
+    onModalOpen:function (activeModal) {
+        pm.layout.activeModal = activeModal;
         pm.layout.isModalOpen = true;
     },
 
     onModalClose:function () {
-        pm.layout.isModalOpen = true;
+        pm.layout.activeModal = "";
+        pm.layout.isModalOpen = false;
     },
 
     attachModalHandlers:function () {
         $("#modal-new-collection").on("shown", function () {
             $("#new-collection-blank").focus();
-            pm.layout.onModalOpen();
+            pm.layout.onModalOpen("#modal-new-collection");
         });
 
         $("#modal-new-collection").on("hidden", function () {
@@ -239,7 +242,7 @@ pm.layout = {
 
         $("#modal-edit-collection").on("shown", function () {
             $("#modal-edit-collection .collection-name").focus();
-            pm.layout.onModalOpen();
+            pm.layout.onModalOpen("#modal-edit-collection");
         });
 
         $("#modal-edit-collection").on("hidden", function () {
@@ -248,7 +251,7 @@ pm.layout = {
 
         $("#modal-edit-collection-request").on("shown", function () {
             $("#modal-edit-collection-request .collection-request-name").focus();
-            pm.layout.onModalOpen();
+            pm.layout.onModalOpen("#modal-edit-collection-request");
         });
 
         $("#modal-edit-collection-request").on("hidden", function () {
@@ -257,7 +260,7 @@ pm.layout = {
 
         $("#modal-add-to-collection").on("shown", function () {
             $("#select-collection").focus();
-            pm.layout.onModalOpen();
+            pm.layout.onModalOpen("#modal-add-to-collection");
         });
 
         $("#modal-add-to-collection").on("hidden", function () {
@@ -265,7 +268,7 @@ pm.layout = {
         });
 
         $("#modal-share-collection").on("shown", function () {
-            pm.layout.onModalOpen();
+            pm.layout.onModalOpen("#modal-share-collection");
         });
 
         $("#modal-share-collection").on("hidden", function () {
@@ -273,7 +276,7 @@ pm.layout = {
         });
 
         $("#modal-import-collection").on("shown", function () {
-            pm.layout.onModalOpen();
+            pm.layout.onModalOpen("#modal-import-collection");
         });
 
         $("#modal-import-collection").on("hidden", function () {
@@ -281,7 +284,7 @@ pm.layout = {
         });
 
         $("#modal-delete-collection").on("shown", function () {
-            pm.layout.onModalOpen();
+            pm.layout.onModalOpen("#modal-delete-collection");
         });
 
         $("#modal-delete-collection").on("hidden", function () {
@@ -290,7 +293,7 @@ pm.layout = {
 
         $("#modal-environments").on("shown", function () {
             $('.environments-actions-add').focus();
-            pm.layout.onModalOpen();
+            pm.layout.onModalOpen("#modal-environments");
         });
 
         $("#modal-environments").on("hidden", function () {
@@ -299,7 +302,7 @@ pm.layout = {
 
         $("#modal-header-presets").on("shown", function () {
             $(".header-presets-actions-add").focus();
-            pm.layout.onModalOpen();
+            pm.layout.onModalOpen("#modal-header-presets");
         });
 
         $("#modal-header-presets").on("hidden", function () {
@@ -308,7 +311,7 @@ pm.layout = {
 
         $("#modal-settings").on("shown", function () {
             $("#history-count").focus();
-            pm.layout.onModalOpen();
+            pm.layout.onModalOpen("#modal-settings");
         });
 
         $("#modal-settings").on("hidden", function () {
@@ -316,7 +319,7 @@ pm.layout = {
         });
 
         $("#modal-spread-the-word").on("shown", function () {
-            pm.layout.onModalOpen();
+            pm.layout.onModalOpen("#modal-spread-the-word");
         });
 
         $("#modal-spread-the-word").on("hidden", function () {
@@ -324,7 +327,7 @@ pm.layout = {
         });
 
         $("#modal-shortcuts").on("shown", function () {
-            pm.layout.onModalOpen();
+            pm.layout.onModalOpen("#modal-shortcuts");
         });
 
         $("#modal-shortcuts").on("hidden", function () {

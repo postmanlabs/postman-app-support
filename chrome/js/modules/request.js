@@ -1658,10 +1658,11 @@ pm.request = {
                     row = rows[j];
                     value = row.valueElement.val();
                     value = envManager.processString(value, envValues);
-                    value = encodeURIComponent(value);
+                    value = encodeURIComponent(value);                    
                     value = value.replace(/%20/g, '+');
                     key = encodeURIComponent(row.keyElement.val());
                     key = key.replace(/%20/g, '+');
+                    console.log(key, value);
                     finalBodyData += key + "=" + value + "&";
                 }
 
