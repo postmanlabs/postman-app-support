@@ -56,11 +56,22 @@ pm.request = {
             pm.request.body.isEditorInitialized = true;
             var bodyTextarea = document.getElementById("body");
             pm.request.body.codeMirror = CodeMirror.fromTextArea(bodyTextarea,
-                {
-                    mode:"htmlmixed",
-                    lineNumbers:true,
-                    theme:'eclipse'
-                });
+            {
+                mode:"htmlmixed",
+                lineNumbers:true,
+                theme:'eclipse'
+            });
+
+
+            $("#request .CodeMirror").resizable({
+                stop: function() { pm.request.body.codeMirror.refresh(); },
+                resize: function(event, ui) {
+                    ui.size.width = ui.originalSize.width;
+                    $(".CodeMirror-scroll").height($(this).height());                    
+                    pm.request.body.codeMirror.refresh();
+                }
+            });
+
             $("#request .CodeMirror-scroll").css("height", "200px");
             pm.request.body.codeMirror.refresh();
         },
