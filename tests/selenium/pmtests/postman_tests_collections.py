@@ -15,9 +15,9 @@ class PostmanTestsCollections(PostmanTests):
 
         sidebar_section_collections = self.browser.find_element_by_id("sidebar-section-collections")
         if sidebar_section_collections.get_attribute("style").find("block") > 0:
-            self.print_success("test_switch_to_collections")
+            return True
         else:
-            self.print_failed("test_switch_to_collections")
+            return False
 
     def test_2_create_collection_with_modal(self):
         add_link = self.browser.find_element_by_css_selector("#collections-options a:nth-of-type(1)")
@@ -36,9 +36,9 @@ class PostmanTestsCollections(PostmanTests):
         collection_items = self.browser.find_elements_by_css_selector("#collection-items li")
 
         if len(collection_items) > 0:
-            self.print_success("test_create_collection_with_modal")
+            return True
         else:
-            self.print_failed("test_create_collection_with_modal")
+            return False
 
     def test_3_create_collection_with_request(self):
         self.set_url_field(self.browser, "http://localhost:5000/delete")
@@ -68,9 +68,9 @@ class PostmanTestsCollections(PostmanTests):
 
         collection_items = self.browser.find_elements_by_css_selector("#collection-items li")
         if len(collection_items) > 1:
-            self.print_success("test_create_collection_with_request")
+            return True
         else:
-            self.print_failed("test_create_collection_with_request")
+            return False
         
 
     def test_4_add_request_to_existing_collection(self):
@@ -98,9 +98,9 @@ class PostmanTestsCollections(PostmanTests):
         requests = self.browser.find_elements_by_css_selector("#collection-items li:nth-of-type(1) ul li")
         
         if len(requests) > 0:
-            self.print_success("test_add_request_to_existing_collection")
+            return True
         else:
-            self.print_failed("test_add_request_to_existing_collection")
+            return False
 
     def test_5_add_collection_request_to_existing_collection(self):
         request = self.browser.find_element_by_css_selector("#collection-items li:nth-of-type(1) ul li:nth-of-type(1) .request a")
@@ -127,9 +127,9 @@ class PostmanTestsCollections(PostmanTests):
         requests = self.browser.find_elements_by_css_selector("#collection-items li:nth-of-type(2) ul li")
         
         if len(requests) > 1:
-            self.print_success("test_add_collection_request_to_existing_collection")
+            return True
         else:
-            self.print_failed("test_add_collection_request_to_existing_collection")
+            return False
 
 
     def test_6_delete_collection_request(self):
@@ -144,9 +144,9 @@ class PostmanTestsCollections(PostmanTests):
         requests = self.browser.find_elements_by_css_selector("#collection-items li:nth-of-type(1) ul li")
         
         if len(requests) == 0:
-            self.print_success("test_delete_collection_request")
+            return True
         else:
-            self.print_failed("test_delete_collection_request")
+            return False
 
     def test_7_delete_collection(self):
         collection = self.browser.find_element_by_css_selector("#collection-items li:nth-of-type(1)")
@@ -165,9 +165,9 @@ class PostmanTestsCollections(PostmanTests):
         collection_items = self.browser.find_elements_by_css_selector("#collection-items li.sidebar-collection")
 
         if len(collection_items) == 1:
-            self.print_success("test_delete_collection")
+            return True
         else:
-            self.print_failed("test_delete_collection")
+            return False
 
     def test_8_import_collection_from_url(self):
         add_link = self.browser.find_element_by_css_selector("#collections-options a:nth-of-type(2)")
@@ -188,6 +188,6 @@ class PostmanTestsCollections(PostmanTests):
         collection_items = self.browser.find_elements_by_css_selector("#collection-items li.sidebar-collection")
 
         if len(collection_items) == 2:
-            self.print_success("test_import_collection_from_url")
+            return True
         else:
-            self.print_failed("test_import_collection_from_url")
+            return False

@@ -37,14 +37,20 @@ class PostmanTests:
                 order = int(name.split("_")[1])
                 m = {
                     "order": order,
-                    "method": method[1]
+                    "method": method[1],
+                    "name": method[0]
                     }
                 allms.append(m)
 
         ordered = sorted(allms, key=lambda k: k["order"])
 
         for m in ordered:
-            m["method"]()
+            result = m["method"]()
+
+            if result is True:
+                print "[PASSED]: %s" % m["name"]
+            else:
+                print "[FAILED]: %s" % m["name"]
 
         self.browser.quit()
 

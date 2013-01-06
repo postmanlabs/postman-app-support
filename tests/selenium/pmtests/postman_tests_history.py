@@ -10,6 +10,7 @@ import time
 from postman_tests import PostmanTests
 
 class PostmanTestsHistory(PostmanTests):
+
     def test_1_save_request_to_history(self):
         self.set_url_field(self.browser, "http://localhost:5000/get?val=1")
         method_select = self.browser.find_element_by_id("request-method-selector")    
@@ -22,9 +23,9 @@ class PostmanTestsHistory(PostmanTests):
             first_history_item = self.browser.find_element_by_css_selector("#history-items li:nth-of-type(1) .request")
             value = self.browser.execute_script("return arguments[0].innerHTML", first_history_item)
             if value.find("http://localhost:5000/get?val=1") > 0:
-                self.print_success("test_save_request_to_history")
+                return True
         else:
-            self.print_failed("test_save_request_to_history")
+            return False
 
     def test_2_load_request_from_history(self):
         self.set_url_field(self.browser, "")
@@ -34,9 +35,9 @@ class PostmanTestsHistory(PostmanTests):
         try:
             w = WebDriverWait(self.browser, 10)    
             w.until(lambda browser: self.browser.find_element_by_id("url").get_attribute("value") == "http://localhost:5000/get?val=1")
-            self.print_success("test_load_request_from_history")
+            return True
         except:
-            self.print_failed("test_load_request_from_history")
+            return False
 
     def test_3_delete_request_from_history(self):
         first_history_item = self.browser.find_element_by_css_selector("#history-items li:nth-of-type(1) .request-actions .request-actions-delete")
@@ -45,9 +46,9 @@ class PostmanTestsHistory(PostmanTests):
         history_items = self.browser.find_elements_by_css_selector("#history-items li")
 
         if len(history_items) == 0:
-            self.print_success("test_delete_request_from_history")
+            return True
         else:
-            self.print_failed("test_delete_request_from_history")
+            return False
 
     def test_4_clear_history(self):
         self.set_url_field(self.browser, "http://localhost:5000/html?val=1")
@@ -74,6 +75,6 @@ class PostmanTestsHistory(PostmanTests):
         history_items = self.browser.find_elements_by_css_selector("#history-items li")
 
         if len(history_items) == 0:
-            self.print_success("test_clear_history")
+            return True
         else:
-            self.print_failed("test_clear_history")
+            return False

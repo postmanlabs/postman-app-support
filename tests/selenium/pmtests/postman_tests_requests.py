@@ -20,10 +20,8 @@ class PostmanTestsRequests(PostmanTests):
         code_data_value = self.get_codemirror_value(self.browser)    
 
         if code_data_value.find("get") > 0:
-            self.print_success("test_get_basic")
             return True
         else:
-            self.print_failed("test_get_basic")
             return False
 
     def test_2_get_only_key(self):
@@ -37,10 +35,8 @@ class PostmanTestsRequests(PostmanTests):
         code_data_value = self.get_codemirror_value(self.browser)    
 
         if code_data_value.find("/get?start") > 0:
-            self.print_success("test_get_only_key")
             return True
         else:
-            self.print_failed("test_get_only_key")
             return False
 
     def test_3_delete_basic(self):
@@ -57,10 +53,8 @@ class PostmanTestsRequests(PostmanTests):
         code_data_value = self.get_codemirror_value(self.browser)
 
         if code_data_value.find("delete") > 0:
-            self.print_success("test_delete_basic")
             return True
         else:
-            self.print_failed("test_delete_basic")
             return False
 
         return True
@@ -77,10 +71,8 @@ class PostmanTestsRequests(PostmanTests):
         code_data_value = self.get_codemirror_value(self.browser)
 
         if code_data_value.find("div") > 0:
-            self.print_success("test_head_basic")
             return True
         else:
-            self.print_failed("test_head_basic")
             return False
 
     def test_5_options_basic(self):
@@ -94,10 +86,8 @@ class PostmanTestsRequests(PostmanTests):
         code_data_value = self.get_codemirror_value(self.browser)
 
         if code_data_value.find("div") > 0:
-            self.print_success("test_options_basic")
             return True
-        
-            self.print_failed("test_options_basic")
+        else:
             return False
 
     def test_6_post_basic(self):
@@ -111,10 +101,8 @@ class PostmanTestsRequests(PostmanTests):
         code_data_value = self.get_codemirror_value(self.browser)
 
         if code_data_value.find("post") > 0:
-            self.print_success("test_post_basic")
             return True
         else:
-            self.print_failed("test_post_basic")
             return False
 
     def test_7_put_basic(self):
@@ -128,10 +116,8 @@ class PostmanTestsRequests(PostmanTests):
         code_data_value = self.get_codemirror_value(self.browser)
 
         if code_data_value.find("put") > 0:
-            self.print_success("test_put_basic")
             return True
         else:
-            self.print_failed("test_put_basic")
             return False
 
     def test_8_init_environment(self):
@@ -252,10 +238,8 @@ class PostmanTestsRequests(PostmanTests):
         code_data_value = self.get_codemirror_value(self.browser)    
 
         if code_data_value.find("get?start=something") > 0:
-            self.print_success("test_get_environment")
             return True
         else:
-            self.print_failed("test_get_environment")
             return False
 
     def test_10_post_formdata_environment(self):
@@ -288,10 +272,8 @@ class PostmanTestsRequests(PostmanTests):
         code_data_value = self.get_codemirror_value(self.browser)    
 
         if code_data_value.find("original") > 0:
-            self.print_success("test_post_formdata_environment")
             return True
         else:
-            self.print_failed("test_post_formdata_environment")
             return False
 
     def test_11_post_urlencoded_environment(self):
@@ -327,10 +309,8 @@ class PostmanTestsRequests(PostmanTests):
         code_data_value = self.get_codemirror_value(self.browser)    
 
         if code_data_value.find("original") > 0:
-            self.print_success("test_post_urlencoded_environment")
             return True
         else:
-            self.print_failed("test_post_urlencoded_environment")
             return False
 
 
@@ -353,10 +333,8 @@ class PostmanTestsRequests(PostmanTests):
         code_data_value = self.get_codemirror_value(self.browser)    
 
         if code_data_value.find("John Appleseed") > 0:
-            self.print_success("test_post_raw_environment")
             return True
         else:
-            self.print_failed("test_post_raw_environment")
             return False
 
     def test_13_post_raw_json_environment(self):
@@ -378,8 +356,6 @@ class PostmanTestsRequests(PostmanTests):
         code_data_value = self.get_codemirror_value(self.browser)    
 
         if code_data_value.find("John Appleseed") > 0:
-            self.print_success("test_post_raw_json_environment")
             return True
         else:
-            self.print_failed("test_post_raw_json_environment")
             return False

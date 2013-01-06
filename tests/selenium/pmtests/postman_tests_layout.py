@@ -24,6 +24,6 @@ class PostmanTestsLayout(PostmanTests):
             sidebar_style = sidebar.get_attribute("style")
 
             if sidebar_style.find("350px") > 0:
-                self.print_success("test_toggle_sidebar")
+                return True
             else:
-                self.print_failed("test_toggle_sidebar")
+                return False

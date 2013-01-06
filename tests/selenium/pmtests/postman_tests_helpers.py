@@ -29,9 +29,9 @@ class PostmanTestsHelpers(PostmanTests):
         header_first_value = self.browser.find_element_by_css_selector("#headers-keyvaleditor .keyvalueeditor-row:nth-of-type(1) .keyvalueeditor-value").get_attribute("value")
         
         if header_first_key == "Authorization" and header_first_value == "Basic QWxhZGluOnNlc2FtIG9wZW4=":
-            self.print_success("test_basic_auth_plain")
+            return True
         else:
-            self.print_failed("test_basic_auth_plain")
+            return False
 
 
     def test_2_basic_auth_environment(self):
@@ -106,9 +106,9 @@ class PostmanTestsHelpers(PostmanTests):
         header_first_value = self.browser.find_element_by_css_selector("#headers-keyvaleditor .keyvalueeditor-row:nth-of-type(1) .keyvalueeditor-value").get_attribute("value")
         
         if header_first_key == "Authorization" and header_first_value == "Basic QWxhZGluOnNlc2FtIG9wZW4=":
-            self.print_success("test_basic_auth_environment")
+            return True
         else:
-            self.print_failed("test_basic_auth_environment")
+            return False
 
     def test_3_oauth1_plain_get(self):
         self.reset_request()
@@ -163,9 +163,9 @@ class PostmanTestsHelpers(PostmanTests):
     
 
         if found_oauth_signature is True:
-            self.print_success("test_oauth1_plain_get")
+            return True
         else:
-            self.print_failed("test_oauth1_plain_get")        
+            return False
 
     def test_4_oauth1_formdata_post(self):
         self.reset_request()
@@ -239,9 +239,9 @@ class PostmanTestsHelpers(PostmanTests):
     
 
         if found_oauth_signature is True:
-            self.print_success("test_oauth1_formdata_post")
+            return True
         else:
-            self.print_failed("test_oauth1_formdata_post")
+            return False
 
     def test_5_oauth1_formdata_post_missing_http(self):
         self.reset_request()
@@ -315,9 +315,9 @@ class PostmanTestsHelpers(PostmanTests):
     
 
         if found_oauth_signature is True:
-            self.print_success("test_oauth1_formdata_post_missing_http")
+            return True
         else:
-            self.print_failed("test_oauth1_formdata_post_missing_http")
+            return False
 
     def test_6_oauth1_urlencoded_post(self):
         self.reset_request()
@@ -394,9 +394,9 @@ class PostmanTestsHelpers(PostmanTests):
     
 
         if found_oauth_signature is True:
-            self.print_success("test_oauth1_urlencoded_post")
+            return True
         else:
-            self.print_failed("test_oauth1_urlencoded_post")
+            return False
     
     def test_7_oauth1_post_headers(self):
         self.reset_request()
@@ -476,9 +476,9 @@ class PostmanTestsHelpers(PostmanTests):
     
 
         if found_oauth_signature is True:
-            self.print_success("test_oauth1_post_headers")
+            return True
         else:
-            self.print_failed("test_oauth1_post_headers")
+            return False
 
     def test_8_oauth1_post_environment(self):
         self.reset_request()
@@ -661,6 +661,6 @@ class PostmanTestsHelpers(PostmanTests):
     
 
         if found_oauth_signature is True:
-            self.print_success("test_oauth1_post_environment")
+            return True
         else:
-            self.print_failed("test_oauth1_post_environment")
+            return False

@@ -65,9 +65,9 @@ class PostmanTestsEnvironments(PostmanTests):
         time.sleep(0.3)
         
         if environments_list_value.find("Test environment") > 0:
-            self.print_success("test_add_environment")
+            return True
         else:
-            self.print_failed("test_add_environment")
+            return False
         
 
     def test_2_delete_environment(self):
@@ -78,9 +78,9 @@ class PostmanTestsEnvironments(PostmanTests):
         environments_list_value = self.browser.execute_script("return arguments[0].innerHTML", environments_list)
 
         if environments_list_value.find("Test environment") < 0:
-            self.print_success("test_delete_environment")
+            return True
         else:
-            self.print_failed("test_delete_environment")
+            return False
         
     def test_3_edit_environment(self):
         edit_button = self.browser.find_element_by_css_selector("#environments-list tbody tr:first-child .environment-action-edit")
@@ -106,9 +106,9 @@ class PostmanTestsEnvironments(PostmanTests):
         environments_list_value = self.browser.execute_script("return arguments[0].innerHTML", environments_list)        
 
         if environments_list_value.find("Test edited environment") > 0:
-            self.print_success("test_edit_environment")
+            return True
         else:
-            self.print_failed("test_edit_environment")
+            return False
 
 
     def test_4_globals(self):
@@ -148,6 +148,6 @@ class PostmanTestsEnvironments(PostmanTests):
         contents_value = self.browser.execute_script("return arguments[0].innerHTML", contents)
 
         if contents_value.find("Global Foo") > 0 and contents_value.find("Global Bar") > 0:
-            self.print_success("test_globals")
+            return True
         else:
-            self.print_failed("test_globals")
+            return False
