@@ -9,20 +9,7 @@ import time
 from postman_tests import PostmanTests
 
 class PostmanTestsHelpers(PostmanTests):
-    def run(self):
-        print "\nTesting Helpers"
-        print "---------------------"
-        self.test_basic_auth_plain()
-        self.test_basic_auth_environment()
-        self.test_oauth1_plain_get()
-        self.test_oauth1_formdata_post()
-        self.test_oauth1_formdata_post_missing_http()
-        self.test_oauth1_urlencoded_post()
-        self.test_oauth1_post_headers()
-        self.test_oauth1_post_environment()
-        self.browser.quit()
-
-    def test_basic_auth_plain(self):
+    def test_1_basic_auth_plain(self):
         basic_auth_selector = self.browser.find_element_by_css_selector("#request-types .request-helper-tabs li:nth-of-type(2)")
         basic_auth_selector.click()
         
@@ -47,7 +34,7 @@ class PostmanTestsHelpers(PostmanTests):
             self.print_failed("test_basic_auth_plain")
 
 
-    def test_basic_auth_environment(self):
+    def test_2_basic_auth_environment(self):
         self.reset_request()
 
         environment_selector = self.browser.find_element_by_id("environment-selector")
@@ -123,7 +110,7 @@ class PostmanTestsHelpers(PostmanTests):
         else:
             self.print_failed("test_basic_auth_environment")
 
-    def test_oauth1_plain_get(self):
+    def test_3_oauth1_plain_get(self):
         self.reset_request()
 
         oauth1_selector = self.browser.find_element_by_css_selector("#request-types .request-helper-tabs li:nth-of-type(3)")
@@ -180,7 +167,7 @@ class PostmanTestsHelpers(PostmanTests):
         else:
             self.print_failed("test_oauth1_plain_get")        
 
-    def test_oauth1_formdata_post(self):
+    def test_4_oauth1_formdata_post(self):
         self.reset_request()
 
         method_select = self.browser.find_element_by_id("request-method-selector")    
@@ -256,7 +243,7 @@ class PostmanTestsHelpers(PostmanTests):
         else:
             self.print_failed("test_oauth1_formdata_post")
 
-    def test_oauth1_formdata_post_missing_http(self):
+    def test_5_oauth1_formdata_post_missing_http(self):
         self.reset_request()
 
         method_select = self.browser.find_element_by_id("request-method-selector")    
@@ -332,7 +319,7 @@ class PostmanTestsHelpers(PostmanTests):
         else:
             self.print_failed("test_oauth1_formdata_post_missing_http")
 
-    def test_oauth1_urlencoded_post(self):
+    def test_6_oauth1_urlencoded_post(self):
         self.reset_request()
 
         method_select = self.browser.find_element_by_id("request-method-selector")    
@@ -411,7 +398,7 @@ class PostmanTestsHelpers(PostmanTests):
         else:
             self.print_failed("test_oauth1_urlencoded_post")
     
-    def test_oauth1_post_headers(self):
+    def test_7_oauth1_post_headers(self):
         self.reset_request()
 
         method_select = self.browser.find_element_by_id("request-method-selector")    
@@ -493,7 +480,7 @@ class PostmanTestsHelpers(PostmanTests):
         else:
             self.print_failed("test_oauth1_post_headers")
 
-    def test_oauth1_post_environment(self):
+    def test_8_oauth1_post_environment(self):
         self.reset_request()
 
         method_select = self.browser.find_element_by_id("request-method-selector")    

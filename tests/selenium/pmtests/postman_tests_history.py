@@ -1,3 +1,4 @@
+from optparse import OptionParser
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support.select import Select
@@ -9,16 +10,7 @@ import time
 from postman_tests import PostmanTests
 
 class PostmanTestsHistory(PostmanTests):
-    def run(self):
-        print "\nTesting history"
-        print "---------------"
-        self.test_save_request_to_history()
-        self.test_load_request_from_history()
-        self.test_delete_request_from_history()
-        self.test_clear_history()
-        self.browser.quit()
-
-    def test_save_request_to_history(self):
+    def test_1_save_request_to_history(self):
         self.set_url_field(self.browser, "http://localhost:5000/get?val=1")
         method_select = self.browser.find_element_by_id("request-method-selector")    
         Select(method_select).select_by_value("GET")
@@ -34,7 +26,7 @@ class PostmanTestsHistory(PostmanTests):
         else:
             self.print_failed("test_save_request_to_history")
 
-    def test_load_request_from_history(self):
+    def test_2_load_request_from_history(self):
         self.set_url_field(self.browser, "")
         first_history_item = self.browser.find_element_by_css_selector("#history-items li:nth-of-type(1) .request")
         first_history_item.click()
@@ -46,7 +38,7 @@ class PostmanTestsHistory(PostmanTests):
         except:
             self.print_failed("test_load_request_from_history")
 
-    def test_delete_request_from_history(self):
+    def test_3_delete_request_from_history(self):
         first_history_item = self.browser.find_element_by_css_selector("#history-items li:nth-of-type(1) .request-actions .request-actions-delete")
         first_history_item.click()
 
@@ -57,7 +49,7 @@ class PostmanTestsHistory(PostmanTests):
         else:
             self.print_failed("test_delete_request_from_history")
 
-    def test_clear_history(self):
+    def test_4_clear_history(self):
         self.set_url_field(self.browser, "http://localhost:5000/html?val=1")
         method_select = self.browser.find_element_by_id("request-method-selector")    
         Select(method_select).select_by_value("GET")

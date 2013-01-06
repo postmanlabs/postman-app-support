@@ -19,9 +19,34 @@ class PostmanTests:
         self.browser = browser
         
         self.load_postman()
-        self.test_title()
-        self.test_indexed_db()
+        self.init_test_title()
+        self.init_test_indexed_db()
         
+
+    def run(self):
+        print "\nRunning"
+        print "---------------"
+
+        methods = inspect.getmembers(self, predicate=inspect.ismethod)
+        allms = []
+        for method in methods:
+            name = method[0]
+            f = method[1]
+           
+            if name.find("test") == 0:
+                order = int(name.split("_")[1])
+                m = {
+                    "order": order,
+                    "method": method[1]
+                    }
+                allms.append(m)
+
+        ordered = sorted(allms, key=lambda k: k["order"])
+
+        for m in ordered:
+            m["method"]()
+
+        self.browser.quit()
 
     def load_postman(self):
         self.browser.get('chrome-extension://ljkndjhokjnonidfaggiacifldihhjmg/index.html')
@@ -41,10 +66,10 @@ class PostmanTests:
     def set_code_mirror_raw_value(self, value):
         code_data_value = self.browser.execute_script("return pm.request.body.loadRawData(arguments[0])", value)
         
-    def test_title(self):
+    def init_test_title(self):
         assert "Postman" in self.browser.title
 
-    def test_indexed_db(self):
+    def init_test_indexed_db(self):
         w = WebDriverWait(self.browser, 10)
         w.until(lambda driver: self.browser.find_element_by_css_selector("#sidebar-section-history .empty-message"))
 

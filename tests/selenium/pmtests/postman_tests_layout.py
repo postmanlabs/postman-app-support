@@ -9,13 +9,7 @@ import time
 from postman_tests import PostmanTests
 
 class PostmanTestsLayout(PostmanTests):
-    def run(self):
-        print "\nTesting layout"
-        print "---------------"
-        self.test_toggle_sidebar()
-        self.browser.quit()
-
-    def test_toggle_sidebar(self):
+    def test_1_toggle_sidebar(self):
         sidebar_toggle = self.browser.find_element_by_id("sidebar-toggle")
         sidebar_toggle.click()
         time.sleep(1)

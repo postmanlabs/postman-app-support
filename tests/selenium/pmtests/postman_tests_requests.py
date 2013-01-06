@@ -9,37 +9,7 @@ import time
 from postman_tests import PostmanTests
 
 class PostmanTestsRequests(PostmanTests):
-    def run(self):
-        print "\nTesting requests"
-        print "---------------"
-        self.test_get_basic()
-        self.test_get_only_key()
-        self.test_delete_basic()
-        self.test_head_basic()
-        self.test_options_basic()
-        self.test_post_basic()
-        self.test_put_basic()
-
-        self.init_environment()
-        
-        self.test_get_environment()
-        self.test_post_formdata_environment()
-        self.test_post_urlencoded_environment()
-        self.test_post_raw_environment()
-        self.test_post_raw_json_environment()
-
-        self.browser.quit()
-        print "---------------"
-
-    def run_auto(self):
-        methods = inspect.getmembers(self, predicate=inspect.ismethod)
-        for method in methods:
-            name = method[0]
-            if name.find("test_") is 0:
-                method = getattr(PostmanTestsRequests, name)
-                method(self)
-
-    def test_get_basic(self):
+    def test_1_get_basic(self):
         self.reset_request()
 
         self.set_url_field(self.browser, "http://localhost:5000/get")
@@ -56,7 +26,7 @@ class PostmanTestsRequests(PostmanTests):
             self.print_failed("test_get_basic")
             return False
 
-    def test_get_only_key(self):
+    def test_2_get_only_key(self):
         self.reset_request()
 
         self.set_url_field(self.browser, "http://localhost:5000/get?start")
@@ -73,7 +43,7 @@ class PostmanTestsRequests(PostmanTests):
             self.print_failed("test_get_only_key")
             return False
 
-    def test_delete_basic(self):
+    def test_3_delete_basic(self):
         self.reset_request()
 
         self.set_url_field(self.browser, "http://localhost:5000/delete")
@@ -96,7 +66,7 @@ class PostmanTestsRequests(PostmanTests):
         return True
 
 
-    def test_head_basic(self):
+    def test_4_head_basic(self):
         self.reset_request()
 
         self.set_url_field(self.browser, "http://localhost:5000/html")
@@ -113,7 +83,7 @@ class PostmanTestsRequests(PostmanTests):
             self.print_failed("test_head_basic")
             return False
 
-    def test_options_basic(self):
+    def test_5_options_basic(self):
         self.reset_request()
 
         self.set_url_field(self.browser, "http://localhost:5000/html")
@@ -130,7 +100,7 @@ class PostmanTestsRequests(PostmanTests):
             self.print_failed("test_options_basic")
             return False
 
-    def test_post_basic(self):
+    def test_6_post_basic(self):
         self.reset_request()
 
         self.set_url_field(self.browser, "http://localhost:5000/post")
@@ -147,7 +117,7 @@ class PostmanTestsRequests(PostmanTests):
             self.print_failed("test_post_basic")
             return False
 
-    def test_put_basic(self):
+    def test_7_put_basic(self):
         self.reset_request()
 
         self.set_url_field(self.browser, "http://localhost:5000/put")
@@ -164,7 +134,7 @@ class PostmanTestsRequests(PostmanTests):
             self.print_failed("test_put_basic")
             return False
 
-    def init_environment(self):
+    def test_8_init_environment(self):
         environment_selector = self.browser.find_element_by_id("environment-selector")
         environment_selector.click()
 
@@ -271,7 +241,7 @@ class PostmanTestsRequests(PostmanTests):
         manage_env_link = self.browser.find_element_by_css_selector("#environment-selector .dropdown-menu li:nth-of-type(1) a")
         manage_env_link.click()
 
-    def test_get_environment(self):
+    def test_9_get_environment(self):
         self.reset_request()
 
         self.set_url_field(self.browser, "http://localhost:5000/{{path_get}}")
@@ -288,7 +258,7 @@ class PostmanTestsRequests(PostmanTests):
             self.print_failed("test_get_environment")
             return False
 
-    def test_post_formdata_environment(self):
+    def test_10_post_formdata_environment(self):
         self.reset_request()
 
         self.set_url_field(self.browser, "http://localhost:5000/{{path_post}}")
@@ -324,7 +294,7 @@ class PostmanTestsRequests(PostmanTests):
             self.print_failed("test_post_formdata_environment")
             return False
 
-    def test_post_urlencoded_environment(self):
+    def test_11_post_urlencoded_environment(self):
         self.reset_request()
 
         self.set_url_field(self.browser, "http://localhost:5000/{{path_post}}")
@@ -364,7 +334,7 @@ class PostmanTestsRequests(PostmanTests):
             return False
 
 
-    def test_post_raw_environment(self):
+    def test_12_post_raw_environment(self):
         self.reset_request()
 
         self.set_url_field(self.browser, "http://localhost:5000/{{path_post}}")
@@ -389,7 +359,7 @@ class PostmanTestsRequests(PostmanTests):
             self.print_failed("test_post_raw_environment")
             return False
 
-    def test_post_raw_json_environment(self):
+    def test_13_post_raw_json_environment(self):
         self.reset_request()
 
         self.set_url_field(self.browser, "http://localhost:5000/{{path_post}}")

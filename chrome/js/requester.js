@@ -3801,6 +3801,7 @@ pm.request = {
                 headers = headers.splice(0, headers.length - 1);
                 headers = _.union(headers, preset.headers);
                 $('#headers-keyvaleditor').keyvalueeditor('reset', headers);
+                $('#headers-keyvaleditor .keyvalueeditor-last .keyvalueeditor-key').focus();
             }
         }
     },

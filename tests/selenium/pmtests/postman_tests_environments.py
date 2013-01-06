@@ -9,15 +9,6 @@ import time
 from postman_tests import PostmanTests
 
 class PostmanTestsEnvironments(PostmanTests):
-    def run(self):
-        print "\nTesting environments"
-        print "---------------------"
-        self.test_add_environment()
-        self.test_delete_environment()
-        self.test_edit_environment()
-        self.test_globals()
-        self.browser.quit()
-
     def init_environment(self):
         environment_selector = self.browser.find_element_by_id("environment-selector")
         environment_selector.click()
@@ -33,7 +24,7 @@ class PostmanTestsEnvironments(PostmanTests):
         add_env_button.click()
         time.sleep(0.3)
 
-    def test_add_environment(self):
+    def test_1_add_environment(self):
         self.init_environment()
 
         environment_name = self.browser.find_element_by_id("environment-editor-name")
@@ -79,7 +70,7 @@ class PostmanTestsEnvironments(PostmanTests):
             self.print_failed("test_add_environment")
         
 
-    def test_delete_environment(self):
+    def test_2_delete_environment(self):
         delete_button = self.browser.find_element_by_css_selector("#environments-list tbody tr:first-child .environment-action-delete")
         delete_button.click()
         
@@ -91,7 +82,7 @@ class PostmanTestsEnvironments(PostmanTests):
         else:
             self.print_failed("test_delete_environment")
         
-    def test_edit_environment(self):
+    def test_3_edit_environment(self):
         edit_button = self.browser.find_element_by_css_selector("#environments-list tbody tr:first-child .environment-action-edit")
         edit_button.click()
 
@@ -120,7 +111,7 @@ class PostmanTestsEnvironments(PostmanTests):
             self.print_failed("test_edit_environment")
 
 
-    def test_globals(self):
+    def test_4_globals(self):
         manage_globals_button = self.browser.find_element_by_css_selector("#environments-list-wrapper .toolbar .environments-actions-manage-globals")
         manage_globals_button.click()
 

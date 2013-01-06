@@ -594,7 +594,7 @@ li .right {
 }
 
 #request-actions {
-    width: 480px;
+    width: 100%;
 }
 
 #request-actions-primary {
@@ -603,6 +603,7 @@ li .right {
 
 #request-actions-secondary {
     float: right;
+    margin-right: 22px;
 }
 
 #update-request-in-collection {
@@ -1398,4 +1399,9 @@ li .right {
 
 .btn {
     border-radius: 0;
+}
+
+input[type="file"] {
+    height: 28px;
+    line-height: 0px;
 }

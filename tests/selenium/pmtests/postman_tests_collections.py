@@ -9,20 +9,7 @@ import time
 from postman_tests import PostmanTests
 
 class PostmanTestsCollections(PostmanTests):
-    def run(self):
-        print "\nTesting collections"
-        print "---------------------"
-        self.test_switch_to_collections()
-        self.test_create_collection_with_modal()
-        self.test_create_collection_with_request()
-        self.test_add_request_to_existing_collection()
-        self.test_add_collection_request_to_existing_collection()
-        self.test_delete_collection_request()
-        self.test_delete_collection()
-        self.test_import_collection_from_url()
-        self.browser.quit()
-
-    def test_switch_to_collections(self):
+    def test_1_switch_to_collections(self):
         collection_tab = self.browser.find_element_by_css_selector("#sidebar-selectors li:nth-of-type(2)")
         collection_tab.click()
 
@@ -32,7 +19,7 @@ class PostmanTestsCollections(PostmanTests):
         else:
             self.print_failed("test_switch_to_collections")
 
-    def test_create_collection_with_modal(self):
+    def test_2_create_collection_with_modal(self):
         add_link = self.browser.find_element_by_css_selector("#collections-options a:nth-of-type(1)")
         add_link.click()
         time.sleep(0.5)
@@ -53,7 +40,7 @@ class PostmanTestsCollections(PostmanTests):
         else:
             self.print_failed("test_create_collection_with_modal")
 
-    def test_create_collection_with_request(self):
+    def test_3_create_collection_with_request(self):
         self.set_url_field(self.browser, "http://localhost:5000/delete")
         method_select = self.browser.find_element_by_id("request-method-selector")    
         Select(method_select).select_by_value("DELETE")
@@ -86,7 +73,7 @@ class PostmanTestsCollections(PostmanTests):
             self.print_failed("test_create_collection_with_request")
         
 
-    def test_add_request_to_existing_collection(self):
+    def test_4_add_request_to_existing_collection(self):
         self.set_url_field(self.browser, "http://localhost:5000/post")
         method_select = self.browser.find_element_by_id("request-method-selector")    
         Select(method_select).select_by_value("POST")
@@ -115,7 +102,7 @@ class PostmanTestsCollections(PostmanTests):
         else:
             self.print_failed("test_add_request_to_existing_collection")
 
-    def test_add_collection_request_to_existing_collection(self):
+    def test_5_add_collection_request_to_existing_collection(self):
         request = self.browser.find_element_by_css_selector("#collection-items li:nth-of-type(1) ul li:nth-of-type(1) .request a")
         request.click()
         time.sleep(0.5)
@@ -145,7 +132,7 @@ class PostmanTestsCollections(PostmanTests):
             self.print_failed("test_add_collection_request_to_existing_collection")
 
 
-    def test_delete_collection_request(self):
+    def test_6_delete_collection_request(self):
         request = self.browser.find_element_by_css_selector("#collection-items li:nth-of-type(1) ul li:nth-of-type(1) .request")
         hov = ActionChains(self.browser).move_to_element(request)
         hov.perform()
@@ -161,7 +148,7 @@ class PostmanTestsCollections(PostmanTests):
         else:
             self.print_failed("test_delete_collection_request")
 
-    def test_delete_collection(self):
+    def test_7_delete_collection(self):
         collection = self.browser.find_element_by_css_selector("#collection-items li:nth-of-type(1)")
         hov = ActionChains(self.browser).move_to_element(collection)
         hov.perform()
@@ -182,7 +169,7 @@ class PostmanTestsCollections(PostmanTests):
         else:
             self.print_failed("test_delete_collection")
 
-    def test_import_collection_from_url(self):
+    def test_8_import_collection_from_url(self):
         add_link = self.browser.find_element_by_css_selector("#collections-options a:nth-of-type(2)")
         add_link.click()
         time.sleep(0.5)
