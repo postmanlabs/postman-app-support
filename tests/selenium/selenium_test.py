@@ -8,6 +8,7 @@ import inspect
 import time
 import imp
 import os
+from colorama import deinit
 MODULE_EXTENSIONS = ('.py', '.pyc', '.pyo')
 
 def package_contents(package_name):
@@ -26,6 +27,8 @@ def main():
     # Runs all tests on import
     for module in modules:
         __import__("pmtests." + module)
+
+    deinit()
 
 if __name__ == "__main__":
     main()

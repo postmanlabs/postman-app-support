@@ -227,6 +227,8 @@ class PostmanTestsRequests(PostmanTests):
         manage_env_link = self.browser.find_element_by_css_selector("#environment-selector .dropdown-menu li:nth-of-type(1) a")
         manage_env_link.click()
 
+        return True
+
     def test_9_get_environment(self):
         self.reset_request()
 

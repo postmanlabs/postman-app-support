@@ -3,12 +3,15 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support.select import Select
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
+from colorama import init
+from colorama import Fore, Back, Style
 import selenium.webdriver.chrome.service as service
 import inspect
 import time
 
 class PostmanTests:
     def __init__(self):
+        init()
         s = service.Service('/Users/asthana/Documents/www/chromedriver')  # Optional argument, if not specified will search path.
         s.start()
     
@@ -48,9 +51,9 @@ class PostmanTests:
             result = m["method"]()
 
             if result is True:
-                print "[PASSED]: %s" % m["name"]
+                print Fore.WHITE + Back.GREEN + "[PASSED]" + Fore.RESET + Back.RESET + " %s" % m["name"]
             else:
-                print "[FAILED]: %s" % m["name"]
+                print Fore.WHITE + Back.RED + "[FAILED]" + Fore.RESET + Back.RESET + "  %s" % m["name"]
 
         self.browser.quit()
 
