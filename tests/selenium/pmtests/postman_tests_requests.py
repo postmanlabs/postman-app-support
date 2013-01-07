@@ -398,5 +398,63 @@ class PostmanTestsRequests(PostmanTests):
                 return False
         else:
             return False
+
+    def test_16_with_no_cache(self):
+        self.reset_request()
+        self.set_url_field(self.browser, "http://localhost:5000/get")
         
+        settings_button = self.browser.find_element_by_css_selector(".preferences a:nth-of-type(2)")
+        settings_button.click()
+
+        time.sleep(1)
+
+        no_cache_select = self.browser.find_element_by_id("send-no-cache-header")    
+        Select(no_cache_select).select_by_value("true")
+        
+        close_button = self.browser.find_element_by_css_selector("#modal-settings .modal-header .close")
+        close_button.click()
+
+        time.sleep(1)
+
+        self.set_url_field(self.browser, "http://localhost:5000/get")
+
+        send_button = self.browser.find_element_by_id("submit-request")
+        send_button.click()
+
+        code_data_value = self.get_codemirror_value(self.browser)    
+
+        if code_data_value.find("no-cache") > 0:
+            return True
+        else:
+            return False        
+
+    def test_17_without_no_cache(self):
+        self.reset_request()
+        self.set_url_field(self.browser, "http://localhost:5000/get")
+        
+        settings_button = self.browser.find_element_by_css_selector(".preferences a:nth-of-type(2)")
+        settings_button.click()
+
+        time.sleep(1)
+
+        no_cache_select = self.browser.find_element_by_id("send-no-cache-header")    
+        Select(no_cache_select).select_by_value("false")
+        
+        close_button = self.browser.find_element_by_css_selector("#modal-settings .modal-header .close")
+        close_button.click()
+
+        time.sleep(1)
+
+        self.set_url_field(self.browser, "http://localhost:5000/get")
+
+        send_button = self.browser.find_element_by_id("submit-request")
+        send_button.click()
+
+        code_data_value = self.get_codemirror_value(self.browser)    
+
+        if code_data_value.find("no-cache") < 0:
+            return True
+        else:
+            return False
+
 PostmanTestsRequests().run()

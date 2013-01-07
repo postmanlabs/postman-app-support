@@ -48,7 +48,11 @@ class PostmanTests:
         ordered = sorted(allms, key=lambda k: k["order"])
 
         for m in ordered:
-            result = m["method"]()
+            try:
+                result = m["method"]()
+            except Error as e:
+                result = False
+                print e
 
             if result is True:
                 print Fore.WHITE + Back.GREEN + "[PASSED]" + Fore.RESET + Back.RESET + " %s" % m["name"]
