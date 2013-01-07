@@ -9,9 +9,21 @@ pm.layout = {
     },
 
     init:function () {
-        $('#sidebar-footer').on("click", function () {
+        $('#make-postman-better').on("click", function () {
             $('#modal-spread-the-word').modal('show');
             pm.layout.attachSocialButtons();
+        });
+
+        $('#donate').on("click", function () {
+            $('#donate-form form').submit();
+        });
+
+        $('#donate').popover({
+            animation: true,
+            content: "Please donate $5 only if you like Postman! This will help a lot in the development and maintenance of the project.",
+            placement: "top",
+            trigger: "hover",
+            title: "Donate"
         });
 
         $('#response-body-toggle').on("click", function () {

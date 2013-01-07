@@ -28,8 +28,7 @@ pm.broadcasts = {
     },
 
     fetch:function () {
-        var broadcast_url = "http://localhost/postman-server/html/broadcasts";
-        console.log(broadcast_url);
+        var broadcast_url = "http://localhost/postman-server/html/broadcasts";        
         $.get(broadcast_url, function (data) {
             pm.broadcasts.setBroadcasts(data["broadcasts"]);
             pm.broadcasts.renderBroadcasts();

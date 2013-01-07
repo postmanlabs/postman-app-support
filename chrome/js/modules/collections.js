@@ -200,13 +200,10 @@ pm.collections = {
                 request.id = newId;
 
                 if ("responses" in request) {
-                    console.log("Modifying responses");
-                    console.log(request);
                     var j, count;
                     for (j = 0, count = request["responses"].length; j < count; j++) {
                         request["responses"][j].id = guid();
-                        request["responses"][j].collectionRequestId = newId;
-                        console.log("Changed to " + newId);
+                        request["responses"][j].collectionRequestId = newId;                        
                     }
                 }
 
@@ -258,8 +255,7 @@ pm.collections = {
     },
 
     loadResponseInEditor:function (id) {
-        var responses = pm.request.responses;
-        console.log(responses);
+        var responses = pm.request.responses;        
         var responseIndex = find(responses, function (item, i, responses) {
             return item.id === id;
         });
@@ -270,8 +266,6 @@ pm.collections = {
     },
 
     removeSampleResponse:function (id) {
-        console.log(id);
-        console.log(pm.request.responses);
         var responses = pm.request.responses;
         var responseIndex = find(responses, function (item, i, responses) {
             return item.id === id;
@@ -520,8 +514,6 @@ pm.collections = {
                     requests[i].name = limitStringLineWidth(requests[i].name, 40);
                 }
 
-                console.log("Unsorted", requests);
-
                 //Sort requests as A-Z order
                 if (!("order" in collection)) {
                     requests.sort(sortAlphabetical);
@@ -538,8 +530,6 @@ pm.collections = {
                         requests = orderedRequests;
                     }
                 }
-
-                console.log("Sorted", requests);
 
                 $(targetElement).append(Handlebars.templates.collection_sidebar({"items":requests}));
                 $(targetElement).sortable({

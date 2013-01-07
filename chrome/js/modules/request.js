@@ -255,8 +255,6 @@ pm.request = {
                 data = pm.request.getBodyParamString(newParams);
             }
 
-            console.log(data);
-
             return data;
         },
 
@@ -638,8 +636,7 @@ pm.request = {
             this.headers = pm.request.unpackResponseHeaders(data);            
 
             if(pm.settings.get("usePostmanProxy") === true) {
-                var count = this.headers.length;
-                console.log(this.headers);
+                var count = this.headers.length;                
                 for(var i = 0; i < count; i++) {
                     if(this.headers[i].key == "Postman-Location") {
                         this.headers[i].key = "Location";
@@ -1679,7 +1676,7 @@ pm.request = {
                     value = value.replace(/%20/g, '+');
                     key = encodeURIComponent(row.keyElement.val());
                     key = key.replace(/%20/g, '+');
-                    console.log(key, value);
+                    
                     finalBodyData += key + "=" + value + "&";
                 }
 

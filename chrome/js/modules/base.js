@@ -153,7 +153,6 @@ window.requestFileSystem = window.requestFileSystem || window.webkitRequestFileS
  */
 
 pm.init = function () {
-    console.log("Yay! Grunt works!");
     Handlebars.partials = Handlebars.templates;
     pm.history.init();
     pm.collections.init();

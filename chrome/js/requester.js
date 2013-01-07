@@ -153,7 +153,6 @@ window.requestFileSystem = window.requestFileSystem || window.webkitRequestFileS
  */
 
 pm.init = function () {
-    console.log("Yay! Grunt works!");
     Handlebars.partials = Handlebars.templates;
     pm.history.init();
     pm.collections.init();
@@ -209,8 +208,7 @@ pm.broadcasts = {
     },
 
     fetch:function () {
-        var broadcast_url = "http://localhost/postman-server/html/broadcasts";
-        console.log(broadcast_url);
+        var broadcast_url = "http://localhost/postman-server/html/broadcasts";        
         $.get(broadcast_url, function (data) {
             pm.broadcasts.setBroadcasts(data["broadcasts"]);
             pm.broadcasts.renderBroadcasts();
@@ -496,13 +494,10 @@ pm.collections = {
                 request.id = newId;
 
                 if ("responses" in request) {
-                    console.log("Modifying responses");
-                    console.log(request);
                     var j, count;
                     for (j = 0, count = request["responses"].length; j < count; j++) {
                         request["responses"][j].id = guid();
-                        request["responses"][j].collectionRequestId = newId;
-                        console.log("Changed to " + newId);
+                        request["responses"][j].collectionRequestId = newId;                        
                     }
                 }
 
@@ -554,8 +549,7 @@ pm.collections = {
     },
 
     loadResponseInEditor:function (id) {
-        var responses = pm.request.responses;
-        console.log(responses);
+        var responses = pm.request.responses;        
         var responseIndex = find(responses, function (item, i, responses) {
             return item.id === id;
         });
@@ -566,8 +560,6 @@ pm.collections = {
     },
 
     removeSampleResponse:function (id) {
-        console.log(id);
-        console.log(pm.request.responses);
         var responses = pm.request.responses;
         var responseIndex = find(responses, function (item, i, responses) {
             return item.id === id;
@@ -816,8 +808,6 @@ pm.collections = {
                     requests[i].name = limitStringLineWidth(requests[i].name, 40);
                 }
 
-                console.log("Unsorted", requests);
-
                 //Sort requests as A-Z order
                 if (!("order" in collection)) {
                     requests.sort(sortAlphabetical);
@@ -834,8 +824,6 @@ pm.collections = {
                         requests = orderedRequests;
                     }
                 }
-
-                console.log("Sorted", requests);
 
                 $(targetElement).append(Handlebars.templates.collection_sidebar({"items":requests}));
                 $(targetElement).sortable({
@@ -2931,9 +2919,21 @@ pm.layout = {
     },
 
     init:function () {
-        $('#sidebar-footer').on("click", function () {
+        $('#make-postman-better').on("click", function () {
             $('#modal-spread-the-word').modal('show');
             pm.layout.attachSocialButtons();
+        });
+
+        $('#donate').on("click", function () {
+            $('#donate-form form').submit();
+        });
+
+        $('#donate').popover({
+            animation: true,
+            content: "Please donate $5 only if you like Postman! This will help a lot in the development and maintenance of the project.",
+            placement: "top",
+            trigger: "hover",
+            title: "Donate"
         });
 
         $('#response-body-toggle').on("click", function () {
@@ -3690,8 +3690,6 @@ pm.request = {
                 data = pm.request.getBodyParamString(newParams);
             }
 
-            console.log(data);
-
             return data;
         },
 
@@ -4073,8 +4071,7 @@ pm.request = {
             this.headers = pm.request.unpackResponseHeaders(data);            
 
             if(pm.settings.get("usePostmanProxy") === true) {
-                var count = this.headers.length;
-                console.log(this.headers);
+                var count = this.headers.length;                
                 for(var i = 0; i < count; i++) {
                     if(this.headers[i].key == "Postman-Location") {
                         this.headers[i].key = "Location";
@@ -5114,7 +5111,7 @@ pm.request = {
                     value = value.replace(/%20/g, '+');
                     key = encodeURIComponent(row.keyElement.val());
                     key = key.replace(/%20/g, '+');
-                    console.log(key, value);
+                    
                     finalBodyData += key + "=" + value + "&";
                 }
 

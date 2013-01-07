@@ -503,8 +503,7 @@ li .right {
 }
 
 #sidebar-footer {
-    background-color: #000;
-    color: #fff;
+    background-color: #000;    
     font-size: 11px;
     font-weight: bold;
     position: fixed;
@@ -513,9 +512,28 @@ li .right {
     height: 20px;
     opacity: 0.8;
     z-index: 50;
-    text-align: center;
-    padding: 5px 0 5px 0;
-    cursor: pointer;
+    padding: 5px 0 5px 0;    
+}
+
+#donate-form {
+    display: none;
+}
+
+#sidebar-footer a {
+    color: #fff;
+    display: inline-block;
+    margin-left: 10px;
+    padding: 3px;
+    border-radius: 3px;
+}
+
+#sidebar-footer a:hover {
+    background: #08C;
+}
+
+#donate {
+    float: right;
+    margin-right: 25px;
 }
 
 #sidebar-footer:hover {
