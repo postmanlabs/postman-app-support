@@ -157,6 +157,7 @@ pm.helpers = {
         removeOAuthKeys:function (params) {
             var i, count;
             var oauthParams = [
+                "oauth_consumer_key",
                 "oauth_token",
                 "oauth_signature_method",
                 "oauth_timestamp",

@@ -82,17 +82,10 @@ class PostmanTests:
         w = WebDriverWait(self.browser, 10)
         w.until(lambda driver: self.browser.find_element_by_css_selector("#sidebar-section-history .empty-message"))
 
-        print "\nPostman loaded succesfully. IndexedDB opened"
+        print "\nPostman loaded succesfully."
         return True
 
     def reset_request(self):
         reset_button = self.browser.find_element_by_id("request-actions-reset")
         reset_button.click()
         time.sleep(0.5)
-
-
-    def print_success(self, method_name):
-        print "[PASSED] %s" % method_name
-
-    def print_failed(self, method_name):
-        print "[FAILED] %s" % method_name
