@@ -3793,8 +3793,7 @@ pm.request = {
         return newHeaders;
     },
 
-    onHeaderAutoCompleteItemSelect:function(item) {
-        console.log(item.type);
+    onHeaderAutoCompleteItemSelect:function(item) {        
         if(item.type == "preset") {
             var preset = pm.headerPresets.getHeaderPreset(item.id);
             if("headers" in preset) {
@@ -3802,7 +3801,13 @@ pm.request = {
                 headers = headers.splice(0, headers.length - 1);
                 headers = _.union(headers, preset.headers);
                 $('#headers-keyvaleditor').keyvalueeditor('reset', headers);
-                $('#headers-keyvaleditor .keyvalueeditor-last .keyvalueeditor-key').focus();
+
+                //Ensures that the key gets focus
+                var element = $('#headers-keyvaleditor .keyvalueeditor-last input:first-child')[0];
+                $('#headers-keyvaleditor .keyvalueeditor-last input:first-child')[0].focus();
+                setTimeout(function() {
+                    element.focus();
+                }, 10);                
             }
         }
     },
