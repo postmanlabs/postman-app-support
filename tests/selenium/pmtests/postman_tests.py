@@ -53,7 +53,7 @@ class PostmanTests:
             if result is True:
                 print Fore.WHITE + Back.GREEN + "[PASSED]" + Fore.RESET + Back.RESET + " %s" % m["name"]
             else:
-                print Fore.WHITE + Back.RED + "[FAILED]" + Fore.RESET + Back.RESET + "  %s" % m["name"]
+                print Fore.WHITE + Back.RED + "[FAILED]" + Fore.RESET + Back.RESET + " %s" % m["name"]
 
         self.browser.quit()
 

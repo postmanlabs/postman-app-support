@@ -366,16 +366,37 @@ class PostmanTestsRequests(PostmanTests):
     def test_14_url_with_semicolon(self):
         self.reset_request()
 
-        self.set_url_field(self.browser, "http://localhost:5000/get;val=start")
+        self.set_url_field(self.browser, "http://localhost:5000/get?some=start;val")
 
         send_button = self.browser.find_element_by_id("submit-request")
         send_button.click()
 
         code_data_value = self.get_codemirror_value(self.browser)    
 
-        if code_data_value.find("/get;val=start") > 0:
+        if code_data_value.find("/get?some=start;val") > 0:
             return True
         else:
             return False
 
+    # https://github.com/a85/POSTMan-Chrome-Extension/issues/165
+    def test_15_odata_url(self):
+        self.reset_request()
+
+        self.set_url_field(self.browser, "http://localhost:5000/Resource(code1='1',code2='1')")
+
+        send_button = self.browser.find_element_by_id("submit-request")
+        send_button.click()
+
+        code_data_value = self.get_codemirror_value(self.browser)
+
+        if code_data_value.find("Not Found") > 0:
+            first_history_item = self.browser.find_element_by_css_selector("#history-items li:nth-of-type(1) .request .request-name")
+            value = self.browser.execute_script("return arguments[0].innerHTML", first_history_item)
+            if value.find("http://localhost:5000/Resource(code1='1'<br>,code2='1')") > 0:
+                return True
+            else:
+                return False
+        else:
+            return False
+        
 PostmanTestsRequests().run()

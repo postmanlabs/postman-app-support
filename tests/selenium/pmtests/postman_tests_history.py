@@ -24,6 +24,8 @@ class PostmanTestsHistory(PostmanTests):
             value = self.browser.execute_script("return arguments[0].innerHTML", first_history_item)
             if value.find("http://localhost:5000/get?val=1") > 0:
                 return True
+            else:
+                return False
         else:
             return False
 
