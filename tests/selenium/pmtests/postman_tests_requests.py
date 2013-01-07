@@ -359,3 +359,5 @@ class PostmanTestsRequests(PostmanTests):
             return True
         else:
             return False
+
+PostmanTestsRequests().run()

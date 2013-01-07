@@ -191,3 +191,5 @@ class PostmanTestsCollections(PostmanTests):
             return True
         else:
             return False
+
+PostmanTestsCollections().run()

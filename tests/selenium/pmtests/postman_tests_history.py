@@ -78,3 +78,6 @@ class PostmanTestsHistory(PostmanTests):
             return True
         else:
             return False
+
+
+PostmanTestsHistory().run()

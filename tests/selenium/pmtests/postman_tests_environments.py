@@ -151,3 +151,5 @@ class PostmanTestsEnvironments(PostmanTests):
             return True
         else:
             return False
+
+PostmanTestsEnvironments().run()

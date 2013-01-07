@@ -27,3 +27,5 @@ class PostmanTestsLayout(PostmanTests):
                 return True
             else:
                 return False
+
+PostmanTestsLayout().run()

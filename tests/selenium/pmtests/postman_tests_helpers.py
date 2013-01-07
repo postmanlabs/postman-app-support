@@ -664,3 +664,5 @@ class PostmanTestsHelpers(PostmanTests):
             return True
         else:
             return False
+
+PostmanTestsHelpers().run()
