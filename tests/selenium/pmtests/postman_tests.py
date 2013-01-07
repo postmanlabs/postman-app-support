@@ -8,6 +8,7 @@ from colorama import Fore, Back, Style
 import selenium.webdriver.chrome.service as service
 import inspect
 import time
+import traceback
 
 class PostmanTests:
     def __init__(self):
@@ -50,9 +51,9 @@ class PostmanTests:
         for m in ordered:
             try:
                 result = m["method"]()
-            except Error as e:
+            except Exception as e:
                 result = False
-                print e
+                print traceback.format_exc()
 
             if result is True:
                 print Fore.WHITE + Back.GREEN + "[PASSED]" + Fore.RESET + Back.RESET + " %s" % m["name"]

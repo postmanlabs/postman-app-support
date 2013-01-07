@@ -20,7 +20,7 @@ def package_contents(package_name):
         for module in os.listdir(pathname)
         if module.endswith(MODULE_EXTENSIONS)])
 
-def main():
+def run_all():
     print "Start running tests\n"
     modules = package_contents("pmtests")
     
@@ -28,6 +28,11 @@ def main():
     for module in modules:
         __import__("pmtests." + module)
 
+def run():
+    from pmtests.postman_tests_requests import PostmanTestsRequests
+    
+def main():
+    run()
     deinit()
 
 if __name__ == "__main__":

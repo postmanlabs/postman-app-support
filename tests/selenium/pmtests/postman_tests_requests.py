@@ -4,6 +4,7 @@ from selenium.webdriver.support.select import Select
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
 import selenium.webdriver.chrome.service as service
+import traceback     
 import inspect
 import time
 from postman_tests import PostmanTests
@@ -347,7 +348,6 @@ class PostmanTestsRequests(PostmanTests):
         method_select = self.browser.find_element_by_id("request-method-selector")    
         Select(method_select).select_by_value("POST")
 
-        # Select urlencoded
         self.browser.find_element_by_css_selector("#data-mode-selector a:nth-of-type(3)").click()
 
         self.set_code_mirror_raw_value("{\"{{Foo}}\":\"{{Name}}\"")
@@ -455,6 +455,126 @@ class PostmanTestsRequests(PostmanTests):
         if code_data_value.find("no-cache") < 0:
             return True
         else:
+            return False
+
+    def test_18_raw_json_type(self):
+        self.reset_request()
+        self.set_url_field(self.browser, "http://localhost:5000/post")
+
+        self.browser.find_element_by_id("headers-keyvaleditor-actions-open").click()
+        time.sleep(0.1)
+
+        first_key = self.browser.find_element_by_css_selector("#headers-keyvaleditor .keyvalueeditor-row:first-child .keyvalueeditor-key")
+        first_key.clear()
+        first_key.send_keys("Content-Type") 
+
+        first_val = self.browser.find_element_by_css_selector("#headers-keyvaleditor .keyvalueeditor-row:first-child .keyvalueeditor-value")
+        first_val.clear()
+        first_val.send_keys("text/json")
+
+        method_select = self.browser.find_element_by_id("request-method-selector")    
+        Select(method_select).select_by_value("POST")
+
+        self.browser.find_element_by_css_selector("#data-mode-selector a:nth-of-type(3)").click()
+        self.set_code_mirror_raw_value("{\"{{Foo}}\":\"{{Name}}\"")
+
+        send_button = self.browser.find_element_by_id("submit-request")
+        send_button.click()
+
+        code_data_value = self.get_codemirror_value(self.browser)
+
+        if code_data_value.find("text/json") > 0:
+            self.reset_request();
+            first_history_item = self.browser.find_element_by_css_selector("#history-items li:nth-of-type(1) .request")
+            first_history_item.click()
+
+            try:
+                w = WebDriverWait(self.browser, 10)    
+                w.until(lambda browser: self.browser.find_element_by_id("url").get_attribute("value") == "http://localhost:5000/post")
+                
+                selected_mode_element = self.browser.find_element_by_id("body-editor-mode-item-selected")
+                selected_mode_element_value = self.browser.execute_script("return arguments[0].innerHTML", selected_mode_element)
+
+                if selected_mode_element_value.find("JSON") == 0:
+                    return True
+                else:
+                    return False
+            except:
+                return False
+        else:
+            return False
+
+    def test_19_raw_xml_type(self):
+        self.reset_request()
+        self.set_url_field(self.browser, "http://localhost:5000/post")
+
+        self.browser.find_element_by_id("headers-keyvaleditor-actions-open").click()
+        time.sleep(0.1)
+
+        self.browser.find_element_by_id("headers-keyvaleditor-actions-open").click()
+        time.sleep(0.1)
+
+        first_key = self.browser.find_element_by_css_selector("#headers-keyvaleditor .keyvalueeditor-row:first-child .keyvalueeditor-key")
+        first_key.clear()
+        first_key.send_keys("Content-Type") 
+
+        first_val = self.browser.find_element_by_css_selector("#headers-keyvaleditor .keyvalueeditor-row:first-child .keyvalueeditor-value")
+        first_val.clear()
+        first_val.send_keys("text/xml")
+
+        method_select = self.browser.find_element_by_id("request-method-selector")    
+        Select(method_select).select_by_value("POST")
+
+        self.browser.find_element_by_css_selector("#data-mode-selector a:nth-of-type(3)").click()
+        self.set_code_mirror_raw_value("{\"{{Foo}}\":\"{{Name}}\"")
+
+        send_button = self.browser.find_element_by_id("submit-request")
+        send_button.click()
+
+        code_data_value = self.get_codemirror_value(self.browser)
+
+        if code_data_value.find("text/xml") > 0:
+            self.reset_request();
+            first_history_item = self.browser.find_element_by_css_selector("#history-items li:nth-of-type(1) .request")
+            first_history_item.click()
+
+            try:
+                w = WebDriverWait(self.browser, 10)    
+                w.until(lambda browser: self.browser.find_element_by_id("url").get_attribute("value") == "http://localhost:5000/post")
+                
+                selected_mode_element = self.browser.find_element_by_id("body-editor-mode-item-selected")
+                selected_mode_element_value = self.browser.execute_script("return arguments[0].innerHTML", selected_mode_element)
+
+                if selected_mode_element_value.find("XML") == 0:
+                    return True
+                else:
+                    return False
+            except:
+                return False
+        else:
+            return False
+
+    def na_test_20_raw_large_request(self):
+        self.reset_request()
+        self.set_url_field(self.browser, "http://localhost:5000/post")        
+        method_select = self.browser.find_element_by_id("request-method-selector")    
+        Select(method_select).select_by_value("POST")
+        self.browser.find_element_by_css_selector("#data-mode-selector a:nth-of-type(3)").click()
+        try:
+            raw_json = open("large_json.json").read()
+            self.set_code_mirror_raw_value(raw_json)
+
+            send_button = self.browser.find_element_by_id("submit-request")
+            send_button.click()
+
+            code_data_value = self.get_codemirror_value(self.browser)
+            
+            if code_data_value.find("images/user_1.png") > 0:        
+                return True
+            else:
+                return False
+        except:
+            print traceback.format_exc()
             return False
 
 PostmanTestsRequests().run()
