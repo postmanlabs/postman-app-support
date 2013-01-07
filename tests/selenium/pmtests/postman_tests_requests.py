@@ -362,4 +362,20 @@ class PostmanTestsRequests(PostmanTests):
         else:
             return False
 
+    # https://github.com/a85/POSTMan-Chrome-Extension/issues/174
+    def test_14_url_with_semicolon(self):
+        self.reset_request()
+
+        self.set_url_field(self.browser, "http://localhost:5000/get;val=start")
+
+        send_button = self.browser.find_element_by_id("submit-request")
+        send_button.click()
+
+        code_data_value = self.get_codemirror_value(self.browser)    
+
+        if code_data_value.find("/get;val=start") > 0:
+            return True
+        else:
+            return False
+
 PostmanTestsRequests().run()
