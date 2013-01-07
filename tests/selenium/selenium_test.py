@@ -29,10 +29,10 @@ def run_all():
         __import__("pmtests." + module)
 
 def run():
-    from pmtests.postman_tests_requests import PostmanTestsRequests
+    from pmtests.postman_tests_broadcasts import PostmanTestsBroadcasts
     
 def main():
-    run()
+    run_all()
     deinit()
 
 if __name__ == "__main__":

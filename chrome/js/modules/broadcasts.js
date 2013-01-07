@@ -5,6 +5,7 @@ pm.broadcasts = {
 
         var today = new Date();
 
+        pm.broadcasts.showBlank();
         pm.broadcasts.fetch();
         if (last_update_time) {
             var last_update = new Date(last_update_time);
@@ -17,8 +18,13 @@ pm.broadcasts = {
         $("#broadcasts-count").on("click", function () {
             pm.broadcasts.markAllAsRead();
         });
+    },
 
-
+    showBlank:function() {
+        var $broadcasts_count = $("#broadcasts-count");
+        $broadcasts_count.removeClass();
+        $broadcasts_count.addClass("no-new-broadcasts");
+        $broadcasts_count.html("0");
     },
 
     fetch:function () {
