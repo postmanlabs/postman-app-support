@@ -1351,6 +1351,11 @@ li .right {
     vertical-align: middle;
 }
 
+#broadcasts-count:hover {
+    background-color: #333;
+    text-decoration: none;
+}
+
 .new-broadcasts {
     background-color: #8b0000;
 }

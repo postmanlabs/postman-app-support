@@ -2194,8 +2194,7 @@ pm.indexedDB = {
     open_latest:function () {
 
         var v = 11;
-        var request = indexedDB.open("postman", v);
-        console.log("Open latest");
+        var request = indexedDB.open("postman", v);        
         request.onupgradeneeded = function (e) {
 
             var db = e.target.result;
@@ -2736,7 +2735,6 @@ pm.indexedDB = {
 
         getAllHeaderPresets:function (callback) {
             var db = pm.indexedDB.db;
-            console.log("Get presets");
             if (db == null) {
                 console.log("Db is null");
                 return;
@@ -2751,12 +2749,10 @@ pm.indexedDB = {
             var cursorRequest = index.openCursor(keyRange);
             var headerPresets = [];
 
-            console.log("Get presets");
             cursorRequest.onsuccess = function (e) {
                 var result = e.target.result;
 
                 if (!result) {
-                    console.log(headerPresets);
                     callback(headerPresets);
                     return;
                 }
@@ -3864,11 +3860,22 @@ pm.request = {
     onHeaderAutoCompleteItemSelect:function(item) {        
         if(item.type == "preset") {
             var preset = pm.headerPresets.getHeaderPreset(item.id);
-            if("headers" in preset) {
+            if("headers" in preset) {                    
                 var headers = $('#headers-keyvaleditor').keyvalueeditor('getValues');
-                headers = headers.splice(0, headers.length - 1);
-                headers = _.union(headers, preset.headers);
-                $('#headers-keyvaleditor').keyvalueeditor('reset', headers);
+                var loc = -1;    
+                for(var i = 0; i < headers.length; i++) {
+                    if(headers[i].key === item.label) {
+                        loc = i;
+                        break;
+                    }
+                }          
+
+                if(loc >= 0) {
+                    headers.splice(loc, 1);        
+                }                                            
+                
+                var newHeaders = _.union(headers, preset.headers);                
+                $('#headers-keyvaleditor').keyvalueeditor('reset', newHeaders);
 
                 //Ensures that the key gets focus
                 var element = $('#headers-keyvaleditor .keyvalueeditor-last input:first-child')[0];
@@ -4152,7 +4159,9 @@ pm.request = {
 
 
             $("#response-headers").append(Handlebars.templates.response_headers({"items":this.headers}));
-            $('.response-header-name').popover();
+            $('.response-header-name').popover({
+                trigger: "hover",
+            });
         },
 
         clear:function () {
@@ -4184,7 +4193,9 @@ pm.request = {
         render:function (response) {
             pm.request.response.showScreen("success");
             $('#response-status').html(Handlebars.templates.item_response_code(response.responseCode));
-            $('.response-code').popover();
+            $('.response-code').popover({
+                trigger: "hover"
+            });
 
             //This sets pm.request.response.headers
             $("#response-headers").append(Handlebars.templates.response_headers({"items":response.headers}));
@@ -4322,7 +4333,9 @@ pm.request = {
                 pm.request.response.responseCode = responseCode;
 
                 $('#response-status').html(Handlebars.templates.item_response_code(responseCode));
-                $('.response-code').popover();
+                $('.response-code').popover({
+                    trigger: "hover"
+                });
 
                 //This sets pm.request.response.headers
                 this.loadHeaders(response.getAllResponseHeaders());

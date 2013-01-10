@@ -79,8 +79,7 @@ pm.indexedDB = {
     open_latest:function () {
 
         var v = 11;
-        var request = indexedDB.open("postman", v);
-        console.log("Open latest");
+        var request = indexedDB.open("postman", v);        
         request.onupgradeneeded = function (e) {
 
             var db = e.target.result;
@@ -621,7 +620,6 @@ pm.indexedDB = {
 
         getAllHeaderPresets:function (callback) {
             var db = pm.indexedDB.db;
-            console.log("Get presets");
             if (db == null) {
                 console.log("Db is null");
                 return;
@@ -636,12 +634,10 @@ pm.indexedDB = {
             var cursorRequest = index.openCursor(keyRange);
             var headerPresets = [];
 
-            console.log("Get presets");
             cursorRequest.onsuccess = function (e) {
                 var result = e.target.result;
 
                 if (!result) {
-                    console.log(headerPresets);
                     callback(headerPresets);
                     return;
                 }
