@@ -8,7 +8,53 @@ pm.layout = {
         "plusOne":'<script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script><g:plusone size="medium" href="https://chrome.google.com/webstore/detail/fdmmgilgnpjigdojojpjoooidkmcomcm"></g:plusone>'
     },
 
+    detectLauncher: function() {
+        var launcherNotificationCount = pm.settings.get("launcherNotificationCount");        
+        var maxCount = 2;
+        if(launcherNotificationCount == 2) {
+            return true;
+        }
+
+        var extension_id = "igofndmniooofoabmmpfonmdnhgchoka";
+        var extension_url = "https://chrome.google.com/webstore/detail/" + extension_id;
+        
+        chrome.management.getAll(function(extensions) {
+            var count = extensions.length;    
+
+            for(var i = 0; i < count; i++) { 
+              var ext = extensions[i];
+              if(ext.id == extension_id){
+                if(ext.enabled){
+                  return true;
+                }
+                else {                  
+                  return true;
+                }
+              }
+            }  
+
+            noty(
+            {
+                type:'information',
+                text:"You don't have the Postman Launcher installed! Click here to get it for quick access to Postman from the Chrome toolbar",
+                layout:'topRight',
+                callback: {
+                    onClose: function() {
+                        var url = "https://chrome.google.com/webstore/detail/postman-launcher/igofndmniooofoabmmpfonmdnhgchoka";
+                        window.open(url, '_blank');
+                        window.focus();
+                    }
+                }            
+            });
+
+            var launcherNotificationCount = parseInt(pm.settings.get("launcherNotificationCount")) + 1;        
+            pm.settings.set("launcherNotificationCount", launcherNotificationCount);
+        });        
+    },
+
     init:function () {
+        pm.layout.detectLauncher()   
+
         $('#make-postman-better').on("click", function () {
             $('#modal-spread-the-word').modal('show');
             pm.layout.attachSocialButtons();
@@ -131,6 +177,7 @@ pm.layout = {
         });
 
         $('a[rel="tooltip"]').tooltip();
+        $('input[rel="popover"]').popover();
 
         $('#form-add-to-collection').submit(function () {
             pm.collections.addRequestToCollection();

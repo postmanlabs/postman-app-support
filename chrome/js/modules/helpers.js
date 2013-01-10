@@ -15,6 +15,7 @@ pm.helpers = {
             pm.helpers.processRequestHelper(type);
         });
 
+        pm.helpers.oAuth1.init();
 
     },
 
@@ -81,6 +82,22 @@ pm.helpers = {
     },
 
     oAuth1:{
+        isAutoEnabled: false,
+
+        init:function () {
+            $('#request-helper-oauth1-auto').click(function() {
+                var isAutoEnabled = $('#request-helper-oauth1-auto').attr('checked') ? true : false;
+                pm.helpers.oAuth1.isAutoEnabled = isAutoEnabled;
+                
+                if(!isAutoEnabled) {
+                    $('#request-helper-oAuth1 .request-helper-submit').css("display", "inline-block");
+                }
+                else {
+                    $('#request-helper-oAuth1 .request-helper-submit').css("display", "none");   
+                }
+            });
+        },
+
         generateHelper:function () {
             $('#request-helper-oauth1-timestamp').val(OAuth.timestamp());
             $('#request-helper-oauth1-nonce').val(OAuth.nonce(6));

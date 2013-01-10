@@ -1551,7 +1551,7 @@ pm.request = {
         pm.request.setUrlParamString(pm.request.getUrlEditorParams());
         pm.request.headers = pm.request.getHeaderEditorParams();
 
-        if (pm.helpers.activeHelper == "oauth1") {
+        if (pm.helpers.activeHelper == "oauth1" && pm.helpers.oAuth1.isAutoEnabled) {            
             pm.helpers.oAuth1.generateHelper();
             pm.helpers.oAuth1.process();
         }

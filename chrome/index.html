@@ -40,20 +40,12 @@
             <ul>
                 <li>
                     <a href="http://www.twitter.com/postmanclient"
-                       rel="tooltip" target="_blank"
-                       data-original-title="Follow Postman on Twitter to get updates and
-		                        kick-ass API tips"
-                       data-placement="bottom">
-                        <img src="img/twitter.png"/>
+                        target="_blank"><img src="img/twitter.png"/>
                     </a>
                 </li>
                 <li>
                     <a href="http://www.github.com/a85/POSTMan-Chrome-Extension/wiki"
-                       rel="tooltip" target="_blank"
-                       data-original-title="Know more about Postman at
-		                        the wiki"
-                       data-placement="bottom">
-                        <img src="img/question_mark.png"/>
+                       target="_blank"><img src="img/question_mark.png"/>
                     </a>
                 </li>
             </ul>
@@ -251,24 +243,34 @@
                                key="oauth_version"/>
                     </div>
                 </div>
+
+                <div class="control-group">
+                    <label class="control-label">Add params to header</label>
+                    <div class="controls">
+                        <input type="checkbox" class="checkbox" id="request-helper-oauth1-header"/>
+                    </div>
+                </div>
                 
+                <div class="control-group">
+                    <label class="control-label">Auto add parameters</label>
+                    <div class="controls">
+                        <input type="checkbox" class="checkbox" id="request-helper-oauth1-auto"/>                        
+                    </div>
+                </div>
+
                 <div class="control-group">
                     <div class="controls">
                         <a class="btn btn-secondary request-helper-submit"
                            data-type="oAuth1">
                             Refresh request
                         </a>
-                        <label class="checkbox inline">
-                            <input type="checkbox" id="request-helper-oauth1-header"> Add to Header
-                        </label>
                     </div>
                 </div>
             </form>
         </div>
         <div class="request-helper-form-description">
             <h4>Note</h4>
-            The OAuth signature will be added to the header list. It'll be updated automatically
-            when you update the URL parameters.
+            If auto addition is enabled, OAuth parameters will be added when you send the request
         </div>
     </div>
 </div>
@@ -328,12 +330,19 @@
     <div id="url-keyvaleditor"></div>    
 </div>
 
-<div id="headers-keyvaleditor-container" class="row" style="margin-left: 0px; display: none;">
-    <div id="headers-keyvaleditor"></div>
-    <div id="headers-keyvaleditor-actions">
-        <input type="button" id="headers-keyvaleditor-actions-manage-presets"
-               class="btn"
-               value="Manage presets"/>        
+<div id="headers-keyvaleditor-container" class="row clearfix" style="margin-left: 0px; display: none;">
+    <div class="keyvaleditor-left">
+        <div id="headers-keyvaleditor"></div>
+    </div>
+    <div class="keyvaleditor-right">
+        <div id="headers-keyvaleditor-actions">
+            <input type="button" id="headers-keyvaleditor-actions-manage-presets"
+                   class="btn"
+                   rel="popover" 
+                   data-trigger="hover"
+                   data-placement="bottom" data-content="Presets let you define groups of headers for quick addition" data-original-title="Header presets"
+                   value="Manage presets"/><br/>           
+        </div>
     </div>
 </div>
 

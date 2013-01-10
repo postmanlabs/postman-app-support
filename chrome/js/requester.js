@@ -1681,6 +1681,7 @@ pm.helpers = {
             pm.helpers.processRequestHelper(type);
         });
 
+        pm.helpers.oAuth1.init();
 
     },
 
@@ -1747,6 +1748,22 @@ pm.helpers = {
     },
 
     oAuth1:{
+        isAutoEnabled: false,
+
+        init:function () {
+            $('#request-helper-oauth1-auto').click(function() {
+                var isAutoEnabled = $('#request-helper-oauth1-auto').attr('checked') ? true : false;
+                pm.helpers.oAuth1.isAutoEnabled = isAutoEnabled;
+                
+                if(!isAutoEnabled) {
+                    $('#request-helper-oAuth1 .request-helper-submit').css("display", "inline-block");
+                }
+                else {
+                    $('#request-helper-oAuth1 .request-helper-submit').css("display", "none");   
+                }
+            });
+        },
+
         generateHelper:function () {
             $('#request-helper-oauth1-timestamp').val(OAuth.timestamp());
             $('#request-helper-oauth1-nonce').val(OAuth.nonce(6));
@@ -2918,7 +2935,53 @@ pm.layout = {
         "plusOne":'<script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script><g:plusone size="medium" href="https://chrome.google.com/webstore/detail/fdmmgilgnpjigdojojpjoooidkmcomcm"></g:plusone>'
     },
 
+    detectLauncher: function() {
+        var launcherNotificationCount = pm.settings.get("launcherNotificationCount");        
+        var maxCount = 2;
+        if(launcherNotificationCount == 2) {
+            return true;
+        }
+
+        var extension_id = "igofndmniooofoabmmpfonmdnhgchoka";
+        var extension_url = "https://chrome.google.com/webstore/detail/" + extension_id;
+        
+        chrome.management.getAll(function(extensions) {
+            var count = extensions.length;    
+
+            for(var i = 0; i < count; i++) { 
+              var ext = extensions[i];
+              if(ext.id == extension_id){
+                if(ext.enabled){
+                  return true;
+                }
+                else {                  
+                  return true;
+                }
+              }
+            }  
+
+            noty(
+            {
+                type:'information',
+                text:"You don't have the Postman Launcher installed! Click here to get it for quick access to Postman from the Chrome toolbar",
+                layout:'topRight',
+                callback: {
+                    onClose: function() {
+                        var url = "https://chrome.google.com/webstore/detail/postman-launcher/igofndmniooofoabmmpfonmdnhgchoka";
+                        window.open(url, '_blank');
+                        window.focus();
+                    }
+                }            
+            });
+
+            var launcherNotificationCount = parseInt(pm.settings.get("launcherNotificationCount")) + 1;        
+            pm.settings.set("launcherNotificationCount", launcherNotificationCount);
+        });        
+    },
+
     init:function () {
+        pm.layout.detectLauncher()   
+
         $('#make-postman-better').on("click", function () {
             $('#modal-spread-the-word').modal('show');
             pm.layout.attachSocialButtons();
@@ -3041,6 +3104,7 @@ pm.layout = {
         });
 
         $('a[rel="tooltip"]').tooltip();
+        $('input[rel="popover"]').popover();
 
         $('#form-add-to-collection').submit(function () {
             pm.collections.addRequestToCollection();
@@ -4986,7 +5050,7 @@ pm.request = {
         pm.request.setUrlParamString(pm.request.getUrlEditorParams());
         pm.request.headers = pm.request.getHeaderEditorParams();
 
-        if (pm.helpers.activeHelper == "oauth1") {
+        if (pm.helpers.activeHelper == "oauth1" && pm.helpers.oAuth1.isAutoEnabled) {            
             pm.helpers.oAuth1.generateHelper();
             pm.helpers.oAuth1.process();
         }
@@ -5154,6 +5218,7 @@ pm.settings = {
         pm.settings.create("usePostmanProxy", false);        
         pm.settings.create("proxyURL", "");
         pm.settings.create("lastRequest", "");
+        pm.settings.create("launcherNotificationCount", 2);
         pm.settings.create("variableDelimiter", "{{...}}");
 
         $('#history-count').val(pm.settings.get("historyCount"));
@@ -5239,6 +5304,7 @@ pm.settings = {
     },
 
     set:function (key, value) {
+        console.log(key, value);
         pm.settings[key] = value;
         localStorage[key] = value;
     },
