@@ -15,7 +15,7 @@ pm.settings = {
         pm.settings.create("usePostmanProxy", false);        
         pm.settings.create("proxyURL", "");
         pm.settings.create("lastRequest", "");
-        pm.settings.create("launcherNotificationCount", 2);
+        pm.settings.create("launcherNotificationCount", 0);
         pm.settings.create("variableDelimiter", "{{...}}");
 
         $('#history-count').val(pm.settings.get("historyCount"));

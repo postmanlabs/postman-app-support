@@ -2933,46 +2933,30 @@ pm.layout = {
 
     detectLauncher: function() {
         var launcherNotificationCount = pm.settings.get("launcherNotificationCount");        
-        var maxCount = 2;
-        if(launcherNotificationCount == 2) {
+        var maxCount = 1;
+        if(launcherNotificationCount == 1) {
             return true;
         }
 
         var extension_id = "igofndmniooofoabmmpfonmdnhgchoka";
-        var extension_url = "https://chrome.google.com/webstore/detail/" + extension_id;
-        
-        chrome.management.getAll(function(extensions) {
-            var count = extensions.length;    
+        var extension_url = "https://chrome.google.com/webstore/detail/" + extension_id;        
 
-            for(var i = 0; i < count; i++) { 
-              var ext = extensions[i];
-              if(ext.id == extension_id){
-                if(ext.enabled){
-                  return true;
+        noty(
+        {
+            type:'information',
+            text:"Click here to get the Postman Launcher for quick access to Postman from the Chrome toolbar",
+            layout:'topRight',
+            callback: {
+                onClose: function() {
+                    var url = "https://chrome.google.com/webstore/detail/postman-launcher/igofndmniooofoabmmpfonmdnhgchoka";
+                    window.open(url, '_blank');
+                    window.focus();
                 }
-                else {                  
-                  return true;
-                }
-              }
-            }  
+            }            
+        });
 
-            noty(
-            {
-                type:'information',
-                text:"You don't have the Postman Launcher installed! Click here to get it for quick access to Postman from the Chrome toolbar",
-                layout:'topRight',
-                callback: {
-                    onClose: function() {
-                        var url = "https://chrome.google.com/webstore/detail/postman-launcher/igofndmniooofoabmmpfonmdnhgchoka";
-                        window.open(url, '_blank');
-                        window.focus();
-                    }
-                }            
-            });
-
-            var launcherNotificationCount = parseInt(pm.settings.get("launcherNotificationCount")) + 1;        
-            pm.settings.set("launcherNotificationCount", launcherNotificationCount);
-        });        
+        var launcherNotificationCount = parseInt(pm.settings.get("launcherNotificationCount")) + 1;        
+        pm.settings.set("launcherNotificationCount", launcherNotificationCount);       
     },
 
     init:function () {
@@ -5231,7 +5215,7 @@ pm.settings = {
         pm.settings.create("usePostmanProxy", false);        
         pm.settings.create("proxyURL", "");
         pm.settings.create("lastRequest", "");
-        pm.settings.create("launcherNotificationCount", 2);
+        pm.settings.create("launcherNotificationCount", 0);
         pm.settings.create("variableDelimiter", "{{...}}");
 
         $('#history-count').val(pm.settings.get("historyCount"));
@@ -5351,4 +5335,3 @@ pm.urlCache = {
         });
     }
 };
->>>>>>> ee9435d733274d692a4cdcf6a9e7fea75a32247a
