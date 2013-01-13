@@ -56,7 +56,7 @@ CodeMirror.defineMode("xquery", function(config, parserConfig) {
     'preceding-sibling','processing-instruction','ref','return','returns','satisfies','schema','schema-element',
     'self','some','sortby','stable','text','then','to','treat','typeswitch','union','variable','version','where',
     'xquery', 'empty-sequence'];
-    for(var i=0, l=basic.length; i < l; i++) { kwObj[basic[i]] = kw(basic[i])};
+    for(var i=0, l=basic.length; i < l; i++) { kwObj[basic[i]] = kw(basic[i]);};
     
     // a list of types. For each add a property to kwObj with the value of 
     // {type: "atom", style: "atom"}
@@ -137,7 +137,7 @@ CodeMirror.defineMode("xquery", function(config, parserConfig) {
         return ret("tag", "tag");
       }
       else  
-        return ret("word", "word");
+        return ret("word", "variable");
     }
     // if a number
     else if (/\d/.test(ch)) {
@@ -191,7 +191,7 @@ CodeMirror.defineMode("xquery", function(config, parserConfig) {
       if(!known) stream.eatWhile(/[\w\$_-]/);
       
       // gobble a colon in the case that is a lib func type call fn:doc
-      var foundColon = stream.eat(":")
+      var foundColon = stream.eat(":");
       
       // if there's not a second colon, gobble another word. Otherwise, it's probably an axis specifier
       // which should get matched as a keyword
@@ -213,7 +213,7 @@ CodeMirror.defineMode("xquery", function(config, parserConfig) {
       // if the previous word was element, attribute, axis specifier, this word should be the name of that
       if(isInXmlConstructor(state)) {
         popStateStack(state);
-        return ret("word", "word", word);
+        return ret("word", "variable", word);
       }
       // as previously checked, if the word is element,attribute, axis specifier, call it an "xmlconstructor" and 
       // push the stack so we know to look for it on the next word
@@ -221,7 +221,7 @@ CodeMirror.defineMode("xquery", function(config, parserConfig) {
       
       // if the word is known, return the details of that else just call this a generic 'word'
       return known ? ret(known.type, known.style, word) :
-                     ret("word", "word", word);
+                     ret("word", "variable", word);
     }
   }
 
@@ -325,7 +325,7 @@ CodeMirror.defineMode("xquery", function(config, parserConfig) {
         state.tokenize = tokenBase;        
       }
       return ret("tag", "tag");
-    }
+    };
   }
 
   // tokenizer for XML attributes
@@ -365,6 +365,7 @@ CodeMirror.defineMode("xquery", function(config, parserConfig) {
   
   // handle comments, including nested 
   function tokenXMLComment(stream, state) {
+    var ch;
     while (ch = stream.next()) {
       if (ch == "-" && stream.match("->", true)) {
         state.tokenize = tokenBase;        
@@ -376,6 +377,7 @@ CodeMirror.defineMode("xquery", function(config, parserConfig) {
 
   // handle CDATA
   function tokenCDATA(stream, state) {
+    var ch;
     while (ch = stream.next()) {
       if (ch == "]" && stream.match("]", true)) {
         state.tokenize = tokenBase;        
@@ -386,6 +388,7 @@ CodeMirror.defineMode("xquery", function(config, parserConfig) {
 
   // handle preprocessing instructions
   function tokenPreProcessing(stream, state) {
+    var ch;
     while (ch = stream.next()) {
       if (ch == "?" && stream.match(">", true)) {
         state.tokenize = tokenBase;        
@@ -422,7 +425,7 @@ CodeMirror.defineMode("xquery", function(config, parserConfig) {
   
   function popStateStack(state) {
     var popped = state.stack.pop();
-    var reinstateTokenize = state.stack.length && state.stack[state.stack.length-1].tokenize
+    var reinstateTokenize = state.stack.length && state.stack[state.stack.length-1].tokenize;
     state.tokenize = reinstateTokenize || tokenBase;
   }
   

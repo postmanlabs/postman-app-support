@@ -21,7 +21,7 @@ CodeMirror.defineMode("verilog", function(config, parserConfig) {
     }
     if (/[\[\]{}\(\),;\:\.]/.test(ch)) {
       curPunc = ch;
-      return null
+      return null;
     }
     if (/[\d']/.test(ch)) {
       stream.eatWhile(/[\w\.']/);
@@ -48,7 +48,7 @@ CodeMirror.defineMode("verilog", function(config, parserConfig) {
       return "keyword";
     }
     if (atoms.propertyIsEnumerable(cur)) return "atom";
-    return "word";
+    return "variable";
   }
 
   function tokenString(quote) {

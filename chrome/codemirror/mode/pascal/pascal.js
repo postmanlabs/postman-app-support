@@ -26,7 +26,7 @@ CodeMirror.defineMode("pascal", function(config) {
       return tokenComment(stream, state);
     }
     if (/[\[\]{}\(\),;\:\.]/.test(ch)) {
-      return null
+      return null;
     }
     if (/\d/.test(ch)) {
       stream.eatWhile(/[\w\.]/);
@@ -46,7 +46,7 @@ CodeMirror.defineMode("pascal", function(config) {
     var cur = stream.current();
     if (keywords.propertyIsEnumerable(cur)) return "keyword";
     if (atoms.propertyIsEnumerable(cur)) return "atom";
-    return "word";
+    return "variable";
   }
 
   function tokenString(quote) {

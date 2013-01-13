@@ -1,5 +1,6 @@
 .DS_Store
 .idea/
+node_modules/
 design/
 screenshots/
 tests/selenium/chromedriver.log
@@ -8,4 +9,5 @@ tests/selenium/chromedriver.log
 *.zip
 #*
 .#*
-
+*.pyc
+tests/selenium/pmtests/*.pyc

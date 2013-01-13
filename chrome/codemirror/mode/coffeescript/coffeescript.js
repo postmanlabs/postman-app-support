@@ -10,11 +10,12 @@ CodeMirror.defineMode('coffeescript', function(conf) {
     }
 
     var singleOperators = new RegExp("^[\\+\\-\\*/%&|\\^~<>!\?]");
-    var singleDelimiters = new RegExp('^[\\(\\)\\[\\]\\{\\}@,:`=;\\.]');
+    var singleDelimiters = new RegExp('^[\\(\\)\\[\\]\\{\\},:`=;\\.]');
     var doubleOperators = new RegExp("^((\->)|(\=>)|(\\+\\+)|(\\+\\=)|(\\-\\-)|(\\-\\=)|(\\*\\*)|(\\*\\=)|(\\/\\/)|(\\/\\=)|(==)|(!=)|(<=)|(>=)|(<>)|(<<)|(>>)|(//))");
     var doubleDelimiters = new RegExp("^((\\.\\.)|(\\+=)|(\\-=)|(\\*=)|(%=)|(/=)|(&=)|(\\|=)|(\\^=))");
     var tripleDelimiters = new RegExp("^((\\.\\.\\.)|(//=)|(>>=)|(<<=)|(\\*\\*=))");
     var identifiers = new RegExp("^[_A-Za-z$][_A-Za-z$0-9]*");
+    var properties = new RegExp("^(@|this\.)[_A-Za-z$][_A-Za-z$0-9]*");
 
     var wordOperators = wordRegexp(['and', 'or', 'not',
                                     'is', 'isnt', 'in',
@@ -157,6 +158,10 @@ CodeMirror.defineMode('coffeescript', function(conf) {
         if (stream.match(identifiers)) {
             return 'variable';
         }
+        
+        if (stream.match(properties)) {
+            return 'property';
+        }
 
         // Handle non-detected items
         stream.next();
@@ -182,7 +187,7 @@ CodeMirror.defineMode('coffeescript', function(conf) {
             }
             if (singleline) {
                 if (conf.mode.singleLineStringErrors) {
-                    outclass = ERRORCLASS
+                    outclass = ERRORCLASS;
                 } else {
                     state.tokenize = tokenBase;
                 }
@@ -200,7 +205,7 @@ CodeMirror.defineMode('coffeescript', function(conf) {
             }
             stream.eatWhile("#");
         }
-        return "comment"
+        return "comment";
     }
 
     function indent(stream, state, type) {
@@ -239,7 +244,7 @@ CodeMirror.defineMode('coffeescript', function(conf) {
             while (state.scopes[0].offset !== _indent) {
                 state.scopes.shift();
             }
-            return false
+            return false;
         } else {
             state.scopes.shift();
             return false;
@@ -259,12 +264,6 @@ CodeMirror.defineMode('coffeescript', function(conf) {
             } else {
                 return ERRORCLASS;
             }
-        }
-
-        // Handle properties
-        if (current === '@') {
-            stream.eat('@');
-            return 'keyword';
         }
 
         // Handle scope changes.

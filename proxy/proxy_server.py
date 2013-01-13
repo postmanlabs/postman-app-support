@@ -63,6 +63,20 @@ class InterceptingProxyClient(ProxyClient):
             if not header["name"] in self.all_headers:
                 ProxyClient.sendHeader(self, header["name"], header["value"])
         ProxyClient.endHeaders(self)
+
+    def handleHeader(self, key, value):
+        # change response header here
+        print("Header: %s: %s" % (key, value))
+        l = key.lower()
+        if l == "location":
+            key = "Postman-Location"
+
+        ProxyClient.handleHeader(self, key, value)
+
+    def handleResponseEnd(self):
+        if not self._finished:
+            self.father.responseHeaders.setRawHeaders("client", ["location"])
+        ProxyClient.handleResponseEnd(self)
  
 class InterceptingProxyClientFactory(ProxyClientFactory):
     protocol = InterceptingProxyClient

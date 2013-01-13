@@ -21,7 +21,7 @@ CodeMirror.defineMode("groovy", function(config, parserConfig) {
     }
     if (/[\[\]{}\(\),;\:\.]/.test(ch)) {
       curPunc = ch;
-      return null
+      return null;
     }
     if (/\d/.test(ch)) {
       stream.eatWhile(/[\w\.]/);
@@ -59,7 +59,7 @@ CodeMirror.defineMode("groovy", function(config, parserConfig) {
       if (blockKeywords.propertyIsEnumerable(cur)) curPunc = "newstatement";
       return "keyword";
     }
-    return "word";
+    return "variable";
   }
   tokenBase.isBase = true;
 

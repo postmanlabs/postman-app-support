@@ -1,6 +1,6 @@
 {
     "name":"__MSG_name__",
-    "version":"0.7.6",
+    "version":"0.8",
     "icons":{
         "16":"icon_16.png",
         "32":"icon_32.png",
@@ -15,7 +15,7 @@
     },
 
     "default_locale":"en",
-    "permissions":["cookies", "http://*/*", "https://*/*"],
+    "permissions":["cookies", "http://*/*", "https://*/*", "management"],
     "content_scripts":[
         {
             "matches":["http://getpostman.com/*", "https://getpostman.com/*"],

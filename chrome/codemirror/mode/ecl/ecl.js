@@ -49,7 +49,7 @@ CodeMirror.defineMode("ecl", function(config) {
     }
     if (/[\[\]{}\(\),;\:\.]/.test(ch)) {
       curPunc = ch;
-      return null
+      return null;
     }
     if (/\d/.test(ch)) {
       stream.eatWhile(/[\w\.]/);
@@ -100,7 +100,7 @@ CodeMirror.defineMode("ecl", function(config) {
 	    }
     }
     if (atoms.propertyIsEnumerable(cur)) return "atom";
-    return "word";
+    return null;
   }
 
   function tokenString(quote) {
@@ -200,4 +200,4 @@ CodeMirror.defineMode("ecl", function(config) {
   };
 });
 
-CodeMirror.defineMIME("text/x-ecl");
+CodeMirror.defineMIME("text/x-ecl", "ecl");
