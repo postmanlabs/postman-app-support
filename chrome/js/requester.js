@@ -2940,7 +2940,7 @@ pm.layout = {
 
         var extension_id = "igofndmniooofoabmmpfonmdnhgchoka";
         var extension_url = "https://chrome.google.com/webstore/detail/" + extension_id;        
-
+        
         noty(
         {
             type:'information',
@@ -2953,7 +2953,7 @@ pm.layout = {
                     window.focus();
                 }
             }            
-        });
+        });        
 
         var launcherNotificationCount = parseInt(pm.settings.get("launcherNotificationCount")) + 1;        
         pm.settings.set("launcherNotificationCount", launcherNotificationCount);       
