@@ -11,7 +11,7 @@ pm.layout = {
     detectLauncher: function() {
         var launcherNotificationCount = pm.settings.get("launcherNotificationCount");        
         var maxCount = 1;
-        if(launcherNotificationCount == 1) {
+        if(launcherNotificationCount >= 1) {
             return true;
         }
 
