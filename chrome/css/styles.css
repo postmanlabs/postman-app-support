@@ -1332,12 +1332,15 @@ li .right {
     display: none;
     float: left;
     font-size: 11px;
-    margin-top: 5px;
     margin-left: 15px;
 }
 
 #body-editor-mode-selector .btn-group a {
     font-size: 12px !important;
+    margin-top: 5px;
+    float: left;
+    width: 40px;
+    margin-right: 15px;
 }
 
 #broadcasts-count {
