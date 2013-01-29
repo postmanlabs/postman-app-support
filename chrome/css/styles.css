@@ -1335,6 +1335,12 @@ li .right {
     margin-left: 15px;
 }
 
+#body-editor-mode-selector-format-result {
+    margin: 10px 10px 10px 10px;
+    color: red;
+    display: none;
+}
+
 #body-editor-mode-selector .btn-group a {
     font-size: 12px !important;
     margin-top: 5px;

@@ -76,6 +76,9 @@ pm.indexedDB.modes = {
     readonly:"readonly"
 };
 
+pm.jsonlint = jsonlint_postman;
+jsonlint_postman = null;
+
 pm.fs = {};
 pm.webUrl = "http://getpostman.com";
 pm.bannedHeaders = [
@@ -144,6 +147,7 @@ window.requestFileSystem = window.requestFileSystem || window.webkitRequestFileS
  Bootstrap
  CodeMirror
  Underscore
+ JsonLint
 
  Code status
 
@@ -3580,16 +3584,30 @@ pm.request = {
         },
         
         autoFormatEditor:function (mode) {
-          var content = '';
+          var content = pm.request.body.codeMirror.getValue(),
+              validated = null, result = null;
+          
+          $('#body-editor-mode-selector-format-result').empty().hide();
           
           if (pm.request.body.isEditorInitialized) {
             
             // In case its a JSON then just properly stringify it.
             // CodeMirror does not work well with pure JSON format.
             if (mode === 'javascript') {
-              content = JSON.parse(pm.request.body.codeMirror.getValue());
-              pm.request.body.codeMirror.setValue(JSON.stringify(content, null, 4));
               
+              // Validate code first.
+              try {
+                validated = pm.jsonlint.parse(content);
+                if (validated) {
+                  content = JSON.parse(pm.request.body.codeMirror.getValue());
+                  pm.request.body.codeMirror.setValue(JSON.stringify(content, null, 4));
+                }
+              } catch(e) {
+                result = e.message;
+                // Show jslint result.
+                // We could also highlight the line with error here.
+                $('#body-editor-mode-selector-format-result').html(result).show();
+              }
             } else { // Otherwise use internal CodeMirror.autoFormatRage method for a specific mode.
               var totalLines = pm.request.body.codeMirror.lineCount(),
                   totalChars = pm.request.body.codeMirror.getValue().length;

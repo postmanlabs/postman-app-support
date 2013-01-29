@@ -159,6 +159,7 @@ pm.init = function () {
     pm.settings.init();
     pm.layout.init();
     pm.editor.init();
+    pm.jsonlint.init();
     pm.request.init();
     pm.urlCache.refreshAutoComplete();
     pm.helpers.init();
