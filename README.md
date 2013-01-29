@@ -40,4 +40,4 @@ If you downloaded the Postman zip file here is what you need to do to install it
 1. Go to Tools > Extensions inside Chrome by clicking on the wrench icon on top right.
 2. Select "Load unpacked extension"
 3. Select the "chrome" folder with manifest.json in it's root
-4. Postman will be installed as a developer extension. The installation from the Chrome Web Store will remain independent with all your dataa.
+4. Postman will be installed as a developer extension. The installation from the Chrome Web Store will remain independent with all your data.
