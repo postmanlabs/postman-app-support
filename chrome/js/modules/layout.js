@@ -9,11 +9,15 @@ pm.layout = {
     },
 
     detectLauncher: function() {
+        if(pm.debug) {
+            return;    
+        }
+
         var launcherNotificationCount = pm.settings.get("launcherNotificationCount");        
         var maxCount = 1;
         if(launcherNotificationCount >= 1) {
             return true;
-        }
+        }        
 
         var extension_id = "igofndmniooofoabmmpfonmdnhgchoka";
         var extension_url = "https://chrome.google.com/webstore/detail/" + extension_id;        

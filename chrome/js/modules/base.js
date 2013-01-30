@@ -69,6 +69,8 @@ function sortAlphabetical(a, b) {
 
 var pm = {};
 
+pm.debug = true;
+
 pm.indexedDB = {};
 pm.indexedDB.db = null;
 pm.indexedDB.modes = {
