@@ -88,9 +88,52 @@ pm.request = {
                     pm.request.body.codeMirror.setOption("mode", mode);
                 }
 
+                if (mode === "text") {
+                  $('#body-editor-mode-selector-format').addClass('disabled');
+                } else {
+                  $('#body-editor-mode-selector-format').removeClass('disabled');
+                }
+
+                //pm.request.body.autoFormatEditor(mode);
                 pm.request.body.codeMirror.refresh();
             }
+        },
 
+        autoFormatEditor:function (mode) {
+          var content = pm.request.body.codeMirror.getValue(),
+              validated = null, result = null;
+          
+          $('#body-editor-mode-selector-format-result').empty().hide();
+          
+          if (pm.request.body.isEditorInitialized) {
+            
+            // In case its a JSON then just properly stringify it.
+            // CodeMirror does not work well with pure JSON format.
+            if (mode === 'javascript') {
+              
+              // Validate code first.
+              try {
+                validated = pm.jsonlint.instance.parse(content);
+                if (validated) {
+                  content = JSON.parse(pm.request.body.codeMirror.getValue());
+                  pm.request.body.codeMirror.setValue(JSON.stringify(content, null, 4));
+                }
+              } catch(e) {
+                result = e.message;
+                // Show jslint result.
+                // We could also highlight the line with error here.
+                $('#body-editor-mode-selector-format-result').html(result).show();
+              }
+            } else { // Otherwise use internal CodeMirror.autoFormatRage method for a specific mode.
+              var totalLines = pm.request.body.codeMirror.lineCount(),
+                  totalChars = pm.request.body.codeMirror.getValue().length;
+              
+              pm.request.body.codeMirror.autoFormatRange(
+                {line: 0, ch: 0}, 
+                {line: totalLines - 1, ch: pm.request.body.codeMirror.getLine(totalLines - 1).length}
+              );
+            }
+          }
         },
 
         initFormDataEditor:function () {
@@ -134,6 +177,17 @@ pm.request = {
                 var editorMode = $(event.target).attr("data-editor-mode");
                 var language = $(event.target).attr("data-language");
                 pm.request.body.setEditorMode(editorMode, language);
+            });
+            
+            // 'Format code' button listener.
+            $('#body-editor-mode-selector-format').on('click.postman', function(evt) {
+              var editorMode = $(event.target).attr("data-editor-mode");
+
+              if ($(evt.currentTarget).hasClass('disabled')) {
+                return;
+              }
+
+              //pm.request.body.autoFormatEditor(pm.request.body.codeMirror.getMode().name);
             });
         },
 
