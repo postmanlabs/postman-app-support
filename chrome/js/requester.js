@@ -4155,6 +4155,12 @@ pm.request = {
             pm.request.response.setFormat(mode, text, pm.settings.get("previewType"), true);
         },
 
+        stripScriptTag:function (text) {
+            var re = /<script\b[^>]*>([\s\S]*?)<\/script>/gm;            
+            text = text.replace(re, "");            
+            return text;
+        },
+
         changePreviewType:function (newType) {
             if (this.previewType === newType) {
                 return;
@@ -4189,7 +4195,7 @@ pm.request = {
                 $('#response-as-code').css("display", "none");
                 $('#code-data').css("display", "none");
                 $('#response-as-preview').css("display", "block");
-                $('#response-pretty-modifiers').css("display", "none");
+                $('#response-pretty-modifiers').css("display", "none");                
             }
         },
 
@@ -4314,7 +4320,9 @@ pm.request = {
             pm.request.response.renderCookies(response.cookies);
             if (responsePreviewType === "html") {
                 $("#response-as-preview").html("");
-                pm.filesystem.renderResponsePreview("response.html", response.text, "html", function (response_url) {
+                
+                var cleanResponseText = pm.request.response.stripScriptTag(pm.request.response.text);
+                pm.filesystem.renderResponsePreview("response.html", cleanResponseText, "html", function (response_url) {
                     $("#response-as-preview").html("<iframe></iframe>");
                     $("#response-as-preview iframe").attr("src", response_url);
                 });
@@ -4473,11 +4481,12 @@ pm.request = {
                 pm.request.response.loadCookies(url);
 
                 if (responsePreviewType === "html") {
-                    $("#response-as-preview").html("");
-                    pm.filesystem.renderResponsePreview("response.html", pm.request.response.text, "html", function (response_url) {
+                    $("#response-as-preview").html("");                                    
+                    var cleanResponseText = pm.request.response.stripScriptTag(pm.request.response.text);                    
+                    pm.filesystem.renderResponsePreview("response.html", cleanResponseText, "html", function (response_url) {
                         $("#response-as-preview").html("<iframe></iframe>");
                         $("#response-as-preview iframe").attr("src", response_url);
-                    });
+                    });    
                 }
 
                 if (pm.request.method === "HEAD") {
