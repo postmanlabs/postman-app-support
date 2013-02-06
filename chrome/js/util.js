@@ -27,10 +27,11 @@ function findPosition(list, key, value) {
 }
 
 function limitStringLineWidth(string, numChars) {
+    string = string.replace("&", "&amp;");
     var remainingChars = string;
     var finalString = "";
     var numLeft = string.length;
-    do {
+    do {        
         finalString += remainingChars.substr(0, numChars);
         remainingChars = remainingChars.substr(numChars);
         numLeft -= numChars;

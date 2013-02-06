@@ -67,6 +67,7 @@ pm.history = {
                     if (url.length > 80) {
                         url = url.substring(0, 80) + "...";
                     }
+                    
                     url = limitStringLineWidth(url, 40);
 
                     var request = {
