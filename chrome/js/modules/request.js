@@ -328,8 +328,7 @@ pm.request = {
 
             return data;
         },
-
-        //Modify this to load values with types for keyvaleditor
+        
         loadData:function (mode, data, asObjects) {
             var body = pm.request.body;
             body.setDataMode(mode);
@@ -338,8 +337,7 @@ pm.request = {
 
             var params;
             if (mode === "params") {
-                if(asObjects === true) {
-                    console.log(data);
+                if(asObjects === true) {                    
                     $('#formdata-keyvaleditor').keyvalueeditor('reset', data);        
                 }
                 else {
@@ -1449,7 +1447,7 @@ pm.request = {
         }
     },
 
-    loadRequestInEditor:function (request, isFromCollection, isFromSample) {
+    loadRequestInEditor:function (request, isFromCollection, isFromSample) {        
         pm.helpers.showRequestHelper("normal");
         this.url = request.url;
         this.body.data = request.body;

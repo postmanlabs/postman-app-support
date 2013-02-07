@@ -333,8 +333,9 @@ pm.collections = {
         collectionRequest.headers = pm.request.getPackedHeaders();
         collectionRequest.url = url;
         collectionRequest.method = pm.request.method;
-        collectionRequest.data = pm.request.body.getData();
+        collectionRequest.data = pm.request.body.getData(true);
         collectionRequest.dataMode = pm.request.dataMode;
+        collectionRequest.version = 2;
         collectionRequest.time = new Date().getTime();
 
         pm.indexedDB.getCollectionRequest(collectionRequest.id, function (req) {

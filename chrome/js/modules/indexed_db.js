@@ -185,10 +185,11 @@ pm.indexedDB = {
             "url":req.url.toString(),
             "method":req.method.toString(),
             "headers":req.headers.toString(),
-            "data":req.data.toString(),
+            "data":req.data,
             "dataMode":req.dataMode.toString(),
             "timestamp":req.timestamp,
-            "responses":req.responses
+            "responses":req.responses,
+            "version":req.version
         });
 
         collectionRequest.onsuccess = function () {

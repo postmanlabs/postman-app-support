@@ -630,8 +630,9 @@ pm.collections = {
         collectionRequest.headers = pm.request.getPackedHeaders();
         collectionRequest.url = url;
         collectionRequest.method = pm.request.method;
-        collectionRequest.data = pm.request.body.getData();
+        collectionRequest.data = pm.request.body.getData(true);
         collectionRequest.dataMode = pm.request.dataMode;
+        collectionRequest.version = 2;
         collectionRequest.time = new Date().getTime();
 
         pm.indexedDB.getCollectionRequest(collectionRequest.id, function (req) {
@@ -2307,10 +2308,11 @@ pm.indexedDB = {
             "url":req.url.toString(),
             "method":req.method.toString(),
             "headers":req.headers.toString(),
-            "data":req.data.toString(),
+            "data":req.data,
             "dataMode":req.dataMode.toString(),
             "timestamp":req.timestamp,
-            "responses":req.responses
+            "responses":req.responses,
+            "version":req.version
         });
 
         collectionRequest.onsuccess = function () {
@@ -3827,8 +3829,7 @@ pm.request = {
 
             return data;
         },
-
-        //Modify this to load values with types for keyvaleditor
+        
         loadData:function (mode, data, asObjects) {
             var body = pm.request.body;
             body.setDataMode(mode);
@@ -3837,8 +3838,7 @@ pm.request = {
 
             var params;
             if (mode === "params") {
-                if(asObjects === true) {
-                    console.log(data);
+                if(asObjects === true) {                    
                     $('#formdata-keyvaleditor').keyvalueeditor('reset', data);        
                 }
                 else {
@@ -4948,7 +4948,7 @@ pm.request = {
         }
     },
 
-    loadRequestInEditor:function (request, isFromCollection, isFromSample) {
+    loadRequestInEditor:function (request, isFromCollection, isFromSample) {        
         pm.helpers.showRequestHelper("normal");
         this.url = request.url;
         this.body.data = request.body;
