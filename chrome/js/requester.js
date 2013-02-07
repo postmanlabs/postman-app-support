@@ -3505,7 +3505,7 @@ pm.request = {
     dataMode:"params",
     isFromCollection:false,
     collectionRequestId:"",
-    methodsWithBody:["POST", "PUT", "PATCH", "DELETE"],
+    methodsWithBody:["POST", "PUT", "PATCH", "DELETE", "LINK", "UNLINK"],
     areListenersAdded:false,
     startTime:0,
     endTime:0,
@@ -3767,6 +3767,7 @@ pm.request = {
             return pm.request.body.mode;
         },
 
+        //Be able to return direct keyvaleditor params
         getData:function () {
             var data;
             var mode = pm.request.body.mode;
@@ -3808,6 +3809,7 @@ pm.request = {
             return data;
         },
 
+        //Modify this to load values with types for keyvaleditor
         loadData:function (mode, data) {
             var body = pm.request.body;
             body.setDataMode(mode);
