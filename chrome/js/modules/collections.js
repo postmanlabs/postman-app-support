@@ -384,11 +384,12 @@ pm.collections = {
         collectionRequest.headers = pm.request.getPackedHeaders();
         collectionRequest.url = url;
         collectionRequest.method = pm.request.method;
-        collectionRequest.data = pm.request.body.getData();
+        collectionRequest.data = pm.request.body.getData(true);
         collectionRequest.dataMode = pm.request.dataMode;
         collectionRequest.name = newRequestName;
         collectionRequest.description = newRequestDescription;
         collectionRequest.time = new Date().getTime();
+        collectionRequest.version = 2;
         collectionRequest.responses = pm.request.responses;
 
         if (newCollection) {

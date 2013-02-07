@@ -681,11 +681,12 @@ pm.collections = {
         collectionRequest.headers = pm.request.getPackedHeaders();
         collectionRequest.url = url;
         collectionRequest.method = pm.request.method;
-        collectionRequest.data = pm.request.body.getData();
+        collectionRequest.data = pm.request.body.getData(true);
         collectionRequest.dataMode = pm.request.dataMode;
         collectionRequest.name = newRequestName;
         collectionRequest.description = newRequestDescription;
         collectionRequest.time = new Date().getTime();
+        collectionRequest.version = 2;
         collectionRequest.responses = pm.request.responses;
 
         if (newCollection) {
@@ -2022,7 +2023,7 @@ pm.history = {
                     if (url.length > 80) {
                         url = url.substring(0, 80) + "...";
                     }
-                    
+
                     url = limitStringLineWidth(url, 40);
 
                     var request = {
@@ -2055,6 +2056,7 @@ pm.history = {
     },
 
     addRequest:function (url, method, headers, data, dataMode) {
+        console.log(data);
         var id = guid();
         var maxHistoryCount = pm.settings.get("historyCount");
         var requests = this.requests;
@@ -2071,9 +2073,10 @@ pm.history = {
             "url":url.toString(),
             "method":method.toString(),
             "headers":headers.toString(),
-            "data":data.toString(),
+            "data":data,
             "dataMode":dataMode.toString(),
-            "timestamp":new Date().getTime()
+            "timestamp":new Date().getTime(),
+            "version": 2
         };
 
         var index = this.requestExists(historyRequest);
@@ -3768,7 +3771,7 @@ pm.request = {
         },
 
         //Be able to return direct keyvaleditor params
-        getData:function () {
+        getData:function (asObjects) {
             var data;
             var mode = pm.request.body.mode;
             var params;
@@ -3782,12 +3785,21 @@ pm.request = {
                 for (i = 0; i < params.length; i++) {
                     param = {
                         key:params[i].key,
-                        value:params[i].value
+                        value:params[i].value,
+                        type:params[i].type
                     };
 
                     newParams.push(param);
                 }
-                data = pm.request.getBodyParamString(newParams);
+
+                if(asObjects === true) {
+                    console.log(newParams);
+                    return newParams;
+                }
+                else {
+                    data = pm.request.getBodyParamString(newParams);    
+                }
+                
             }
             else if (mode === "raw") {
                 data = pm.request.body.getRawData();
@@ -3798,19 +3810,26 @@ pm.request = {
                 for (i = 0; i < params.length; i++) {
                     param = {
                         key:params[i].key,
-                        value:params[i].value
+                        value:params[i].value,
+                        type:params[i].type
                     };
 
                     newParams.push(param);
                 }
-                data = pm.request.getBodyParamString(newParams);
+
+                if(asObjects === true) {
+                    return newParams;
+                }
+                else {
+                    data = pm.request.getBodyParamString(newParams);    
+                }                
             }
 
             return data;
         },
 
         //Modify this to load values with types for keyvaleditor
-        loadData:function (mode, data) {
+        loadData:function (mode, data, asObjects) {
             var body = pm.request.body;
             body.setDataMode(mode);
 
@@ -3818,15 +3837,28 @@ pm.request = {
 
             var params;
             if (mode === "params") {
-                params = getBodyVars(data, false);
-                $('#formdata-keyvaleditor').keyvalueeditor('reset', params);
+                if(asObjects === true) {
+                    console.log(data);
+                    $('#formdata-keyvaleditor').keyvalueeditor('reset', data);        
+                }
+                else {
+                    params = getBodyVars(data, false);
+                    $('#formdata-keyvaleditor').keyvalueeditor('reset', params);    
+                }
+                
             }
             else if (mode === "raw") {
                 body.loadRawData(data);
             }
             else if (mode === "urlencoded") {
-                params = getBodyVars(data, false);
-                $('#urlencoded-keyvaleditor').keyvalueeditor('reset', params);
+                if(asObjects === true) {
+                    $('#urlencoded-keyvaleditor').keyvalueeditor('reset', data);
+                }
+                else {
+                    params = getBodyVars(data, false);
+                    $('#urlencoded-keyvaleditor').keyvalueeditor('reset', params);    
+                }
+                
             }
         }
     },
@@ -4016,11 +4048,14 @@ pm.request = {
     getAsJson:function () {
         var request = {
             url:$('#url').val(),
-            data:pm.request.body.getData(),
+            data:pm.request.body.getData(true),
             headers:pm.request.getPackedHeaders(),
             dataMode:pm.request.dataMode,
-            method:pm.request.method
+            method:pm.request.method,
+            version:2
         };
+
+        console.log(request);
 
         return JSON.stringify(request);
     },
@@ -5011,7 +5046,16 @@ pm.request = {
         if (this.isMethodWithBody(this.method)) {
             this.dataMode = request.dataMode;
             $('#data').css("display", "block");
-            pm.request.body.loadData(request.dataMode, request.data);
+
+            if("version" in request) {
+                if(request.version == 2) {
+                    pm.request.body.loadData(request.dataMode, request.data, true);        
+                }
+            }
+            else {
+                pm.request.body.loadData(request.dataMode, request.data);    
+            }
+            
         }
         else {
             $('#data').css("display", "none");
@@ -5139,7 +5183,7 @@ pm.request = {
         var i;
         this.url = $('#url').val();
         var url = this.url;
-        this.body.data = pm.request.body.getData();
+        this.body.data = pm.request.body.getData(true);
 
         if (url === "") {
             return;
@@ -5165,7 +5209,8 @@ pm.request = {
 
         var originalUrl = $('#url').val();
         var method = this.method.toUpperCase();
-        var data = pm.request.body.getData();
+        var data = pm.request.body.getData(true);
+
         var originalData = data;
         var finalBodyData;
         var headers = this.headers;

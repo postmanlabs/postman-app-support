@@ -67,7 +67,7 @@ pm.history = {
                     if (url.length > 80) {
                         url = url.substring(0, 80) + "...";
                     }
-                    
+
                     url = limitStringLineWidth(url, 40);
 
                     var request = {
@@ -100,6 +100,7 @@ pm.history = {
     },
 
     addRequest:function (url, method, headers, data, dataMode) {
+        console.log(data);
         var id = guid();
         var maxHistoryCount = pm.settings.get("historyCount");
         var requests = this.requests;
@@ -116,9 +117,10 @@ pm.history = {
             "url":url.toString(),
             "method":method.toString(),
             "headers":headers.toString(),
-            "data":data.toString(),
+            "data":data,
             "dataMode":dataMode.toString(),
-            "timestamp":new Date().getTime()
+            "timestamp":new Date().getTime(),
+            "version": 2
         };
 
         var index = this.requestExists(historyRequest);

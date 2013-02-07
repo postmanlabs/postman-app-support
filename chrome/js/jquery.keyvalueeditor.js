@@ -66,7 +66,7 @@
             return h;
         },
 
-        getNewRow:function (key, value, state) {
+        getNewRow:function (key, value, type, state) {
             var settings = state.settings;
             var pKey = settings.placeHolderKey;
             var pValue = settings.placeHolderValue;
@@ -83,21 +83,43 @@
             h += '<input type="text" class="keyvalueeditor-key" placeHolder="' + pKey
                 + '" name="keyvalueeditor-' + key
                 + '" value="' + key
-                + '"/>';
+                + '"/>';            
 
-            h += '<input type="text" class="keyvalueeditor-value keyvalueeditor-value-text" placeHolder="' + pValue
-                + '" name="keyvalueeditor-' + value
-                + '" value="' + value
-                + '"/>';
+            if ($.inArray("file", valueTypes) >= 0) {                
+                if (type === "file") {
+                    h += '<input type="text" class="keyvalueeditor-value keyvalueeditor-value-text" placeHolder="' + pValue
+                        + '" name="keyvalueeditor-' + value
+                        + '" value="' + value
+                        + '" style="display: none;"/>';
 
-            if ($.inArray("file", valueTypes) >= 0) {
-                h += '<input type="file" multiple class="keyvalueeditor-value keyvalueeditor-value-file" placeHolder="' + pValue
-                    + '" name="keyvalueeditor-' + value
-                    + '" value="' + value
-                    + '" style="display: none;"/>';
+                    h += '<input type="file" multiple class="keyvalueeditor-value keyvalueeditor-value-file" placeHolder="' + pValue
+                        + '" name="keyvalueeditor-' + value
+                        + '" value="' + value
+                        + '"/>';
 
-                h += '<select class="keyvalueeditor-valueTypeSelector"><option value="text" selected>Text</option>' +
-                    '<option value="file">File</option></select>';
+                    h += '<select class="keyvalueeditor-valueTypeSelector"><option value="text">Text</option>' +
+                        '<option value="file" selected>File</option></select>';
+                }                    
+                else {
+                    h += '<input type="text" class="keyvalueeditor-value keyvalueeditor-value-text" placeHolder="' + pValue
+                        + '" name="keyvalueeditor-' + value
+                        + '" value="' + value
+                        + '"/>';
+
+                    h += '<input type="file" multiple class="keyvalueeditor-value keyvalueeditor-value-file" placeHolder="' + pValue
+                        + '" name="keyvalueeditor-' + value
+                        + '" value="' + value
+                        + '" style="display: none;"/>';
+
+                    h += '<select class="keyvalueeditor-valueTypeSelector"><option value="text" selected>Text</option>' +
+                        '<option value="file">File</option></select>';
+                }
+            }
+            else {
+                h += '<input type="text" class="keyvalueeditor-value keyvalueeditor-value-text" placeHolder="' + pValue
+                        + '" name="keyvalueeditor-' + value
+                        + '" value="' + value
+                        + '"/>';
             }
 
             h += methods.getDeleteLink(state);
@@ -154,8 +176,11 @@
 
         //For external use
         addParam:function (param, state) {
-            //Add delete link to the last element
-            $(state.editor).find('.keyvalueeditor-last').before(methods.getNewRow(param.key, param.value, state));
+            if(!("type" in param)) {
+                param.type = "text";                    
+            }
+
+            $(state.editor).find('.keyvalueeditor-last').before(methods.getNewRow(param.key, param.value, param.type, state));
         },
 
         //Check for duplicates here
@@ -175,12 +200,18 @@
             var pairs = [];
             $(this).find('.keyvalueeditor-row').each(function () {
                 var key = $(this).find('.keyvalueeditor-key').val();
-                var value = $(this).find('.keyvalueeditor-value').val();
+                var value = $(this).find('.keyvalueeditor-value').val();                
+                var type = $(this).find('.keyvalueeditor-valueTypeSelector').val();
+                
+                if (type === undefined) {
+                    type = "text";
+                }
 
                 if (key) {
                     var pair = {
                         key:key,
-                        value:value
+                        value:value,
+                        type:type
                     };
 
                     pairs.push(pair);
