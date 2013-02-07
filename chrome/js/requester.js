@@ -2300,6 +2300,15 @@ pm.indexedDB = {
         var trans = db.transaction(["collection_requests"], "readwrite");
         var store = trans.objectStore("collection_requests");
 
+        var version;
+
+        if ("version" in req) {
+            version = req.version;
+        }
+        else {
+            version = 1;
+        }
+        
         var collectionRequest = store.put({
             "collectionId":req.collectionId,
             "id":req.id,
@@ -5050,6 +5059,9 @@ pm.request = {
             if("version" in request) {
                 if(request.version == 2) {
                     pm.request.body.loadData(request.dataMode, request.data, true);        
+                }
+                else {
+                    pm.request.body.loadData(request.dataMode, request.data);        
                 }
             }
             else {

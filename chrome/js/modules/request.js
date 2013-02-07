@@ -1550,6 +1550,9 @@ pm.request = {
                 if(request.version == 2) {
                     pm.request.body.loadData(request.dataMode, request.data, true);        
                 }
+                else {
+                    pm.request.body.loadData(request.dataMode, request.data);        
+                }
             }
             else {
                 pm.request.body.loadData(request.dataMode, request.data);    

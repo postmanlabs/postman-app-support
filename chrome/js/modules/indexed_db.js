@@ -177,6 +177,15 @@ pm.indexedDB = {
         var trans = db.transaction(["collection_requests"], "readwrite");
         var store = trans.objectStore("collection_requests");
 
+        var version;
+
+        if ("version" in req) {
+            version = req.version;
+        }
+        else {
+            version = 1;
+        }
+        
         var collectionRequest = store.put({
             "collectionId":req.collectionId,
             "id":req.id,
