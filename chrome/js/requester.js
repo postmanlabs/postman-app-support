@@ -76,9 +76,6 @@ pm.indexedDB.modes = {
     readonly:"readonly"
 };
 
-pm.jsonlint = jsonlint_postman;
-jsonlint_postman = null;
-
 pm.fs = {};
 pm.webUrl = "http://getpostman.com";
 pm.bannedHeaders = [
@@ -147,7 +144,6 @@ window.requestFileSystem = window.requestFileSystem || window.webkitRequestFileS
  Bootstrap
  CodeMirror
  Underscore
- JsonLint
 
  Code status
 
@@ -163,6 +159,7 @@ pm.init = function () {
     pm.settings.init();
     pm.layout.init();
     pm.editor.init();
+    pm.jsonlint.init();
     pm.request.init();
     pm.urlCache.refreshAutoComplete();
     pm.helpers.init();
@@ -1037,6 +1034,11 @@ pm.envManager = {
             pm.envManager.showEditor(id);
         });
 
+        $('#environments-list').on("click", ".environment-action-duplicate", function () {
+            var id = $(this).attr('data-id');
+            pm.envManager.duplicateEnvironment(id);
+        });
+
         $('#environments-list').on("click", ".environment-action-download", function () {
             var id = $(this).attr('data-id');
             pm.envManager.downloadEnvironment(id);
@@ -1340,6 +1342,26 @@ pm.envManager = {
             pm.envManager.getAllEnvironments();
             pm.envManager.showSelector();
         });
+    },
+
+    duplicateEnvironment:function (id) {
+        var env = pm.envManager.getEnvironmentFromId(id);
+        
+        //get a new name for this duplicated environment
+        env.name = env.name + "_" + $.now();
+        
+        //change the env guid
+        env.id = guid();
+
+        pm.indexedDB.environments.addEnvironment(env, function () {
+            //Add confirmation
+            var o = {
+                name:env.name,
+                action:'added'
+            };
+            $('#environment-importer-confirmations').append(Handlebars.templates.message_environment_added(o));
+            pm.envManager.getAllEnvironments();
+        });        
     },
 
     downloadEnvironment:function (id) {
@@ -2789,6 +2811,15 @@ pm.indexedDB = {
         }
     }
 };
+pm.jsonlint = {
+    instance: null,
+    
+    init: function() {
+      pm.jsonlint.instance = jsonlint_postman;
+      jsonlint_postman = null;
+    }
+};
+
 pm.keymap = {
     init:function () {
         var clearHistoryHandler = function () {
@@ -3570,7 +3601,7 @@ pm.request = {
                 else {
                     pm.request.body.codeMirror.setOption("mode", mode);
                 }
-                
+
                 if (mode === "text") {
                   $('#body-editor-mode-selector-format').addClass('disabled');
                 } else {
@@ -3580,9 +3611,8 @@ pm.request = {
                 pm.request.body.autoFormatEditor(mode);
                 pm.request.body.codeMirror.refresh();
             }
-
         },
-        
+
         autoFormatEditor:function (mode) {
           var content = pm.request.body.codeMirror.getValue(),
               validated = null, result = null;
@@ -3597,7 +3627,7 @@ pm.request = {
               
               // Validate code first.
               try {
-                validated = pm.jsonlint.parse(content);
+                validated = pm.jsonlint.instance.parse(content);
                 if (validated) {
                   content = JSON.parse(pm.request.body.codeMirror.getValue());
                   pm.request.body.codeMirror.setValue(JSON.stringify(content, null, 4));
@@ -3665,11 +3695,12 @@ pm.request = {
             
             // 'Format code' button listener.
             $('#body-editor-mode-selector-format').on('click.postman', function(evt) {
-              
+              var editorMode = $(event.target).attr("data-editor-mode");
+
               if ($(evt.currentTarget).hasClass('disabled')) {
                 return;
               }
-              
+
               pm.request.body.autoFormatEditor(pm.request.body.codeMirror.getMode().name);
             });
         },

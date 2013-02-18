@@ -41,3 +41,15 @@ If you downloaded the Postman zip file here is what you need to do to install it
 2. Select "Load unpacked extension"
 3. Select the "chrome" folder with manifest.json in it's root
 4. Postman will be installed as a developer extension. The installation from the Chrome Web Store will remain independent with all your data.
+
+Building and Developing
+=========================
+1. Install the dependencies
+<pre>
+sudo npm install -g grunt grunt-handlebars grunt-contrib-handlebars
+</pre>
+2. Generate the template.js
+<pre>
+	grunt handlebars
+</pre>
+3. For misc. grunt tasks, look at grunt.js.
