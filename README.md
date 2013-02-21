@@ -1,7 +1,7 @@
 Postman
 =======
 Postman helps you be more efficient while working with APIs. Postman is a scratch-your-own-itch project. The need for it arose while one of the developers was creating an API for his project. After looking around for a number of tools, nothing felt just right. The primary features added were a history of sent requests and collections.
-A number of other features have been added since the initial release. Here is a small list.
+A number of other features have been added since the initial release. A small list is below. To see a fancier page and a video tutorial, check out http://www.getpostman.com
 
 Features
 ========
@@ -41,3 +41,15 @@ If you downloaded the Postman zip file here is what you need to do to install it
 2. Select "Load unpacked extension"
 3. Select the "chrome" folder with manifest.json in it's root
 4. Postman will be installed as a developer extension. The installation from the Chrome Web Store will remain independent with all your data.
+
+Building and Developing
+=========================
+1. Install the dependencies
+<pre>
+sudo npm install -g grunt grunt-handlebars grunt-contrib-handlebars
+</pre>
+2. Generate the template.js
+<pre>
+	grunt handlebars
+</pre>
+3. For misc. grunt tasks, look at grunt.js.

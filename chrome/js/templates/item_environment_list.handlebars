@@ -2,7 +2,13 @@
     <td>
         <a  class="environment-action-edit" data-id="{{id}}">{{name}}</a>
     </td>
-    <td style="width: 50px;">
+    <td style="width: 70px;">
+        <a
+           rel="tooltip" data-original-title="Duplicate environment"
+           data-placement="bottom"
+           class="environment-action-duplicate" data-id="{{id}}">
+           <img src="img/copy.png"
+                style="vertical-align: middle; width: 20px; height: 20px;"/></a>
         <a
            rel="tooltip" data-original-title="Download environment"
            data-placement="bottom"

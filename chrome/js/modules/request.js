@@ -390,7 +390,7 @@ pm.request = {
             pm.request.loadRequestInEditor(lastRequestParsed);
         }
     },
-    
+
     setHeaderValue:function (key, value) {
         var headers = pm.request.headers;
         var origKey = key;
