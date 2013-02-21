@@ -4381,13 +4381,17 @@ pm.request = {
                     responseCodeName = response.statusText;
                 }
                 else {
-                    responseCodeName = httpStatusCodes[response.status]['name'];
+                    if(httpStatusCodes[response.status]) {
+                        responseCodeName = httpStatusCodes[response.status]['name'];
+                    } else {
+                        responseCodeName = 'Not defined';
+                    }
                 }
 
                 var responseCode = {
                     'code':response.status,
                     'name':responseCodeName,
-                    'detail':httpStatusCodes[response.status]['detail']
+                    'detail':httpStatusCodes[response.status] ? httpStatusCodes[response.status]['detail'] : 'No detail defined'
                 };
 
                 var responseData;
