@@ -3350,7 +3350,7 @@ pm.layout = {
     },
 
     setLayout:function () {
-        this.refreshScrollPanes();
+        this.refreshScrollPanes();        
     },
 
     refreshScrollPanes:function () {
@@ -3524,6 +3524,7 @@ pm.request = {
     startTime:0,
     endTime:0,
     xhr:null,
+    clipper:null,
     responses:[],
 
     body:{
@@ -3899,7 +3900,7 @@ pm.request = {
             pm.request.loadRequestInEditor(lastRequestParsed);
         }
     },
-
+    
     setHeaderValue:function (key, value) {
         var headers = pm.request.headers;
         var origKey = key;
@@ -4605,6 +4606,9 @@ pm.request = {
             $('#response-formatting a[data-type="' + format + '"]').addClass('active');
             $('#code-data').css("display", "none");
             $('#code-data').attr("data-mime", language);
+
+            console.log(pm.request.clipper, response);
+            pm.request.clipper.setText(response);
 
             var codeDataArea = document.getElementById("code-data");
             var foldFunc;

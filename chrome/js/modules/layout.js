@@ -400,7 +400,7 @@ pm.layout = {
     },
 
     setLayout:function () {
-        this.refreshScrollPanes();
+        this.refreshScrollPanes();        
     },
 
     refreshScrollPanes:function () {

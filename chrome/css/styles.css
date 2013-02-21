@@ -839,6 +839,12 @@ li .right {
     margin-left: 10px;
 }
 
+#response-copy {
+    float: left;
+    margin-left: 5px;
+    margin-top: 17px;
+}
+
 #response-collection-request-actions {
     float: left;
     margin-left: 5px;
