@@ -1464,3 +1464,7 @@ input[type="file"] {
     margin-top: 8px;
     display: inline-block;
 }
+
+.cm-string:first-child {
+    color: purple !important;
+}
