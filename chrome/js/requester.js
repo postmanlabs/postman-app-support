@@ -1038,6 +1038,11 @@ pm.envManager = {
             pm.envManager.showEditor(id);
         });
 
+        $('#environments-list').on("click", ".environment-action-duplicate", function () {
+            var id = $(this).attr('data-id');
+            pm.envManager.duplicateEnvironment(id);
+        });
+
         $('#environments-list').on("click", ".environment-action-download", function () {
             var id = $(this).attr('data-id');
             pm.envManager.downloadEnvironment(id);
@@ -1341,6 +1346,26 @@ pm.envManager = {
             pm.envManager.getAllEnvironments();
             pm.envManager.showSelector();
         });
+    },
+
+    duplicateEnvironment:function (id) {
+        var env = pm.envManager.getEnvironmentFromId(id);
+        
+        //get a new name for this duplicated environment
+        env.name = env.name + "_" + $.now();
+        
+        //change the env guid
+        env.id = guid();
+
+        pm.indexedDB.environments.addEnvironment(env, function () {
+            //Add confirmation
+            var o = {
+                name:env.name,
+                action:'added'
+            };
+            $('#environment-importer-confirmations').append(Handlebars.templates.message_environment_added(o));
+            pm.envManager.getAllEnvironments();
+        });        
     },
 
     downloadEnvironment:function (id) {
@@ -4347,7 +4372,9 @@ pm.request = {
                     $('#response-as-code').css("display", "none");
                     $('#response-as-text').css("display", "none");
                     $('#response-as-image').css("display", "block");
-                    var imgLink = $('#url').val();
+                    
+                    var imgLink = pm.request.processUrl($('#url').val());
+
                     $('#response-formatting').css("display", "none");
                     $('#response-actions').css("display", "none");
                     $("#response-language").css("display", "none");
@@ -4482,7 +4509,8 @@ pm.request = {
                         $('#response-as-code').css("display", "none");
                         $('#response-as-text').css("display", "none");
                         $('#response-as-image').css("display", "block");
-                        var imgLink = $('#url').val();
+                        var imgLink = pm.request.processUrl($('#url').val());
+                        
                         $('#response-formatting').css("display", "none");
                         $('#response-actions').css("display", "none");
                         $("#response-language").css("display", "none");
@@ -5183,6 +5211,22 @@ pm.request = {
         return headers;
     },
 
+    processUrl:function (url) {
+        var envManager = pm.envManager;
+        var environment = envManager.selectedEnv;
+        var envValues = [];
+        var url = $('#url').val();
+        
+        if (environment !== null) {
+            envValues = environment.values;
+        }
+
+        url = envManager.processString(url, envValues);
+        url = ensureProperUrl(url);
+
+        return url;
+    },
+
     //Send the current request
     send:function (responseType) {
         // Set state as if change event of input handlers was called
@@ -5197,7 +5241,16 @@ pm.request = {
         $('#headers-keyvaleditor-actions-open .headers-count').html(pm.request.headers.length);
 
         var i;
-        this.url = $('#url').val();
+        this.url = pm.request.processUrl($('#url').val());
+        var envManager = pm.envManager;         
+        var environment = envManager.selectedEnv;
+        var envValues = [];
+        var url = $('#url').val();
+        
+        if (environment !== null) {
+            envValues = environment.values;
+        }
+
         var url = this.url;
         this.body.data = pm.request.body.getData(true);
 
@@ -5207,18 +5260,6 @@ pm.request = {
 
         var xhr = new XMLHttpRequest();
         pm.request.xhr = xhr;
-
-        var envManager = pm.envManager;
-        var environment = envManager.selectedEnv;
-        var envValues = [];
-
-        if (environment !== null) {
-            envValues = environment.values;
-        }
-
-        url = envManager.processString(url, envValues);
-        url = ensureProperUrl(url);
-
         pm.request.url = url;
 
         url = pm.request.encodeUrl(url);

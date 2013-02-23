@@ -65,6 +65,11 @@ pm.envManager = {
             pm.envManager.showEditor(id);
         });
 
+        $('#environments-list').on("click", ".environment-action-duplicate", function () {
+            var id = $(this).attr('data-id');
+            pm.envManager.duplicateEnvironment(id);
+        });
+
         $('#environments-list').on("click", ".environment-action-download", function () {
             var id = $(this).attr('data-id');
             pm.envManager.downloadEnvironment(id);
@@ -368,6 +373,26 @@ pm.envManager = {
             pm.envManager.getAllEnvironments();
             pm.envManager.showSelector();
         });
+    },
+
+    duplicateEnvironment:function (id) {
+        var env = pm.envManager.getEnvironmentFromId(id);
+        
+        //get a new name for this duplicated environment
+        env.name = env.name + "_" + $.now();
+        
+        //change the env guid
+        env.id = guid();
+
+        pm.indexedDB.environments.addEnvironment(env, function () {
+            //Add confirmation
+            var o = {
+                name:env.name,
+                action:'added'
+            };
+            $('#environment-importer-confirmations').append(Handlebars.templates.message_environment_added(o));
+            pm.envManager.getAllEnvironments();
+        });        
     },
 
     downloadEnvironment:function (id) {

@@ -837,7 +837,9 @@ pm.request = {
                     $('#response-as-code').css("display", "none");
                     $('#response-as-text').css("display", "none");
                     $('#response-as-image').css("display", "block");
-                    var imgLink = $('#url').val();
+                    
+                    var imgLink = pm.request.processUrl($('#url').val());
+
                     $('#response-formatting').css("display", "none");
                     $('#response-actions').css("display", "none");
                     $("#response-language").css("display", "none");
@@ -972,7 +974,8 @@ pm.request = {
                         $('#response-as-code').css("display", "none");
                         $('#response-as-text').css("display", "none");
                         $('#response-as-image').css("display", "block");
-                        var imgLink = $('#url').val();
+                        var imgLink = pm.request.processUrl($('#url').val());
+                        
                         $('#response-formatting').css("display", "none");
                         $('#response-actions').css("display", "none");
                         $("#response-language").css("display", "none");
@@ -1673,6 +1676,22 @@ pm.request = {
         return headers;
     },
 
+    processUrl:function (url) {
+        var envManager = pm.envManager;
+        var environment = envManager.selectedEnv;
+        var envValues = [];
+        var url = $('#url').val();
+        
+        if (environment !== null) {
+            envValues = environment.values;
+        }
+
+        url = envManager.processString(url, envValues);
+        url = ensureProperUrl(url);
+
+        return url;
+    },
+
     //Send the current request
     send:function (responseType) {
         // Set state as if change event of input handlers was called
@@ -1687,7 +1706,16 @@ pm.request = {
         $('#headers-keyvaleditor-actions-open .headers-count').html(pm.request.headers.length);
 
         var i;
-        this.url = $('#url').val();
+        this.url = pm.request.processUrl($('#url').val());
+        var envManager = pm.envManager;         
+        var environment = envManager.selectedEnv;
+        var envValues = [];
+        var url = $('#url').val();
+        
+        if (environment !== null) {
+            envValues = environment.values;
+        }
+
         var url = this.url;
         this.body.data = pm.request.body.getData(true);
 
@@ -1697,18 +1725,6 @@ pm.request = {
 
         var xhr = new XMLHttpRequest();
         pm.request.xhr = xhr;
-
-        var envManager = pm.envManager;
-        var environment = envManager.selectedEnv;
-        var envValues = [];
-
-        if (environment !== null) {
-            envValues = environment.values;
-        }
-
-        url = envManager.processString(url, envValues);
-        url = ensureProperUrl(url);
-
         pm.request.url = url;
 
         url = pm.request.encodeUrl(url);
