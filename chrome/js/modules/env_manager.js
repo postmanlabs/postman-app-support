@@ -250,6 +250,9 @@ pm.envManager = {
 
     getAllEnvironments:function () {
         pm.indexedDB.environments.getAllEnvironments(function (environments) {
+            environments.sort(sortAlphabetical);
+            console.log(environments);                
+            
             $('#environment-selector .dropdown-menu').html("");
             $('#environments-list tbody').html("");
             pm.envManager.environments = environments;
