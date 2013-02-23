@@ -467,7 +467,7 @@ pm.collections = {
         });
     },
 
-    importCollectionData:function (collection) {
+    importCollectionData:function (collection) {        
         pm.indexedDB.addCollection(collection, function (c) {
             var message = {
                 name:collection.name,
@@ -508,8 +508,9 @@ pm.collections = {
                 requests.push(request);
             }
 
+            pm.indexedDB.updateCollection(collection, function() {});
+            
             collection.requests = requests;
-
             pm.collections.render(collection);
         });
     },
@@ -744,6 +745,14 @@ pm.collections = {
                 pm.request.collectionRequestId = collectionRequest.id;
                 $('#update-request-in-collection').css("display", "inline-block");
                 pm.collections.openCollection(collectionRequest.collectionId);
+
+                //Update collection's order element    
+                pm.indexedDB.getCollection(collection.id, function(collection) {
+                    if("order" in collection) {
+                        collection["order"].push(collectionRequest.id);
+                        pm.indexedDB.updateCollection(collection, function() {});
+                    }
+                });
             });
         }
 
@@ -829,6 +838,8 @@ pm.collections = {
                         requests = orderedRequests;
                     }
                 }
+
+                console.log(requests);
 
                 $(targetElement).append(Handlebars.templates.collection_sidebar({"items":requests}));
                 $(targetElement).sortable({
@@ -2288,11 +2299,24 @@ pm.indexedDB = {
         var trans = db.transaction(["collections"], "readwrite");
         var store = trans.objectStore("collections");
 
-        var request = store.put({
-            "id":collection.id,
-            "name":collection.name,
-            "timestamp":new Date().getTime()
-        });
+        var request;
+
+        if("order" in collection) {
+            request = store.put({
+                "id":collection.id,
+                "name":collection.name,
+                "order":collection.order,
+                "timestamp":new Date().getTime()
+            });
+        }
+        else {
+            request = store.put({
+                "id":collection.id,
+                "name":collection.name,
+                "timestamp":new Date().getTime()
+            });
+        }
+        
 
         request.onsuccess = function () {
             callback(collection);

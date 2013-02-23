@@ -140,11 +140,24 @@ pm.indexedDB = {
         var trans = db.transaction(["collections"], "readwrite");
         var store = trans.objectStore("collections");
 
-        var request = store.put({
-            "id":collection.id,
-            "name":collection.name,
-            "timestamp":new Date().getTime()
-        });
+        var request;
+
+        if("order" in collection) {
+            request = store.put({
+                "id":collection.id,
+                "name":collection.name,
+                "order":collection.order,
+                "timestamp":new Date().getTime()
+            });
+        }
+        else {
+            request = store.put({
+                "id":collection.id,
+                "name":collection.name,
+                "timestamp":new Date().getTime()
+            });
+        }
+        
 
         request.onsuccess = function () {
             callback(collection);
