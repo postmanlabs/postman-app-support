@@ -15,6 +15,7 @@ pm.request = {
     endTime:0,
     xhr:null,
     clipper:null,
+    editorMode:0,
     responses:[],
 
     body:{
@@ -666,6 +667,37 @@ pm.request = {
             var newRows = getUrlVars($('#url').val(), false);
             $('#url-keyvaleditor').keyvalueeditor('reset', newRows);
         });
+
+        $('#add-to-collection').on("click", function () {
+            if (pm.collections.areLoaded === false) {
+                pm.collections.getAllCollections();
+            }
+        });
+
+        $("#submit-request").on("click", function () {
+            pm.request.send("text");
+        });
+
+        $("#preview-request").on("click", function () {
+            pm.request.preview();
+        });
+
+        $("#update-request-in-collection").on("click", function () {
+            pm.collections.updateCollectionFromCurrentRequest();
+        });
+
+        $("#cancel-request").on("click", function () {
+            pm.request.cancel();
+        });
+
+        $("#request-actions-reset").on("click", function () {
+            pm.request.startNew();
+        });
+
+        $('#request-method-selector').change(function () {
+            var val = $(this).val();
+            pm.request.setMethod(val);
+        });
     },
 
     getTotalTime:function () {
@@ -975,7 +1007,7 @@ pm.request = {
                         $('#response-as-text').css("display", "none");
                         $('#response-as-image').css("display", "block");
                         var imgLink = pm.request.processUrl($('#url').val());
-                        
+
                         $('#response-formatting').css("display", "none");
                         $('#response-actions').css("display", "none");
                         $("#response-language").css("display", "none");
@@ -1768,6 +1800,7 @@ pm.request = {
         var rows, count, j;
         var row, key, value;
 
+        // Prepare body
         if (this.isMethodWithBody(method)) {
             if (this.dataMode === 'raw') {
                 data = envManager.processString(data, envValues);
@@ -1845,5 +1878,20 @@ pm.request = {
         $('#submit-request').button("loading");
         pm.request.response.clear();
         pm.request.response.showScreen("waiting");
+    },
+
+    preview:function() {
+        console.log("Preview this request");
+        if(pm.request.editorMode == 1) {
+            pm.request.editorMode = 0;    
+            $("#request-builder").css("display", "block");
+            $("#request-preview").css("display", "none");    
+        }
+        else {
+            pm.request.editorMode = 1;    
+            $("#request-builder").css("display", "none");
+            $("#request-preview").css("display", "block");    
+        }               
     }
+
 };

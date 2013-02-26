@@ -132,33 +132,6 @@ pm.layout = {
 
         pm.request.response.clear();
 
-        $('#add-to-collection').on("click", function () {
-            if (pm.collections.areLoaded === false) {
-                pm.collections.getAllCollections();
-            }
-        });
-
-        $("#submit-request").on("click", function () {
-            pm.request.send("text");
-        });
-
-        $("#update-request-in-collection").on("click", function () {
-            pm.collections.updateCollectionFromCurrentRequest();
-        });
-
-        $("#cancel-request").on("click", function () {
-            pm.request.cancel();
-        });
-
-        $("#request-actions-reset").on("click", function () {
-            pm.request.startNew();
-        });
-
-        $('#request-method-selector').change(function () {
-            var val = $(this).val();
-            pm.request.setMethod(val);
-        });
-
         $('#sidebar-selectors li a').click(function () {
             var id = $(this).attr('data-id');
             pm.layout.sidebar.select(id);

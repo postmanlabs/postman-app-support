@@ -40,6 +40,10 @@ a, a:hover {
     outline: none;
 }
 
+#request-preview {
+    display: none;
+}
+
 #request-method-selector {
     width: 100px;
 }
