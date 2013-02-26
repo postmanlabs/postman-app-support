@@ -2084,7 +2084,7 @@ pm.history = {
 
         if (requestsCount >= maxHistoryCount) {
             //Delete the last request
-            var lastRequest = requests[requestsCount - 1];
+            var lastRequest = requests[0];
             this.deleteRequest(lastRequest.id);
         }
 
