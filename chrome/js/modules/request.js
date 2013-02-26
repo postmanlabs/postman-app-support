@@ -1659,7 +1659,7 @@ pm.request = {
         var originalUrl = $('#url').val();
         var method = this.method.toUpperCase();
         var data = pm.request.body.getRawData();
-        var originalData = data;
+        var originalData = pm.request.body.getData();
         var finalBodyData;
         var headers = this.headers;
 
@@ -1765,7 +1765,7 @@ pm.request = {
         }
 
         if (pm.settings.get("autoSaveRequest")) {
-            pm.history.addRequest(originalUrl, method, pm.request.getPackedHeaders(), originalData, this.dataMode);
+            pm.history.addRequest(originalUrl, method, pm.request.getPackedHeaders(), pm.request.body.getData(), this.dataMode);
         }
 
         $('#submit-request').button("loading");
