@@ -5177,7 +5177,7 @@ pm.request = {
         var originalUrl = $('#url').val();
         var method = this.method.toUpperCase();
         var data = pm.request.body.getRawData();
-        var originalData = data;
+        var originalData = pm.request.body.getData();
         var finalBodyData;
         var headers = this.headers;
 
