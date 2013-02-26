@@ -1765,7 +1765,7 @@ pm.request = {
         }
 
         if (pm.settings.get("autoSaveRequest")) {
-            pm.history.addRequest(originalUrl, method, pm.request.getPackedHeaders(), originalData, this.dataMode);
+            pm.history.addRequest(originalUrl, method, pm.request.getPackedHeaders(), pm.request.body.getData(), this.dataMode);
         }
 
         $('#submit-request').button("loading");
