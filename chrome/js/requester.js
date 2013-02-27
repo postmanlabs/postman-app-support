@@ -2102,11 +2102,13 @@ pm.history = {
         var requests = this.requests;
         var requestsCount = this.requests.length;
 
-        if (requestsCount >= maxHistoryCount) {
-            //Delete the last request
-            var lastRequest = requests[0];
-            this.deleteRequest(lastRequest.id);
-        }
+        if(maxHistoryCount > 0) {
+            if (requestsCount >= maxHistoryCount) {
+                //Delete the last request
+                var lastRequest = requests[0];
+                this.deleteRequest(lastRequest.id);
+            }    
+        }        
 
         var historyRequest = {
             "id":id,
@@ -3549,7 +3551,6 @@ pm.request = {
     startTime:0,
     endTime:0,
     xhr:null,
-    clipper:null,
     editorMode:0,
     responses:[],
 
@@ -4666,9 +4667,6 @@ pm.request = {
             $('#response-formatting a[data-type="' + format + '"]').addClass('active');
             $('#code-data').css("display", "none");
             $('#code-data').attr("data-mime", language);
-
-            console.log(pm.request.clipper, response);
-            pm.request.clipper.setText(response);
 
             var codeDataArea = document.getElementById("code-data");
             var foldFunc;

@@ -44,6 +44,10 @@ a, a:hover {
     display: none;
 }
 
+#preview-request {
+    display: none;
+}
+
 #request-method-selector {
     width: 100px;
 }
@@ -1254,8 +1258,7 @@ li .right {
     margin-bottom: 10px;
 }
 
-#url-keyvaleditor-actions,
-#headers-keyvaleditor-actions {
+#url-keyvaleditor-actions {
     width: 510px;
 }
 
