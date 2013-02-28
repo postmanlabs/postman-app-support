@@ -77,7 +77,7 @@ class PostmanTestsEnvironments(PostmanTests):
         environments_list = self.browser.find_element_by_id("environments-list")
         environments_list_value = self.browser.execute_script("return arguments[0].innerHTML", environments_list)
 
-        if environments_list_value.find("Test environment") < 0:
+        if environments_list_value.find("Test another environment") < 0:
             return True
         else:
             return False

@@ -16,7 +16,7 @@ class PostmanTestsBroadcasts(PostmanTests):
         count = self.browser.find_element_by_css_selector("#broadcasts-count")
         count_value = self.browser.execute_script("return arguments[0].innerHTML", count)
         
-        if count_value.find("3") == 0:
+        if count_value.find("2") == 0:
             return True
         else:
             return False
@@ -28,7 +28,7 @@ class PostmanTestsBroadcasts(PostmanTests):
         broadcasts_div = self.browser.find_element_by_css_selector("#broadcasts .dropdown-menu")
         broadcasts_value = self.browser.execute_script("return arguments[0].innerHTML", broadcasts_div)
 
-        if broadcasts_value.find("This is a bug.") > 0:
+        if broadcasts_value.find("dropdown") > 0:
             count = self.browser.find_element_by_css_selector("#broadcasts-count")
             count_value = self.browser.execute_script("return arguments[0].innerHTML", count)        
             if count_value.find("0") == 0:
