@@ -1483,6 +1483,8 @@ pm.request = {
     },
 
     loadRequestInEditor:function (request, isFromCollection, isFromSample) {        
+        console.log(request);
+
         pm.helpers.showRequestHelper("normal");
         this.url = request.url;
         this.body.data = request.body;
@@ -1763,6 +1765,8 @@ pm.request = {
         var data = pm.request.body.getData(true);
         var originalData = data;
 
+        console.log(originalData);
+
         var finalBodyData;
         var headers = this.headers;
 
@@ -1869,7 +1873,7 @@ pm.request = {
         }
 
         if (pm.settings.get("autoSaveRequest")) {
-            pm.history.addRequest(originalUrl, method, pm.request.getPackedHeaders(), pm.request.body.getData(), this.dataMode);
+            pm.history.addRequest(originalUrl, method, pm.request.getPackedHeaders(), originalData, this.dataMode);
         }
 
         $('#submit-request').button("loading");

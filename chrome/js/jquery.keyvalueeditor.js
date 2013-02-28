@@ -176,6 +176,8 @@
 
         //For external use
         addParam:function (param, state) {
+            console.log(param);
+            
             if(!("type" in param)) {
                 param.type = "text";                    
             }
