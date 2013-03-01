@@ -1554,6 +1554,7 @@ pm.request = {
             $('#update-request-in-collection').css("display", "inline-block");
         }
         else {
+            this.name = "";
             $('#request-meta').css("display", "none");
             $('#update-request-in-collection').css("display", "none");
         }

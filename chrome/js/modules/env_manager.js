@@ -382,7 +382,7 @@ pm.envManager = {
         var env = pm.envManager.getEnvironmentFromId(id);
         
         //get a new name for this duplicated environment
-        env.name = env.name + "_" + $.now();
+        env.name = env.name + " " + "copy";
         
         //change the env guid
         env.id = guid();
@@ -393,7 +393,7 @@ pm.envManager = {
                 name:env.name,
                 action:'added'
             };
-            $('#environment-importer-confirmations').append(Handlebars.templates.message_environment_added(o));
+
             pm.envManager.getAllEnvironments();
         });        
     },
