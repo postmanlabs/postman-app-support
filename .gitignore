@@ -11,3 +11,9 @@ tests/selenium/chromedriver.log
 .#*
 *.pyc
 tests/selenium/pmtests/*.pyc
+chromedriver.log
+postman.sublime-project
+postman.sublime-workspace
+tests/chromedriver.log
+versions/
+build/
