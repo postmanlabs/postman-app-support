@@ -1,5 +1,8 @@
 .DS_Store
 .idea/
+*.iml
+atlassian-ide-plugin.xml
+
 node_modules/
 design/
 screenshots/
