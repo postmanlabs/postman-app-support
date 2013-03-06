@@ -400,6 +400,12 @@
             Send
         </button>
         <button class="btn"
+                id="give-curl-command"
+                href="#modal-curl"
+                data-toggle="modal" data-backdrop="static"
+                data-keyboard="true">Curl
+        </button>
+        <button class="btn"
                 id="update-request-in-collection">Save
         </button>
         <button class="btn"
@@ -769,6 +775,17 @@
         <a data-dismiss="modal" class="btn">No</a>
     </div>
 </div>
+<div id="modal-curl" class="modal fade">
+	<div class="modal-header">
+		<a class="close" data-dismiss="modal">x</a>
+        <h3>Curl Translation</h3>
+	</div>
+	<div class="modal-body">
+        <div id="curl-command">
+			<pre id="curl-translation"></pre>
+		</div>
+	</div>
+</div>	
 <div id="modal-environments" class="modal fade">
     <div class="modal-header">
         <a class="close" data-dismiss="modal">x</a>

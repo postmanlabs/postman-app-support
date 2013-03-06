@@ -10,38 +10,38 @@ pm.layout = {
 
     detectLauncher: function() {
         if(pm.debug) {
-            return;    
+            return;
         }
 
-        var launcherNotificationCount = pm.settings.get("launcherNotificationCount");        
+        var launcherNotificationCount = pm.settings.get("launcherNotificationCount");
         var maxCount = 1;
         if(launcherNotificationCount >= 1) {
             return true;
-        }        
+        }
 
         var extension_id = "igofndmniooofoabmmpfonmdnhgchoka";
-        var extension_url = "https://chrome.google.com/webstore/detail/" + extension_id;        
-        
-        noty(
-        {
-            type:'information',
-            text:"Click here to get the Postman Launcher for quick access to Postman from the Chrome toolbar",
-            layout:'topRight',
-            callback: {
-                onClose: function() {
-                    var url = "https://chrome.google.com/webstore/detail/postman-launcher/igofndmniooofoabmmpfonmdnhgchoka";
-                    window.open(url, '_blank');
-                    window.focus();
-                }
-            }            
-        });        
+        var extension_url = "https://chrome.google.com/webstore/detail/" + extension_id;
 
-        var launcherNotificationCount = parseInt(pm.settings.get("launcherNotificationCount")) + 1;        
-        pm.settings.set("launcherNotificationCount", launcherNotificationCount);       
+        noty(
+                {
+                    type:'information',
+                    text:"Click here to get the Postman Launcher for quick access to Postman from the Chrome toolbar",
+                    layout:'topRight',
+                    callback: {
+                        onClose: function() {
+                            var url = "https://chrome.google.com/webstore/detail/postman-launcher/igofndmniooofoabmmpfonmdnhgchoka";
+                            window.open(url, '_blank');
+                            window.focus();
+                        }
+                    }
+                });
+
+        var launcherNotificationCount = parseInt(pm.settings.get("launcherNotificationCount")) + 1;
+        pm.settings.set("launcherNotificationCount", launcherNotificationCount);
     },
 
     init:function () {
-        pm.layout.detectLauncher()   
+        pm.layout.detectLauncher()
 
         $('#make-postman-better').on("click", function () {
             $('#modal-spread-the-word').modal('show');
@@ -310,6 +310,14 @@ pm.layout = {
         $("#modal-delete-collection").on("hidden", function () {
             pm.layout.onModalClose();
         });
+        
+        $("#modal-curl").on("shown", function () {
+            pm.layout.onModalOpen("#modal-curl");
+        });
+
+        $("#modal-curl").on("hidden", function () {
+            pm.layout.onModalClose();
+        });
 
         $("#modal-environments").on("shown", function () {
             $('.environments-actions-add').focus();
@@ -373,7 +381,7 @@ pm.layout = {
     },
 
     setLayout:function () {
-        this.refreshScrollPanes();        
+        this.refreshScrollPanes();
     },
 
     refreshScrollPanes:function () {

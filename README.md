@@ -46,10 +46,18 @@ Building and Developing
 =========================
 1. Install the dependencies
 <pre>
-sudo npm install -g grunt grunt-handlebars grunt-contrib-handlebars
+    sudo npm install -g grunt grunt-handlebars grunt-contrib-handlebars
 </pre>
 2. Generate the template.js
 <pre>
-	grunt handlebars
+	rm -f  chrome/js/requester.* chrome/js/templates.js && grunt handlebars && grunt --force
 </pre>
-3. For misc. grunt tasks, look at grunt.js.
+3. Interesting folders to modify:
+<pre>
+    mate chrome/index.html chrome/js/modules chrome/js/templates chrome/css
+<pre>
+4. The following command will continuously build while chrome/js/modules and chrome/js/templates are being modified:
+<pre>
+    grunt watch
+<pre>
+5. For misc. grunt tasks, look at grunt.js.
