@@ -167,9 +167,7 @@ pm.layout = {
 
             pm.indexedDB.getCollection(id, function (collection) {
                 collection.name = name;
-                pm.indexedDB.updateCollection(collection, function (collection) {
-                    $('#form-edit-collection .collection-name').val("");
-                    $('#form-edit-collection .collection-id').val("");
+                pm.indexedDB.updateCollection(collection, function (collection) {                    
                     $('#collection-' + collection.id + " .sidebar-collection-head-name").html(collection.name);
                     $('#select-collection option[value="' + collection.id + '"]').html(collection.name);
                 });

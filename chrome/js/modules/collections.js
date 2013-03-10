@@ -51,10 +51,11 @@ pm.collections = {
 
         $collection_items.on("click", ".collection-actions-edit", function () {
             var id = $(this).attr('data-id');
-            var name = $(this).attr('data-name');
-            $('#form-edit-collection .collection-id').val(id);
-            $('#form-edit-collection .collection-name').val(name);
-            $('#modal-edit-collection').modal('show');
+            pm.indexedDB.getCollection(id, function (collection) {
+                $('#form-edit-collection .collection-id').val(collection.id);
+                $('#form-edit-collection .collection-name').val(collection.name);
+                $('#modal-edit-collection').modal('show');
+            });            
         });
 
         $collection_items.on("click", ".collection-actions-delete", function () {
