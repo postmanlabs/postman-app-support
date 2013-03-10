@@ -12,6 +12,7 @@ tests/selenium/chromedriver.log
 *.pyc
 tests/selenium/pmtests/*.pyc
 chromedriver.log
+chrome/js/requester.js
 chrome/js/requester.min.js
 postman.sublime-project
 postman.sublime-workspace
