@@ -62,8 +62,10 @@ pm.collections = {
             var id = $(this).attr('data-id');
             var name = $(this).attr('data-name');
 
-            $('#modal-delete-collection-yes').attr('data-id', id);
-            $('#modal-delete-collection-name').html(name);
+            pm.indexedDB.getCollection(id, function (collection) {
+                $('#modal-delete-collection-yes').attr('data-id', id);
+                $('#modal-delete-collection-name').html(collection.name);
+            });            
         });
 
         $('#modal-delete-collection-yes').on("click", function () {
