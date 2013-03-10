@@ -1,6 +1,5 @@
 /*global module:false*/
 module.exports = function(grunt) {
-  grunt.loadNpmTasks('grunt-handlebars');
   // Project configuration.
   grunt.initConfig({
     meta: {
@@ -11,19 +10,13 @@ module.exports = function(grunt) {
         '* Copyright (c) <%= grunt.template.today("yyyy") %> ' +
         'YOUR_NAME; Licensed MIT */'
     },
-    lint: {
-      files: ['grunt.js', 'chrome/js/requester.min.js']
-    },
-    qunit: {
-      files: ['tests/**/*.html']
-    },
     concat: {
       dist: {
         src: ['chrome/js/modules/*.js'],
         dest: 'chrome/js/requester.js'
       }
     },
-    min: {
+    mindirect: {
       dist: {
         src: ['chrome/js/requester.js'],
         dest: 'chrome/js/requester.min.js'
@@ -52,15 +45,36 @@ module.exports = function(grunt) {
       }
     },
     handlebars: {
-      all: {
-        src: 'chrome/js/templates',
-        dest: 'chrome/js/templates.js'
+      compile: {
+        options: {
+          partialsUseNamespace: true,
+          namespace: 'Handlebars.templates',
+          processPartialName: function(filePath) {
+            var pieces = filePath.split("/");
+            var name = pieces[pieces.length - 1].split(".")[0];
+            return name;
+          },
+          processName: function(filePath) {
+            var pieces = filePath.split("/");
+            var name = pieces[pieces.length - 1].split(".")[0];
+            return name;
+          }
+        },
+        files: {
+          "chrome/js/templates.js": "chrome/js/templates/*"
+        }
       }
-    },
-    uglify: {}
+    }
   });
 
+  // These plugins provide necessary tasks.
+  grunt.loadNpmTasks('grunt-contrib-handlebars');
+  grunt.loadNpmTasks('grunt-contrib-concat');      
+  grunt.loadNpmTasks('grunt-contrib-jshint');
+  grunt.loadNpmTasks('grunt-mindirect');
+  grunt.loadNpmTasks('grunt-contrib-watch');
+
   // Default task.
-  grunt.registerTask('default', 'lint qunit concat min');
+  grunt.registerTask('default', ['jshint', 'concat']);
 
 };

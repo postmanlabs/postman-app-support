@@ -51,6 +51,7 @@ pm.envManager = {
     },
 
     init:function () {
+        console.log(Handlebars.templates);
         pm.envManager.initGlobals();
         $('#environment-list').append(Handlebars.templates.environment_list({"items":this.environments}));
 
