@@ -17,6 +17,7 @@ pm.settings = {
         pm.settings.create("lastRequest", "");
         pm.settings.create("launcherNotificationCount", 0);
         pm.settings.create("variableDelimiter", "{{...}}");
+        pm.settings.create("languageDetection", "auto");
 
         $('#history-count').val(pm.settings.get("historyCount"));
         $('#auto-save-request').val(pm.settings.get("autoSaveRequest") + "");
@@ -25,6 +26,7 @@ pm.settings = {
         $('#use-postman-proxy').val(pm.settings.get("usePostmanProxy") + "");
         $('#postman-proxy-url').val(pm.settings.get("postmanProxyUrl"));
         $('#variable-delimiter').val(pm.settings.get("variableDelimiter"));
+        $('#language-detection').val(pm.settings.get("languageDetection"));
 
         $('#history-count').change(function () {
             pm.settings.set("historyCount", $('#history-count').val());
@@ -78,6 +80,10 @@ pm.settings = {
 
         $('#variable-delimiter').change(function () {
             pm.settings.set("variableDelimiter", $('#variable-delimiter').val());
+        });
+
+        $('#language-detection').change(function () {
+            pm.settings.set("languageDetection", $('#language-detection').val());
         });
 
         if (pm.settings.get("usePostmanProxy") == true) {
