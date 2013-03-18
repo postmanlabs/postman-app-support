@@ -856,12 +856,12 @@ pm.request = {
             var responsePreviewType = 'html';
 
             if (!_.isUndefined(contentType) && !_.isNull(contentType)) {
-                if (contentType.search(/json/i) !== -1 || contentType.search(/javascript/i) !== -1) {
+                if (contentType.search(/json/i) !== -1 || contentType.search(/javascript/i) !== -1 || pm.settings.get("languageDetection") == 'javascript') {
                     language = 'javascript';
                 }
 
                 $('#language').val(language);
-
+                
                 if (contentType.search(/image/i) >= 0) {
                     responsePreviewType = 'image';
 
@@ -877,13 +877,16 @@ pm.request = {
                     $("#response-as-preview").css("display", "none");
                     $("#response-pretty-modifiers").css("display", "none");
                     $("#response-as-image").html("<img src='" + imgLink + "'/>");
-                }
+                } 
                 else {
                     responsePreviewType = 'html';
                     pm.request.response.setFormat(language, response.text, pm.settings.get("previewType"), true);
                 }
             }
             else {
+                if (pm.settings.get("languageDetection") == 'javascript') {
+                    language = 'javascript';
+                }
                 pm.request.response.setFormat(language, response.text, pm.settings.get("previewType"), true);
             }
 
@@ -993,7 +996,7 @@ pm.request = {
                 var responsePreviewType = 'html';
 
                 if (!_.isUndefined(contentType) && !_.isNull(contentType)) {
-                    if (contentType.search(/json/i) !== -1 || contentType.search(/javascript/i) !== -1) {
+                    if (contentType.search(/json/i) !== -1 || contentType.search(/javascript/i) !== -1 || pm.settings.get("languageDetection") == 'javascript') {
                         language = 'javascript';
                     }
 
@@ -1043,6 +1046,9 @@ pm.request = {
                     }
                 }
                 else {
+                    if (pm.settings.get("languageDetection") == 'javascript') {
+                        language = 'javascript';
+                    }
                     this.setFormat(language, this.text, pm.settings.get("previewType"), true);
                 }
 
