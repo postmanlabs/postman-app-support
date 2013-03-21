@@ -545,8 +545,6 @@ pm.collections = {
                     }
                 }
 
-                console.log(requests);
-
                 $(targetElement).append(Handlebars.templates.collection_sidebar({"items":requests}));
                 $(targetElement).sortable({
                     update:function (event, ui) {

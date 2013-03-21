@@ -239,7 +239,7 @@ pm.layout = {
     },
 
     onModalOpen:function (activeModal) {
-        pm.layout.activeModal = activeModal;
+        pm.layout.activeModal = activeModal;        
         pm.layout.isModalOpen = true;
     },
 
@@ -258,7 +258,7 @@ pm.layout = {
             pm.layout.onModalClose();
         });
 
-        $("#modal-edit-collection").on("shown", function () {
+        $("#modal-edit-collection").on("shown", function () {            
             $("#modal-edit-collection .collection-name").focus();
             pm.layout.onModalOpen("#modal-edit-collection");
         });

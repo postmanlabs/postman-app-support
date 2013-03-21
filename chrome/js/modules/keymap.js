@@ -74,7 +74,7 @@ pm.keymap = {
             return false;
         });
 
-        $(document).bind('keydown', 'return', function () {
+        $(document).bind('keydown', 'return', function () {            
             if(pm.layout.isModalOpen) return;
 
             pm.request.send("text");

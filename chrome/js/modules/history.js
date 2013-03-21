@@ -99,8 +99,7 @@ pm.history = {
         });
     },
 
-    addRequest:function (url, method, headers, data, dataMode) {
-        console.log(data);
+    addRequest:function (url, method, headers, data, dataMode) {        
         var id = guid();
         var maxHistoryCount = pm.settings.get("historyCount");
         var requests = this.requests;

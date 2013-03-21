@@ -295,7 +295,6 @@ pm.request = {
                 }
 
                 if(asObjects === true) {
-                    console.log(newParams);
                     return newParams;
                 }
                 else {
@@ -554,8 +553,6 @@ pm.request = {
             method:pm.request.method,
             version:2
         };
-
-        console.log(request);
 
         return JSON.stringify(request);
     },
@@ -1488,9 +1485,7 @@ pm.request = {
         }
     },
 
-    loadRequestInEditor:function (request, isFromCollection, isFromSample) {        
-        console.log(request);
-
+    loadRequestInEditor:function (request, isFromCollection, isFromSample) {            
         pm.helpers.showRequestHelper("normal");
         this.url = request.url;
         this.body.data = request.body;

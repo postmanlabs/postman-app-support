@@ -51,7 +51,6 @@ pm.envManager = {
     },
 
     init:function () {
-        console.log(Handlebars.templates);
         pm.envManager.initGlobals();
         $('#environment-list').append(Handlebars.templates.environment_list({"items":this.environments}));
 
@@ -251,8 +250,7 @@ pm.envManager = {
 
     getAllEnvironments:function () {
         pm.indexedDB.environments.getAllEnvironments(function (environments) {
-            environments.sort(sortAlphabetical);
-            console.log(environments);                
+            environments.sort(sortAlphabetical);            
             
             $('#environment-selector .dropdown-menu').html("");
             $('#environments-list tbody').html("");
