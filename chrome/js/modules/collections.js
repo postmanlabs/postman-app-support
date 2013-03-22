@@ -28,15 +28,21 @@ pm.collections = {
             pm.collections.toggleRequestList(id);
         });
 
-        $collection_items.on("click", ".request-actions-delete", function () {
-            var id = $(this).attr('data-id');
-            pm.collections.deleteCollectionRequest(id);
-        });
-
         $collection_items.on("click", ".request-actions-load", function () {
             var id = $(this).attr('data-id');
             pm.collections.getCollectionRequest(id);
         });
+
+
+        $collection_items.on("click", ".request-actions-delete", function () {
+            var id = $(this).attr('data-id');
+
+            pm.indexedDB.getCollectionRequest(id, function (req) {
+                $('#modal-delete-collection-request-yes').attr('data-id', id);
+                $('#modal-delete-collection-request-name').html(req.name);
+                $('#modal-delete-collection-request').modal('show');
+            });            
+        });        
 
         $collection_items.on("click", ".request-actions-edit", function () {
             var id = $(this).attr('data-id');
@@ -71,6 +77,11 @@ pm.collections = {
         $('#modal-delete-collection-yes').on("click", function () {
             var id = $(this).attr('data-id');
             pm.collections.deleteCollection(id);
+        });
+
+        $('#modal-delete-collection-request-yes').on("click", function () {
+            var id = $(this).attr('data-id');
+            pm.collections.deleteCollectionRequest(id);
         });
 
         $('#import-collection-url-submit').on("click", function () {
