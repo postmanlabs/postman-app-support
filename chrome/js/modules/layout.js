@@ -43,6 +43,11 @@ pm.layout = {
     init:function () {
         pm.layout.detectLauncher()   
 
+        if (pm.settings.get("haveDonated") == true) {
+            console.log("Donated");
+            pm.layout.hideDonationBar();
+        }
+
         $('#make-postman-better').on("click", function () {
             $('#modal-spread-the-word').modal('show');
             pm.layout.attachSocialButtons();
@@ -383,7 +388,10 @@ pm.layout = {
                 mouseWheelSpeed:24
             });
         }
+    },
 
+    hideDonationBar: function () {
+        $("#sidebar-footer").css("display", "none");
     },
 
     sidebar:{
