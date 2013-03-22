@@ -968,6 +968,8 @@ li .right {
 }
 
 .cm-link {
+    background: white;
+    display: inline-block;
     cursor: pointer;
 }
 

@@ -212,7 +212,7 @@ pm.layout = {
             pm.layout.setLayout();
         });
 
-        $('#response-data').on("click", ".cm-link", function () {
+        $('#response-data').on("mousedown", ".cm-link", function () {
             var link = $(this).html();
             var headers = $('#headers-keyvaleditor').keyvalueeditor('getValues');
             pm.request.loadRequestFromLink(link, headers);
