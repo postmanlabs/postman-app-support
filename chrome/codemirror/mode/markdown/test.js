@@ -20,6 +20,36 @@ MT.testMode(
     'comment', 'foo'
   ]
 );
+// Code blocks using 4 spaces with internal indentation
+MT.testMode(
+  'codeBlocksUsing4SpacesIndentation',
+  '    bar\n        hello\n            world\n    foo\nbar',
+  [
+    null, '    ',
+    'comment', 'bar',
+    null, '        ',
+    'comment', 'hello',
+    null, '            ',
+    'comment', 'world',
+    null, '    ',
+    'comment', 'foo',
+    null, 'bar'
+  ]
+);
+// Code blocks using 4 spaces with internal indentation
+MT.testMode(
+  'codeBlocksUsing4SpacesIndentation',
+  ' foo\n    bar\n        hello\n    world',
+  [
+    null, ' foo',
+    null, '    ',
+    'comment', 'bar',
+    null, '        ',
+    'comment', 'hello',
+    null, '    ',
+    'comment', 'world'
+  ]
+);
 
 // Code blocks using 1 tab (regardless of CodeMirror.indentWithTabs value)
 MT.testMode(
@@ -38,6 +68,17 @@ MT.testMode(
   [
     null, 'foo ',
     'comment', '`bar`'
+  ]
+);
+
+// Block code using single backtick (shouldn't work)
+MT.testMode(
+  'blockCodeSingleBacktick',
+  '`\nfoo\n`',
+  [
+    'comment', '`',
+    null, 'foo',
+    'comment', '`'
   ]
 );
 
@@ -584,6 +625,24 @@ MT.testMode(
     'comment', 'hello'
   ]
 );
+// Code with internal indentation
+MT.testMode(
+  'listCodeIndentation',
+  '* foo\n\n        bar\n            hello\n                world\n        foo\n    bar',
+  [
+    'string', '* foo',
+    null, '        ',
+    'comment', 'bar',
+    null, '            ',
+    'comment', 'hello',
+    null, '                ',
+    'comment', 'world',
+    null, '        ',
+    'comment', 'foo',
+    null, '    ',
+    'string', 'bar'
+  ]
+);
 // Code followed by text
 MT.testMode(
   'listCodeText',
@@ -660,12 +719,149 @@ MT.testMode(
   ]
 );
 
+// Inline link with image
+MT.testMode(
+  'linkImage',
+  '[![foo](http://example.com/)](http://example.com/) bar',
+  [
+    'link', '[',
+    'tag', '![foo]',
+    'string', '(http://example.com/)',
+    'link', ']',
+    'string', '(http://example.com/)',
+    null, ' bar'
+  ]
+);
+
+// Inline link with Em
+MT.testMode(
+  'linkEm',
+  '[*foo*](http://example.com/) bar',
+  [
+    'link', '[',
+    'link em', '*foo*',
+    'link', ']',
+    'string', '(http://example.com/)',
+    null, ' bar'
+  ]
+);
+
+// Inline link with Strong
+MT.testMode(
+  'linkStrong',
+  '[**foo**](http://example.com/) bar',
+  [
+    'link', '[',
+    'link strong', '**foo**',
+    'link', ']',
+    'string', '(http://example.com/)',
+    null, ' bar'
+  ]
+);
+
+// Inline link with EmStrong
+MT.testMode(
+  'linkEmStrong',
+  '[***foo***](http://example.com/) bar',
+  [
+    'link', '[',
+    'link strong', '**',
+    'link emstrong', '*foo**',
+    'link em', '*',
+    'link', ']',
+    'string', '(http://example.com/)',
+    null, ' bar'
+  ]
+);
+
+// Image with title
+MT.testMode(
+  'imageTitle',
+  '![foo](http://example.com/ "bar") hello',
+  [
+    'tag', '![foo]',
+    'string', '(http://example.com/ "bar")',
+    null, ' hello'
+  ]
+);
+
+// Image without title
+MT.testMode(
+  'imageNoTitle',
+  '![foo](http://example.com/) bar',
+  [
+    'tag', '![foo]',
+    'string', '(http://example.com/)',
+    null, ' bar'
+  ]
+);
+
+// Image with asterisks
+MT.testMode(
+  'imageAsterisks',
+  '![*foo*](http://example.com/) bar',
+  [
+    'tag', '![*foo*]',
+    'string', '(http://example.com/)',
+    null, ' bar'
+  ]
+);
+
+// Not a link. Should be normal text due to square brackets being used
+// regularly in text, especially in quoted material, and no space is allowed
+// between square brackets and parentheses (per Dingus).
+MT.testMode(
+  'notALink',
+  '[foo] (bar)',
+  [
+    null, '[foo] (bar)'
+  ]
+);
+
 // Reference-style links
 MT.testMode(
   'linkReference',
   '[foo][bar] hello',
   [
     'link', '[foo]',
+    'string', '[bar]',
+    null, ' hello'
+  ]
+);
+// Reference-style links with Em
+MT.testMode(
+  'linkReferenceEm',
+  '[*foo*][bar] hello',
+  [
+    'link', '[',
+    'link em', '*foo*',
+    'link', ']',
+    'string', '[bar]',
+    null, ' hello'
+  ]
+);
+// Reference-style links with Strong
+MT.testMode(
+  'linkReferenceStrong',
+  '[**foo**][bar] hello',
+  [
+    'link', '[',
+    'link strong', '**foo**',
+    'link', ']',
+    'string', '[bar]',
+    null, ' hello'
+  ]
+);
+// Reference-style links with EmStrong
+MT.testMode(
+  'linkReferenceEmStrong',
+  '[***foo***][bar] hello',
+  [
+    'link', '[',
+    'link strong', '**',
+    'link emstrong', '*foo**',
+    'link em', '*',
+    'link', ']',
     'string', '[bar]',
     null, ' hello'
   ]

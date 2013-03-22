@@ -228,7 +228,7 @@ CodeMirror.defineMode("css", function(config) {
     else if (/[,+>*\/]/.test(ch)) {
       return ret(null, "select-op");
     }
-    else if (ch == "." && stream.match(/^\w+/)) {
+    else if (ch == "." && stream.match(/^-?[_a-z][_a-z0-9-]*/i)) {
       return ret("qualifier", type);
     }
     else if (ch == ":") {
@@ -236,6 +236,11 @@ CodeMirror.defineMode("css", function(config) {
     }
     else if (/[;{}\[\]\(\)]/.test(ch)) {
       return ret(null, ch);
+    }
+    else if (ch == "u" && stream.match("rl(")) {
+      stream.backUp(1);
+      state.tokenize = tokenParenthesized;
+      return ret("property", "variable");
     }
     else {
       stream.eatWhile(/[\w\\\-]/);
@@ -267,7 +272,7 @@ CodeMirror.defineMode("css", function(config) {
     return ret("comment", "comment");
   }
 
-  function tokenString(quote) {
+  function tokenString(quote, nonInclusive) {
     return function(stream, state) {
       var escaped = false, ch;
       while ((ch = stream.next()) != null) {
@@ -275,9 +280,21 @@ CodeMirror.defineMode("css", function(config) {
           break;
         escaped = !escaped && ch == "\\";
       }
-      if (!escaped) state.tokenize = tokenBase;
+      if (!escaped) {
+        if (nonInclusive) stream.backUp(1);
+        state.tokenize = tokenBase;
+      }
       return ret("string", "string");
     };
+  }
+
+  function tokenParenthesized(stream, state) {
+    stream.next(); // Must be '('
+    if (!stream.match(/\s*[\"\']/, false))
+      state.tokenize = tokenString(")", true);
+    else
+      state.tokenize = tokenBase;
+    return ret(null, "(");
   }
 
   return {
@@ -335,7 +352,7 @@ CodeMirror.defineMode("css", function(config) {
       // sequence of selectors:
       // One or more of the named type of selector chained with commas.
 
-      if (stream.eatSpace()) return null;
+      if (state.tokenize == tokenBase && stream.eatSpace()) return null;
       var style = state.tokenize(stream, state);
 
       // Changing style returned based on context
