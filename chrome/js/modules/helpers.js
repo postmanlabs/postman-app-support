@@ -112,7 +112,17 @@ pm.helpers = {
                 return null;
             }
 
-            var processedUrl = pm.envManager.convertString($('#url').val()).trim();
+            var processedUrl;
+
+            var realm = $('#request-helper-oauth1-realm').val();
+
+            if(realm === '') {
+                processedUrl = pm.envManager.convertString($('#url').val()).trim();    
+            }
+            else {
+                processedUrl = pm.envManager.convertString(realm);
+            }
+            
             processedUrl = ensureProperUrl(processedUrl);
 
             if (processedUrl.indexOf('?') > 0) {
@@ -237,7 +247,13 @@ pm.helpers = {
             var addToHeader = $('#request-helper-oauth1-header').attr('checked') ? true : false;
 
             if (addToHeader) {
-                var realm = pm.envManager.convertString($('#url').val()).trim();
+                var realm = $('#request-helper-oauth1-realm').val();
+
+                if(realm === '') {
+                    console.log(realm);
+                    realm = pm.envManager.convertString($('#url').val()).trim();    
+                }
+
                 if (realm.indexOf('?') > 0) {
                     realm = realm.split("?")[0];
                 }
