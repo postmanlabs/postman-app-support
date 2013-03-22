@@ -683,6 +683,10 @@ li .right {
     cursor: pointer;
 }
 
+.sidebar-collection-request-active {
+    background-color: #DCDCDC;
+}
+
 .sidebar-collection-head {
     font-weight: bold;
     padding-left: 5px;

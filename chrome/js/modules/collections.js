@@ -262,6 +262,8 @@ pm.collections = {
     },
 
     getCollectionRequest:function (id) {
+        $('.sidebar-collection-request').removeClass('sidebar-collection-request-active');
+        $('#sidebar-request-' + id).addClass('sidebar-collection-request-active');
         pm.indexedDB.getCollectionRequest(id, function (request) {
             pm.request.isFromCollection = true;
             pm.request.collectionRequestId = id;
