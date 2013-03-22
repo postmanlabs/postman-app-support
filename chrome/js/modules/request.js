@@ -1177,20 +1177,20 @@ pm.request = {
             var renderMode = mode;
             if ($.inArray(mode, ["javascript", "xml", "html"]) >= 0) {
                 renderMode = "links";
-            }
+            }            
 
             if (!pm.editor.codeMirror || forceCreate) {
                 $('#response .CodeMirror').remove();
                 pm.editor.codeMirror = CodeMirror.fromTextArea(codeDataArea,
-                    {
-                        mode:renderMode,
-                        lineNumbers:true,
-                        fixedGutter:true,
-                        onGutterClick:foldFunc,
-                        theme:'eclipse',
-                        lineWrapping:lineWrapping,
-                        readOnly:true
-                    });
+                {
+                    mode:renderMode,
+                    lineNumbers:true,
+                    fixedGutter:true,
+                    onGutterClick:foldFunc,
+                    theme:'eclipse',
+                    lineWrapping:lineWrapping,
+                    readOnly:true
+                });
 
                 var cm = pm.editor.codeMirror;
                 cm.setValue(response);
@@ -1203,6 +1203,7 @@ pm.request = {
                 pm.editor.codeMirror.setOption("readOnly", false);
                 pm.editor.codeMirror.setValue(response);
                 pm.editor.codeMirror.refresh();
+                
                 CodeMirror.commands["goDocStart"](pm.editor.codeMirror);
                 $(window).scrollTop(0);
             }
