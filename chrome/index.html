@@ -627,7 +627,7 @@
                 <div class="controls">
                     <div class="input">
                         <input type="hidden" class="collection-request-id"/>
-                        <input type="text" class="medium clean-input collection-request-name"/>
+                        <input type="text" class="medium clean-input collection-request-name" data-tabindex="1"/>
                     </div>
                 </div>
             </div>
@@ -636,15 +636,15 @@
 
                 <div class="controls">
                     <div class="input">
-                        <textarea class="medium collection-request-description"></textarea>
+                        <textarea class="medium collection-request-description" data-tabindex="2"></textarea>
                     </div>
                 </div>
             </div>
         </form>
     </div>
     <div class="modal-footer">
-        <a class="btn btn-primary">Edit</a>
-        <a data-dismiss="modal" class="btn btn-secondary">Cancel</a>
+        <a class="btn btn-primary" data-tabindex="3">Edit</a>
+        <a data-dismiss="modal" class="btn btn-secondary" data-tabindex="4">Cancel</a>
     </div>
 </div>
 <div id="modal-add-to-collection" class="modal fade" data-keyboard="true">
