@@ -54,6 +54,7 @@ pm.editor = {
         });
     },
 
+    //Refactor this
     toggleLineWrapping:function () {
         var lineWrapping = pm.editor.codeMirror.getOption("lineWrapping");
         if (lineWrapping === true) {
@@ -68,5 +69,6 @@ pm.editor = {
         }
 
         pm.settings.set("lineWrapping", lineWrapping);
+        pm.editor.codeMirror.refresh();
     }
 };
