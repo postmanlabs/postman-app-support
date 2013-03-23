@@ -517,10 +517,12 @@ pm.collections = {
         var id = ui.draggable.context.id;
         var requestId = $('#' + id + ' .request').attr("data-id");
         var targetCollectionId = $($(event.target).find('.sidebar-collection-head-name')[0]).attr('data-id');      
-        pm.indexedDB.getCollection(targetCollectionId, function(collection) {
+        pm.indexedDB.getCollection(targetCollectionId, function(collection) {            
             pm.indexedDB.getCollectionRequest(requestId, function(collectionRequest) {
-                pm.collections.deleteCollectionRequest(requestId);
+                if(targetCollectionId == collectionRequest.collectionId) return;
                 
+                pm.collections.deleteCollectionRequest(requestId);
+
                 collectionRequest.id = guid();
                 collectionRequest.collectionId = targetCollectionId;
                 console.log(collectionRequest);
