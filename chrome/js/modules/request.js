@@ -1304,6 +1304,8 @@ pm.request = {
     },
 
     startNew:function () {
+        $('.sidebar-collection-request').removeClass('sidebar-collection-request-active');
+        
         if (pm.request.xhr !== null) {
             pm.request.xhr.abort();
         }

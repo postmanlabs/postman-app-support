@@ -95,6 +95,7 @@ pm.history = {
     loadRequest:function (id) {
         pm.indexedDB.getRequest(id, function (request) {
             pm.request.isFromCollection = false;
+            $('.sidebar-collection-request').removeClass('sidebar-collection-request-active');
             pm.request.loadRequestInEditor(request);
         });
     },

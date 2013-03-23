@@ -385,6 +385,8 @@ pm.collections = {
     },
 
     addRequestToCollection:function () {
+        $('.sidebar-collection-request').removeClass('sidebar-collection-request-active');
+
         var existingCollectionId = $('#select-collection').val();
         var newCollection = $("#new-collection").val();
         var newRequestName = $('#new-request-name').val();
@@ -426,6 +428,7 @@ pm.collections = {
                 pm.layout.refreshScrollPanes();
                 pm.indexedDB.addCollectionRequest(collectionRequest, function (req) {
                     var targetElement = "#collection-requests-" + req.collectionId;
+                    $('#sidebar-request-' + req.id).addClass('sidebar-collection-request-active');
                     pm.urlCache.addUrl(req.url);
 
                     if (typeof req.name === "undefined") {
@@ -458,6 +461,8 @@ pm.collections = {
                 req.name = limitStringLineWidth(req.name, 43);
 
                 $(targetElement).append(Handlebars.templates.item_collection_sidebar_request(req));
+                $('#sidebar-request-' + req.id).addClass('sidebar-collection-request-active');
+
                 pm.layout.refreshScrollPanes();
 
                 pm.request.isFromCollection = true;
@@ -473,7 +478,7 @@ pm.collections = {
                     }
                 });
             });
-        }
+        }        
 
         pm.layout.sidebar.select("collections");
 
@@ -520,12 +525,11 @@ pm.collections = {
         pm.indexedDB.getCollection(targetCollectionId, function(collection) {            
             pm.indexedDB.getCollectionRequest(requestId, function(collectionRequest) {
                 if(targetCollectionId == collectionRequest.collectionId) return;
-                
+
                 pm.collections.deleteCollectionRequest(requestId);
 
                 collectionRequest.id = guid();
-                collectionRequest.collectionId = targetCollectionId;
-                console.log(collectionRequest);
+                collectionRequest.collectionId = targetCollectionId;            
 
                 pm.indexedDB.addCollectionRequest(collectionRequest, function (req) {                        
                     var targetElement = "#collection-requests-" + req.collectionId;
