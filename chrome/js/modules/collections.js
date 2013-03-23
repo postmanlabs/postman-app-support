@@ -596,6 +596,39 @@ pm.collections = {
         });
     },
 
+    updateCollectionMeta: function(id, name) {
+        pm.indexedDB.getCollection(id, function (collection) {
+            collection.name = name;
+            pm.indexedDB.updateCollection(collection, function (collection) {                    
+                $('#collection-' + collection.id + " .sidebar-collection-head-name").html(collection.name);
+                $('#select-collection option[value="' + collection.id + '"]').html(collection.name);                
+            });
+        });        
+    },
+
+    updateCollectionRequestMeta: function(id, name, description) {
+        pm.indexedDB.getCollectionRequest(id, function (req) {
+            req.name = name;
+            req.description = description;
+            pm.indexedDB.updateCollectionRequest(req, function (newRequest) {
+                var requestName;
+                if (req.name != undefined) {
+                    requestName = limitStringLineWidth(req.name, 43);
+                }
+                else {
+                    requestName = limitStringLineWidth(req.url, 43);
+                }
+
+                $('#sidebar-request-' + req.id + " .request .request-name").html(requestName);
+                if (pm.request.collectionRequestId === req.id) {
+                    $('#request-name').html(req.name);
+                    $('#request-description').html(req.description);
+                }
+                $('#modal-edit-collection-request').modal('hide');
+            });
+        });
+    },
+
     deleteCollection:function (id) {
         pm.indexedDB.deleteCollection(id, function () {
             pm.layout.sidebar.removeCollection(id);
