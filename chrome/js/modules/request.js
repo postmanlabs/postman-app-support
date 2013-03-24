@@ -926,7 +926,7 @@ pm.request = {
             if (response.readyState == 4) {
                 //Something went wrong
                 if (response.status == 0) {
-                    var errorUrl = pm.envManager.convertString(pm.request.url);
+                    var errorUrl = pm.envManager.getCurrentValue(pm.request.url);
                     $('#connection-error-url').html(errorUrl);
                     pm.request.response.showScreen("failed");
                     $('#submit-request').button("reset");
@@ -951,7 +951,7 @@ pm.request = {
                 };
 
                 var responseData;
-                if (response.responseType == "arraybuffer") {
+                if (response.responseRawDataType == "arraybuffer") {
                     responseData = response.response;
                 }
                 else {
@@ -1014,7 +1014,7 @@ pm.request = {
                         $("#response-pretty-modifiers").css("display", "none");
                         $("#response-as-image").html("<img src='" + imgLink + "'/>");
                     }
-                    else if (contentType.search(/pdf/i) >= 0 && response.responseType == "arraybuffer") {
+                    else if (contentType.search(/pdf/i) >= 0 && response.responseRawDataType == "arraybuffer") {
                         responsePreviewType = 'pdf';
 
                         // Hide everything else
@@ -1033,7 +1033,7 @@ pm.request = {
                         });
 
                     }
-                    else if (contentType.search(/pdf/i) >= 0 && response.responseType == "text") {
+                    else if (contentType.search(/pdf/i) >= 0 && response.responseRawDataType == "text") {
                         pm.request.send("arraybuffer");
                         return;
                     }
@@ -1711,24 +1711,14 @@ pm.request = {
         return headers;
     },
 
-    processUrl:function (url) {
-        var envManager = pm.envManager;
-        var environment = envManager.selectedEnv;
-        var envValues = [];
-        var url = $('#url').val();
-        
-        if (environment !== null) {
-            envValues = environment.values;
-        }
-
-        url = envManager.processString(url, envValues);
+    processUrl:function (url) {        
+        var url = $('#url').val();        
+        url = pm.envManager.getCurrentValue(url);
         url = ensureProperUrl(url);
-
         return url;
     },
 
-    //Send the current request
-    send:function (responseType) {
+    prepareForTakeOff: function() {
         // Set state as if change event of input handlers was called
         pm.request.setUrlParamString(pm.request.getUrlEditorParams());
         pm.request.headers = pm.request.getHeaderEditorParams();
@@ -1738,148 +1728,148 @@ pm.request = {
             pm.helpers.oAuth1.process();
         }
 
-        $('#headers-keyvaleditor-actions-open .headers-count').html(pm.request.headers.length);
+        $('#headers-keyvaleditor-actions-open .headers-count').html(pm.request.headers.length);        
+        pm.request.url = pm.request.processUrl($('#url').val());
+        pm.request.body.data = pm.request.body.getData(true);   
+        pm.request.startTime = new Date().getTime();     
+    },
 
-        var i;
-        this.url = pm.request.processUrl($('#url').val());
-        var envManager = pm.envManager;         
-        var environment = envManager.selectedEnv;
-        var envValues = [];
-        var url = $('#url').val();
-        
-        if (environment !== null) {
-            envValues = environment.values;
+    setupEnvironment: function() {
+
+    },
+
+    //Send the current request
+    send:function (_responseRawDataType) {
+        var responseRawDataType = _responseRawDataType;
+        if (!responseRawDataType) {
+            responseRawDataType = "text";
         }
 
-        var url = this.url;
-        this.body.data = pm.request.body.getData(true);
+        pm.request.prepareForTakeOff();                                        
 
+        var url = pm.request.url;
         if (url === "") {
             return;
-        }
-
-        var xhr = new XMLHttpRequest();
-        pm.request.xhr = xhr;
-        pm.request.url = url;
+        }        
 
         url = pm.request.encodeUrl(url);
 
-        var originalUrl = $('#url').val();
-        var method = this.method.toUpperCase();
+        var originalUrl = $('#url').val(); //Store this for saving the request            
+        var method = pm.request.method.toUpperCase();        
+        var originalData = pm.request.body.getData(true);
 
-        var data = pm.request.body.getData(true);
-        var originalData = data;
-
-        console.log(originalData);
-
-        var finalBodyData;
-        var headers = this.headers;
-
+        var headers = pm.request.headers;
         if (pm.settings.get("usePostmanProxy") == true) {
             headers = pm.request.prepareHeadersForProxy(headers);
-        }
+        }        
 
-        pm.request.startTime = new Date().getTime();
-
+        //Start setting up XHR
+        var xhr = new XMLHttpRequest();
+        pm.request.xhr = xhr;
         xhr.onreadystatechange = function (event) {
             pm.request.response.load(event.target);
         };
 
-        if (!responseType) {
-            responseType = "text";
-        }
+        xhr.responseType = responseRawDataType;
+        xhr.open(method, url, true); //Open the XHR request. Will be sent later
 
-        xhr.responseType = responseType;
-        xhr.open(method, url, true);
-
+        //Set headers
+        var i;
         for (i = 0; i < headers.length; i++) {
             var header = headers[i];
             if (!_.isEmpty(header.value)) {
-                xhr.setRequestHeader(header.name, envManager.processString(header.value, envValues));
+                xhr.setRequestHeader(header.name, pm.envManager.getCurrentValue(header.value));
             }
         }
 
+        //Auto set some headers
         if(pm.settings.get("sendNoCacheHeader") === true) {
             xhr.setRequestHeader("Cache-Control", "no-cache");                
         }
 
+
+        //Save the request: Can this be done earlier?
+        if (pm.settings.get("autoSaveRequest")) {
+            pm.history.addRequest(originalUrl, method, pm.request.getPackedHeaders(), originalData, pm.request.dataMode);
+        }
+
+        //Set up the body
         var rows, count, j;
-        var row, key, value;
-
+        var row, key, value;        
         // Prepare body
-        if (this.isMethodWithBody(method)) {
-            if (this.dataMode === 'raw') {
-                data = envManager.processString(data, envValues);
-                finalBodyData = data;
-                xhr.send(finalBodyData);
+        if (pm.request.isMethodWithBody(method)) {
+            if (pm.request.dataMode === 'raw') {
+                var rawBodyData = pm.request.body.getData(true);                
+                rawBodyData = pm.envManager.getCurrentValue(rawBodyData);                
+                xhr.send(rawBodyData);
             }
-            else if (this.dataMode === 'params') {
-                finalBodyData = new FormData();
-
+            else if (pm.request.dataMode === 'params') {
+                //Set up multipart/formdata. Handled by XHR. Only process environment variables
+                var paramsBodyData = new FormData();
                 rows = $('#formdata-keyvaleditor').keyvalueeditor('getElements');
-
                 count = rows.length;
 
-                for (j = 0; j < count; j++) {
-                    row = rows[j];
-                    key = row.keyElement.val();
-                    var valueType = row.valueType;
-                    var valueElement = row.valueElement;
+                if (count > 0) {
+                    for (j = 0; j < count; j++) {
+                        row = rows[j];
+                        key = row.keyElement.val();
+                        var valueType = row.valueType;
+                        var valueElement = row.valueElement;
 
-                    if (valueType === "file") {
-                        var domEl = valueElement.get(0);
-                        var len = domEl.files.length;
-                        for (i = 0; i < len; i++) {
-                            finalBodyData.append(key, domEl.files[i]);
+                        if (valueType === "file") {
+                            var domEl = valueElement.get(0);
+                            var len = domEl.files.length;
+                            for (i = 0; i < len; i++) {
+                                paramsBodyData.append(key, domEl.files[i]);
+                            }
+                        }
+                        else {
+                            value = valueElement.val();
+                            value = pm.envManager.getCurrentValue(value);
+                            paramsBodyData.append(key, value);
                         }
                     }
-                    else {
-                        value = valueElement.val();
-                        value = envManager.processString(value, envValues);
-                        finalBodyData.append(key, value);
-                    }
-                }
-
-                if (count > 0) {
-                    xhr.send(finalBodyData);
+                    xhr.send(paramsBodyData);
                 }
                 else {
                     xhr.send();
                 }
             }
-            else if (this.dataMode === 'urlencoded') {
-                finalBodyData = "";
+            else if (pm.request.dataMode === 'urlencoded') {
+                //Encode Data
+                var urlEncodedBodyData = "";
                 rows = $('#urlencoded-keyvaleditor').keyvalueeditor('getElements');
+
+                //This can be done earlier
                 xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
                 count = rows.length;
-                for (j = 0; j < count; j++) {
-                    row = rows[j];
-                    value = row.valueElement.val();
-                    value = envManager.processString(value, envValues);
-                    value = encodeURIComponent(value);                    
-                    value = value.replace(/%20/g, '+');
-                    key = encodeURIComponent(row.keyElement.val());
-                    key = key.replace(/%20/g, '+');
-                    
-                    finalBodyData += key + "=" + value + "&";
-                }
-
-                finalBodyData = finalBodyData.substr(0, finalBodyData.length - 1);
 
                 if (count > 0) {
-                    xhr.send(finalBodyData);
+                    for (j = 0; j < count; j++) {
+                        row = rows[j];
+                        value = row.valueElement.val();
+                        value = pm.envManager.getCurrentValue(value);
+                        value = encodeURIComponent(value);                    
+                        value = value.replace(/%20/g, '+');
+                        key = encodeURIComponent(row.keyElement.val());
+                        key = key.replace(/%20/g, '+');
+                        
+                        urlEncodedBodyData += key + "=" + value + "&";
+                    }
+
+                    urlEncodedBodyData = urlEncodedBodyData.substr(0, urlEncodedBodyData.length - 1);
+
+                    xhr.send(urlEncodedBodyData);
                 }
                 else {
                     xhr.send();
-                }
+                }                
             }
         } else {
             xhr.send();
         }
 
-        if (pm.settings.get("autoSaveRequest")) {
-            pm.history.addRequest(originalUrl, method, pm.request.getPackedHeaders(), originalData, this.dataMode);
-        }
+        //Show the final UI
 
         $('#submit-request').button("loading");
         pm.request.response.clear();

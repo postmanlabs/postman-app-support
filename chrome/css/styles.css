@@ -683,9 +683,14 @@ li .right {
     cursor: pointer;
 }
 
-.sidebar-collection-request-active {
-    background-color: #DCDCDC;
+.sidebar-collection-request:hover .request-name {
+    color: #333 !important;
 }
+
+.sidebar-collection-request-active {    
+    background-color: #DFEAF0;
+}
+
 
 .sidebar-collection-head {
     font-weight: bold;

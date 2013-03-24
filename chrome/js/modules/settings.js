@@ -4,7 +4,7 @@ pm.settings = {
     autoSaveRequest:true,
     selectedEnvironmentId:"",
 
-    init:function () {
+    createSettings: function() {
         pm.settings.create("historyCount", 100);
         pm.settings.create("autoSaveRequest", true);
         pm.settings.create("selectedEnvironmentId", true);
@@ -19,7 +19,9 @@ pm.settings = {
         pm.settings.create("variableDelimiter", "{{...}}");
         pm.settings.create("languageDetection", "auto");
         pm.settings.create("haveDonated", false);
+    },
 
+    initValues: function() {
         $('#history-count').val(pm.settings.get("historyCount"));
         $('#auto-save-request').val(pm.settings.get("autoSaveRequest") + "");
         $('#retain-link-headers').val(pm.settings.get("retainLinkHeaders") + "");
@@ -29,7 +31,9 @@ pm.settings = {
         $('#variable-delimiter').val(pm.settings.get("variableDelimiter"));
         $('#language-detection').val(pm.settings.get("languageDetection"));
         $('#have-donated').val(pm.settings.get("haveDonated") + "");
+    },
 
+    initListeners: function() {
         $('#history-count').change(function () {
             pm.settings.set("historyCount", $('#history-count').val());
         });
@@ -105,6 +109,12 @@ pm.settings = {
         else {
             $('#postman-proxy-url-container').css("display", "none");
         }
+    },
+    
+    init:function () {                
+        pm.settings.createSettings();
+        pm.settings.initValues();
+        pm.settings.initListeners();
     },
 
     create:function (key, defaultVal) {

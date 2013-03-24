@@ -248,6 +248,17 @@ pm.envManager = {
         return pm.envManager.processString(string, envValues);
     },
 
+    getCurrentValue: function(string) {
+        var environment = pm.envManager.selectedEnv;
+        var envValues = [];
+
+        if (environment !== null) {
+            envValues = environment.values;
+        }
+
+        return pm.envManager.processString(string, envValues);
+    },
+
     getAllEnvironments:function () {
         pm.indexedDB.environments.getAllEnvironments(function (environments) {
             environments.sort(sortAlphabetical);            
