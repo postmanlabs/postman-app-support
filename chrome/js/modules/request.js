@@ -1838,22 +1838,14 @@ pm.request = {
     },
 
     //Send the current request
-    send:function (_responseRawDataType) {
-        var responseRawDataType = _responseRawDataType;
-        if (!responseRawDataType) {
-            responseRawDataType = "text";
-        }
-
+    send:function (responseRawDataType) {
         pm.request.prepareForSending();                                        
-
-        var url = pm.request.url;
-        if (url === "") {
+        if (pm.request.url === "") {
             return;
         }        
 
-        url = pm.request.encodeUrl(url);
-
-        var originalUrl = $('#url').val(); //Store this for saving the request            
+        var originalUrl = $('#url').val(); //Store this for saving the request
+        var url = pm.request.encodeUrl(pm.request.url);        
         var method = pm.request.method.toUpperCase();        
         var originalData = pm.request.body.getData(true);        
 
@@ -1863,6 +1855,10 @@ pm.request = {
         xhr.onreadystatechange = function (event) {
             pm.request.response.load(event.target);
         };
+        
+        if (!responseRawDataType) {
+            responseRawDataType = "text";
+        }
 
         xhr.responseType = responseRawDataType;
         var headers = pm.request.getXhrHeaders(headers);        
