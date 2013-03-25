@@ -4,7 +4,7 @@ pm.settings = {
     autoSaveRequest:true,
     selectedEnvironmentId:"",
 
-    init:function () {
+    createSettings: function() {
         pm.settings.create("historyCount", 100);
         pm.settings.create("autoSaveRequest", true);
         pm.settings.create("selectedEnvironmentId", true);
@@ -17,7 +17,11 @@ pm.settings = {
         pm.settings.create("lastRequest", "");
         pm.settings.create("launcherNotificationCount", 0);
         pm.settings.create("variableDelimiter", "{{...}}");
+        pm.settings.create("languageDetection", "auto");
+        pm.settings.create("haveDonated", false);
+    },
 
+    initValues: function() {
         $('#history-count').val(pm.settings.get("historyCount"));
         $('#auto-save-request').val(pm.settings.get("autoSaveRequest") + "");
         $('#retain-link-headers').val(pm.settings.get("retainLinkHeaders") + "");
@@ -25,7 +29,11 @@ pm.settings = {
         $('#use-postman-proxy').val(pm.settings.get("usePostmanProxy") + "");
         $('#postman-proxy-url').val(pm.settings.get("postmanProxyUrl"));
         $('#variable-delimiter').val(pm.settings.get("variableDelimiter"));
+        $('#language-detection').val(pm.settings.get("languageDetection"));
+        $('#have-donated').val(pm.settings.get("haveDonated") + "");
+    },
 
+    initListeners: function() {
         $('#history-count').change(function () {
             pm.settings.set("historyCount", $('#history-count').val());
         });
@@ -80,12 +88,33 @@ pm.settings = {
             pm.settings.set("variableDelimiter", $('#variable-delimiter').val());
         });
 
+        $('#language-detection').change(function () {
+            pm.settings.set("languageDetection", $('#language-detection').val());
+        });
+
+        $('#have-donated').change(function () {
+            var val = $('#have-donated').val();
+            if (val == "true") {
+                pm.layout.hideDonationBar();
+                pm.settings.set("haveDonated", true);
+            }
+            else {
+                pm.settings.set("haveDonated", false);
+            }
+        });
+
         if (pm.settings.get("usePostmanProxy") == true) {
             $('#postman-proxy-url-container').css("display", "block");
         }
         else {
             $('#postman-proxy-url-container').css("display", "none");
         }
+    },
+    
+    init:function () {                
+        pm.settings.createSettings();
+        pm.settings.initValues();
+        pm.settings.initListeners();
     },
 
     create:function (key, defaultVal) {

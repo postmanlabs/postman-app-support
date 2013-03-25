@@ -43,6 +43,11 @@ pm.layout = {
     init:function () {
         pm.layout.detectLauncher()   
 
+        if (pm.settings.get("haveDonated") == true) {
+            console.log("Donated");
+            pm.layout.hideDonationBar();
+        }
+
         $('#make-postman-better').on("click", function () {
             $('#modal-spread-the-word').modal('show');
             pm.layout.attachSocialButtons();
@@ -156,6 +161,22 @@ pm.layout = {
             return false;
         });
 
+        $('#form-edit-collection').submit(function() {
+            var id = $('#form-edit-collection .collection-id').val();
+            var name = $('#form-edit-collection .collection-name').val();
+            pm.collections.updateCollection(id, name);
+            $('#modal-edit-collection').modal('hide');
+            return false;
+        });
+
+        $('#form-edit-collection-request').submit(function() {
+            var id = $('#form-edit-collection-request .collection-request-id').val();
+            var name = $('#form-edit-collection-request .collection-request-name').val();
+            var description = $('#form-edit-collection-request .collection-request-description').val();
+            pm.collections.updateCollectionRequestMeta(id, name, description);
+            return false;
+        });
+
         $('#modal-new-collection .btn-primary').click(function () {
             pm.collections.addCollection();
             return false;
@@ -163,18 +184,9 @@ pm.layout = {
 
         $('#modal-edit-collection .btn-primary').click(function () {
             var id = $('#form-edit-collection .collection-id').val();
-            var name = $('#form-edit-collection .collection-name').val();
+            var name = $('#form-edit-collection .collection-name').val();            
 
-            pm.indexedDB.getCollection(id, function (collection) {
-                collection.name = name;
-                pm.indexedDB.updateCollection(collection, function (collection) {
-                    $('#form-edit-collection .collection-name').val("");
-                    $('#form-edit-collection .collection-id').val("");
-                    $('#collection-' + collection.id + " .sidebar-collection-head-name").html(collection.name);
-                    $('#select-collection option[value="' + collection.id + '"]').html(collection.name);
-                });
-            });
-
+            pm.collections.updateCollectionMeta(id, name);
             $('#modal-edit-collection').modal('hide');
         });
 
@@ -182,34 +194,14 @@ pm.layout = {
             var id = $('#form-edit-collection-request .collection-request-id').val();
             var name = $('#form-edit-collection-request .collection-request-name').val();
             var description = $('#form-edit-collection-request .collection-request-description').val();
-
-            pm.indexedDB.getCollectionRequest(id, function (req) {
-                req.name = name;
-                req.description = description;
-                pm.indexedDB.updateCollectionRequest(req, function (newRequest) {
-                    var requestName;
-                    if (req.name != undefined) {
-                        requestName = limitStringLineWidth(req.name, 43);
-                    }
-                    else {
-                        requestName = limitStringLineWidth(req.url, 43);
-                    }
-
-                    $('#sidebar-request-' + req.id + " .request .request-name").html(requestName);
-                    if (pm.request.collectionRequestId === req.id) {
-                        $('#request-name').html(req.name);
-                        $('#request-description').html(req.description);
-                    }
-                    $('#modal-edit-collection-request').modal('hide');
-                });
-            });
+            pm.collections.updateCollectionRequestMeta(id, name, description);
         });
 
         $(window).resize(function () {
             pm.layout.setLayout();
         });
 
-        $('#response-data').on("click", ".cm-link", function () {
+        $('#response-data').on("mousedown", ".cm-link", function () {
             var link = $(this).html();
             var headers = $('#headers-keyvaleditor').keyvalueeditor('getValues');
             pm.request.loadRequestFromLink(link, headers);
@@ -241,7 +233,7 @@ pm.layout = {
     },
 
     onModalOpen:function (activeModal) {
-        pm.layout.activeModal = activeModal;
+        pm.layout.activeModal = activeModal;        
         pm.layout.isModalOpen = true;
     },
 
@@ -260,7 +252,7 @@ pm.layout = {
             pm.layout.onModalClose();
         });
 
-        $("#modal-edit-collection").on("shown", function () {
+        $("#modal-edit-collection").on("shown", function () {            
             $("#modal-edit-collection .collection-name").focus();
             pm.layout.onModalOpen("#modal-edit-collection");
         });
@@ -385,7 +377,10 @@ pm.layout = {
                 mouseWheelSpeed:24
             });
         }
+    },
 
+    hideDonationBar: function () {
+        $("#sidebar-footer").css("display", "none");
     },
 
     sidebar:{

@@ -28,15 +28,21 @@ pm.collections = {
             pm.collections.toggleRequestList(id);
         });
 
-        $collection_items.on("click", ".request-actions-delete", function () {
-            var id = $(this).attr('data-id');
-            pm.collections.deleteCollectionRequest(id);
-        });
-
         $collection_items.on("click", ".request-actions-load", function () {
             var id = $(this).attr('data-id');
             pm.collections.getCollectionRequest(id);
         });
+
+
+        $collection_items.on("click", ".request-actions-delete", function () {
+            var id = $(this).attr('data-id');
+
+            pm.indexedDB.getCollectionRequest(id, function (req) {
+                $('#modal-delete-collection-request-yes').attr('data-id', id);
+                $('#modal-delete-collection-request-name').html(req.name);
+                $('#modal-delete-collection-request').modal('show');
+            });            
+        });        
 
         $collection_items.on("click", ".request-actions-edit", function () {
             var id = $(this).attr('data-id');
@@ -51,23 +57,31 @@ pm.collections = {
 
         $collection_items.on("click", ".collection-actions-edit", function () {
             var id = $(this).attr('data-id');
-            var name = $(this).attr('data-name');
-            $('#form-edit-collection .collection-id').val(id);
-            $('#form-edit-collection .collection-name').val(name);
-            $('#modal-edit-collection').modal('show');
+            pm.indexedDB.getCollection(id, function (collection) {
+                $('#form-edit-collection .collection-id').val(collection.id);
+                $('#form-edit-collection .collection-name').val(collection.name);
+                $('#modal-edit-collection').modal('show');
+            });            
         });
 
         $collection_items.on("click", ".collection-actions-delete", function () {
             var id = $(this).attr('data-id');
             var name = $(this).attr('data-name');
 
-            $('#modal-delete-collection-yes').attr('data-id', id);
-            $('#modal-delete-collection-name').html(name);
+            pm.indexedDB.getCollection(id, function (collection) {
+                $('#modal-delete-collection-yes').attr('data-id', id);
+                $('#modal-delete-collection-name').html(collection.name);
+            });            
         });
 
         $('#modal-delete-collection-yes').on("click", function () {
             var id = $(this).attr('data-id');
             pm.collections.deleteCollection(id);
+        });
+
+        $('#modal-delete-collection-request-yes').on("click", function () {
+            var id = $(this).attr('data-id');
+            pm.collections.deleteCollectionRequest(id);
         });
 
         $('#import-collection-url-submit').on("click", function () {
@@ -248,6 +262,8 @@ pm.collections = {
     },
 
     getCollectionRequest:function (id) {
+        $('.sidebar-collection-request').removeClass('sidebar-collection-request-active');
+        $('#sidebar-request-' + id).addClass('sidebar-collection-request-active');
         pm.indexedDB.getCollectionRequest(id, function (request) {
             pm.request.isFromCollection = true;
             pm.request.collectionRequestId = id;
@@ -369,6 +385,8 @@ pm.collections = {
     },
 
     addRequestToCollection:function () {
+        $('.sidebar-collection-request').removeClass('sidebar-collection-request-active');
+
         var existingCollectionId = $('#select-collection').val();
         var newCollection = $("#new-collection").val();
         var newRequestName = $('#new-request-name').val();
@@ -410,6 +428,7 @@ pm.collections = {
                 pm.layout.refreshScrollPanes();
                 pm.indexedDB.addCollectionRequest(collectionRequest, function (req) {
                     var targetElement = "#collection-requests-" + req.collectionId;
+                    $('#sidebar-request-' + req.id).addClass('sidebar-collection-request-active');
                     pm.urlCache.addUrl(req.url);
 
                     if (typeof req.name === "undefined") {
@@ -442,6 +461,8 @@ pm.collections = {
                 req.name = limitStringLineWidth(req.name, 43);
 
                 $(targetElement).append(Handlebars.templates.item_collection_sidebar_request(req));
+                $('#sidebar-request-' + req.id).addClass('sidebar-collection-request-active');
+
                 pm.layout.refreshScrollPanes();
 
                 pm.request.isFromCollection = true;
@@ -457,7 +478,7 @@ pm.collections = {
                     }
                 });
             });
-        }
+        }        
 
         pm.layout.sidebar.select("collections");
 
@@ -497,6 +518,46 @@ pm.collections = {
         });
     },
 
+    handleRequestDropOnCollection: function(event, ui) {
+        var id = ui.draggable.context.id;
+        var requestId = $('#' + id + ' .request').attr("data-id");
+        var targetCollectionId = $($(event.target).find('.sidebar-collection-head-name')[0]).attr('data-id');      
+        pm.indexedDB.getCollection(targetCollectionId, function(collection) {            
+            pm.indexedDB.getCollectionRequest(requestId, function(collectionRequest) {
+                if(targetCollectionId == collectionRequest.collectionId) return;
+
+                pm.collections.deleteCollectionRequest(requestId);
+
+                collectionRequest.id = guid();
+                collectionRequest.collectionId = targetCollectionId;            
+
+                pm.indexedDB.addCollectionRequest(collectionRequest, function (req) {                        
+                    var targetElement = "#collection-requests-" + req.collectionId;
+                    pm.urlCache.addUrl(req.url);
+
+                    if (typeof req.name === "undefined") {
+                        req.name = req.url;
+                    }
+                    req.name = limitStringLineWidth(req.name, 43);
+
+                    $(targetElement).append(Handlebars.templates.item_collection_sidebar_request(req));
+                    pm.layout.refreshScrollPanes();
+
+                    $('#update-request-in-collection').css("display", "inline-block");
+                    pm.collections.openCollection(collectionRequest.collectionId);
+
+                    //Update collection's order element    
+                    pm.indexedDB.getCollection(collection.id, function(collection) {
+                        if("order" in collection) {
+                            collection["order"].push(collectionRequest.id);
+                            pm.indexedDB.updateCollection(collection, function() {});
+                        }
+                    });
+                });
+            });
+        });
+    },
+
     render:function (collection) {
         $('#sidebar-section-collections .empty-message').css("display", "none");
 
@@ -510,11 +571,18 @@ pm.collections = {
 
         $('a[rel="tooltip"]').tooltip();
 
+        $('#collection-' + collection.id + " .sidebar-collection-head").droppable({
+            accept: ".sidebar-collection-request",
+            hoverClass: "ui-state-hover",
+            drop: pm.collections.handleRequestDropOnCollection
+        });
+
         if ("requests" in collection) {
             var id = collection.id;
             var requests = collection.requests;
             var targetElement = "#collection-requests-" + id;
             var count = requests.length;
+            var requestTargetElement;
 
             if (count > 0) {
                 for (var i = 0; i < count; i++) {
@@ -523,6 +591,11 @@ pm.collections = {
                         requests[i].name = requests[i].url;
                     }
                     requests[i].name = limitStringLineWidth(requests[i].name, 40);
+
+                    
+                    //Make requests draggable for moving to a different collection
+                    requestTargetElement = "#sidebar-request-" + requests[i].id;                    
+                    $(requestTargetElement).draggable({});
                 }
 
                 //Sort requests as A-Z order
@@ -542,9 +615,10 @@ pm.collections = {
                     }
                 }
 
-                console.log(requests);
-
+                //Add requests to the DOM
                 $(targetElement).append(Handlebars.templates.collection_sidebar({"items":requests}));
+
+
                 $(targetElement).sortable({
                     update:function (event, ui) {
                         var target_parent = $(event.target).parents(".sidebar-collection-requests");                        
@@ -579,6 +653,39 @@ pm.collections = {
     deleteCollectionRequest:function (id) {
         pm.indexedDB.deleteCollectionRequest(id, function () {
             pm.layout.sidebar.removeRequestFromHistory(id);
+        });
+    },
+
+    updateCollectionMeta: function(id, name) {
+        pm.indexedDB.getCollection(id, function (collection) {
+            collection.name = name;
+            pm.indexedDB.updateCollection(collection, function (collection) {                    
+                $('#collection-' + collection.id + " .sidebar-collection-head-name").html(collection.name);
+                $('#select-collection option[value="' + collection.id + '"]').html(collection.name);                
+            });
+        });        
+    },
+
+    updateCollectionRequestMeta: function(id, name, description) {
+        pm.indexedDB.getCollectionRequest(id, function (req) {
+            req.name = name;
+            req.description = description;
+            pm.indexedDB.updateCollectionRequest(req, function (newRequest) {
+                var requestName;
+                if (req.name != undefined) {
+                    requestName = limitStringLineWidth(req.name, 43);
+                }
+                else {
+                    requestName = limitStringLineWidth(req.url, 43);
+                }
+
+                $('#sidebar-request-' + req.id + " .request .request-name").html(requestName);
+                if (pm.request.collectionRequestId === req.id) {
+                    $('#request-name').html(req.name);
+                    $('#request-description').html(req.description);
+                }
+                $('#modal-edit-collection-request').modal('hide');
+            });
         });
     },
 

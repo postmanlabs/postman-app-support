@@ -683,6 +683,15 @@ li .right {
     cursor: pointer;
 }
 
+.sidebar-collection-request:hover .request-name {
+    color: #333 !important;
+}
+
+.sidebar-collection-request-active {    
+    background-color: #DFEAF0;
+}
+
+
 .sidebar-collection-head {
     font-weight: bold;
     padding-left: 5px;
@@ -964,6 +973,8 @@ li .right {
 }
 
 .cm-link {
+    background: white;
+    display: inline-block;
     cursor: pointer;
 }
 
@@ -1169,7 +1180,7 @@ li .right {
 .request-meta-actions {
     position: absolute;
     margin-left: -17px;
-    margin-top: 2px;
+    margin-top: 8px;
     display: none;
 }
 
@@ -1303,6 +1314,7 @@ li .right {
 /* CodeMirror overrides */
 #response .CodeMirror {
     margin-left: -1px;
+    overflow-x: auto;
 }
 
 .CodeMirror pre {
@@ -1444,10 +1456,6 @@ li .right {
     font-weight: bold;
     border-radius: 5px;
     padding: 0 7px;
-}
-
-.modal.fade {
-    top: -150%;
 }
 
 #environment-selector .btn-group a {

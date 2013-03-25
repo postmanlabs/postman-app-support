@@ -95,12 +95,12 @@ pm.history = {
     loadRequest:function (id) {
         pm.indexedDB.getRequest(id, function (request) {
             pm.request.isFromCollection = false;
+            $('.sidebar-collection-request').removeClass('sidebar-collection-request-active');
             pm.request.loadRequestInEditor(request);
         });
     },
 
-    addRequest:function (url, method, headers, data, dataMode) {
-        console.log(data);
+    addRequest:function (url, method, headers, data, dataMode) {        
         var id = guid();
         var maxHistoryCount = pm.settings.get("historyCount");
         var requests = this.requests;

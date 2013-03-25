@@ -6,22 +6,26 @@ pm.editor = {
     //Defines a links mode for CodeMirror
     init:function () {
         CodeMirror.defineMode("links", function (config, parserConfig) {
+            console.log("Defining mode");
             var linksOverlay = {
                 startState:function () {
                     return { "link":"" }
                 },
 
-                token:function (stream, state) {
-                    if (stream.eatSpace()) {
+                token:function (stream, state) {                    
+                    if (stream.eatSpace()) {                        
                         return null;
                     }
 
                     var matches;
-                    if (matches = stream.match(/https?:\/\/[^\\'"\n\t\s]*(?=[<"'\n\t\s])/, false)) {
-                        //Eat all characters before http link
-                        var m = stream.match(/.*(?=https?:)/, true);
+                    var targetString = stream.string.substr(stream.start);
+
+                    if (matches = targetString.match(/https?:\/\/[^\\'"\n\t\s]*(?=[<"'\n\t\s])/, false)) {
+                        //Eat all characters before http link                        
+                        var m = targetString.match(/.*(?=https?:)/, true);
                         if (m) {
-                            if (m[0].length > 0) {
+                            if (m[0].length > 0) {                                
+                                stream.next();
                                 return null;
                             }
                         }
@@ -50,6 +54,7 @@ pm.editor = {
         });
     },
 
+    //Refactor this
     toggleLineWrapping:function () {
         var lineWrapping = pm.editor.codeMirror.getOption("lineWrapping");
         if (lineWrapping === true) {
@@ -64,5 +69,6 @@ pm.editor = {
         }
 
         pm.settings.set("lineWrapping", lineWrapping);
+        pm.editor.codeMirror.refresh();
     }
 };

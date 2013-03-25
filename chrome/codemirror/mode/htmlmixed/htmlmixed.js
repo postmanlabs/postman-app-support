@@ -5,7 +5,7 @@ CodeMirror.defineMode("htmlmixed", function(config) {
 
   function html(stream, state) {
     var style = htmlMode.token(stream, state.htmlState);
-    if (style == "tag" && stream.current() == ">" && state.htmlState.context) {
+    if (/(?:^|\s)tag(?:\s|$)/.test(style) && stream.current() == ">" && state.htmlState.context) {
       if (/^script$/i.test(state.htmlState.context.tagName)) {
         state.token = javascript;
         state.localState = jsMode.startState(htmlMode.indent(state.htmlState, ""));
@@ -22,7 +22,7 @@ CodeMirror.defineMode("htmlmixed", function(config) {
     var close = cur.search(pat), m;
     if (close > -1) stream.backUp(cur.length - close);
     else if (m = cur.match(/<\/?$/)) {
-      stream.backUp(cur[0].length);
+      stream.backUp(cur.length);
       if (!stream.match(pat, false)) stream.match(cur[0]);
     }
     return style;
