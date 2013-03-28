@@ -927,7 +927,7 @@ pm.request = {
                 //Something went wrong
                 if (response.status == 0) {
                     var errorUrl = pm.envManager.getCurrentValue(pm.request.url);
-                    $('#connection-error-url').html(errorUrl);
+                    $('#connection-error-url').html("<a href='" + errorUrl + "' target='_blank'>" + errorUrl + "</a>");
                     pm.request.response.showScreen("failed");
                     $('#submit-request').button("reset");
                     return false;
