@@ -211,7 +211,7 @@ pm.broadcasts = {
     },
 
     fetch:function () {
-        var broadcast_url = "http://www.getpostman.com/broadcasts";        
+        var broadcast_url = "http://www.getpostman.com/broadcasts";
         $.get(broadcast_url, function (data) {
             pm.broadcasts.setBroadcasts(data["broadcasts"]);
             pm.broadcasts.renderBroadcasts();
@@ -467,7 +467,7 @@ pm.collections = {
         });
     },
 
-    importCollectionData:function (collection) {        
+    importCollectionData:function (collection) {
         pm.indexedDB.addCollection(collection, function (c) {
             var message = {
                 name:collection.name,
@@ -500,7 +500,7 @@ pm.collections = {
                     var j, count;
                     for (j = 0, count = request["responses"].length; j < count; j++) {
                         request["responses"][j].id = guid();
-                        request["responses"][j].collectionRequestId = newId;                        
+                        request["responses"][j].collectionRequestId = newId;
                     }
                 }
 
@@ -509,7 +509,7 @@ pm.collections = {
             }
 
             pm.indexedDB.updateCollection(collection, function() {});
-            
+
             collection.requests = requests;
             pm.collections.render(collection);
         });
@@ -553,7 +553,7 @@ pm.collections = {
     },
 
     loadResponseInEditor:function (id) {
-        var responses = pm.request.responses;        
+        var responses = pm.request.responses;
         var responseIndex = find(responses, function (item, i, responses) {
             return item.id === id;
         });
@@ -746,7 +746,7 @@ pm.collections = {
                 $('#update-request-in-collection').css("display", "inline-block");
                 pm.collections.openCollection(collectionRequest.collectionId);
 
-                //Update collection's order element    
+                //Update collection's order element
                 pm.indexedDB.getCollection(collection.id, function(collection) {
                     if("order" in collection) {
                         collection["order"].push(collectionRequest.id);
@@ -828,7 +828,7 @@ pm.collections = {
                 }
                 else {
                     if(collection["order"].length == requests.length) {
-                        var orderedRequests = [];                    
+                        var orderedRequests = [];
                         for (var j = 0, len = collection["order"].length; j < len; j++) {
                             var element = _.find(requests, function (request) {
                                 return request.id == collection["order"][j]
@@ -844,10 +844,10 @@ pm.collections = {
                 $(targetElement).append(Handlebars.templates.collection_sidebar({"items":requests}));
                 $(targetElement).sortable({
                     update:function (event, ui) {
-                        var target_parent = $(event.target).parents(".sidebar-collection-requests");                        
-                        var target_parent_collection = $(event.target).parents(".sidebar-collection");                        
+                        var target_parent = $(event.target).parents(".sidebar-collection-requests");
+                        var target_parent_collection = $(event.target).parents(".sidebar-collection");
                         var collection_id = $(target_parent_collection).attr("data-id");
-                        var ul_id = $(target_parent.context).attr("id");                        
+                        var ul_id = $(target_parent.context).attr("id");
                         var collection_requests = $(target_parent.context).children("li");
                         var count = collection_requests.length;
                         var order = [];
@@ -858,7 +858,7 @@ pm.collections = {
                             order.push(request_id);
                         }
 
-                        pm.indexedDB.getCollection(collection_id, function (collection) {                            
+                        pm.indexedDB.getCollection(collection_id, function (collection) {
                             collection["order"] = order;
                             pm.indexedDB.updateCollection(collection, function (collection) {
                             });
@@ -1235,8 +1235,8 @@ pm.envManager = {
     getAllEnvironments:function () {
         pm.indexedDB.environments.getAllEnvironments(function (environments) {
             environments.sort(sortAlphabetical);
-            console.log(environments);                
-            
+            console.log(environments);
+
             $('#environment-selector .dropdown-menu').html("");
             $('#environments-list tbody').html("");
             pm.envManager.environments = environments;
@@ -1364,10 +1364,10 @@ pm.envManager = {
 
     duplicateEnvironment:function (id) {
         var env = pm.envManager.getEnvironmentFromId(id);
-        
+
         //get a new name for this duplicated environment
         env.name = env.name + " " + "copy";
-        
+
         //change the env guid
         env.id = guid();
 
@@ -1379,7 +1379,7 @@ pm.envManager = {
             };
 
             pm.envManager.getAllEnvironments();
-        });        
+        });
     },
 
     downloadEnvironment:function (id) {
@@ -1798,12 +1798,12 @@ pm.helpers = {
             $('#request-helper-oauth1-auto').click(function() {
                 var isAutoEnabled = $('#request-helper-oauth1-auto').attr('checked') ? true : false;
                 pm.helpers.oAuth1.isAutoEnabled = isAutoEnabled;
-                
+
                 if(!isAutoEnabled) {
                     $('#request-helper-oAuth1 .request-helper-submit').css("display", "inline-block");
                 }
                 else {
-                    $('#request-helper-oAuth1 .request-helper-submit').css("display", "none");   
+                    $('#request-helper-oAuth1 .request-helper-submit').css("display", "none");
                 }
             });
         },
@@ -2107,8 +2107,8 @@ pm.history = {
                 //Delete the last request
                 var lastRequest = requests[0];
                 this.deleteRequest(lastRequest.id);
-            }    
-        }        
+            }
+        }
 
         var historyRequest = {
             "id":id,
@@ -2243,7 +2243,7 @@ pm.indexedDB = {
     open_latest:function () {
 
         var v = 11;
-        var request = indexedDB.open("postman", v);        
+        var request = indexedDB.open("postman", v);
         request.onupgradeneeded = function (e) {
 
             var db = e.target.result;
@@ -2321,7 +2321,7 @@ pm.indexedDB = {
                 "timestamp":new Date().getTime()
             });
         }
-        
+
 
         request.onsuccess = function () {
             callback(collection);
@@ -2362,7 +2362,7 @@ pm.indexedDB = {
         else {
             version = 1;
         }
-        
+
         var collectionRequest = store.put({
             "collectionId":req.collectionId,
             "id":req.id,
@@ -2859,7 +2859,7 @@ pm.indexedDB = {
 };
 pm.jsonlint = {
     instance: null,
-    
+
     init: function() {
       pm.jsonlint.instance = jsonlint_postman;
       jsonlint_postman = null;
@@ -2901,7 +2901,7 @@ pm.keymap = {
             return true;
         });
 
-        $('body').on('keydown', 'textarea', function (event) {            
+        $('body').on('keydown', 'textarea', function (event) {
             if(pm.layout.isModalOpen) return;
 
             if (event.keyCode === 27) {
@@ -2919,7 +2919,7 @@ pm.keymap = {
         $(document).bind('keydown', 'backspace', urlFocusHandler);
         $(document).bind('keydown', 'alt+n', newRequestHandler);
 
-        $(document).bind('keydown', 'q', function () {            
+        $(document).bind('keydown', 'q', function () {
             pm.envManager.quicklook.toggleDisplay();
             return false;
         });
@@ -2985,7 +2985,7 @@ pm.keymap = {
 
         $(document).bind('keydown', 'a', function () {
             if(pm.layout.isModalOpen) return;
-            
+
             if (pm.collections.areLoaded === false) {
                 pm.collections.getAllCollections();
             }
@@ -3014,18 +3014,18 @@ pm.layout = {
 
     detectLauncher: function() {
         if(pm.debug) {
-            return;    
+            return;
         }
 
-        var launcherNotificationCount = pm.settings.get("launcherNotificationCount");        
+        var launcherNotificationCount = pm.settings.get("launcherNotificationCount");
         var maxCount = 1;
         if(launcherNotificationCount >= 1) {
             return true;
-        }        
+        }
 
         var extension_id = "igofndmniooofoabmmpfonmdnhgchoka";
-        var extension_url = "https://chrome.google.com/webstore/detail/" + extension_id;        
-        
+        var extension_url = "https://chrome.google.com/webstore/detail/" + extension_id;
+
         noty(
         {
             type:'information',
@@ -3037,15 +3037,15 @@ pm.layout = {
                     window.open(url, '_blank');
                     window.focus();
                 }
-            }            
-        });        
+            }
+        });
 
-        var launcherNotificationCount = parseInt(pm.settings.get("launcherNotificationCount")) + 1;        
-        pm.settings.set("launcherNotificationCount", launcherNotificationCount);       
+        var launcherNotificationCount = parseInt(pm.settings.get("launcherNotificationCount")) + 1;
+        pm.settings.set("launcherNotificationCount", launcherNotificationCount);
     },
 
     init:function () {
-        pm.layout.detectLauncher()   
+        pm.layout.detectLauncher()
 
         $('#make-postman-better').on("click", function () {
             $('#modal-spread-the-word').modal('show');
@@ -3377,7 +3377,7 @@ pm.layout = {
     },
 
     setLayout:function () {
-        this.refreshScrollPanes();        
+        this.refreshScrollPanes();
     },
 
     refreshScrollPanes:function () {
@@ -3605,7 +3605,7 @@ pm.request = {
                 stop: function() { pm.request.body.codeMirror.refresh(); },
                 resize: function(event, ui) {
                     ui.size.width = ui.originalSize.width;
-                    $(".CodeMirror-scroll").height($(this).height());                    
+                    $(".CodeMirror-scroll").height($(this).height());
                     pm.request.body.codeMirror.refresh();
                 }
             });
@@ -3640,15 +3640,15 @@ pm.request = {
         autoFormatEditor:function (mode) {
           var content = pm.request.body.codeMirror.getValue(),
               validated = null, result = null;
-          
+
           $('#body-editor-mode-selector-format-result').empty().hide();
-          
+
           if (pm.request.body.isEditorInitialized) {
-            
+
             // In case its a JSON then just properly stringify it.
             // CodeMirror does not work well with pure JSON format.
             if (mode === 'javascript') {
-              
+
               // Validate code first.
               try {
                 validated = pm.jsonlint.instance.parse(content);
@@ -3665,9 +3665,9 @@ pm.request = {
             } else { // Otherwise use internal CodeMirror.autoFormatRage method for a specific mode.
               var totalLines = pm.request.body.codeMirror.lineCount(),
                   totalChars = pm.request.body.codeMirror.getValue().length;
-              
+
               pm.request.body.codeMirror.autoFormatRange(
-                {line: 0, ch: 0}, 
+                {line: 0, ch: 0},
                 {line: totalLines - 1, ch: pm.request.body.codeMirror.getLine(totalLines - 1).length}
               );
             }
@@ -3716,7 +3716,7 @@ pm.request = {
                 var language = $(event.target).attr("data-language");
                 pm.request.body.setEditorMode(editorMode, language);
             });
-            
+
             // 'Format code' button listener.
             $('#body-editor-mode-selector-format').on('click.postman', function(evt) {
               var editorMode = $(event.target).attr("data-editor-mode");
@@ -3836,9 +3836,9 @@ pm.request = {
                     return newParams;
                 }
                 else {
-                    data = pm.request.getBodyParamString(newParams);    
+                    data = pm.request.getBodyParamString(newParams);
                 }
-                
+
             }
             else if (mode === "raw") {
                 data = pm.request.body.getRawData();
@@ -3860,13 +3860,13 @@ pm.request = {
                     return newParams;
                 }
                 else {
-                    data = pm.request.getBodyParamString(newParams);    
-                }                
+                    data = pm.request.getBodyParamString(newParams);
+                }
             }
 
             return data;
         },
-        
+
         loadData:function (mode, data, asObjects) {
             var body = pm.request.body;
             body.setDataMode(mode);
@@ -3875,14 +3875,14 @@ pm.request = {
 
             var params;
             if (mode === "params") {
-                if(asObjects === true) {                    
-                    $('#formdata-keyvaleditor').keyvalueeditor('reset', data);        
+                if(asObjects === true) {
+                    $('#formdata-keyvaleditor').keyvalueeditor('reset', data);
                 }
                 else {
                     params = getBodyVars(data, false);
-                    $('#formdata-keyvaleditor').keyvalueeditor('reset', params);    
+                    $('#formdata-keyvaleditor').keyvalueeditor('reset', params);
                 }
-                
+
             }
             else if (mode === "raw") {
                 body.loadRawData(data);
@@ -3893,9 +3893,9 @@ pm.request = {
                 }
                 else {
                     params = getBodyVars(data, false);
-                    $('#urlencoded-keyvaleditor').keyvalueeditor('reset', params);    
+                    $('#urlencoded-keyvaleditor').keyvalueeditor('reset', params);
                 }
-                
+
             }
         }
     },
@@ -3983,24 +3983,24 @@ pm.request = {
         return newHeaders;
     },
 
-    onHeaderAutoCompleteItemSelect:function(item) {        
+    onHeaderAutoCompleteItemSelect:function(item) {
         if(item.type == "preset") {
             var preset = pm.headerPresets.getHeaderPreset(item.id);
-            if("headers" in preset) {                    
+            if("headers" in preset) {
                 var headers = $('#headers-keyvaleditor').keyvalueeditor('getValues');
-                var loc = -1;    
+                var loc = -1;
                 for(var i = 0; i < headers.length; i++) {
                     if(headers[i].key === item.label) {
                         loc = i;
                         break;
                     }
-                }          
+                }
 
                 if(loc >= 0) {
-                    headers.splice(loc, 1);        
-                }                                            
-                
-                var newHeaders = _.union(headers, preset.headers);                
+                    headers.splice(loc, 1);
+                }
+
+                var newHeaders = _.union(headers, preset.headers);
                 $('#headers-keyvaleditor').keyvalueeditor('reset', newHeaders);
 
                 //Ensures that the key gets focus
@@ -4008,7 +4008,7 @@ pm.request = {
                 $('#headers-keyvaleditor .keyvalueeditor-last input:first-child')[0].focus();
                 setTimeout(function() {
                     element.focus();
-                }, 10);                
+                }, 10);
             }
         }
     },
@@ -4261,8 +4261,8 @@ pm.request = {
         },
 
         stripScriptTag:function (text) {
-            var re = /<script\b[^>]*>([\s\S]*?)<\/script>/gm;            
-            text = text.replace(re, "");            
+            var re = /<script\b[^>]*>([\s\S]*?)<\/script>/gm;
+            text = text.replace(re, "");
             return text;
         },
 
@@ -4300,21 +4300,21 @@ pm.request = {
                 $('#response-as-code').css("display", "none");
                 $('#code-data').css("display", "none");
                 $('#response-as-preview').css("display", "block");
-                $('#response-pretty-modifiers').css("display", "none");                
+                $('#response-pretty-modifiers').css("display", "none");
             }
         },
 
         loadHeaders:function (data) {
-            this.headers = pm.request.unpackResponseHeaders(data);            
+            this.headers = pm.request.unpackResponseHeaders(data);
 
             if(pm.settings.get("usePostmanProxy") === true) {
-                var count = this.headers.length;                
+                var count = this.headers.length;
                 for(var i = 0; i < count; i++) {
                     if(this.headers[i].key == "Postman-Location") {
                         this.headers[i].key = "Location";
                         this.headers[i].name = "Location";
                         break;
-                    }                        
+                    }
                 }
             }
 
@@ -4405,7 +4405,7 @@ pm.request = {
                     $('#response-as-code').css("display", "none");
                     $('#response-as-text').css("display", "none");
                     $('#response-as-image').css("display", "block");
-                    
+
                     var imgLink = pm.request.processUrl($('#url').val());
 
                     $('#response-formatting').css("display", "none");
@@ -4427,7 +4427,7 @@ pm.request = {
             pm.request.response.renderCookies(response.cookies);
             if (responsePreviewType === "html") {
                 $("#response-as-preview").html("");
-                
+
                 var cleanResponseText = pm.request.response.stripScriptTag(pm.request.response.text);
                 pm.filesystem.renderResponsePreview("response.html", cleanResponseText, "html", function (response_url) {
                     $("#response-as-preview").html("<iframe></iframe>");
@@ -4589,12 +4589,12 @@ pm.request = {
                 pm.request.response.loadCookies(url);
 
                 if (responsePreviewType === "html") {
-                    $("#response-as-preview").html("");                                    
-                    var cleanResponseText = pm.request.response.stripScriptTag(pm.request.response.text);                    
+                    $("#response-as-preview").html("");
+                    var cleanResponseText = pm.request.response.stripScriptTag(pm.request.response.text);
                     pm.filesystem.renderResponsePreview("response.html", cleanResponseText, "html", function (response_url) {
                         $("#response-as-preview").html("<iframe></iframe>");
                         $("#response-as-preview iframe").attr("src", response_url);
-                    });    
+                    });
                 }
 
                 if (pm.request.method === "HEAD") {
@@ -4677,6 +4677,8 @@ pm.request = {
             //Use prettyprint here instead of stringify
             if (language === 'javascript') {
                 try {
+                    if ('string' ===  typeof response && response.match(/^[\)\]\}]/))
+                        response = response.substring(response.indexOf('\n'));
                     response = vkbeautify.json(response);
                     mode = 'javascript';
                     foldFunc = CodeMirror.newFoldFunction(CodeMirror.braceRangeFinder);
@@ -5019,7 +5021,7 @@ pm.request = {
         }
     },
 
-    loadRequestInEditor:function (request, isFromCollection, isFromSample) {        
+    loadRequestInEditor:function (request, isFromCollection, isFromSample) {
         console.log(request);
 
         pm.helpers.showRequestHelper("normal");
@@ -5123,16 +5125,16 @@ pm.request = {
 
             if("version" in request) {
                 if(request.version == 2) {
-                    pm.request.body.loadData(request.dataMode, request.data, true);        
+                    pm.request.body.loadData(request.dataMode, request.data, true);
                 }
                 else {
-                    pm.request.body.loadData(request.dataMode, request.data);        
+                    pm.request.body.loadData(request.dataMode, request.data);
                 }
             }
             else {
-                pm.request.body.loadData(request.dataMode, request.data);    
+                pm.request.body.loadData(request.dataMode, request.data);
             }
-            
+
         }
         else {
             $('#data').css("display", "none");
@@ -5249,7 +5251,7 @@ pm.request = {
         var environment = envManager.selectedEnv;
         var envValues = [];
         var url = $('#url').val();
-        
+
         if (environment !== null) {
             envValues = environment.values;
         }
@@ -5266,7 +5268,7 @@ pm.request = {
         pm.request.setUrlParamString(pm.request.getUrlEditorParams());
         pm.request.headers = pm.request.getHeaderEditorParams();
 
-        if (pm.helpers.activeHelper == "oauth1" && pm.helpers.oAuth1.isAutoEnabled) {            
+        if (pm.helpers.activeHelper == "oauth1" && pm.helpers.oAuth1.isAutoEnabled) {
             pm.helpers.oAuth1.generateHelper();
             pm.helpers.oAuth1.process();
         }
@@ -5275,11 +5277,11 @@ pm.request = {
 
         var i;
         this.url = pm.request.processUrl($('#url').val());
-        var envManager = pm.envManager;         
+        var envManager = pm.envManager;
         var environment = envManager.selectedEnv;
         var envValues = [];
         var url = $('#url').val();
-        
+
         if (environment !== null) {
             envValues = environment.values;
         }
@@ -5333,7 +5335,7 @@ pm.request = {
         }
 
         if(pm.settings.get("sendNoCacheHeader") === true) {
-            xhr.setRequestHeader("Cache-Control", "no-cache");                
+            xhr.setRequestHeader("Cache-Control", "no-cache");
         }
 
         var rows, count, j;
@@ -5389,11 +5391,11 @@ pm.request = {
                     row = rows[j];
                     value = row.valueElement.val();
                     value = envManager.processString(value, envValues);
-                    value = encodeURIComponent(value);                    
+                    value = encodeURIComponent(value);
                     value = value.replace(/%20/g, '+');
                     key = encodeURIComponent(row.keyElement.val());
                     key = key.replace(/%20/g, '+');
-                    
+
                     finalBodyData += key + "=" + value + "&";
                 }
 
@@ -5422,15 +5424,15 @@ pm.request = {
     preview:function() {
         console.log("Preview this request");
         if(pm.request.editorMode == 1) {
-            pm.request.editorMode = 0;    
+            pm.request.editorMode = 0;
             $("#request-builder").css("display", "block");
-            $("#request-preview").css("display", "none");    
+            $("#request-preview").css("display", "none");
         }
         else {
-            pm.request.editorMode = 1;    
+            pm.request.editorMode = 1;
             $("#request-builder").css("display", "none");
-            $("#request-preview").css("display", "block");    
-        }               
+            $("#request-preview").css("display", "block");
+        }
     }
 
 };
@@ -5448,7 +5450,7 @@ pm.settings = {
         pm.settings.create("previewType", "parsed");
         pm.settings.create("retainLinkHeaders", false);
         pm.settings.create("sendNoCacheHeader", true);
-        pm.settings.create("usePostmanProxy", false);        
+        pm.settings.create("usePostmanProxy", false);
         pm.settings.create("proxyURL", "");
         pm.settings.create("lastRequest", "");
         pm.settings.create("launcherNotificationCount", 0);
@@ -5484,7 +5486,7 @@ pm.settings = {
             else {
                 pm.settings.set("retainLinkHeaders", false);
             }
-        });        
+        });
 
         $('#send-no-cache-header').change(function () {
             var val = $('#send-no-cache-header').val();
