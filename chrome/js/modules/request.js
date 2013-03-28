@@ -1143,6 +1143,8 @@ pm.request = {
             //Use prettyprint here instead of stringify
             if (language === 'javascript') {
                 try {
+                    if ('string' ===  typeof response && response.match(/^[\)\]\}]/))
+                        response = response.substring(response.indexOf('\n'));
                     response = vkbeautify.json(response);
                     mode = 'javascript';
                     foldFunc = CodeMirror.newFoldFunction(CodeMirror.braceRangeFinder);
