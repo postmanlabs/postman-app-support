@@ -130,7 +130,6 @@ pm.settings = {
     },
 
     set:function (key, value) {
-        console.log(key, value);
         pm.settings[key] = value;
         localStorage[key] = value;
     },

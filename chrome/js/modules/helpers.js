@@ -16,7 +16,6 @@ pm.helpers = {
         });
 
         pm.helpers.oAuth1.init();
-
     },
 
     processRequestHelper:function (type) {

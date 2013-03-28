@@ -1938,7 +1938,16 @@ pm.request = {
             pm.request.editorMode = 1;    
             $("#request-builder").css("display", "none");
             $("#request-preview").css("display", "block");    
-        }               
+        }
+
+        pm.request.prepareForSending();
+        console.log(pm.request.url);
+        console.log(pm.request.method.toUpperCase());
+        console.log(pm.request.getXhrHeaders());
+
+        if(pm.request.isMethodWithBody(pm.request.method.toUpperCase())) {
+            console.log(pm.request.getRequestBodyToBeSent());
+        }
     }
 
 };

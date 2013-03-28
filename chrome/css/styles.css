@@ -44,10 +44,6 @@ a, a:hover {
     display: none;
 }
 
-#preview-request {
-    display: none;
-}
-
 #request-method-selector {
     width: 100px;
 }
