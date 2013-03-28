@@ -1711,11 +1711,10 @@ pm.request = {
         return headers;
     },
 
-    processUrl:function (url) {        
-        var url = $('#url').val();        
-        url = pm.envManager.getCurrentValue(url);
-        url = ensureProperUrl(url);
-        return url;
+    processUrl:function (url) {
+        var finalUrl = pm.envManager.getCurrentValue(url);
+        finalUrl = ensureProperUrl(finalUrl);
+        return finalUrl;
     },
 
     prepareForSending: function() {
@@ -1729,7 +1728,6 @@ pm.request = {
 
         $('#headers-keyvaleditor-actions-open .headers-count').html(pm.request.headers.length);        
         pm.request.url = pm.request.processUrl($('#url').val());
-        pm.request.body.data = pm.request.body.getData(true);   
         pm.request.startTime = new Date().getTime();     
     },
 
@@ -1837,6 +1835,32 @@ pm.request = {
         }                
     },
 
+    getRequestBodyToBeSent: function() {
+        if (pm.request.dataMode === 'raw') {
+            var rawBodyData = pm.request.body.getData(true);
+            rawBodyData = pm.envManager.getCurrentValue(rawBodyData);
+            return rawBodyData;
+        }
+        else if (pm.request.dataMode === 'params') {
+            var formDataBody = pm.request.getFormDataBody();
+            if(formDataBody !== false) {
+                return formDataBody;
+            }
+            else {
+                return false;
+            }
+        }
+        else if (pm.request.dataMode === 'urlencoded') {
+            var urlEncodedBodyData = pm.request.getUrlEncodedBody();
+            if(urlEncodedBodyData !== false) {
+                return urlEncodedBodyData;
+            }
+            else {
+                return false;
+            }
+        }
+    },
+
     //Send the current request
     send:function (responseRawDataType) {
         pm.request.prepareForSending();                                        
@@ -1855,7 +1879,8 @@ pm.request = {
         xhr.onreadystatechange = function (event) {
             pm.request.response.load(event.target);
         };
-        
+
+        //Response raw data type is used for fetching binary responses while generating PDFs
         if (!responseRawDataType) {
             responseRawDataType = "text";
         }
@@ -1866,44 +1891,28 @@ pm.request = {
             xhr.setRequestHeader(headers[i].name, headers[i].value);            
         }
 
+        // Prepare body
+        if (pm.request.isMethodWithBody(method)) {
+            var body = pm.request.getRequestBodyToBeSent();
+            if(body === false) {
+                xhr.send();
+            }
+            else {
+                xhr.send(body);
+            }
+        } else {
+            xhr.send();
+        }
+
         pm.request.xhr = xhr;
 
         //Save the request
         if (pm.settings.get("autoSaveRequest")) {
-            pm.history.addRequest(originalUrl, 
-                method, 
+            pm.history.addRequest(originalUrl,
+                method,
                 pm.request.getPackedHeaders(),
-                originalData, 
+                originalData,
                 pm.request.dataMode);
-        }
-
-        // Prepare body
-        if (pm.request.isMethodWithBody(method)) {
-            if (pm.request.dataMode === 'raw') {
-                var rawBodyData = pm.request.body.getData(true);                
-                rawBodyData = pm.envManager.getCurrentValue(rawBodyData);                
-                xhr.send(rawBodyData);
-            }
-            else if (pm.request.dataMode === 'params') {
-                var formDataBody = pm.request.getFormDataBody();
-                if(formDataBody !== false) {
-                    xhr.send(formDataBody);
-                }
-                else {
-                    xhr.send();
-                }
-            }
-            else if (pm.request.dataMode === 'urlencoded') {
-                var urlEncodedBodyData = pm.request.getUrlEncodedBody();
-                if(urlEncodedBodyData !== false) {
-                    xhr.send(urlEncodedBodyData);
-                }
-                else {
-                    xhr.send();
-                }
-            }
-        } else {
-            xhr.send();
         }
 
         //Show the final UI
