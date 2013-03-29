@@ -1773,8 +1773,55 @@ pm.request = {
         return finalHeaders;
     },
 
+    getFormDataPreview: function() {
+        var rows, count, j;
+        var row, key, value;
+        var i;
+        rows = $('#formdata-keyvaleditor').keyvalueeditor('getElements');
+        count = rows.length;
+        var params = [];
+
+        if (count > 0) {
+            for (j = 0; j < count; j++) {
+                row = rows[j];
+                key = row.keyElement.val();
+                var valueType = row.valueType;
+                var valueElement = row.valueElement;
+
+                if (valueType === "file") {
+                    var domEl = valueElement.get(0);
+                    var len = domEl.files.length;
+                    for (i = 0; i < len; i++) {
+                        var fileObj = {
+                            key: key,
+                            value: domEl.files[i],
+                            type: "file",
+                        }
+                        params.push(fileObj);
+                    }
+                }
+                else {
+                    value = valueElement.val();
+                    value = pm.envManager.getCurrentValue(value);
+                    var textObj = {
+                        key: key,
+                        value: value,
+                        type: "text",
+                    }
+                    params.push(textObj);
+                }
+            }
+
+            return params;
+        }
+        else {
+            return false;
+        }
+    },
+
     getFormDataBody: function() {                
         var rows, count, j;
+        var i;
         var row, key, value;        
         var paramsBodyData = new FormData();
         rows = $('#formdata-keyvaleditor').keyvalueeditor('getElements');
@@ -1835,6 +1882,32 @@ pm.request = {
         else {
             return false;
         }                
+    },
+
+    getRequestBodyPreview: function() {
+        if (pm.request.dataMode === 'raw') {
+            var rawBodyData = pm.request.body.getData(true);
+            rawBodyData = pm.envManager.getCurrentValue(rawBodyData);
+            return rawBodyData;
+        }
+        else if (pm.request.dataMode === 'params') {
+            var formDataBody = pm.request.getFormDataPreview();
+            if(formDataBody !== false) {
+                return formDataBody;
+            }
+            else {
+                return false;
+            }
+        }
+        else if (pm.request.dataMode === 'urlencoded') {
+            var urlEncodedBodyData = pm.request.getUrlEncodedBody();
+            if(urlEncodedBodyData !== false) {
+                return urlEncodedBodyData;
+            }
+            else {
+                return false;
+            }
+        }
     },
 
     getRequestBodyToBeSent: function() {
@@ -1941,12 +2014,14 @@ pm.request = {
         }
 
         pm.request.prepareForSending();
+
+        console.log("Previewing request");
         console.log(pm.request.url);
         console.log(pm.request.method.toUpperCase());
         console.log(pm.request.getXhrHeaders());
 
         if(pm.request.isMethodWithBody(pm.request.method.toUpperCase())) {
-            console.log(pm.request.getRequestBodyToBeSent());
+            console.log(pm.request.getRequestBodyPreview());
         }
     }
 
