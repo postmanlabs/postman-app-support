@@ -1828,12 +1828,12 @@ pm.request = {
                 console.log(param);
                 body += pm.request.getDummyFormDataBoundary();
                 if(param.type === "text") {
-                    body += "Content-Disposition: form-data; name=\"" + param.key + "\"<br/><br/>";
+                    body += "<br/>Content-Disposition: form-data; name=\"" + param.key + "\"<br/><br/>";
                     body += param.value;
                     body += "<br/>";
                 }
                 else if(param.type === "file") {
-                    body += "Content-Disposition: form-data; name=\"" + param.key + "\"; filename=";
+                    body += "<br/>Content-Disposition: form-data; name=\"" + param.key + "\"; filename=";
                     body += "\"" + param.value.name + "\"<br/>";
                     body += "Content-Type: " + param.value.type;
                     body += "<br/><br/><br/>"
