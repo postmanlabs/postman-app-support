@@ -675,7 +675,7 @@ pm.request = {
         });
 
         $("#preview-request").on("click", function () {
-            pm.request.preview();
+            pm.request.handlePreviewClick();
         });
 
         $("#update-request-in-collection").on("click", function () {
@@ -1306,6 +1306,7 @@ pm.request = {
     },
 
     startNew:function () {
+        pm.request.showRequestBuilder();
         $('.sidebar-collection-request').removeClass('sidebar-collection-request-active');
         
         if (pm.request.xhr !== null) {
@@ -1490,8 +1491,10 @@ pm.request = {
         }
     },
 
-    loadRequestInEditor:function (request, isFromCollection, isFromSample) {            
+    loadRequestInEditor:function (request, isFromCollection, isFromSample) {
+        pm.request.showRequestBuilder();
         pm.helpers.showRequestHelper("normal");
+
         this.url = request.url;
         this.body.data = request.body;
         this.method = request.method.toUpperCase();
@@ -1837,6 +1840,8 @@ pm.request = {
                 }
             }
 
+            body += pm.request.getDummyFormDataBoundary();
+
             return body;
         }
         else {
@@ -2039,22 +2044,31 @@ pm.request = {
         return { host: host, path: path };
     },
 
-    preview:function() {
-        console.log("Preview this request");
+    showRequestBuilder: function() {
+        $("#preview-request").html("Preview");
+        pm.request.editorMode = 0;
+        $("#request-builder").css("display", "block");
+        $("#request-preview").css("display", "none");
+    },
+
+    showPreview: function() {
+        //Show preview
+        $("#preview-request").html("Build");
+        pm.request.editorMode = 1;
+        $("#request-builder").css("display", "none");
+        $("#request-preview").css("display", "block");
+    },
+
+    handlePreviewClick:function() {
         if(pm.request.editorMode == 1) {
-            pm.request.editorMode = 0;    
-            $("#request-builder").css("display", "block");
-            $("#request-preview").css("display", "none");    
+            pm.request.showRequestBuilder();
         }
         else {
-            pm.request.editorMode = 1;    
-            $("#request-builder").css("display", "none");
-            $("#request-preview").css("display", "block");    
+            pm.request.showPreview();
         }
 
         pm.request.prepareForSending();
 
-        console.log("Previewing request");
         var method = pm.request.method.toUpperCase();
         var httpVersion = "HTTP/1.1";
         var hostAndPath = pm.request.splitUrlIntoHostAndPath(pm.request.url);
@@ -2068,15 +2082,22 @@ pm.request = {
             body = pm.request.getRequestBodyPreview();
         }
 
-        console.log(method);
-        console.log(httpVersion);
-        console.log(path);
-        console.log(host);
-        console.log(headers);
+        var requestPreview = method + " " + path + " " + httpVersion + "<br/>";
+        requestPreview += "Host: " + host + "<br/>";
 
-        if(hasBody) {
-            console.log(body);
+        var headersCount = headers.length;
+        for(var i = 0; i < headersCount; i ++) {
+            requestPreview += headers[i].key + ": " + headers[i].value + "<br/>";
         }
+
+        if(hasBody && body !== false) {
+            requestPreview += "<br/>" + body + "<br/><br/>";
+        }
+        else {
+            requestPreview += "<br/><br/>";
+        }
+
+        $("#request-preview-content").html(requestPreview);
     }
 
 };
