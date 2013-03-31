@@ -1773,6 +1773,11 @@ pm.request = {
         return finalHeaders;
     },
 
+    getDummyFormDataBoundary: function() {
+        var boundary = "----WebKitFormBoundaryE19zNvXGzXaLvS5C";
+        return boundary;
+    },
+
     getFormDataPreview: function() {
         var rows, count, j;
         var row, key, value;
@@ -1812,7 +1817,27 @@ pm.request = {
                 }
             }
 
-            return params;
+            console.log(params);
+            var paramsCount = params.length;
+            var body = "";
+            for(i = 0; i < paramsCount; i++) {
+                var param = params[i];
+                console.log(param);
+                body += pm.request.getDummyFormDataBoundary();
+                if(param.type === "text") {
+                    body += "Content-Disposition: form-data; name=\"" + param.key + "\"<br/><br/>";
+                    body += param.value;
+                    body += "<br/>";
+                }
+                else if(param.type === "file") {
+                    body += "Content-Disposition: form-data; name=\"" + param.key + "\"; filename=";
+                    body += "\"" + param.value.name + "\"<br/>";
+                    body += "Content-Type: " + param.value.type;
+                    body += "<br/><br/><br/>"
+                }
+            }
+
+            return body;
         }
         else {
             return false;
@@ -2000,6 +2025,20 @@ pm.request = {
         pm.request.response.showScreen("waiting");
     },
 
+    splitUrlIntoHostAndPath: function(url) {
+        var path = "";
+        var host;
+
+        var parts = url.split('/');
+        host = parts[2];
+        var partsCount = parts.length;
+        for(var i = 3; i < partsCount; i++) {
+            path += "/" + parts[i];
+        }
+
+        return { host: host, path: path };
+    },
+
     preview:function() {
         console.log("Preview this request");
         if(pm.request.editorMode == 1) {
@@ -2016,12 +2055,27 @@ pm.request = {
         pm.request.prepareForSending();
 
         console.log("Previewing request");
-        console.log(pm.request.url);
-        console.log(pm.request.method.toUpperCase());
-        console.log(pm.request.getXhrHeaders());
+        var method = pm.request.method.toUpperCase();
+        var httpVersion = "HTTP/1.1";
+        var hostAndPath = pm.request.splitUrlIntoHostAndPath(pm.request.url);
+        var path = hostAndPath.path;
+        var host = hostAndPath.host;
+        var headers = pm.request.getXhrHeaders();
+        var hasBody = pm.request.isMethodWithBody(pm.request.method.toUpperCase());
+        var body;
 
-        if(pm.request.isMethodWithBody(pm.request.method.toUpperCase())) {
-            console.log(pm.request.getRequestBodyPreview());
+        if(hasBody) {
+            body = pm.request.getRequestBodyPreview();
+        }
+
+        console.log(method);
+        console.log(httpVersion);
+        console.log(path);
+        console.log(host);
+        console.log(headers);
+
+        if(hasBody) {
+            console.log(body);
         }
     }
 
