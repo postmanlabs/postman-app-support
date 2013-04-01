@@ -1,7 +1,7 @@
 pm.helpers = {
     activeHelper: "normal",
 
-    init:function () {
+    init: function () {
         $("#request-types .request-helper-tabs li").on("click", function () {
             $("#request-types .request-helper-tabs li").removeClass("active");
             $(this).addClass("active");
@@ -18,17 +18,20 @@ pm.helpers = {
         pm.helpers.oAuth1.init();
     },
 
-    processRequestHelper:function (type) {
+    processRequestHelper: function (type) {
         if (type === 'basic') {
             this.basic.process();
         }
         else if (type === 'oAuth1') {
             this.oAuth1.process();
         }
+        else if (type === 'digest') {
+            this.digest.process();
+        }
         return false;
     },
 
-    showRequestHelper:function (type) {
+    showRequestHelper: function (type) {
         pm.helpers.activeHelper = type.toLowerCase();
         $("#request-types ul li").removeClass("active");
         $('#request-types ul li[data-id=' + type + ']').addClass('active');
@@ -48,8 +51,8 @@ pm.helpers = {
         return false;
     },
 
-    basic:{
-        process:function () {
+    basic: {
+        process: function () {
             var headers = pm.request.headers;
             var authHeaderKey = "Authorization";
             var pos = findPosition(headers, "key", authHeaderKey);
@@ -65,13 +68,13 @@ pm.helpers = {
 
             if (pos >= 0) {
                 headers[pos] = {
-                    key:authHeaderKey,
-                    name:authHeaderKey,
-                    value:encodedString
+                    key: authHeaderKey,
+                    name: authHeaderKey,
+                    value: encodedString
                 };
             }
             else {
-                headers.push({key:authHeaderKey, name:authHeaderKey, value:encodedString});
+                headers.push({key: authHeaderKey, name: authHeaderKey, value: encodedString});
             }
 
             pm.request.headers = headers;
@@ -80,29 +83,99 @@ pm.helpers = {
         }
     },
 
-    oAuth1:{
+    digest: {
+        getUsingMD5: function () {
+            var username = $("#request-helper-digestAuth-username").val();
+            var realm = $("#request-helper-digestAuth-realm").val();
+            var password = $("#request-helper-digestAuth-password").val();
+            var method = pm.request.method.toUpperCase();
+            var nonce = $("#request-helper-digestAuth-nonce").val();
+
+            var url = pm.request.processUrl($('#url').val());
+            var urlParts = pm.request.splitUrlIntoHostAndPath(url);
+            var digestUri = urlParts.path;
+
+            var a1 = username + ":" + realm + ":" + password;
+            var a2 = method + ":" + digestUri;
+
+            var ha1 = CryptoJS.MD5(a1);
+            var ha2 = CryptoJS.MD5(a2);
+
+            var response = CryptoJS.MD5(ha1 + ":" + nonce + ":" + ha2);
+
+            var headerVal = " ";
+            headerVal += "username=\"" + username + "\", ";
+            headerVal += "realm=\"" + realm + "\", ";
+            headerVal += "nonce=\"" + nonce + "\", ";
+            headerVal += "uri=\"" + digestUri + "\", ";
+            headerVal += "response=\"" + response + "\"";
+
+            return headerVal;
+        },
+
+        getUsingMD5sess: function () {
+
+        },
+
+        process: function () {
+            var headers = pm.request.headers;
+            var authHeaderKey = "Authorization";
+            var pos = findPosition(headers, "key", authHeaderKey);
+
+            //Generate digest header here
+
+            var algorithm = $("#request-helper-digestAuth-realm").val();
+            var headerVal;
+
+            if (algorithm === "MD5-sess") {
+                headerVal = pm.helpers.digest.getUsingMD5sess();
+            }
+            else {
+                headerVal = pm.helpers.digest.getUsingMD5();
+            }
+
+            headerVal = authHeaderKey + ": Digest" + headerVal;
+
+            if (pos >= 0) {
+                headers[pos] = {
+                    key: authHeaderKey,
+                    name: authHeaderKey,
+                    value: headerVal
+                };
+            }
+            else {
+                headers.push({key: authHeaderKey, name: authHeaderKey, value: headerVal});
+            }
+
+            pm.request.headers = headers;
+            $('#headers-keyvaleditor').keyvalueeditor('reset', headers);
+            pm.request.openHeaderEditor();
+        }
+    },
+
+    oAuth1: {
         isAutoEnabled: false,
 
-        init:function () {
-            $('#request-helper-oauth1-auto').click(function() {
+        init: function () {
+            $('#request-helper-oauth1-auto').click(function () {
                 var isAutoEnabled = $('#request-helper-oauth1-auto').attr('checked') ? true : false;
                 pm.helpers.oAuth1.isAutoEnabled = isAutoEnabled;
-                
-                if(!isAutoEnabled) {
+
+                if (!isAutoEnabled) {
                     $('#request-helper-oAuth1 .request-helper-submit').css("display", "inline-block");
                 }
                 else {
-                    $('#request-helper-oAuth1 .request-helper-submit').css("display", "none");   
+                    $('#request-helper-oAuth1 .request-helper-submit').css("display", "none");
                 }
             });
         },
 
-        generateHelper:function () {
+        generateHelper: function () {
             $('#request-helper-oauth1-timestamp').val(OAuth.timestamp());
             $('#request-helper-oauth1-nonce').val(OAuth.nonce(6));
         },
 
-        generateSignature:function () {
+        generateSignature: function () {
             //Make sure the URL is urlencoded properly
             //Set the URL keyval editor as well. Other get params disappear when you click on URL params again
             if ($('#url').val() === '') {
@@ -115,13 +188,13 @@ pm.helpers = {
 
             var realm = $('#request-helper-oauth1-realm').val();
 
-            if(realm === '') {
-                processedUrl = pm.envManager.convertString($('#url').val()).trim();    
+            if (realm === '') {
+                processedUrl = pm.envManager.convertString($('#url').val()).trim();
             }
             else {
                 processedUrl = pm.envManager.convertString(realm);
             }
-            
+
             processedUrl = ensureProperUrl(processedUrl);
 
             if (processedUrl.indexOf('?') > 0) {
@@ -129,9 +202,9 @@ pm.helpers = {
             }
 
             var message = {
-                action:processedUrl,
-                method:pm.request.method,
-                parameters:[]
+                action: processedUrl,
+                method: pm.request.method,
+                parameters: []
             };
 
             //all the fields defined by oauth
@@ -180,7 +253,7 @@ pm.helpers = {
             return OAuth.SignatureMethod.sign(message, accessor);
         },
 
-        removeOAuthKeys:function (params) {
+        removeOAuthKeys: function (params) {
             var i, count;
             var oauthParams = [
                 "oauth_consumer_key",
@@ -204,7 +277,7 @@ pm.helpers = {
             return newParams;
         },
 
-        process:function () {
+        process: function () {
             var i, count, length;
             var params = [];
             var urlParams = pm.request.getUrlEditorParams();
@@ -226,7 +299,7 @@ pm.helpers = {
             $('input.signatureParam').each(function () {
                 if ($(this).val() != '') {
                     var val = $(this).val();
-                    params.push({key:$(this).attr('key'), value:val});
+                    params.push({key: $(this).attr('key'), value: val});
                 }
             });
 
@@ -241,16 +314,16 @@ pm.helpers = {
                 return;
             }
 
-            params.push({key:signatureKey, value:signature});
+            params.push({key: signatureKey, value: signature});
 
             var addToHeader = $('#request-helper-oauth1-header').attr('checked') ? true : false;
 
             if (addToHeader) {
                 var realm = $('#request-helper-oauth1-realm').val();
 
-                if(realm === '') {
+                if (realm === '') {
                     console.log(realm);
-                    realm = pm.envManager.convertString($('#url').val()).trim();    
+                    realm = pm.envManager.convertString($('#url').val()).trim();
                 }
 
                 if (realm.indexOf('?') > 0) {
@@ -269,13 +342,13 @@ pm.helpers = {
 
                 if (pos >= 0) {
                     headers[pos] = {
-                        key:authHeaderKey,
-                        name:authHeaderKey,
-                        value:rawString
+                        key: authHeaderKey,
+                        name: authHeaderKey,
+                        value: rawString
                     };
                 }
                 else {
-                    headers.push({key:authHeaderKey, name:authHeaderKey, value:rawString});
+                    headers.push({key: authHeaderKey, name: authHeaderKey, value: rawString});
                 }
 
                 pm.request.headers = headers;
