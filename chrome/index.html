@@ -99,6 +99,7 @@
             <ul class="request-helper-tabs">
                 <li class="active" data-id="normal">Normal</li>
                 <li data-id="basicAuth">Basic Auth</li>
+                <li data-id="digestAuth">Digest Auth</li>
                 <li data-id="oAuth1">OAuth 1.0</li>
             </ul>
             <div id="environment-selector-wrapper">
@@ -166,6 +167,75 @@
                                 <a
                                         class="btn btn-secondary request-helper-submit"
                                         data-type="basic">Refresh headers</a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="request-helper-form-description">
+                    <h4>Note</h4>
+                    The authorization header will be generated and added as a custom header.
+                </div>
+            </div>
+            <div id="request-helper-digestAuth" class="request-helpers">
+                <div class="request-helper-form-container">
+                    <form class="form-horizontal">
+                        <div class="control-group">
+                            <label class="control-label">Username</label>
+
+                            <div class="controls">
+                                <input type="text" id="request-helper-digestAuth-username" class="clean-input"/>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">Password</label>
+
+                            <div class="controls">
+                                <input type="password" id="request-helper-digestAuth-password" class="clean-input"/>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">Nonce</label>
+
+                            <div class="controls">
+                                <input type="text" id="request-helper-digestAuth-nonce" class="clean-input"/>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">Algorithm</label>
+
+                            <div class="controls">
+                                <input type="text" id="request-helper-digestAuth-algorithm" class="clean-input"
+                                       placeholder="MD5/MD5-sess, default = MD5-sess"/>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">qop</label>
+
+                            <div class="controls">
+                                <input type="text" id="request-helper-digestAuth-qop" class="clean-input"
+                                        placeholder="auth/auth-int, default = auth"/>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">Nonce count</label>
+
+                            <div class="controls">
+                                <input type="text" id="request-helper-digestAuth-nonceCount" class="clean-input"
+                                        placeholder="Only for qop = auth-int"/>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">Client nonce</label>
+
+                            <div class="controls">
+                                <input type="text" id="request-helper-digestAuth-clientNonce" class="clean-input"
+                                       placeholder="Only for qop = auth-int"/>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <div class="controls">
+                                <a class="btn btn-secondary request-helper-submit"
+                                        data-type="digest">Refresh headers</a>
                             </div>
                         </div>
                     </form>

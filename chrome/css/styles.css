@@ -201,7 +201,7 @@ fieldset {
     opacity: 0.3;
 }
 
-#external-links ul li img:hover {    
+#external-links ul li img:hover {
     opacity: 0.7;
 }
 
@@ -511,7 +511,7 @@ li .right {
 }
 
 #sidebar-footer {
-    background-color: #000;    
+    background-color: #000;
     font-size: 11px;
     font-weight: bold;
     position: fixed;
@@ -520,7 +520,7 @@ li .right {
     height: 20px;
     opacity: 0.8;
     z-index: 50;
-    padding: 5px 0 5px 0;    
+    padding: 5px 0 5px 0;
 }
 
 #donate-form {
@@ -683,7 +683,7 @@ li .right {
     color: #333 !important;
 }
 
-.sidebar-collection-request-active {    
+.sidebar-collection-request-active {
     background-color: #DFEAF0;
 }
 
@@ -1047,7 +1047,7 @@ li .right {
 #environment-selector-wrapper {
     position: absolute;
     margin-top: 8px;
-    margin-left: 230px;
+    margin-left: 310px;
     font-size: 11px;
 }
 
@@ -1366,7 +1366,7 @@ li .right {
     font-size: 12px !important;
     margin-top: 5px;
     width: 40px;
-    float: left;    
+    float: left;
     margin-right: 15px;
 }
 
