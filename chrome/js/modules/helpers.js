@@ -84,37 +84,81 @@ pm.helpers = {
     },
 
     digest: {
-        getUsingMD5: function () {
+        getHeader: function () {
+            var algorithm = $("#request-helper-digestAuth-realm").val();
+
             var username = $("#request-helper-digestAuth-username").val();
             var realm = $("#request-helper-digestAuth-realm").val();
             var password = $("#request-helper-digestAuth-password").val();
             var method = pm.request.method.toUpperCase();
             var nonce = $("#request-helper-digestAuth-nonce").val();
+            var nonceCount = $("#request-helper-digestAuth-nonceCount").val();
+            var clientNonce = $("#request-helper-digestAuth-clientNonce").val();
+
+            var opaque = $("#request-helper-digestAuth-opaque").val();
+            var qop = $("#request-helper-digestAuth-qop").val();
+            var body = pm.request.getRequestBodyPreview();
 
             var url = pm.request.processUrl($('#url').val());
             var urlParts = pm.request.splitUrlIntoHostAndPath(url);
             var digestUri = urlParts.path;
 
-            var a1 = username + ":" + realm + ":" + password;
-            var a2 = method + ":" + digestUri;
+            var a1;
+
+            if(algorithm === "MD5-sess") {
+                var a0 = CryptoJS.MD5(username + ":" + realm + ":" + password);
+                a1 = a0 + ":" + nonce + ":" + clientNonce;
+            }
+            else {
+                a1 = username + ":" + realm + ":" + password;
+            }
+
+            var a2;
+
+            if(qop === "auth-int") {
+                a2 = method + ":" + digestUri + ":" + body;
+            }
+            else {
+                a2 = method + ":" + digestUri;
+            }
+
 
             var ha1 = CryptoJS.MD5(a1);
             var ha2 = CryptoJS.MD5(a2);
 
-            var response = CryptoJS.MD5(ha1 + ":" + nonce + ":" + ha2);
+            var response;
+
+            if(qop === "auth-int" || qop === "auth") {
+                response = CryptoJS.MD5(ha1 + ":"
+                    + nonce + ":" +":"
+                    + nonceCount + ":"
+                    + clientNonce + ":"
+                    + qop + ":"
+                    + ha2);
+            }
+            else {
+                response = CryptoJS.MD5(ha1 + ":" + nonce + ":" + ha2);
+            }
 
             var headerVal = " ";
             headerVal += "username=\"" + username + "\", ";
             headerVal += "realm=\"" + realm + "\", ";
             headerVal += "nonce=\"" + nonce + "\", ";
             headerVal += "uri=\"" + digestUri + "\", ";
-            headerVal += "response=\"" + response + "\"";
+
+            if(qop === "auth" || qop === "auth-int") {
+                headerVal += "qop=\"" + qop + "\", ";
+            }
+
+            if(qop === "auth" || qop === "auth-int" || algorithm === "MD5-sess") {
+                headerVal += "nc=\"" + nonceCount + "\", ";
+                headerVal += "cnonce=\"" + clientNonce + "\", ";
+            }
+
+            headerVal += "response=\"" + response + "\", ";
+            headerVal += "opaque=\"" + opaque + "\"";
 
             return headerVal;
-        },
-
-        getUsingMD5sess: function () {
-
         },
 
         process: function () {
@@ -127,13 +171,7 @@ pm.helpers = {
             var algorithm = $("#request-helper-digestAuth-realm").val();
             var headerVal;
 
-            if (algorithm === "MD5-sess") {
-                headerVal = pm.helpers.digest.getUsingMD5sess();
-            }
-            else {
-                headerVal = pm.helpers.digest.getUsingMD5();
-            }
-
+            headerVal = pm.helpers.digest.getHeader();
             headerVal = authHeaderKey + ": Digest" + headerVal;
 
             if (pos >= 0) {
@@ -322,7 +360,6 @@ pm.helpers = {
                 var realm = $('#request-helper-oauth1-realm').val();
 
                 if (realm === '') {
-                    console.log(realm);
                     realm = pm.envManager.convertString($('#url').val()).trim();
                 }
 
