@@ -24,9 +24,14 @@ pm.request = {
         codeMirror:false,
 
         init:function () {
+            this.initPreview();
             this.initFormDataEditor();
             this.initUrlEncodedEditor();
             this.initEditorListeners();
+        },
+
+        initPreview:function () {
+            $(".request-preview-header-limitations").dropdown();
         },
 
         hide:function () {

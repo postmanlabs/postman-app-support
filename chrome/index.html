@@ -485,7 +485,16 @@
     </div>
 
     <div id="request-preview">
-        <h4>Preview</h4>
+        <div id="request-preview-header" class="dropdown">
+            <span class="request-preview-header-title">Preview</span>
+            <a data-toggle="dropdown-toggle" class="dropdown-toggle request-preview-header-limitations">
+                Limitations
+            </a>
+            <ul class="dropdown-menu" role="menu">
+                <li>Automatic headers sent by Chrome can not be previewed</li>
+                <li>Can not preview form-data files</li>
+            </ul>
+        </div>
         <div id="request-preview-content">
         </div>
     </div>

@@ -1475,3 +1475,34 @@ input[type="file"] {
     margin-top: 8px;
     display: inline-block;
 }
+
+#request-preview-header {
+    border-bottom: solid thin #ccc;
+    padding-top: 10px;
+    padding-bottom :5px;
+    margin-left: -20px;
+    margin-bottom: 10px;
+}
+
+.request-preview-header-title {
+    padding-left: 20px;
+    font-size: 16px;
+    font-weight: bold;
+    margin-right: 20px;
+}
+
+#request-preview-header .dropdown-menu {
+    padding: 10px;
+    margin-left: 100px;
+    width: 200px;
+}
+
+#request-preview-header .dropdown-menu li {
+    border-bottom: solid thin #ccc;
+    padding-top: 5px;
+    padding-bottom: 8px;
+}
+
+#request-preview-header .dropdown-menu li:last-child {
+    border-bottom: none;
+}

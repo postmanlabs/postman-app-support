@@ -665,4 +665,8 @@ class PostmanTestsHelpers(PostmanTests):
         else:
             return False
 
+    def test_9_digest_plain():
+        self.reset_request()
+        
+
 PostmanTestsHelpers().run()
