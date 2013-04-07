@@ -1478,10 +1478,10 @@ input[type="file"] {
 
 #request-preview-header {
     border-bottom: solid thin #ccc;
-    padding-top: 10px;
-    padding-bottom :5px;
     margin-left: -20px;
     margin-bottom: 10px;
+    height: 25px;
+    padding-top: 10px;
 }
 
 .request-preview-header-title {
@@ -1489,6 +1489,7 @@ input[type="file"] {
     font-size: 16px;
     font-weight: bold;
     margin-right: 20px;
+    padding-top: 20px;
 }
 
 #request-preview-header .dropdown-menu {
