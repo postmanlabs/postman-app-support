@@ -110,7 +110,9 @@ pm.helpers = {
                 a1 = a0 + ":" + nonce + ":" + clientNonce;
             }
             else {
+                console.log(algorithm, "MD5");
                 a1 = username + ":" + realm + ":" + password;
+                console.log(a1);
             }
 
             var a2;
@@ -118,8 +120,9 @@ pm.helpers = {
             if(qop === "auth-int") {
                 a2 = method + ":" + digestUri + ":" + body;
             }
-            else {
+            else {                
                 a2 = method + ":" + digestUri;
+                console.log(qop, a2);
             }
 
 
@@ -130,11 +133,13 @@ pm.helpers = {
 
             if(qop === "auth-int" || qop === "auth") {
                 response = CryptoJS.MD5(ha1 + ":"
-                    + nonce + ":" +":"
+                    + nonce + ":"
                     + nonceCount + ":"
                     + clientNonce + ":"
                     + qop + ":"
                     + ha2);
+
+                console.log(response);
             }
             else {
                 response = CryptoJS.MD5(ha1 + ":" + nonce + ":" + ha2);
@@ -147,11 +152,11 @@ pm.helpers = {
             headerVal += "uri=\"" + digestUri + "\", ";
 
             if(qop === "auth" || qop === "auth-int") {
-                headerVal += "qop=\"" + qop + "\", ";
+                headerVal += "qop=" + qop + ", ";
             }
 
             if(qop === "auth" || qop === "auth-int" || algorithm === "MD5-sess") {
-                headerVal += "nc=\"" + nonceCount + "\", ";
+                headerVal += "nc=" + nonceCount + ", ";
                 headerVal += "cnonce=\"" + clientNonce + "\", ";
             }
 
@@ -172,7 +177,7 @@ pm.helpers = {
             var headerVal;
 
             headerVal = pm.helpers.digest.getHeader();
-            headerVal = authHeaderKey + ": Digest" + headerVal;
+            headerVal = "Digest" + headerVal;
 
             if (pos >= 0) {
                 headers[pos] = {

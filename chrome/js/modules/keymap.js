@@ -50,6 +50,10 @@ pm.keymap = {
         $(document).bind('keydown', 'alt+c', clearHistoryHandler);
         $(document).bind('keydown', 'backspace', urlFocusHandler);
         $(document).bind('keydown', 'alt+n', newRequestHandler);
+        
+        $(document).bind('keydown', 'alt+p', function() {
+            pm.request.handlePreviewClick();
+        });
 
         $(document).bind('keydown', 'q', function () {            
             pm.envManager.quicklook.toggleDisplay();

@@ -141,6 +141,10 @@ class PostmanTestsCollections(PostmanTests):
         request_delete.click()
         time.sleep(0.5)
 
+        request_delete_yes = self.browser.find_element_by_id("modal-delete-collection-request-yes")
+        request_delete_yes.click()
+        time.sleep(0.5)
+
         requests = self.browser.find_elements_by_css_selector("#collection-items li:nth-of-type(1) ul li")
         
         if len(requests) == 0:

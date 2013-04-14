@@ -212,7 +212,7 @@
 
                             <div class="controls">
                                 <input type="text" id="request-helper-digestAuth-algorithm" class="clean-input"
-                                       placeholder="MD5/MD5-sess, default = MD5-sess"/>
+                                       placeholder="MD5/MD5-sess, default = MD5" value="MD5"/>
                             </div>
                         </div>
                         <div class="control-group">
@@ -226,16 +226,14 @@
                             <label class="control-label">Nonce count</label>
 
                             <div class="controls">
-                                <input type="text" id="request-helper-digestAuth-nonceCount" class="clean-input"
-                                        placeholder="Only for qop = auth-int"/>
+                                <input type="text" id="request-helper-digestAuth-nonceCount" class="clean-input"/>
                             </div>
                         </div>
                         <div class="control-group">
                             <label class="control-label">Client nonce</label>
 
                             <div class="controls">
-                                <input type="text" id="request-helper-digestAuth-clientNonce" class="clean-input"
-                                       placeholder="Only for qop = auth-int"/>
+                                <input type="text" id="request-helper-digestAuth-clientNonce" class="clean-input"/>
                             </div>
                         </div>
                         <div class="control-group">
@@ -1199,6 +1197,10 @@
             <tr>
                 <td>New request</td>
                 <td><strong>Alt + n</strong></td>
+            </tr>
+            <tr>
+                <td>Preview request</td>
+                <td><strong>Alt + p</strong></td>
             </tr>
             <tr>
                 <td>Edit URL</td>

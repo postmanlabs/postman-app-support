@@ -23,7 +23,7 @@ def package_contents(package_name):
 def run_all():
     print "Start running tests\n"
     modules = package_contents("pmtests")
-    
+
     # Runs all tests on import
     for module in modules:
         __import__("pmtests." + module)

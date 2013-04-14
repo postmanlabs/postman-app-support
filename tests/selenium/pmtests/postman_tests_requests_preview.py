@@ -17,7 +17,7 @@ class PostmanTestsRequestsPreview(PostmanTests):
     def preview_has_text(self, text):
         preview_content_div = self.browser.find_element_by_id("request-preview-content")
         preview_content = self.browser.execute_script("return arguments[0].innerHTML", preview_content_div)
-        print preview_content
+
         if preview_content.find(text) >= 0:
             return True
         else:
