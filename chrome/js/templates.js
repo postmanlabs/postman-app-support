@@ -128,7 +128,7 @@ helpers = helpers || Handlebars.helpers; data = data || {};
   
 
 
-  return "<li><a class=\"environment-list-item-noenvironment\" >No environment</a></li>\n<li class=\"divider\"></li>\n<li><a href=\"#modal-environments\" data-toggle=\"modal\"\n       data-backdrop=\"static\" data-keyboard=\"true\">Manage environments</a></li>";
+  return "<li><a class=\"environment-list-item-noenvironment\" >No environment</a></li>\n<li class=\"divider\"></li>\n<li><a href=\"#modal-environments\" data-toggle=\"modal\" data-keyboard=\"true\">Manage environments</a></li>";
   });
 
 this["Handlebars"]["templates"]["header_preset_list"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {

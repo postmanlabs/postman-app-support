@@ -1454,6 +1454,10 @@ li .right {
     padding: 0 7px;
 }
 
+.modal.fade {
+    top: -150%;
+}
+
 #environment-selector .btn-group a {
     font-size: 12px;
 }
