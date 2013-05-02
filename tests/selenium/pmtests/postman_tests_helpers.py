@@ -799,5 +799,176 @@ class PostmanTestsHelpers(PostmanTests):
         else:
             return False
         
+    def test_10_digest_post_environment(self):
+        self.reset_request()
+
+        method_select = self.browser.find_element_by_id("request-method-selector")    
+        Select(method_select).select_by_value("GET")
+
+        # From OAuth example
+        self.set_url_field(self.browser, "http://httpbin.org/digest-auth/auth/user/pass")
+
+        environment_selector = self.browser.find_element_by_id("environment-selector")
+        environment_selector.click()
+
+        time.sleep(0.1)
+
+        manage_env_link = self.browser.find_element_by_css_selector("#environment-selector .dropdown-menu li:last-child a")
+        manage_env_link.click()
+
+        time.sleep(1)
+
+        add_env_button = self.browser.find_element_by_css_selector("#environments-list-wrapper .toolbar .environments-actions-add")
+        add_env_button.click()
+        time.sleep(0.3)
+
+        environment_name = self.browser.find_element_by_id("environment-editor-name")
+        environment_name.clear()
+        environment_name.send_keys("Test digest environment")
+
+        first_key = self.browser.find_element_by_css_selector("#environment-keyvaleditor .keyvalueeditor-row:first-child .keyvalueeditor-key")
+        first_key.clear()
+        first_key.send_keys("username")
+
+        first_val = self.browser.find_element_by_css_selector("#environment-keyvaleditor .keyvalueeditor-row:first-child .keyvalueeditor-value")
+        first_val.clear()
+        first_val.send_keys("user")
+
+        second_key = self.browser.find_element_by_css_selector("#environment-keyvaleditor .keyvalueeditor-row:nth-of-type(2) .keyvalueeditor-key")
+        second_key.clear()
+        second_key.send_keys("realm")
+
+        second_val = self.browser.find_element_by_css_selector("#environment-keyvaleditor .keyvalueeditor-row:nth-of-type(2) .keyvalueeditor-value")
+        second_val.clear()
+        second_val.send_keys("me@kennethreitz.com")
+
+        third_key = self.browser.find_element_by_css_selector("#environment-keyvaleditor .keyvalueeditor-row:nth-of-type(3) .keyvalueeditor-key")
+        third_key.clear()
+        third_key.send_keys("password")
+
+        third_val = self.browser.find_element_by_css_selector("#environment-keyvaleditor .keyvalueeditor-row:nth-of-type(3) .keyvalueeditor-value")
+        third_val.clear()
+        third_val.send_keys("pass")
+
+        fourth_key = self.browser.find_element_by_css_selector("#environment-keyvaleditor .keyvalueeditor-row:nth-of-type(4) .keyvalueeditor-key")
+        fourth_key.clear()
+        fourth_key.send_keys("nonce")
+
+        fourth_val = self.browser.find_element_by_css_selector("#environment-keyvaleditor .keyvalueeditor-row:nth-of-type(4) .keyvalueeditor-value")
+        fourth_val.clear()
+        fourth_val.send_keys("59c177ca4c8aa616a0e0007717a2225d")
+
+        fifth_key = self.browser.find_element_by_css_selector("#environment-keyvaleditor .keyvalueeditor-row:nth-of-type(5) .keyvalueeditor-key")
+        fifth_key.clear()
+        fifth_key.send_keys("algorithm")
+
+        fifth_val = self.browser.find_element_by_css_selector("#environment-keyvaleditor .keyvalueeditor-row:nth-of-type(5) .keyvalueeditor-value")
+        fifth_val.clear()
+        fifth_val.send_keys("MD5")
+
+        sixth_key = self.browser.find_element_by_css_selector("#environment-keyvaleditor .keyvalueeditor-row:nth-of-type(6) .keyvalueeditor-key")
+        sixth_key.clear()
+        sixth_key.send_keys("qop")
+
+        sixth_val = self.browser.find_element_by_css_selector("#environment-keyvaleditor .keyvalueeditor-row:nth-of-type(6) .keyvalueeditor-value")
+        sixth_val.clear()
+        sixth_val.send_keys("auth")
+
+        seventh_key = self.browser.find_element_by_css_selector("#environment-keyvaleditor .keyvalueeditor-row:nth-of-type(7) .keyvalueeditor-key")
+        seventh_key.clear()
+        seventh_key.send_keys("nonce_count")
+
+        seventh_val = self.browser.find_element_by_css_selector("#environment-keyvaleditor .keyvalueeditor-row:nth-of-type(7) .keyvalueeditor-value")
+        seventh_val.clear()
+        seventh_val.send_keys("00000002")
+
+        eigth_key = self.browser.find_element_by_css_selector("#environment-keyvaleditor .keyvalueeditor-row:nth-of-type(8) .keyvalueeditor-key")
+        eigth_key.clear()
+        eigth_key.send_keys("client_nonce")
+
+        eigth_val = self.browser.find_element_by_css_selector("#environment-keyvaleditor .keyvalueeditor-row:nth-of-type(8) .keyvalueeditor-value")
+        eigth_val.clear()
+        eigth_val.send_keys("a621deed62b2ff96")
+
+        ninth_key = self.browser.find_element_by_css_selector("#environment-keyvaleditor .keyvalueeditor-row:nth-of-type(9) .keyvalueeditor-key")
+        ninth_key.clear()
+        ninth_key.send_keys("opaque")
+
+        ninth_val = self.browser.find_element_by_css_selector("#environment-keyvaleditor .keyvalueeditor-row:nth-of-type(9) .keyvalueeditor-value")
+        ninth_val.clear()
+        ninth_val.send_keys("c68f9b6d2ccdf56c49945e0788fd1017")
+
+        submit_button = self.browser.find_element_by_css_selector("#modal-environments .environments-actions-add-submit")
+        submit_button.click()
+        time.sleep(0.3)
+
+        close_button = self.browser.find_element_by_css_selector("#modal-environments .modal-header .close")
+        close_button.click()
+
+        time.sleep(1)
+
+        environment_selector = self.browser.find_element_by_id("environment-selector")
+        environment_selector.click()
+
+        # Select the environment
+        manage_env_link = self.browser.find_element_by_css_selector("#environment-selector .dropdown-menu li:nth-of-type(2) a")
+        manage_env_link.click()
+
+        digest_selector = self.browser.find_element_by_css_selector("#request-types .request-helper-tabs li:nth-of-type(3)")
+        digest_selector.click()
+
+        username = self.browser.find_element_by_id("request-helper-digestAuth-username")      
+        realm = self.browser.find_element_by_id("request-helper-digestAuth-realm")
+        password = self.browser.find_element_by_id("request-helper-digestAuth-password")
+        nonce = self.browser.find_element_by_id("request-helper-digestAuth-nonce")
+        algorithm = self.browser.find_element_by_id("request-helper-digestAuth-algorithm")
+        qop = self.browser.find_element_by_id("request-helper-digestAuth-qop")
+        nonce_count = self.browser.find_element_by_id("request-helper-digestAuth-nonceCount")
+        client_nonce = self.browser.find_element_by_id("request-helper-digestAuth-clientNonce")
+        opaque = self.browser.find_element_by_id("request-helper-digestAuth-opaque")
+
+        username.clear()
+        realm.clear()
+        password.clear()
+        nonce.clear()
+        algorithm.clear()
+        qop.clear()
+        nonce_count.clear()
+        client_nonce.clear()
+        opaque.clear()
+
+        username.send_keys("{{username}}")
+        realm.send_keys("{{realm}}")
+        password.send_keys("{{password}}")
+        nonce.send_keys("{{nonce}}")
+        algorithm.send_keys("{{algorithm}}")
+        qop.send_keys("{{qop}}")
+        nonce_count.send_keys("{{nonce_count}}")
+        client_nonce.send_keys("{{client_nonce}}")
+        opaque.send_keys("{{opaque}}")
+        
+        refresh_headers = self.browser.find_element_by_css_selector("#request-helper-digestAuth .request-helper-submit")
+        refresh_headers.click()
+
+        input_elements = self.browser.find_elements_by_css_selector("#headers-keyvaleditor .keyvalueeditor-row")
+        
+        found_digest_response = False
+        for element in input_elements:
+            value = self.browser.execute_script("return arguments[0].innerHTML", element)            
+            if value.find("response") > 0:
+                found_digest_response = True
+                if value.find("bf0ed74d6a422565ba9aae6d0e36f7b9") > 0:
+                    if value.find("realm") > 0:
+                        found_digest_response = True
+                    else:
+                        found_digest_response = False
+                else:
+                    found_digest_response = False
+    
+
+        if found_digest_response is True:
+            return True
+        else:
+            return False
 
 PostmanTestsHelpers().run()

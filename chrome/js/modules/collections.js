@@ -546,11 +546,19 @@ pm.collections = {
                     $('#update-request-in-collection').css("display", "inline-block");
                     pm.collections.openCollection(collectionRequest.collectionId);
 
+                    //Add the drag event listener
+                    $('#collection-' + collectionRequest.collectionId + " .sidebar-collection-head").droppable({
+                        accept: ".sidebar-collection-request",
+                        hoverClass: "ui-state-hover",
+                        drop: pm.collections.handleRequestDropOnCollection
+                    });
+
                     //Update collection's order element    
-                    pm.indexedDB.getCollection(collection.id, function(collection) {
-                        if("order" in collection) {
-                            collection["order"].push(collectionRequest.id);
-                            pm.indexedDB.updateCollection(collection, function() {});
+                    pm.indexedDB.getCollection(collection.id, function(collection) {                        
+                        if("order" in collection) {                                                
+                            collection["order"].push(collectionRequest.id);                                                        
+                            pm.indexedDB.updateCollection(collection, function() {                                
+                            });
                         }
                     });
                 });
@@ -640,7 +648,6 @@ pm.collections = {
                             pm.indexedDB.updateCollection(collection, function (collection) {
                             });
                         });
-
                     }
                 });
             }
@@ -651,9 +658,20 @@ pm.collections = {
     },
 
     deleteCollectionRequest:function (id) {
-        pm.indexedDB.deleteCollectionRequest(id, function () {
-            pm.layout.sidebar.removeRequestFromHistory(id);
-        });
+        pm.indexedDB.getCollectionRequest(id, function(request) {
+            pm.indexedDB.deleteCollectionRequest(id, function () {
+                pm.layout.sidebar.removeRequestFromHistory(id);
+                //Update order
+                pm.indexedDB.getCollection(request.collectionId, function (collection) {                            
+                    var order = collection["order"];
+                    var index = order.indexOf(id);
+                    order.splice(index, 1);
+                    collection["order"] = order;
+                    pm.indexedDB.updateCollection(collection, function (collection) {                        
+                    });
+                });
+            });
+        });        
     },
 
     updateCollectionMeta: function(id, name) {

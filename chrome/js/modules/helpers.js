@@ -85,23 +85,35 @@ pm.helpers = {
 
     digest: {
         getHeader: function () {
-            var algorithm = $("#request-helper-digestAuth-realm").val();
+            var algorithm = pm.envManager.getCurrentValue($("#request-helper-digestAuth-realm").val());
 
-            var username = $("#request-helper-digestAuth-username").val();
-            var realm = $("#request-helper-digestAuth-realm").val();
-            var password = $("#request-helper-digestAuth-password").val();
+            var username = pm.envManager.getCurrentValue($("#request-helper-digestAuth-username").val());
+            var realm = pm.envManager.getCurrentValue($("#request-helper-digestAuth-realm").val());
+            var password = pm.envManager.getCurrentValue($("#request-helper-digestAuth-password").val());
             var method = pm.request.method.toUpperCase();
-            var nonce = $("#request-helper-digestAuth-nonce").val();
-            var nonceCount = $("#request-helper-digestAuth-nonceCount").val();
-            var clientNonce = $("#request-helper-digestAuth-clientNonce").val();
+            var nonce = pm.envManager.getCurrentValue($("#request-helper-digestAuth-nonce").val());
+            var nonceCount = pm.envManager.getCurrentValue($("#request-helper-digestAuth-nonceCount").val());
+            var clientNonce = pm.envManager.getCurrentValue($("#request-helper-digestAuth-clientNonce").val());
 
-            var opaque = $("#request-helper-digestAuth-opaque").val();
-            var qop = $("#request-helper-digestAuth-qop").val();
+            var opaque = pm.envManager.getCurrentValue($("#request-helper-digestAuth-opaque").val());
+            var qop = pm.envManager.getCurrentValue($("#request-helper-digestAuth-qop").val());
             var body = pm.request.getRequestBodyPreview();
 
             var url = pm.request.processUrl($('#url').val());
             var urlParts = pm.request.splitUrlIntoHostAndPath(url);
             var digestUri = urlParts.path;
+
+            console.log(algorithm);
+            console.log(username);
+            console.log(realm);
+            console.log(password);
+            console.log(method);
+            console.log(nonce);
+            console.log(nonceCount);
+            console.log(clientNonce);
+            console.log(opaque);
+            console.log(qop);
+            console.log(body);
 
             var a1;
 

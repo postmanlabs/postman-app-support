@@ -30,10 +30,11 @@ def run_all():
 
 def run():
     #from pmtests.postman_tests_broadcasts import PostmanTestsBroadcasts
-    from pmtests.postman_tests_collections import PostmanTestsCollections
+    from pmtests.postman_tests_helpers import PostmanTestsHelpers
 
 def main():
     run_all()
+    #run()
     deinit()
 
 if __name__ == "__main__":
