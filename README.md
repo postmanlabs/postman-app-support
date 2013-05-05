@@ -53,3 +53,8 @@ sudo npm install -g grunt grunt-handlebars grunt-contrib-handlebars
 	grunt handlebars
 </pre>
 3. For misc. grunt tasks, look at grunt.js.
+
+Pull requests
+=========================
+
+Please send pull requests to the dev branch. The master branch contains the latest code which has been put in production.
