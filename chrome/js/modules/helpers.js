@@ -421,6 +421,11 @@ pm.helpers = {
                     else if (dataMode === 'params') {
                         $('#formdata-keyvaleditor').keyvalueeditor('reset', params);
                     }
+                    else if (dataMode === 'raw') {
+                        $('#url-keyvaleditor').keyvalueeditor('reset', params);
+                        pm.request.setUrlParamString(params);
+                        pm.request.openUrlEditor();
+                    }
                 }
             }
         }
