@@ -459,10 +459,13 @@
                             <span class="caret" style="margin-top: 8px;"></span>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a data-editor-mode="text" data-language="text">Text</a></li>
-                            <li><a data-editor-mode="javascript" data-language="json">JSON</a></li>
-                            <li><a data-editor-mode="xml" data-language="xml">XML</a></li>
-                            <li><a data-editor-mode="xml" data-language="html">HTML</a></li>
+                            <li><a data-editor-mode="text" data-language="text">Text (No Content-Type header)</a></li>
+                            <li><a data-editor-mode="text" data-language="text/plain">Text (text/plain)</a></li>
+                            <li><a data-editor-mode="javascript" data-language="application/json">JSON (application/json)</a></li>
+                            <li><a data-editor-mode="javascript" data-language="text/json">JSON (text/json)</a></li>                            
+                            <li><a data-editor-mode="xml" data-language="application/xml">XML (application/xml)</a></li>
+                            <li><a data-editor-mode="xml" data-language="text/xml">XML (text/xml)</a></li>
+                            <li><a data-editor-mode="xml" data-language="text/html">HTML (text/html)</a></li>
                         </ul>                
                     </div>
                 </div>

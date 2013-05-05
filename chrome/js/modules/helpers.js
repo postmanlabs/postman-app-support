@@ -385,6 +385,7 @@ pm.helpers = {
                 }
                 var headers = pm.request.headers;
                 var authHeaderKey = "Authorization";
+                
                 var pos = findPosition(headers, "key", authHeaderKey);
 
                 var rawString = "OAuth realm=\"" + realm + "\",";

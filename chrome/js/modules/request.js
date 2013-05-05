@@ -82,8 +82,10 @@ pm.request = {
             pm.request.body.codeMirror.refresh();
         },
 
-        setEditorMode:function (mode, language) {
-            var displayMode = $("#body-editor-mode-selector a[data-language='" + language + "']").html();
+        setEditorMode:function (mode, language, toSetHeader) {            
+            var displayMode = $("#body-editor-mode-selector a[data-language='" + language + "']").html();          
+            console.log(mode, language);
+
             $('#body-editor-mode-item-selected').html(displayMode);
 
             if (pm.request.body.isEditorInitialized) {
@@ -99,6 +101,28 @@ pm.request = {
                 } else {
                   $('#body-editor-mode-selector-format').removeClass('disabled');
                 }
+
+                //Add proper content-type header
+                if (toSetHeader) {
+                    var headers = pm.request.headers;
+                    var contentTypeHeaderKey = "Content-Type";
+                    var pos = findPosition(headers, "key", contentTypeHeaderKey);
+                    console.log(pos);
+
+                    if (pos >= 0) {
+                        headers[pos] = {
+                            key: contentTypeHeaderKey,
+                            name: contentTypeHeaderKey,
+                            value: language
+                        };
+                    }
+                    else {
+                        headers.push({key: contentTypeHeaderKey, name: contentTypeHeaderKey, value: language});
+                    }
+
+                    pm.request.headers = headers;
+                    $('#headers-keyvaleditor').keyvalueeditor('reset', headers);    
+                }                
 
                 //pm.request.body.autoFormatEditor(mode);
                 pm.request.body.codeMirror.refresh();
@@ -182,7 +206,7 @@ pm.request = {
             $('#body-editor-mode-selector .dropdown-menu').on("click", "a", function (event) {
                 var editorMode = $(event.target).attr("data-editor-mode");
                 var language = $(event.target).attr("data-language");
-                pm.request.body.setEditorMode(editorMode, language);
+                pm.request.body.setEditorMode(editorMode, language, true);
             });
             
             // 'Format code' button listener.
@@ -1625,19 +1649,19 @@ pm.request = {
         }
         else if (contentType.search(/json/i) !== -1 || contentType.search(/javascript/i) !== -1) {
             mode = 'javascript';
-            language = 'json';
+            language = contentType;
         }
         else if (contentType.search(/xml/i) !== -1) {
             mode = 'xml';
-            language = 'xml';
+            language = contentType;
         }
         else if (contentType.search(/html/i) !== -1) {
             mode = 'xml';
-            language = 'html';
+            language = contentType;
         }
         else {
             language = 'text';
-            contentType = 'text';
+            language = contentType;
         }
 
         pm.request.body.setEditorMode(mode, language);
