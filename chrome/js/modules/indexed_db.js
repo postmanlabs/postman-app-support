@@ -1,5 +1,6 @@
 pm.indexedDB = {
     TABLE_HEADER_PRESETS: "header_presets",
+    TABLE_HELPERS: "helpers",
 
     onerror:function (event, callback) {
         console.log(event);
@@ -51,6 +52,11 @@ pm.indexedDB = {
 
                     if (!db.objectStoreNames.contains("header_presets")) {
                         var requestStore = db.createObjectStore("header_presets", {keyPath:"id"});
+                        requestStore.createIndex("timestamp", "timestamp", { unique:false});
+                    }
+
+                    if (!db.objectStoreNames.contains("helpers")) {
+                        var requestStore = db.createObjectStore("helpers", {keyPath:"id"});
                         requestStore.createIndex("timestamp", "timestamp", { unique:false});
                     }
 
@@ -112,6 +118,11 @@ pm.indexedDB = {
 
             if (!db.objectStoreNames.contains("header_presets")) {
                 var requestStore = db.createObjectStore("header_presets", {keyPath:"id"});
+                requestStore.createIndex("timestamp", "timestamp", { unique:false});
+            }
+
+            if (!db.objectStoreNames.contains("helpers")) {
+                var requestStore = db.createObjectStore("helpers", {keyPath:"id"});
                 requestStore.createIndex("timestamp", "timestamp", { unique:false});
             }
         };
@@ -591,6 +602,39 @@ pm.indexedDB = {
             request.onerror = function (e) {
                 console.log(e.value);
             };
+        }
+    },
+
+    helpers:{
+        addHelper:function (helper, callback) {
+            var db = pm.indexedDB.db;
+            var trans = db.transaction([pm.indexedDB.TABLE_HELPERS], "readwrite");
+            var store = trans.objectStore(pm.indexedDB.TABLE_HELPERS);
+            var request = store.put(helper);
+
+            request.onsuccess = function (e) {
+                callback(helper);
+            };
+
+            request.onerror = function (e) {
+                console.log(e);
+            };    
+        },
+
+        getHelper:function (id, callback) {
+            var db = pm.indexedDB.db;
+            var trans = db.transaction([pm.indexedDB.TABLE_HELPERS], "readwrite");
+            var store = trans.objectStore(pm.indexedDB.TABLE_HELPERS);
+
+            //Get everything in the store
+            var cursorRequest = store.get(id);
+
+            cursorRequest.onsuccess = function (e) {
+                var result = e.target.result;
+                callback(result);
+            };
+            
+            cursorRequest.onerror = pm.indexedDB.onerror;
         }
     },
 
