@@ -966,17 +966,27 @@ pm.request = {
                 pm.request.response.showBody();
 
                 var responseCodeName;
+                var responseCodeDetail;
+
                 if ("statusText" in response) {
                     responseCodeName = response.statusText;
+                    responseCodeDetail = "";
                 }
                 else {
-                    responseCodeName = httpStatusCodes[response.status]['name'];
+                    if (response.status in httpStatusCodes) {
+                        responseCodeName = httpStatusCodes[response.status]['name'];
+                        responseCodeDetail = httpStatusCodes[response.status]['detail'];    
+                    }
+                    else {
+                        responseCodeName = "";
+                        responseCodeDetail = "";
+                    }
                 }
 
                 var responseCode = {
                     'code':response.status,
                     'name':responseCodeName,
-                    'detail':httpStatusCodes[response.status]['detail']
+                    'detail':responseCodeDetail
                 };
 
                 var responseData;
