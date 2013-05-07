@@ -15,7 +15,18 @@ pm.helpers = {
             pm.helpers.processRequestHelper(type);
         });
 
+        $('.request-helper-clear').on("click", function () {
+            var type = $(this).attr('data-type');
+            pm.helpers.clearFields(type);
+        });
+
         pm.helpers.oAuth1.init();
+    },
+
+    loadFromDB: function() {
+        pm.helpers.basic.loadFromDB();
+        pm.helpers.digest.loadFromDB();
+        pm.helpers.oAuth1.loadFromDB();
     },
 
     processRequestHelper: function (type) {
@@ -27,6 +38,19 @@ pm.helpers = {
         }
         else if (type === 'digest') {
             this.digest.process();
+        }
+        return false;
+    },
+
+    clearFields: function (type) {
+        if (type === 'basic') {
+            this.basic.clearFields();
+        }
+        else if (type === 'oAuth1') {
+            this.oAuth1.clearFields();
+        }
+        else if (type === 'digest') {
+            this.digest.clearFields();
         }
         return false;
     },
@@ -52,6 +76,47 @@ pm.helpers = {
     },
 
     basic: {
+        clearFields: function() {
+            $('#request-helper-basicAuth-username').val("");
+            $('#request-helper-basicAuth-password').val("");
+
+            var helper = {
+                id: "basic",
+                username: "",
+                password: "", 
+                timestamp: new Date().getTime()
+            };
+
+            pm.indexedDB.helpers.addHelper(helper, function(helper) {
+                console.log("Cleared helper", helper);
+            });
+        },
+
+        loadFromDB: function() {
+            pm.indexedDB.helpers.getHelper("basic", function(helper) {
+                if (helper) {
+                    $('#request-helper-basicAuth-username').val(helper.username);
+                    $('#request-helper-basicAuth-password').val(helper.password);    
+                }                
+            });
+        },
+
+        save: function() {
+            var username = $('#request-helper-basicAuth-username').val();
+            var password = $('#request-helper-basicAuth-password').val();
+
+            var helper = {
+                id: "basic",
+                username: username,
+                password: password, 
+                timestamp: new Date().getTime()
+            };
+
+            pm.indexedDB.helpers.addHelper(helper, function(helper) {
+                console.log("Added helper", helper);
+            });
+        },
+
         process: function () {
             var headers = pm.request.headers;
             var authHeaderKey = "Authorization";
@@ -80,12 +145,80 @@ pm.helpers = {
             pm.request.headers = headers;
             $('#headers-keyvaleditor').keyvalueeditor('reset', headers);
             pm.request.openHeaderEditor();
+
+            pm.helpers.basic.save();
         }
     },
 
     digest: {
+        clearFields: function() {
+            $("#request-helper-digestAuth-realm").val("");
+            $("#request-helper-digestAuth-username").val("");
+            $("#request-helper-digestAuth-password").val("");
+            $("#request-helper-digestAuth-nonce").val("");
+            $("#request-helper-digestAuth-algorithm").val("");
+            $("#request-helper-digestAuth-nonceCount").val("");
+            $("#request-helper-digestAuth-clientNonce").val("");
+            $("#request-helper-digestAuth-opaque").val("");
+            $("#request-helper-digestAuth-qop").val("");
+
+            var helper = {
+                id: "digest",
+                time: new Date().getTime(),
+                realm: "",
+                username: "",
+                password: "",
+                nonce: "",
+                algorithm: "",
+                nonceCount: "",
+                clientNonce: "",
+                opaque: "",
+                qop: "" 
+            };
+
+            pm.indexedDB.helpers.addHelper(helper, function(helper) {
+                console.log("Cleared helper", helper);
+            });
+        },
+
+        save: function() {
+            var helper = {
+                id: "digest",
+                time: new Date().getTime(),
+                realm: $("#request-helper-digestAuth-realm").val(),
+                username: $("#request-helper-digestAuth-username").val(),
+                password: $("#request-helper-digestAuth-password").val(),
+                nonce: $("#request-helper-digestAuth-nonce").val(),
+                algorithm: $("#request-helper-digestAuth-algorithm").val(),
+                nonceCount: $("#request-helper-digestAuth-nonceCount").val(),
+                clientNonce: $("#request-helper-digestAuth-clientNonce").val(),
+                opaque: $("#request-helper-digestAuth-opaque").val(),
+                qop: $("#request-helper-digestAuth-qop").val()   
+            };
+
+            pm.indexedDB.helpers.addHelper(helper, function(helper) {
+                console.log("Added helper", helper);
+            });
+        },
+
+        loadFromDB: function() {
+            pm.indexedDB.helpers.getHelper("digest", function(helper) {
+                if (helper) {
+                    $("#request-helper-digestAuth-realm").val(helper.realm);
+                    $("#request-helper-digestAuth-username").val(helper.username);
+                    $("#request-helper-digestAuth-algorithm").val(helper.algorithm);
+                    $("#request-helper-digestAuth-password").val(helper.password);                    
+                    $("#request-helper-digestAuth-nonce").val(helper.nonce);
+                    $("#request-helper-digestAuth-nonceCount").val(helper.nonceCount);
+                    $("#request-helper-digestAuth-clientNonce").val(helper.clientNonce);
+                    $("#request-helper-digestAuth-opaque").val(helper.opaque);
+                    $("#request-helper-digestAuth-qop").val(helper.qop);
+                }                
+            });
+        },
+
         getHeader: function () {
-            var algorithm = pm.envManager.getCurrentValue($("#request-helper-digestAuth-realm").val());
+            var algorithm = pm.envManager.getCurrentValue($("#request-helper-digestAuth-algorithm").val());
 
             var username = pm.envManager.getCurrentValue($("#request-helper-digestAuth-username").val());
             var realm = pm.envManager.getCurrentValue($("#request-helper-digestAuth-realm").val());
@@ -103,28 +236,14 @@ pm.helpers = {
             var urlParts = pm.request.splitUrlIntoHostAndPath(url);
             var digestUri = urlParts.path;
 
-            console.log(algorithm);
-            console.log(username);
-            console.log(realm);
-            console.log(password);
-            console.log(method);
-            console.log(nonce);
-            console.log(nonceCount);
-            console.log(clientNonce);
-            console.log(opaque);
-            console.log(qop);
-            console.log(body);
-
             var a1;
 
             if(algorithm === "MD5-sess") {
                 var a0 = CryptoJS.MD5(username + ":" + realm + ":" + password);
                 a1 = a0 + ":" + nonce + ":" + clientNonce;
             }
-            else {
-                console.log(algorithm, "MD5");
-                a1 = username + ":" + realm + ":" + password;
-                console.log(a1);
+            else {                
+                a1 = username + ":" + realm + ":" + password;                
             }
 
             var a2;
@@ -133,8 +252,7 @@ pm.helpers = {
                 a2 = method + ":" + digestUri + ":" + body;
             }
             else {                
-                a2 = method + ":" + digestUri;
-                console.log(qop, a2);
+                a2 = method + ":" + digestUri;                
             }
 
 
@@ -150,8 +268,6 @@ pm.helpers = {
                     + clientNonce + ":"
                     + qop + ":"
                     + ha2);
-
-                console.log(response);
             }
             else {
                 response = CryptoJS.MD5(ha1 + ":" + nonce + ":" + ha2);
@@ -174,7 +290,7 @@ pm.helpers = {
 
             headerVal += "response=\"" + response + "\", ";
             headerVal += "opaque=\"" + opaque + "\"";
-
+            
             return headerVal;
         },
 
@@ -205,17 +321,101 @@ pm.helpers = {
             pm.request.headers = headers;
             $('#headers-keyvaleditor').keyvalueeditor('reset', headers);
             pm.request.openHeaderEditor();
+
+            pm.helpers.digest.save();
         }
     },
 
     oAuth1: {
         isAutoEnabled: false,
 
+        clearFields: function() {
+            $("#request-helper-oauth1-consumerKey").val("");
+            $("#request-helper-oauth1-consumerSecret").val("");
+            $("#request-helper-oauth1-token").val("");
+            $("#request-helper-oauth1-tokenSecret").val("");
+            $("#request-helper-oauth1-signatureMethod").val("");            
+            $("#request-helper-oauth1-timestamp").val("");
+            $("#request-helper-oauth1-nonce").val("");
+            $("#request-helper-oauth1-version").val("");
+            $("#request-helper-oauth1-realm").val("");
+            $("#request-helper-oauth1-header").prop("checked", false);
+            $("#request-helper-oauth1-auto").prop("checked", false);
+
+            var helper = {
+                id: "digest",
+                time: new Date().getTime(),
+                consumerKey: "",
+                consumerSecret: "",
+                token: "",
+                tokenSecret: "",
+                signatureMethod: "",
+                timestamp: "",
+                nonce: "",
+                version: "",
+                realm: "",
+                header: false,
+                auto: false 
+            };
+
+            pm.indexedDB.helpers.addHelper(helper, function(helper) {
+                console.log("Cleared helper", helper);
+            });
+        },
+
+        save: function() {
+            var helper = {
+                id: "oAuth1",
+                time: new Date().getTime(),
+                consumerKey: $("#request-helper-oauth1-consumerKey").val(),
+                consumerSecret: $("#request-helper-oauth1-consumerSecret").val(),
+                token: $("#request-helper-oauth1-token").val(),
+                tokenSecret: $("#request-helper-oauth1-tokenSecret").val(),
+                signatureMethod: $("#request-helper-oauth1-signatureMethod").val(),
+                timestamp: $("#request-helper-oauth1-timestamp").val(),
+                nonce: $("#request-helper-oauth1-nonce").val(),
+                version: $("#request-helper-oauth1-version").val(),
+                realm: $("#request-helper-oauth1-realm").val(),
+                header: $("#request-helper-oauth1-header").prop("checked"),
+                auto: $("#request-helper-oauth1-auto").prop("checked")
+            };
+
+            pm.indexedDB.helpers.addHelper(helper, function(helper) {
+                console.log("Added helper", helper);
+            });
+        },
+
+        loadFromDB: function() {
+            pm.indexedDB.helpers.getHelper("oAuth1", function(helper) {
+                if (helper) {
+                    $("#request-helper-oauth1-consumerKey").val(helper.consumerKey);
+                    $("#request-helper-oauth1-consumerSecret").val(helper.consumerSecret);
+                    $("#request-helper-oauth1-token").val(helper.token);
+                    $("#request-helper-oauth1-tokenSecret").val(helper.tokenSecret);
+                    $("#request-helper-oauth1-signatureMethod").val(helper.signatureMethod);            
+                    $("#request-helper-oauth1-timestamp").val(helper.timestamp);
+                    $("#request-helper-oauth1-nonce").val(helper.nonce);
+                    $("#request-helper-oauth1-version").val(helper.version);
+                    $("#request-helper-oauth1-realm").val(helper.realm);
+                    $("#request-helper-oauth1-header").prop("checked", helper.header);
+                    $("#request-helper-oauth1-auto").prop("checked", helper.auto);
+
+                    pm.helpers.oAuth1.isAutoEnabled = helper.auto;
+                    if (helper.auto) {
+                        $('#request-helper-oAuth1 .request-helper-submit').css("display", "none");
+                    }
+                    else {
+                        $('#request-helper-oAuth1 .request-helper-submit').css("display", "inline-block");
+                    }
+                }                
+            });
+        },
+
         init: function () {
             $('#request-helper-oauth1-auto').click(function () {
                 var isAutoEnabled = $('#request-helper-oauth1-auto').attr('checked') ? true : false;
                 pm.helpers.oAuth1.isAutoEnabled = isAutoEnabled;
-
+                pm.helpers.oAuth1.save();
                 if (!isAutoEnabled) {
                     $('#request-helper-oAuth1 .request-helper-submit').css("display", "inline-block");
                 }
@@ -429,6 +629,8 @@ pm.helpers = {
                     }
                 }
             }
+
+            pm.helpers.oAuth1.save();
         }
     }
 };

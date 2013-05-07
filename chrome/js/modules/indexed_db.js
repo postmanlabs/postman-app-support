@@ -3,6 +3,7 @@ pm.indexedDB = {
     TABLE_HELPERS: "helpers",
 
     onerror:function (event, callback) {
+        console.log("error");
         console.log(event);
     },
 
@@ -10,7 +11,7 @@ pm.indexedDB = {
 
         var request = indexedDB.open("postman", "POSTman request history");
         request.onsuccess = function (e) {
-            var v = "0.6";
+            var v = "0.7";
             pm.indexedDB.db = e.target.result;
             var db = pm.indexedDB.db;
 
@@ -55,8 +56,8 @@ pm.indexedDB = {
                         requestStore.createIndex("timestamp", "timestamp", { unique:false});
                     }
 
-                    if (!db.objectStoreNames.contains("helpers")) {
-                        var requestStore = db.createObjectStore("helpers", {keyPath:"id"});
+                    if (!db.objectStoreNames.contains(pm.indexedDB.TABLE_HELPERS)) {
+                        var requestStore = db.createObjectStore(pm.indexedDB.TABLE_HELPERS, {keyPath:"id"});
                         requestStore.createIndex("timestamp", "timestamp", { unique:false});
                     }
 
@@ -65,6 +66,7 @@ pm.indexedDB = {
                         pm.history.getAllRequests();
                         pm.envManager.getAllEnvironments();
                         pm.headerPresets.init();
+                        pm.helpers.loadFromDB();
                     };
                 };
 
@@ -83,11 +85,10 @@ pm.indexedDB = {
     },
 
     open_latest:function () {
-
-        var v = 11;
-        var request = indexedDB.open("postman", v);        
+        var v = 14;
+        var request = indexedDB.open("postman", v);                        
         request.onupgradeneeded = function (e) {
-
+            console.log("Upgrade DB");
             var db = e.target.result;
             pm.indexedDB.db = db;
             if (!db.objectStoreNames.contains("requests")) {
@@ -121,8 +122,8 @@ pm.indexedDB = {
                 requestStore.createIndex("timestamp", "timestamp", { unique:false});
             }
 
-            if (!db.objectStoreNames.contains("helpers")) {
-                var requestStore = db.createObjectStore("helpers", {keyPath:"id"});
+            if (!db.objectStoreNames.contains(pm.indexedDB.TABLE_HELPERS)) {
+                var requestStore = db.createObjectStore(pm.indexedDB.TABLE_HELPERS, {keyPath:"id"});
                 requestStore.createIndex("timestamp", "timestamp", { unique:false});
             }
         };
@@ -131,6 +132,7 @@ pm.indexedDB = {
             pm.indexedDB.db = e.target.result;
             pm.history.getAllRequests();
             pm.envManager.getAllEnvironments();
+            pm.helpers.loadFromDB();
             pm.headerPresets.init();
         };
 
@@ -142,6 +144,7 @@ pm.indexedDB = {
             pm.indexedDB.open_v21();
         }
         else {
+            console.log("Open latest");
             pm.indexedDB.open_latest();
         }
     },

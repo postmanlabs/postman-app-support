@@ -164,8 +164,9 @@
                         </div>
                         <div class="control-group">
                             <div class="controls">
-                                <a
-                                        class="btn btn-secondary request-helper-submit"
+                                <a class="btn btn-secondary request-helper-clear"
+                                        data-type="basic">Clear</a>
+                                <a class="btn btn-secondary request-helper-submit"
                                         data-type="basic">Refresh headers</a>
                             </div>
                         </div>
@@ -245,8 +246,10 @@
                         </div>
                         <div class="control-group">
                             <div class="controls">
+                                <a class="btn btn-secondary request-helper-clear"
+                                        data-type="digest">Clear</a>
                                 <a class="btn btn-secondary request-helper-submit"
-                                        data-type="digest">Refresh headers</a>
+                                        data-type="digest">Refresh headers</a>                                                                        
                             </div>
                         </div>
                     </form>
@@ -354,10 +357,12 @@
 
                         <div class="control-group">
                             <div class="controls">
+                                <a class="btn btn-secondary request-helper-clear"
+                                        data-type="oAuth1">Clear</a>
                                 <a class="btn btn-secondary request-helper-submit"
                                    data-type="oAuth1">
                                     Refresh request
-                                </a>
+                                </a>                                
                             </div>
                         </div>
                     </form>

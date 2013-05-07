@@ -204,6 +204,7 @@ pm.layout = {
         $('#response-data').on("mousedown", ".cm-link", function () {
             var link = $(this).html();
             var headers = $('#headers-keyvaleditor').keyvalueeditor('getValues');
+            console.log(headers);
             pm.request.loadRequestFromLink(link, headers);
         });
 
