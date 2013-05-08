@@ -1,6 +1,7 @@
 pm.collections = {
     areLoaded:false,
     items:[],
+    toBeImportedCollection:{},
 
     init:function () {
         this.addCollectionListeners();
@@ -184,7 +185,76 @@ pm.collections = {
         });
     },
 
+    addCollectionDataToDB:function(collection) {
+        pm.indexedDB.addCollection(collection, function (c) {
+            var message = {
+                name:collection.name,
+                action:"added"
+            };
+
+            $('.modal-import-alerts').append(Handlebars.templates.message_collection_added(message));
+
+            var requests = [];
+
+            var ordered = false;
+            if ("order" in collection) {
+                ordered = true;
+            }
+
+            for (var i = 0; i < collection.requests.length; i++) {
+                var request = collection.requests[i];
+                request.collectionId = collection.id;
+                var newId = guid();
+
+                if (ordered) {
+                    var currentId = request.id;
+                    var loc = _.indexOf(collection["order"], currentId);
+                    collection["order"][loc] = newId;
+                }
+
+                request.id = newId;
+
+                if ("responses" in request) {
+                    var j, count;
+                    for (j = 0, count = request["responses"].length; j < count; j++) {
+                        request["responses"][j].id = guid();
+                        request["responses"][j].collectionRequestId = newId;                        
+                    }
+                }
+
+                pm.indexedDB.addCollectionRequest(request, function (req) {});
+                requests.push(request);
+            }
+
+            pm.indexedDB.updateCollection(collection, function() {});
+            
+            collection.requests = requests;
+            pm.collections.render(collection);
+        });
+    },
+
     importCollectionData:function (collection) {        
+        var collections = pm.collections.items;
+        var size = collections.length;
+        var found = false;
+        for (var i = 0; i < size; i++) {
+            if (collections[i].name === collection.name) {
+                found = true;
+                break;
+            }
+        }
+
+        if (found) {
+            pm.collections.toBeImportedCollection = collection;
+            $("#modal-overwrite-collection-name").html(collection.name);
+            $("#modal-overwrite-collection-overwrite").attr("data-collection-id", collection.id);
+            $("#modal-overwrite-collection-duplicate").attr("data-collection-id", collection.id);
+            $("#modal-overwrite-collection").modal("show");
+        }
+        else {
+            pm.collections.addCollectionDataToDB(collection);
+        }
+
         pm.indexedDB.addCollection(collection, function (c) {
             var message = {
                 name:collection.name,
