@@ -42,7 +42,14 @@ pm.request = {
 
         getRawData:function () {
             if (pm.request.body.isEditorInitialized) {
-                return pm.request.body.codeMirror.getValue();
+                var data = pm.request.body.codeMirror.getValue();
+
+                if (pm.settings.get("forceWindowsLineEndings") === true) {
+                    data = data.replace(/\r/g, '');
+                    data = data.replace(/\n/g, "\r\n");
+                }
+
+                return data;
             }
             else {
                 return "";

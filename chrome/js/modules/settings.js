@@ -20,6 +20,7 @@ pm.settings = {
         pm.settings.create("languageDetection", "auto");
         pm.settings.create("haveDonated", false);
         pm.settings.create("activeSidebarSection", "history");
+        pm.settings.create("forceWindowsLineEndings", false);
     },
 
     initValues: function() {
@@ -32,6 +33,7 @@ pm.settings = {
         $('#variable-delimiter').val(pm.settings.get("variableDelimiter"));
         $('#language-detection').val(pm.settings.get("languageDetection"));
         $('#have-donated').val(pm.settings.get("haveDonated") + "");
+        $('#force-windows-line-endings').val(pm.settings.get("forceWindowsLineEndings") + "");
     },
 
     initListeners: function() {
@@ -101,6 +103,16 @@ pm.settings = {
             }
             else {
                 pm.settings.set("haveDonated", false);
+            }
+        });
+
+        $('#force-windows-line-endings').change(function () {
+            var val = $('#force-windows-line-endings').val();
+            if (val == "true") {
+                pm.settings.set("forceWindowsLineEndings", true);
+            }
+            else {
+                pm.settings.set("forceWindowsLineEndings", false);
             }
         });
 
