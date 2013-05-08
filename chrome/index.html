@@ -472,7 +472,11 @@
                             <li><a data-editor-mode="xml" data-language="text/xml">XML (text/xml)</a></li>
                             <li><a data-editor-mode="xml" data-language="text/html">HTML (text/html)</a></li>
                         </ul>                
-                    </div>
+                    </div>                    
+                </div>
+                <div id="request-body-editor-container-type" class="btn-group clearfix" data-toggle="buttons-radio">
+                    <a data-container-type="pretty" class="btn active">Editor</a>
+                    <a data-container-type="textarea" class="btn">Textarea</a>
                 </div>
             </div>
             <div id="body-data-containers">
@@ -483,9 +487,14 @@
                     <div id="urlencoded-keyvaleditor"></div>
                 </div>
                 <div id="body-data-container">
-                    <textarea name="data" id="body" tabindex="4" class="inputText"></textarea>
-                    <pre id="body-editor-mode-selector-format-result">
-                    </pre>
+                    <div id="body-data-container-editor">
+                        <textarea name="data" id="body" tabindex="4" class="inputText"></textarea>
+                        <pre id="body-editor-mode-selector-format-result">
+                        </pre>
+                    </div>
+                    <div id="body-data-container-textarea">
+                        <textarea name="data" id="body-textarea" tabindex="4" class="inputText"></textarea>
+                    </div>
                 </div>
             </div>
         </div>    

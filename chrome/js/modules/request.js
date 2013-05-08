@@ -40,6 +40,15 @@ pm.request = {
             $("#data").css("display", "none");
         },
 
+        setRequestBodyEditorType: function(type) {
+            if (type === "editor") {
+
+            }
+            else if (type === "textarea") {
+                
+            }
+        },
+
         getRawData:function () {
             if (pm.request.body.isEditorInitialized) {
                 var data = pm.request.body.codeMirror.getValue();
@@ -71,6 +80,7 @@ pm.request = {
             pm.request.body.codeMirror = CodeMirror.fromTextArea(bodyTextarea,
             {
                 mode:"htmlmixed",
+                lineWrapping: true,
                 lineNumbers:true,
                 theme:'eclipse'
             });
@@ -225,6 +235,15 @@ pm.request = {
               }
 
               //pm.request.body.autoFormatEditor(pm.request.body.codeMirror.getMode().name);
+            });
+
+            var type = pm.settings.get("requestBodyEditorContainerType");
+            $('#request-body-editor-container-type a').removeClass('active');
+            $('#request-body-editor-container-type a[data-container-type="' + type + '"]').addClass('active');
+
+            $('#request-body-editor-container-type').on('click', 'a', function(evt) {
+                var type = $(this).attr('data-container-type');
+                pm.settings.set("requestBodyEditorContainerType", type);
             });
         },
 

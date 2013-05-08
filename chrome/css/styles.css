@@ -1511,3 +1511,12 @@ input[type="file"] {
 #request-preview-header .dropdown-menu li:last-child {
     border-bottom: none;
 }
+
+#request-body-editor-container-type {
+    float: right;
+    margin-right: 20px;
+}
+
+#body-data-container-textarea {
+    display: none;
+}

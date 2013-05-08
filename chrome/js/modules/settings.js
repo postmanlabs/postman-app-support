@@ -21,6 +21,7 @@ pm.settings = {
         pm.settings.create("haveDonated", false);
         pm.settings.create("activeSidebarSection", "history");
         pm.settings.create("forceWindowsLineEndings", false);
+        pm.settings.create("requestBodyEditorContainerType", "editor");
     },
 
     initValues: function() {
