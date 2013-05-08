@@ -405,7 +405,10 @@ pm.layout = {
         maximizeSidebar:function () {
             var animationDuration = pm.layout.sidebar.animationDuration;
             $('#sidebar-toggle').animate({left:"350px"}, animationDuration, function () {
-                $('#sidebar-footer').fadeIn();
+                if (pm.settings.get("haveDonated") === false) {
+                    $('#sidebar-footer').fadeIn();    
+                }
+                
             });
             $('#sidebar').animate({width:pm.layout.sidebar.width + "px"}, animationDuration);
             $('#sidebar div').animate({opacity:1}, animationDuration);
@@ -450,7 +453,7 @@ pm.layout = {
         select:function (section) {
             $("#sidebar-selectors li").removeClass("active");
             $("#sidebar-selectors-" + section).addClass("active");
-            
+
             pm.settings.set("activeSidebarSection", section);
 
             if (pm.collections.areLoaded === false) {
