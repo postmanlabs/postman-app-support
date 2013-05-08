@@ -2,6 +2,23 @@ pm.indexedDB = {
     TABLE_HEADER_PRESETS: "header_presets",
     TABLE_HELPERS: "helpers",
 
+    onTransactionComplete: function() {        
+        console.log("onTransactionComplete");
+        pm.history.getAllRequests();
+        pm.envManager.getAllEnvironments();
+        pm.headerPresets.init();
+        pm.helpers.loadFromDB();
+
+        var activeSidebarSection = pm.settings.get("activeSidebarSection");
+
+        if (activeSidebarSection) {
+            pm.layout.sidebar.select(activeSidebarSection);    
+        }        
+        else {
+            pm.layout.sidebar.select("history");
+        }
+    },    
+
     onerror:function (event, callback) {
         console.log("error");
         console.log(event);
@@ -62,12 +79,7 @@ pm.indexedDB = {
                     }
 
                     var transaction = event.target.result;
-                    transaction.oncomplete = function () {
-                        pm.history.getAllRequests();
-                        pm.envManager.getAllEnvironments();
-                        pm.headerPresets.init();
-                        pm.helpers.loadFromDB();
-                    };
+                    transaction.oncomplete = pm.indexedDB.onTransactionComplete;
                 };
 
                 setVrequest.onupgradeneeded = function (evt) {
@@ -130,10 +142,7 @@ pm.indexedDB = {
 
         request.onsuccess = function (e) {
             pm.indexedDB.db = e.target.result;
-            pm.history.getAllRequests();
-            pm.envManager.getAllEnvironments();
-            pm.helpers.loadFromDB();
-            pm.headerPresets.init();
+            pm.indexedDB.onTransactionComplete();
         };
 
         request.onerror = pm.indexedDB.onerror;
@@ -143,8 +152,7 @@ pm.indexedDB = {
         if (parseInt(navigator.userAgent.match(/Chrom(e|ium)\/([0-9]+)\./)[2]) < 23) {
             pm.indexedDB.open_v21();
         }
-        else {
-            console.log("Open latest");
+        else {            
             pm.indexedDB.open_latest();
         }
     },

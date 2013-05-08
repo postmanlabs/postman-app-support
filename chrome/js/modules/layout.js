@@ -448,6 +448,11 @@ pm.layout = {
         },
 
         select:function (section) {
+            $("#sidebar-selectors li").removeClass("active");
+            $("#sidebar-selectors-" + section).addClass("active");
+            
+            pm.settings.set("activeSidebarSection", section);
+
             if (pm.collections.areLoaded === false) {
                 pm.collections.getAllCollections();
             }
