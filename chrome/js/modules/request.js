@@ -1728,6 +1728,12 @@ pm.request = {
         for (var i = 0; i < params.length; i++) {
             var p = params[i];
             if (p.key && p.key !== "") {
+                p.key = encodeURIComponent(p.key);                    
+                p.key = p.key.replace(/%20/g, '+');
+
+                p.value = encodeURIComponent(p.value);                    
+                p.value = p.value.replace(/%20/g, '+');
+
                 paramArr.push(p.key + "=" + p.value);
             }
         }
