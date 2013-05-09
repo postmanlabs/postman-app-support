@@ -473,20 +473,20 @@ helpers = helpers || Handlebars.helpers; data = data || {};
   buffer += "<tr>\n    <td>";
   if (stack1 = helpers.name) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.name; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "</td>\n    <td>";
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "</td>\n    <td>";
   if (stack1 = helpers.value) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.value; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "</td>\n    <td>";
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "</td>\n    <td>";
   if (stack1 = helpers.domain) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.domain; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "</td>\n    <td>";
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "</td>\n    <td>";
   if (stack1 = helpers.path) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.path; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "</td>\n    <td>";
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "</td>\n    <td>";
   if (stack1 = helpers.expires) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.expires; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)

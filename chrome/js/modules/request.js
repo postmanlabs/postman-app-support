@@ -1166,9 +1166,12 @@ pm.request = {
 
                 for (var i = 0; i < count; i++) {
                     var cookie = cookies[i];
+                    cookie.name = limitStringLineWidth(cookie.name, 20);
+                    cookie.value = limitStringLineWidth(cookie.value, 20);
+                    cookie.path = limitStringLineWidth(cookie.path, 20);
                     if ("expirationDate" in cookie) {
                         var date = new Date(cookie.expirationDate * 1000);
-                        cookies[i].expires = date.toUTCString();
+                        cookies[i].expires = date.toLocaleString();
                     }
                 }
 
