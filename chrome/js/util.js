@@ -201,3 +201,16 @@ function find(collection, filter) {
     }
     return -1;
 }
+
+function copyToClipboard(text){
+    var copyDiv = document.createElement('textarea');
+    copyDiv.contentEditable = true;
+    document.body.appendChild(copyDiv);
+    copyDiv.innerHTML = text;
+    copyDiv.unselectable = "off";
+    copyDiv.focus();
+    console.log(text);
+    document.execCommand('selectall');
+    document.execCommand("copy", false, null);
+    document.body.removeChild(copyDiv);
+}

@@ -27,7 +27,7 @@ pm.request = {
             this.initPreview();
             this.initFormDataEditor();
             this.initUrlEncodedEditor();
-            this.initEditorListeners();
+            this.initEditorListeners();            
         },
 
         initPreview:function () {
@@ -443,6 +443,16 @@ pm.request = {
             pm.request.isFromCollection = false;
             pm.request.loadRequestInEditor(lastRequestParsed);
         }
+
+        this.intClipboardCopier();
+    },
+
+    intClipboardCopier:function () {
+        $("#response-copy-button").on("click", function() {            
+            var scrollTop = $(window).scrollTop();
+            copyToClipboard(pm.request.response.text);            
+            $(document).scrollTop(scrollTop);
+        });
     },
 
     setHeaderValue:function (key, value) {

@@ -1520,3 +1520,12 @@ input[type="file"] {
 #body-data-container-textarea {
     display: none;
 }
+
+#response-copy-container {
+    float: right;
+    margin-top: 10px;
+    margin-right: 20px;
+}
+
+#response-copy-button.zeroclipboard-is-hover { background-color:#eee; }
+#response-copy-button.zeroclipboard-is-active { background-color:#aaa; } 
