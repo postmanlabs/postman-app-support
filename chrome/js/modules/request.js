@@ -128,17 +128,23 @@ pm.request = {
                     var headers = pm.request.headers;
                     var contentTypeHeaderKey = "Content-Type";
                     var pos = findPosition(headers, "key", contentTypeHeaderKey);
-                    console.log(pos);
 
-                    if (pos >= 0) {
-                        headers[pos] = {
-                            key: contentTypeHeaderKey,
-                            name: contentTypeHeaderKey,
-                            value: language
-                        };
+                    if (language === 'text') {
+                        if (pos >= 0) {
+                            headers.splice(pos, 1);
+                        }
                     }
                     else {
-                        headers.push({key: contentTypeHeaderKey, name: contentTypeHeaderKey, value: language});
+                        if (pos >= 0) {
+                            headers[pos] = {
+                                key: contentTypeHeaderKey,
+                                name: contentTypeHeaderKey,
+                                value: language
+                            };
+                        }
+                        else {
+                            headers.push({key: contentTypeHeaderKey, name: contentTypeHeaderKey, value: language});
+                        }
                     }
 
                     pm.request.headers = headers;
