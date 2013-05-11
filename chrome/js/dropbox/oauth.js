@@ -365,11 +365,8 @@ OAuth.setProperties(OAuth.SignatureMethod.prototype, // instance members
     /** Add a signature to the message. */
     sign: function sign(message) {
         var baseString = OAuth.SignatureMethod.getBaseString(message);
-        console.log(message);
-        console.log("Base string = ", baseString);
         var signature = this.getSignature(baseString);
         OAuth.setParameter(message, "oauth_signature", signature);
-        console.log("Signature final = ", signature);
         return signature; // just in case someone's interested
     }
 ,
@@ -407,6 +404,7 @@ OAuth.setProperties(OAuth.SignatureMethod, // class members
 ,
     /** Instantiate a SignatureMethod for the given method name. */
     newMethod: function newMethod(name, accessor) {
+        console.log(name, accessor);
         var impl = OAuth.SignatureMethod.REGISTERED[name];
         if (impl != null) {
             var method = new impl();
@@ -543,7 +541,16 @@ OAuth.SignatureMethod.registerMethodClass(["HMAC-SHA1", "HMAC-SHA1-Accessor"],
     OAuth.SignatureMethod.makeSubclass(
         function getSignature(baseString) {
             b64pad = '=';
-            var signature = b64_hmac_sha1(this.key, baseString);
+            var signature = CryptoJS.HmacSHA1(baseString, this.key).toString(CryptoJS.enc.Base64);
+            return signature;
+        }
+    ));
+
+OAuth.SignatureMethod.registerMethodClass(["HMAC-SHA256", "HMAC-SHA256-Accessor"],
+    OAuth.SignatureMethod.makeSubclass(
+        function getSignature(baseString) {
+            b64pad = '=';
+            var signature = CryptoJS.HmacSHA256(baseString, this.key).toString(CryptoJS.enc.Base64);
             return signature;
         }
     ));
