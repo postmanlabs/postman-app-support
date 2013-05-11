@@ -22,6 +22,7 @@ pm.request = {
         data:"",
         isEditorInitialized:false,
         codeMirror:false,
+        rawEditorType:"editor",
 
         init:function () {
             this.initPreview();
@@ -40,7 +41,10 @@ pm.request = {
             $("#data").css("display", "none");
         },
 
+        //TODO: Complete this function
         setRequestBodyEditorType: function(type) {
+            pm.request.body.rawEditorType = type;
+            
             if (type === "editor") {
 
             }
@@ -1738,11 +1742,8 @@ pm.request = {
         for (var i = 0; i < params.length; i++) {
             var p = params[i];
             if (p.key && p.key !== "") {
-                p.key = encodeURIComponent(p.key);                    
-                p.key = p.key.replace(/%20/g, '+');
-
-                p.value = encodeURIComponent(p.value);                    
-                p.value = p.value.replace(/%20/g, '+');
+                p.key = p.key.replace(/&/g, '%26');
+                p.value = p.value.replace(/&/g, '%26');
 
                 paramArr.push(p.key + "=" + p.value);
             }
@@ -1903,8 +1904,7 @@ pm.request = {
                     params.push(textObj);
                 }
             }
-
-            console.log(params);
+            
             var paramsCount = params.length;
             var body = "";
             for(i = 0; i < paramsCount; i++) {
