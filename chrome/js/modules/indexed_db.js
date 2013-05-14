@@ -1,6 +1,8 @@
 pm.indexedDB = {
     TABLE_HEADER_PRESETS: "header_presets",
     TABLE_HELPERS: "helpers",
+    TABLE_DRIVE_FILES: "drive_files",
+    TABLE_DRIVE_CHANGES: "drive_changes",
 
     onTransactionComplete: function() {        
         console.log("onTransactionComplete");
@@ -28,7 +30,7 @@ pm.indexedDB = {
 
         var request = indexedDB.open("postman", "POSTman request history");
         request.onsuccess = function (e) {
-            var v = "0.7";
+            var v = "0.7.3";
             pm.indexedDB.db = e.target.result;
             var db = pm.indexedDB.db;
 
@@ -78,6 +80,16 @@ pm.indexedDB = {
                         requestStore.createIndex("timestamp", "timestamp", { unique:false});
                     }
 
+                    if (!db.objectStoreNames.contains(pm.indexedDB.TABLE_DRIVE_FILES)) {
+                        var requestStore = db.createObjectStore(pm.indexedDB.TABLE_DRIVE_FILES, {keyPath:"id"});
+                        requestStore.createIndex("timestamp", "timestamp", { unique:false});
+                    }
+
+                    if (!db.objectStoreNames.contains(pm.indexedDB.TABLE_DRIVE_CHANGES)) {
+                        var requestStore = db.createObjectStore(pm.indexedDB.TABLE_DRIVE_CHANGES, {keyPath:"id"});
+                        requestStore.createIndex("timestamp", "timestamp", { unique:false});
+                    }
+
                     var transaction = event.target.result;
                     transaction.oncomplete = pm.indexedDB.onTransactionComplete;
                 };
@@ -97,7 +109,7 @@ pm.indexedDB = {
     },
 
     open_latest:function () {
-        var v = 14;
+        var v = 17;
         var request = indexedDB.open("postman", v);                        
         request.onupgradeneeded = function (e) {
             console.log("Upgrade DB");
@@ -136,6 +148,18 @@ pm.indexedDB = {
 
             if (!db.objectStoreNames.contains(pm.indexedDB.TABLE_HELPERS)) {
                 var requestStore = db.createObjectStore(pm.indexedDB.TABLE_HELPERS, {keyPath:"id"});
+                requestStore.createIndex("timestamp", "timestamp", { unique:false});
+            }
+
+            if (!db.objectStoreNames.contains(pm.indexedDB.TABLE_DRIVE_FILES)) {
+                var requestStore = db.createObjectStore(pm.indexedDB.TABLE_DRIVE_FILES, {keyPath:"id"});
+                requestStore.createIndex("timestamp", "timestamp", { unique:false});
+            }
+
+            console.log(db.objectStoreNames);
+
+            if (!db.objectStoreNames.contains(pm.indexedDB.TABLE_DRIVE_CHANGES)) {
+                var requestStore = db.createObjectStore(pm.indexedDB.TABLE_DRIVE_CHANGES, {keyPath:"id"});
                 requestStore.createIndex("timestamp", "timestamp", { unique:false});
             }
         };

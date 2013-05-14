@@ -18,7 +18,7 @@ pm.drive = {
      */
     handleClientLoad: function() {
         console.log("Client has loaded");
-        pm.drive.postFile();
+        pm.drive.putFile();
     },
 
     /**
@@ -29,12 +29,21 @@ pm.drive = {
         gapi.client.load('drive', 'v2', pm.drive.handleClientLoad);
     },
 
+    getChangeList: function() {
+
+    },
+
     /**
      * Check if the current user has authorized the application.
      */
     checkAuth: function(){
         gapi.auth.authorize(
-            {'client_id': pm.drive.CLIENT_ID, 'scope': pm.drive.SCOPES.join(' '), 'immediate': true},
+            {
+                'client_id': pm.drive.CLIENT_ID,
+                'scope': pm.drive.SCOPES.join(' '),
+                'immediate': true
+            },
+
             pm.drive.handleAuthResult);
     },
 
@@ -93,12 +102,39 @@ pm.drive = {
 
             request.execute(pm.drive.handlePostFileResponse);
         });
-
-
     },
 
     putFile: function(file) {
+        pm.collections.getCollectionData("98191a83-9138-ce3c-a27b-25ea654de724", function(name, type, filedata) {
+            var boundary = '-------314159265358979323846';
+            var delimiter = "\r\n--" + boundary + "\r\n";
+            var close_delim = "\r\n--" + boundary + "--";
 
+            var metadata = {
+                'title': name,
+                'mimeType': "text/plain"
+            };
+
+            var multipartRequestBody =
+                delimiter +
+                    'Content-Type: application/json\r\n\r\n' +
+                    JSON.stringify(metadata) +
+                    delimiter +
+                    'Content-Type: text/plain\r\n\r\n' +
+                    filedata +
+                    close_delim;
+
+            var request = gapi.client.request({
+                'path': '/upload/drive/v2/files/0B_eXW9RRGhBnOWRmclRROEwyRVU',
+                'method': 'PUT',
+                'params': {'uploadType': 'multipart'},
+                'headers': {
+                    'Content-Type': 'multipart/mixed; boundary="' + boundary + '"'
+                },
+                'body': multipartRequestBody});
+
+            request.execute(pm.drive.handlePostFileResponse);
+        });
     },
 
     deleteFile: function(file) {
