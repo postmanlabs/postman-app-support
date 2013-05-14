@@ -12,12 +12,17 @@ pm.drive = {
         // Add other scopes needed by your application.
     ],
 
+    init: function() {
+        //Show drive dialog for the first time user
+        //Start drive authentication flow only after the user says yes
+        //Do not pester every time
+    },
+
     /**
      * Called when the client library is loaded.
      */
     handleClientLoad: function() {
-        console.log("Client has loaded");
-        pm.drive.putFile();
+        console.log("Client has loaded");        
     },
 
     /**
@@ -65,10 +70,6 @@ pm.drive = {
         }
     },
 
-    handlePostFileResponse: function(e) {
-        console.log(e);
-    },
-
     //Testing
     postFile: function(name, type, filedata, callback) {
         var boundary = '-------314159265358979323846';
@@ -107,7 +108,7 @@ pm.drive = {
         });        
     },
 
-    putFile: function(name, type, filedata) {
+    updateFile: function(name, type, filedata) {
         var boundary = '-------314159265358979323846';
         var delimiter = "\r\n--" + boundary + "\r\n";
         var close_delim = "\r\n--" + boundary + "--";
@@ -135,18 +136,38 @@ pm.drive = {
             },
             'body': multipartRequestBody});
 
-        request.execute(console.log(e);
+        request.execute(function(e) {
+            console.log(e);
             if (callback) {
                 callback();    
             }
         });        
     },
 
-    deleteFile: function(file) {
-
+    trashFile: function(file, callback) {
+        var request = gapi.client.drive.files.trash({
+            'fileId': fileId
+        });
+        request.execute(function(resp) {
+            callback();
+        });
     },
 
-    getFile: function(file) {
-
+    getFile: function(file, callback) {
+        if (file.downloadUrl) {
+            var accessToken = gapi.auth.getToken().access_token;
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', file.downloadUrl);
+            xhr.setRequestHeader('Authorization', 'Bearer ' + accessToken);
+            xhr.onload = function() {
+              callback(xhr.responseText);
+            };
+            xhr.onerror = function() {
+              callback(null);
+            };
+            xhr.send();
+        } else {
+            callback(null);
+      }
     }
 };
