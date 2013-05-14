@@ -70,70 +70,76 @@ pm.drive = {
     },
 
     //Testing
-    postFile: function() {
-        pm.collections.getCollectionData("98191a83-9138-ce3c-a27b-25ea654de724", function(name, type, filedata) {
-            var boundary = '-------314159265358979323846';
-            var delimiter = "\r\n--" + boundary + "\r\n";
-            var close_delim = "\r\n--" + boundary + "--";
+    postFile: function(name, type, filedata, callback) {
+        var boundary = '-------314159265358979323846';
+        var delimiter = "\r\n--" + boundary + "\r\n";
+        var close_delim = "\r\n--" + boundary + "--";
 
-            var metadata = {
-                'title': name,
-                'mimeType': "application/json"
-            };
+        var metadata = {
+            'title': name,
+            'mimeType': "application/json"
+        };
 
-            var multipartRequestBody =
-                    delimiter +
-                    'Content-Type: application/json\r\n\r\n' +
-                    JSON.stringify(metadata) +
-                    delimiter +
-                    'Content-Type: application/json\r\n\r\n' +
-                    filedata +
-                    close_delim;
+        var multipartRequestBody =
+                delimiter +
+                'Content-Type: application/json\r\n\r\n' +
+                JSON.stringify(metadata) +
+                delimiter +
+                'Content-Type: application/json\r\n\r\n' +
+                filedata +
+                close_delim;
 
-            var request = gapi.client.request({
-                'path': '/upload/drive/v2/files',
-                'method': 'POST',
-                'params': {'uploadType': 'multipart'},
-                'headers': {
-                    'Content-Type': 'multipart/mixed; boundary="' + boundary + '"'
-                },
-                'body': multipartRequestBody});
+        var request = gapi.client.request({
+            'path': '/upload/drive/v2/files',
+            'method': 'POST',
+            'params': {'uploadType': 'multipart'},
+            'headers': {
+                'Content-Type': 'multipart/mixed; boundary="' + boundary + '"'
+            },
+            'body': multipartRequestBody});
 
-            request.execute(pm.drive.handlePostFileResponse);
-        });
+        request.execute(function(e) {
+            console.log(e);
+
+            if (callback) {
+                callback();    
+            }            
+        });        
     },
 
-    putFile: function(file) {
-        pm.collections.getCollectionData("98191a83-9138-ce3c-a27b-25ea654de724", function(name, type, filedata) {
-            var boundary = '-------314159265358979323846';
-            var delimiter = "\r\n--" + boundary + "\r\n";
-            var close_delim = "\r\n--" + boundary + "--";
+    putFile: function(name, type, filedata) {
+        var boundary = '-------314159265358979323846';
+        var delimiter = "\r\n--" + boundary + "\r\n";
+        var close_delim = "\r\n--" + boundary + "--";
 
-            var metadata = {
-                'title': name,
-                'mimeType': "text/plain"
-            };
+        var metadata = {
+            'title': name,
+            'mimeType': "application/json"
+        };
 
-            var multipartRequestBody =
+        var multipartRequestBody =
+            delimiter +
+                'Content-Type: application/json\r\n\r\n' +
+                JSON.stringify(metadata) +
                 delimiter +
-                    'Content-Type: application/json\r\n\r\n' +
-                    JSON.stringify(metadata) +
-                    delimiter +
-                    'Content-Type: text/plain\r\n\r\n' +
-                    filedata +
-                    close_delim;
+                'Content-Type: application/json\r\n\r\n' +
+                filedata +
+                close_delim;
 
-            var request = gapi.client.request({
-                'path': '/upload/drive/v2/files/0B_eXW9RRGhBnOWRmclRROEwyRVU',
-                'method': 'PUT',
-                'params': {'uploadType': 'multipart'},
-                'headers': {
-                    'Content-Type': 'multipart/mixed; boundary="' + boundary + '"'
-                },
-                'body': multipartRequestBody});
+        var request = gapi.client.request({
+            'path': '/upload/drive/v2/files/0B_eXW9RRGhBnOWRmclRROEwyRVU',
+            'method': 'PUT',
+            'params': {'uploadType': 'multipart'},
+            'headers': {
+                'Content-Type': 'multipart/mixed; boundary="' + boundary + '"'
+            },
+            'body': multipartRequestBody});
 
-            request.execute(pm.drive.handlePostFileResponse);
-        });
+        request.execute(console.log(e);
+            if (callback) {
+                callback();    
+            }
+        });        
     },
 
     deleteFile: function(file) {
