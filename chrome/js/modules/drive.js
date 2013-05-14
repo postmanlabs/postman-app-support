@@ -3,9 +3,8 @@ function handleClientLoad() {
 }
 
 pm.drive = {
-//    CLIENT_ID: '185983536657.apps.googleusercontent.com',
     auth: {},
-    CLIENT_ID: '185983536657-vlvrhlnr9dllmdbdgvgejdhhceousr0i.apps.googleusercontent.com',
+    CLIENT_ID: '805864674475.apps.googleusercontent.com',
     SCOPES: [
         'https://www.googleapis.com/auth/drive.file',
         'https://www.googleapis.com/auth/userinfo.email',
