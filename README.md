@@ -46,11 +46,11 @@ Building and Developing
 =========================
 1. Install the dependencies
 <pre>
-sudo npm install -g grunt grunt-handlebars grunt-contrib-handlebars
+sudo npm install -g grunt grunt-cli
 </pre>
-2. Generate the template.js
+2. Generate the template.js and request.js files by running grunt. You can watch the folder for changes using:
 <pre>
-	grunt handlebars
+	grunt watch
 </pre>
 3. For misc. grunt tasks, look at grunt.js.
 
