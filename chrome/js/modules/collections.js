@@ -100,9 +100,32 @@ pm.collections = {
             pm.collections.importCollectionFromUrl(url);
         });
 
+        $('#share-collection-upload-drive').on("click", function() {
+            var id = $(this).attr('data-collection-id');
+            pm.collections.uploadCollectionOnDrive(id);
+        });
+
         $collection_items.on("click", ".collection-actions-download", function () {
             var id = $(this).attr('data-id');
+
+            pm.collections.checkIfCollectionIsOnDrive(id, function(exists, driveFile) {
+                if (exists) {
+                    $('#share-collection-upload-drive').css("display", "none");
+                    $('#share-collection-download-drive').css("display", "inline-block");
+                    $('#share-collection-delete-drive').css("display", "inline-block");
+                }
+                else {
+                    $('#share-collection-upload-drive').css("display", "inline-block");
+                    $('#share-collection-download-drive').css("display", "none");
+                    $('#share-collection-delete-drive').css("display", "none");
+                }
+            });
+
             $("#modal-share-collection").modal("show");
+            $('#share-collection-upload-drive').attr("data-collection-id", id);
+            $('#share-collection-download-drive').attr("data-collection-id", id);
+            $('#share-collection-delete-drive').attr("data-collection-id", id);
+
             $('#share-collection-get-link').attr("data-collection-id", id);
             $('#share-collection-download').attr("data-collection-id", id);
             $('#share-collection-link').css("display", "none");
@@ -804,5 +827,48 @@ pm.collections = {
             });
 
         });
+    },
+
+    checkIfCollectionIsOnDrive: function(id, callback) {
+        pm.indexedDB.driveFiles.getDriveFile(id, function(driveFile) {
+            if (driveFile) {
+                callback(true, driveFile);
+            }
+            else {
+                callback(false);
+            }
+            
+        });
+    },
+
+    getCollectionFromDrive: function(id) {
+
+    },
+
+    uploadCollectionOnDrive: function(id) {
+        pm.indexedDB.getCollection(id, function(collection) {
+            var filedata = JSON.stringify(collection);
+            pm.drive.postFile(collection.name, "application/json", filedata, function(file) {
+                console.log(file);
+                var driveFile = {
+                    "id": collection.id,
+                    "type": "collection",
+                    "timestamp":new Date().getTime(),
+                    "file": file
+                };
+
+                pm.indexedDB.driveFiles.addDriveFile(driveFile, function(e) {
+                    console.log("Uploaded file", e);
+                });
+            });
+        });
+    },
+
+    updateCollectionOnDrive: function(id) {
+
+    },
+
+    deleteCollectionOnDrive: function(id) {
+
     }
 };

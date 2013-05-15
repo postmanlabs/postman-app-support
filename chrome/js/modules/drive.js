@@ -103,7 +103,7 @@ pm.drive = {
             console.log(e);
 
             if (callback) {
-                callback();    
+                callback(e);    
             }            
         });        
     },

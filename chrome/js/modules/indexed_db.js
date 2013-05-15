@@ -775,11 +775,12 @@ pm.indexedDB = {
     driveFiles: {
         addDriveFile:function (driveFile, callback) {
             var db = pm.indexedDB.db;
-            var trans = db.transaction([pm.indexedDB.TABLE_HEADER_PRESETS], "readwrite");
-            var store = trans.objectStore(pm.indexedDB.TABLE_HEADER_PRESETS);
+            var trans = db.transaction([pm.indexedDB.TABLE_DRIVE_FILES], "readwrite");
+            var store = trans.objectStore(pm.indexedDB.TABLE_DRIVE_FILES);
             var request = store.put(driveFile);
 
             request.onsuccess = function (e) {
+                console.log("Added file");
                 callback(driveFile);
             };
 
@@ -790,8 +791,8 @@ pm.indexedDB = {
 
         getDriveFile:function (id, callback) {
             var db = pm.indexedDB.db;
-            var trans = db.transaction([pm.indexedDB.TABLE_HEADER_PRESETS], "readwrite");
-            var store = trans.objectStore(pm.indexedDB.TABLE_HEADER_PRESETS);
+            var trans = db.transaction([pm.indexedDB.TABLE_DRIVE_FILES], "readwrite");
+            var store = trans.objectStore(pm.indexedDB.TABLE_DRIVE_FILES);
 
             //Get everything in the store
             var cursorRequest = store.get(id);
@@ -805,8 +806,8 @@ pm.indexedDB = {
 
         deleteDriveFile:function (id, callback) {
             var db = pm.indexedDB.db;
-            var trans = db.transaction([pm.indexedDB.TABLE_HEADER_PRESETS], "readwrite");
-            var store = trans.objectStore([pm.indexedDB.TABLE_HEADER_PRESETS]);
+            var trans = db.transaction([pm.indexedDB.TABLE_DRIVE_FILES], "readwrite");
+            var store = trans.objectStore([pm.indexedDB.TABLE_DRIVE_FILES]);
 
             var request = store['delete'](id);
 
@@ -826,8 +827,8 @@ pm.indexedDB = {
                 return;
             }
 
-            var trans = db.transaction([pm.indexedDB.TABLE_HEADER_PRESETS], "readwrite");
-            var store = trans.objectStore(pm.indexedDB.TABLE_HEADER_PRESETS);
+            var trans = db.transaction([pm.indexedDB.TABLE_DRIVE_FILES], "readwrite");
+            var store = trans.objectStore(pm.indexedDB.TABLE_DRIVE_FILES);
 
             //Get everything in the store
             var keyRange = IDBKeyRange.lowerBound(0);
@@ -855,8 +856,8 @@ pm.indexedDB = {
 
         updateDriveFile:function (driveFile, callback) {
             var db = pm.indexedDB.db;
-            var trans = db.transaction([pm.indexedDB.TABLE_HEADER_PRESETS], "readwrite");
-            var store = trans.objectStore(pm.indexedDB.TABLE_HEADER_PRESETS);
+            var trans = db.transaction([pm.indexedDB.TABLE_DRIVE_FILES], "readwrite");
+            var store = trans.objectStore(pm.indexedDB.TABLE_DRIVE_FILES);
 
             var boundKeyRange = IDBKeyRange.only(driveFile.id);
             var request = store.put(driveFile);
@@ -875,8 +876,8 @@ pm.indexedDB = {
     driveChanges: {
         addDriveChange:function (driveChange, callback) {
             var db = pm.indexedDB.db;
-            var trans = db.transaction([pm.indexedDB.TABLE_HEADER_PRESETS], "readwrite");
-            var store = trans.objectStore(pm.indexedDB.TABLE_HEADER_PRESETS);
+            var trans = db.transaction([pm.indexedDB.TABLE_DRIVE_CHANGES], "readwrite");
+            var store = trans.objectStore(pm.indexedDB.TABLE_DRIVE_CHANGES);
             var request = store.put(driveChange);
 
             request.onsuccess = function (e) {
@@ -890,8 +891,8 @@ pm.indexedDB = {
 
         getDriveChange:function (id, callback) {
             var db = pm.indexedDB.db;
-            var trans = db.transaction([pm.indexedDB.TABLE_HEADER_PRESETS], "readwrite");
-            var store = trans.objectStore(pm.indexedDB.TABLE_HEADER_PRESETS);
+            var trans = db.transaction([pm.indexedDB.TABLE_DRIVE_CHANGES], "readwrite");
+            var store = trans.objectStore(pm.indexedDB.TABLE_DRIVE_CHANGES);
 
             //Get everything in the store
             var cursorRequest = store.get(id);
@@ -905,8 +906,8 @@ pm.indexedDB = {
 
         deleteDriveChange:function (id, callback) {
             var db = pm.indexedDB.db;
-            var trans = db.transaction([pm.indexedDB.TABLE_HEADER_PRESETS], "readwrite");
-            var store = trans.objectStore([pm.indexedDB.TABLE_HEADER_PRESETS]);
+            var trans = db.transaction([pm.indexedDB.TABLE_DRIVE_CHANGES], "readwrite");
+            var store = trans.objectStore([pm.indexedDB.TABLE_DRIVE_CHANGES]);
 
             var request = store['delete'](id);
 
@@ -926,8 +927,8 @@ pm.indexedDB = {
                 return;
             }
 
-            var trans = db.transaction([pm.indexedDB.TABLE_HEADER_PRESETS], "readwrite");
-            var store = trans.objectStore(pm.indexedDB.TABLE_HEADER_PRESETS);
+            var trans = db.transaction([pm.indexedDB.TABLE_DRIVE_CHANGES], "readwrite");
+            var store = trans.objectStore(pm.indexedDB.TABLE_DRIVE_CHANGES);
 
             //Get everything in the store
             var keyRange = IDBKeyRange.lowerBound(0);
@@ -955,8 +956,8 @@ pm.indexedDB = {
 
         updateDriveChange:function (driveChange, callback) {
             var db = pm.indexedDB.db;
-            var trans = db.transaction([pm.indexedDB.TABLE_HEADER_PRESETS], "readwrite");
-            var store = trans.objectStore(pm.indexedDB.TABLE_HEADER_PRESETS);
+            var trans = db.transaction([pm.indexedDB.TABLE_DRIVE_CHANGES], "readwrite");
+            var store = trans.objectStore(pm.indexedDB.TABLE_DRIVE_CHANGES);
 
             var boundKeyRange = IDBKeyRange.only(driveChange.id);
             var request = store.put(driveChange);
