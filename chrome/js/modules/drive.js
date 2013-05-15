@@ -42,13 +42,13 @@ pm.drive = {
      */
     checkAuth: function(){
         gapi.auth.authorize(
-            {
-                'client_id': pm.drive.CLIENT_ID,
-                'scope': pm.drive.SCOPES.join(' '),
-                'immediate': true
-            },
+        {
+            'client_id': pm.drive.CLIENT_ID,
+            'scope': pm.drive.SCOPES.join(' '),
+            'immediate': true
+        },
 
-            pm.drive.handleAuthResult);
+        pm.drive.handleAuthResult);
     },
 
     /**
@@ -108,7 +108,7 @@ pm.drive = {
         });        
     },
 
-    updateFile: function(name, type, filedata) {
+    updateFile: function(file, filedata, callback) {
         var boundary = '-------314159265358979323846';
         var delimiter = "\r\n--" + boundary + "\r\n";
         var close_delim = "\r\n--" + boundary + "--";
@@ -128,7 +128,7 @@ pm.drive = {
                 close_delim;
 
         var request = gapi.client.request({
-            'path': '/upload/drive/v2/files/0B_eXW9RRGhBnOWRmclRROEwyRVU',
+            'path': '/upload/drive/v2/files/' + file.fileId,
             'method': 'PUT',
             'params': {'uploadType': 'multipart'},
             'headers': {

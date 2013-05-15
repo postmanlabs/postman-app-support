@@ -770,5 +770,207 @@ pm.indexedDB = {
                 console.log(e.value);
             };
         }
+    },
+
+    driveFiles: {
+        addDriveFile:function (driveFile, callback) {
+            var db = pm.indexedDB.db;
+            var trans = db.transaction([pm.indexedDB.TABLE_HEADER_PRESETS], "readwrite");
+            var store = trans.objectStore(pm.indexedDB.TABLE_HEADER_PRESETS);
+            var request = store.put(driveFile);
+
+            request.onsuccess = function (e) {
+                callback(driveFile);
+            };
+
+            request.onerror = function (e) {
+                console.log(e);
+            };
+        },
+
+        getDriveFile:function (id, callback) {
+            var db = pm.indexedDB.db;
+            var trans = db.transaction([pm.indexedDB.TABLE_HEADER_PRESETS], "readwrite");
+            var store = trans.objectStore(pm.indexedDB.TABLE_HEADER_PRESETS);
+
+            //Get everything in the store
+            var cursorRequest = store.get(id);
+
+            cursorRequest.onsuccess = function (e) {
+                var result = e.target.result;
+                callback(result);
+            };
+            cursorRequest.onerror = pm.indexedDB.onerror;
+        },
+
+        deleteDriveFile:function (id, callback) {
+            var db = pm.indexedDB.db;
+            var trans = db.transaction([pm.indexedDB.TABLE_HEADER_PRESETS], "readwrite");
+            var store = trans.objectStore([pm.indexedDB.TABLE_HEADER_PRESETS]);
+
+            var request = store['delete'](id);
+
+            request.onsuccess = function () {
+                callback(id);
+            };
+
+            request.onerror = function (e) {
+                console.log(e);
+            };
+        },
+
+        getAllDriveFiles:function (callback) {
+            var db = pm.indexedDB.db;
+            if (db == null) {
+                console.log("Db is null");
+                return;
+            }
+
+            var trans = db.transaction([pm.indexedDB.TABLE_HEADER_PRESETS], "readwrite");
+            var store = trans.objectStore(pm.indexedDB.TABLE_HEADER_PRESETS);
+
+            //Get everything in the store
+            var keyRange = IDBKeyRange.lowerBound(0);
+            var index = store.index("timestamp");
+            var cursorRequest = index.openCursor(keyRange);
+            var driveFiles = [];
+
+            cursorRequest.onsuccess = function (e) {
+                var result = e.target.result;
+
+                if (!result) {
+                    callback(driveFiles);
+                    return;
+                }
+
+                var request = result.value;
+                driveFiles.push(request);
+
+                //This wil call onsuccess again and again until no more request is left
+                result['continue']();
+            };
+
+            cursorRequest.onerror = pm.indexedDB.onerror;
+        },
+
+        updateDriveFile:function (driveFile, callback) {
+            var db = pm.indexedDB.db;
+            var trans = db.transaction([pm.indexedDB.TABLE_HEADER_PRESETS], "readwrite");
+            var store = trans.objectStore(pm.indexedDB.TABLE_HEADER_PRESETS);
+
+            var boundKeyRange = IDBKeyRange.only(driveFile.id);
+            var request = store.put(driveFile);
+
+            request.onsuccess = function (e) {
+                callback(driveFile);
+            };
+
+            request.onerror = function (e) {
+                console.log(e.value);
+            };
+        }
+    },
+
+
+    driveChanges: {
+        addDriveChange:function (driveChange, callback) {
+            var db = pm.indexedDB.db;
+            var trans = db.transaction([pm.indexedDB.TABLE_HEADER_PRESETS], "readwrite");
+            var store = trans.objectStore(pm.indexedDB.TABLE_HEADER_PRESETS);
+            var request = store.put(driveChange);
+
+            request.onsuccess = function (e) {
+                callback(driveChange);
+            };
+
+            request.onerror = function (e) {
+                console.log(e);
+            };
+        },
+
+        getDriveChange:function (id, callback) {
+            var db = pm.indexedDB.db;
+            var trans = db.transaction([pm.indexedDB.TABLE_HEADER_PRESETS], "readwrite");
+            var store = trans.objectStore(pm.indexedDB.TABLE_HEADER_PRESETS);
+
+            //Get everything in the store
+            var cursorRequest = store.get(id);
+
+            cursorRequest.onsuccess = function (e) {
+                var result = e.target.result;
+                callback(result);
+            };
+            cursorRequest.onerror = pm.indexedDB.onerror;
+        },
+
+        deleteDriveChange:function (id, callback) {
+            var db = pm.indexedDB.db;
+            var trans = db.transaction([pm.indexedDB.TABLE_HEADER_PRESETS], "readwrite");
+            var store = trans.objectStore([pm.indexedDB.TABLE_HEADER_PRESETS]);
+
+            var request = store['delete'](id);
+
+            request.onsuccess = function () {
+                callback(id);
+            };
+
+            request.onerror = function (e) {
+                console.log(e);
+            };
+        },
+
+        getAllDriveChanges:function (callback) {
+            var db = pm.indexedDB.db;
+            if (db == null) {
+                console.log("Db is null");
+                return;
+            }
+
+            var trans = db.transaction([pm.indexedDB.TABLE_HEADER_PRESETS], "readwrite");
+            var store = trans.objectStore(pm.indexedDB.TABLE_HEADER_PRESETS);
+
+            //Get everything in the store
+            var keyRange = IDBKeyRange.lowerBound(0);
+            var index = store.index("timestamp");
+            var cursorRequest = index.openCursor(keyRange);
+            var driveChanges = [];
+
+            cursorRequest.onsuccess = function (e) {
+                var result = e.target.result;
+
+                if (!result) {
+                    callback(driveChanges);
+                    return;
+                }
+
+                var request = result.value;
+                driveChanges.push(request);
+
+                //This wil call onsuccess again and again until no more request is left
+                result['continue']();
+            };
+
+            cursorRequest.onerror = pm.indexedDB.onerror;
+        },
+
+        updateDriveChange:function (driveChange, callback) {
+            var db = pm.indexedDB.db;
+            var trans = db.transaction([pm.indexedDB.TABLE_HEADER_PRESETS], "readwrite");
+            var store = trans.objectStore(pm.indexedDB.TABLE_HEADER_PRESETS);
+
+            var boundKeyRange = IDBKeyRange.only(driveChange.id);
+            var request = store.put(driveChange);
+
+            request.onsuccess = function (e) {
+                callback(driveChange);
+            };
+
+            request.onerror = function (e) {
+                console.log(e.value);
+            };
+        }        
     }
+
+
+
 };
