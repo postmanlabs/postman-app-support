@@ -105,6 +105,11 @@ pm.collections = {
             pm.collections.uploadCollectionOnDrive(id);
         });
 
+        $('#share-collection-delete-drive').on("click", function() {
+            var id = $(this).attr('data-collection-id');
+            pm.collections.deleteCollectionOnDrive(id);
+        });
+
         $collection_items.on("click", ".collection-actions-download", function () {
             var id = $(this).attr('data-id');
 
@@ -832,6 +837,7 @@ pm.collections = {
     checkIfCollectionIsOnDrive: function(id, callback) {
         pm.indexedDB.driveFiles.getDriveFile(id, function(driveFile) {
             if (driveFile) {
+                console.log(driveFile);
                 callback(true, driveFile);
             }
             else {
@@ -848,7 +854,7 @@ pm.collections = {
     uploadCollectionOnDrive: function(id) {
         pm.indexedDB.getCollection(id, function(collection) {
             var filedata = JSON.stringify(collection);
-            pm.drive.postFile(collection.name, "application/json", filedata, function(file) {
+            pm.drive.postFile(collection.name + ".postman_collection", "application/json", filedata, function(file) {
                 console.log(file);
                 var driveFile = {
                     "id": collection.id,
@@ -869,6 +875,16 @@ pm.collections = {
     },
 
     deleteCollectionOnDrive: function(id) {
-
+        pm.collections.checkIfCollectionIsOnDrive(id, function(exists, driveFile) {
+            if (exists) {                
+                pm.drive.trashFile(driveFile.file, function() {
+                    console.log("File deleted");
+                    pm.indexedDB.driveFiles.deleteDriveFile(id, function() {
+                        console.log("Deleted local file");
+                    });
+                });
+            }
+        });
+        
     }
 };

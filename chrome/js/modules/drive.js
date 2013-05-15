@@ -145,8 +145,9 @@ pm.drive = {
     },
 
     trashFile: function(file, callback) {
+        console.log(file.id);
         var request = gapi.client.drive.files.trash({
-            'fileId': fileId
+            'fileId': file.id
         });
         request.execute(function(resp) {
             callback();
