@@ -108,7 +108,7 @@ pm.drive = {
         });        
     },
 
-    updateFile: function(file, filedata, callback) {
+    updateFile: function(name, file, filedata, callback) {
         var boundary = '-------314159265358979323846';
         var delimiter = "\r\n--" + boundary + "\r\n";
         var close_delim = "\r\n--" + boundary + "--";
@@ -128,7 +128,7 @@ pm.drive = {
                 close_delim;
 
         var request = gapi.client.request({
-            'path': '/upload/drive/v2/files/' + file.fileId,
+            'path': '/upload/drive/v2/files/' + file.id,
             'method': 'PUT',
             'params': {'uploadType': 'multipart'},
             'headers': {

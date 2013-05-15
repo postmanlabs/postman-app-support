@@ -100,6 +100,11 @@ pm.collections = {
             pm.collections.importCollectionFromUrl(url);
         });
 
+        $('#share-collection-update-drive').on("click", function() {
+            var id = $(this).attr('data-collection-id');
+            pm.collections.updateCollectionOnDrive(id);
+        });
+
         $('#share-collection-upload-drive').on("click", function() {
             var id = $(this).attr('data-collection-id');
             pm.collections.uploadCollectionOnDrive(id);
@@ -116,19 +121,19 @@ pm.collections = {
             pm.collections.checkIfCollectionIsOnDrive(id, function(exists, driveFile) {
                 if (exists) {
                     $('#share-collection-upload-drive').css("display", "none");
-                    $('#share-collection-download-drive').css("display", "inline-block");
+                    $('#share-collection-update-drive').css("display", "inline-block");
                     $('#share-collection-delete-drive').css("display", "inline-block");
                 }
                 else {
                     $('#share-collection-upload-drive').css("display", "inline-block");
-                    $('#share-collection-download-drive').css("display", "none");
+                    $('#share-collection-update-drive').css("display", "none");
                     $('#share-collection-delete-drive').css("display", "none");
                 }
             });
 
             $("#modal-share-collection").modal("show");
             $('#share-collection-upload-drive').attr("data-collection-id", id);
-            $('#share-collection-download-drive').attr("data-collection-id", id);
+            $('#share-collection-update-drive').attr("data-collection-id", id);
             $('#share-collection-delete-drive').attr("data-collection-id", id);
 
             $('#share-collection-get-link').attr("data-collection-id", id);
@@ -871,14 +876,21 @@ pm.collections = {
     },
 
     updateCollectionOnDrive: function(id) {
-
+        pm.indexedDB.getCollection(id, function(collection) {
+            var filedata = JSON.stringify(collection);
+            pm.indexedDB.driveFiles.getDriveFile(id, function(driveFile) {
+                pm.drive.updateFile(collection.name + ".postman_collection", driveFile.file, filedata, function(file) {
+                    console.log(file);                
+                });
+            });
+            
+        });
     },
 
     deleteCollectionOnDrive: function(id) {
         pm.collections.checkIfCollectionIsOnDrive(id, function(exists, driveFile) {
             if (exists) {                
-                pm.drive.trashFile(driveFile.file, function() {
-                    console.log("File deleted");
+                pm.drive.trashFile(driveFile.file, function() {                    
                     pm.indexedDB.driveFiles.deleteDriveFile(id, function() {
                         console.log("Deleted local file");
                     });
