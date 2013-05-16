@@ -22,7 +22,10 @@ pm.drive = {
      * Called when the client library is loaded.
      */
     handleClientLoad: function() {
-        console.log("Client has loaded");        
+        console.log("Client has loaded");    
+        pm.drive.getChangeList(function(result) {
+            //process callbacks here
+        });  
     },
 
     /**
@@ -33,8 +36,37 @@ pm.drive = {
         gapi.client.load('drive', 'v2', pm.drive.handleClientLoad);
     },
 
-    getChangeList: function() {
+    refreshAuth: function(callback) {
 
+    },
+
+    getChangeList: function(callback, startChangeId) {
+        var retrievePageOfChanges = function(request, result) {
+            request.execute(function(resp) {
+              result = result.concat(resp.items);
+              var nextPageToken = resp.nextPageToken;
+              if (nextPageToken) {
+                request = gapi.client.drive.changes.list({
+                  'pageToken': nextPageToken
+                });
+                retrievePageOfChanges(request, result);
+              } else {
+                callback(result);
+              }
+            });
+        }
+
+        var initialRequest;
+        if (startChangeId) {
+            initialRequest = gapi.client.drive.changes.list({
+                'startChangeId' : startChangeId
+            });
+        } 
+        else {
+            initialRequest = gapi.client.drive.changes.list();
+        }
+
+        retrievePageOfChanges(initialRequest, []);
     },
 
     /**
