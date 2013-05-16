@@ -859,18 +859,8 @@ pm.collections = {
     uploadCollectionOnDrive: function(id) {
         pm.indexedDB.getCollection(id, function(collection) {
             var filedata = JSON.stringify(collection);
-            pm.drive.postFile(collection.name + ".postman_collection", "application/json", filedata, function(file) {
-                console.log(file);
-                var driveFile = {
-                    "id": collection.id,
-                    "type": "collection",
-                    "timestamp":new Date().getTime(),
-                    "file": file
-                };
-
-                pm.indexedDB.driveFiles.addDriveFile(driveFile, function(e) {
-                    console.log("Uploaded file", e);
-                });
+            pm.drive.post(collection.id, "collection", collection.name + ".postman_collection", filedata, function() {
+                console.log("Drive change added");                
             });
         });
     },
@@ -879,8 +869,8 @@ pm.collections = {
         pm.indexedDB.getCollection(id, function(collection) {
             var filedata = JSON.stringify(collection);
             pm.indexedDB.driveFiles.getDriveFile(id, function(driveFile) {
-                pm.drive.updateFile(collection.name + ".postman_collection", driveFile.file, filedata, function(file) {
-                    console.log(file);                
+                pm.drive.update(id, "collection", collection.name + ".postman_collection", driveFile.file, filedata, function() {
+                    console.log("Updated file");                
                 });
             });
             
@@ -890,10 +880,8 @@ pm.collections = {
     deleteCollectionOnDrive: function(id) {
         pm.collections.checkIfCollectionIsOnDrive(id, function(exists, driveFile) {
             if (exists) {                
-                pm.drive.trashFile(driveFile.file, function() {                    
-                    pm.indexedDB.driveFiles.deleteDriveFile(id, function() {
-                        console.log("Deleted local file");
-                    });
+                pm.drive.trash(id, "collection", driveFile.file, function() {                    
+                    console.log("Deleted local file");                    
                 });
             }
         });

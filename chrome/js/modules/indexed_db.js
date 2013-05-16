@@ -940,6 +940,7 @@ pm.indexedDB = {
                 var result = e.target.result;
 
                 if (!result) {
+                    console.log(driveChanges);
                     callback(driveChanges);
                     return;
                 }
