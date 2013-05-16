@@ -12,10 +12,28 @@ pm.drive = {
         // Add other scopes needed by your application.
     ],
 
+    isQueueRunning: false,
+
     init: function() {
         //Show drive dialog for the first time user
         //Start drive authentication flow only after the user says yes
         //Do not pester every time
+    },
+
+    executeChange: function(change) {
+        pm.drive.isQueueRunning = true;
+
+
+    },
+
+    //Executes all changes one by one
+    implementChanges: function() {
+        pm.indexedDB.driveChanges.getAllDriveChanges(function(changes) {            
+            if (changes.length > 0 && pm.drive.isQueueRunning === false) {
+                pm.drive.executeChange(changes[0]);    
+            }
+            
+        });
     },
 
     /**
@@ -23,8 +41,10 @@ pm.drive = {
      */
     handleClientLoad: function() {
         console.log("Client has loaded");    
-        pm.drive.getChangeList(function(result) {
-            //process callbacks here
+        pm.drive.getChangeList(function(changes) {
+            //Show indicator here. Block UI changes with an option to skip
+            //Changes is a collection of file objects
+            console.log("Received changes", changes);
         });  
     },
 
@@ -59,11 +79,14 @@ pm.drive = {
         var initialRequest;
         if (startChangeId) {
             initialRequest = gapi.client.drive.changes.list({
-                'startChangeId' : startChangeId
+                'startChangeId' : startChangeId,
+                'fields': 'nextPageToken,largestChangeId,items(fileId,deleted,file(id,title,fileExtension,modifiedDate))'
             });
         } 
         else {
-            initialRequest = gapi.client.drive.changes.list();
+            initialRequest = gapi.client.drive.changes.list({
+                'fields': 'nextPageToken,largestChangeId,items(fileId,deleted,file(id,title,fileExtension,modifiedDate))' 
+            });
         }
 
         retrievePageOfChanges(initialRequest, []);
