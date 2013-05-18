@@ -21,6 +21,10 @@ pm.drive = {
         //Do not pester every time        
     },
 
+    isSyncEnabled: function() {
+        return pm.settings.get("driveSyncEnabled");
+    },
+
     executeChange: function(change) {
         pm.drive.isQueueRunning = true;
 
@@ -53,7 +57,7 @@ pm.drive = {
 
         if (method === "POST") {
             pm.drive.postFile(name, type, fileData, function(file) {
-                console.log("Posted file", file);
+                console.log("Posted file");
                 //Create file inside driveFiles
                 var localDriveFile = {
                     "id": changeTargetId,
@@ -63,13 +67,15 @@ pm.drive = {
                 };
 
                 pm.indexedDB.driveFiles.addDriveFile(localDriveFile, function(e) {
-                    console.log("Uploaded file", e);
+                    console.log("Uploaded file");
                     //Remove the change inside driveChange
                     pm.indexedDB.driveChanges.deleteDriveChange(changeId, function(e) {
-                        console.log("Removed drive change", e);                        
+                        console.log("Removed drive change");
+                        pm.drive.isQueueRunning = false;
+                        pm.drive.runChangeQueue();                        
                     });
 
-                    pm.drive.runChangeQueue();
+                    
                 });                
                 
             });
@@ -81,11 +87,12 @@ pm.drive = {
 
                     //Remove the change inside driveChange
                     pm.indexedDB.driveChanges.deleteDriveChange(changeId, function(e) {
-                        console.log("Removed drive change", e);
-                        //Call runQueue again                        
+                        console.log("Removed drive change");
+                        //Call runQueue again   
+                        pm.drive.isQueueRunning = false;
+                        pm.drive.runChangeQueue();                     
                     });                      
-
-                    pm.drive.runChangeQueue();          
+                            
                 });
             });
         }
@@ -101,11 +108,12 @@ pm.drive = {
                 pm.indexedDB.driveFiles.updateDriveFile(updatedLocalDriveFile, function() {
                     //Remove the change inside driveChange
                     pm.indexedDB.driveChanges.deleteDriveChange(changeId, function(e) {
-                        console.log("Removed drive change", e);
+                        console.log("Removed drive change");
                         //Call runQueue again                        
+                        pm.drive.isQueueRunning = false;
+                        pm.drive.runChangeQueue();              
                     });                      
-
-                    pm.drive.runChangeQueue();              
+                    
                 });                
             });            
         }
@@ -114,8 +122,8 @@ pm.drive = {
     //Executes all changes one by one
     runChangeQueue: function() {
         console.log("Run change queue called");
-        pm.indexedDB.driveChanges.getAllDriveChanges(function(changes) {            
-            console.log("Changes are", changes);
+        if (pm.drive.isQueueRunning === true) return;
+        pm.indexedDB.driveChanges.getAllDriveChanges(function(changes) {                        
             if (changes.length > 0) {
                 pm.drive.executeChange(changes[0]);    
             }
@@ -132,12 +140,22 @@ pm.drive = {
     handleClientLoad: function() {
         console.log("Client has loaded");    
         pm.drive.isSyncing = true;
+        var startChangeId = pm.settings.get("driveStartChangeId");
+        startChangeId = parseInt(startChangeId, 10) + 1;
+        console.log(startChangeId);
         pm.drive.getChangeList(function(changes) {
             //Show indicator here. Block UI changes with an option to skip
             //Changes is a collection of file objects
             pm.drive.isSyncing = false;
-            console.log("Received changes", changes);
-        });  
+
+            if (changes.length > 0) {
+                console.log("Received changes", changes);    
+            }
+            else {
+                console.log("No new changes");
+            }
+            
+        }, startChangeId);  
     },
 
     /**
@@ -155,21 +173,28 @@ pm.drive = {
     getChangeList: function(callback, startChangeId) {
         var retrievePageOfChanges = function(request, result) {
             request.execute(function(resp) {
-              result = result.concat(resp.items);
-              var nextPageToken = resp.nextPageToken;
-              if (nextPageToken) {
-                request = gapi.client.drive.changes.list({
-                  'pageToken': nextPageToken
-                });
-                retrievePageOfChanges(request, result);
-              } else {
-                callback(result);
-              }
+                if ("items" in resp) {
+                    result = result.concat(resp.items);      
+                } 
+              
+                var nextPageToken = resp.nextPageToken;
+                if (nextPageToken) {
+                    request = gapi.client.drive.changes.list({
+                      'pageToken': nextPageToken
+                    });
+
+                    pm.settings.set("driveStartChangeId", resp.largestChangeId);
+                    retrievePageOfChanges(request, result);
+                } else {
+                    pm.settings.set("driveStartChangeId", resp.largestChangeId);                    
+                    callback(result);
+                }
             });
         }
 
         var initialRequest;
-        if (startChangeId) {
+        if (startChangeId > 1) {
+            console.log(startChangeId);
             initialRequest = gapi.client.drive.changes.list({
                 'startChangeId' : startChangeId,
                 'fields': 'nextPageToken,largestChangeId,items(fileId,deleted,file(id,title,fileExtension,modifiedDate))'
@@ -217,7 +242,11 @@ pm.drive = {
         }
     },
 
-    post: function(targetId, targetType, name, fileData, callback) {
+    createFolder: function(folderName, callback) {
+
+    },
+
+    queuePost: function(targetId, targetType, name, fileData, callback) {
         var change = {
             id: guid(),            
             fileData: fileData,
@@ -229,13 +258,13 @@ pm.drive = {
         };
 
         pm.indexedDB.driveChanges.addDriveChange(change, function(change) {
-            console.log("Change added", change);
+            console.log("Post change added");
             pm.drive.runChangeQueue();
             callback();
         });
     },
 
-    update: function(targetId, targetType, name, file, fileData, callback) {
+    queueUpdate: function(targetId, targetType, name, file, fileData, callback) {
         var change = {
             id: guid(),            
             fileData: fileData,
@@ -248,13 +277,13 @@ pm.drive = {
         };
 
         pm.indexedDB.driveChanges.addDriveChange(change, function(change) {
-            console.log("Change added", change);
+            console.log("Update change added");
             pm.drive.runChangeQueue();
             callback();
         });
     },
 
-    trash: function(targetId, targetType, file, callback) {
+    queueTrash: function(targetId, targetType, file, callback) {
         var change = {
             id: guid(),            
             fileId: file.id,
@@ -265,7 +294,7 @@ pm.drive = {
         };
 
         pm.indexedDB.driveChanges.addDriveChange(change, function(change) {
-            console.log("Change added", change);
+            console.log("Trash change added");
             pm.drive.runChangeQueue();
             callback();
         });
@@ -301,9 +330,7 @@ pm.drive = {
             },
             'body': multipartRequestBody});
 
-        request.execute(function(e) {
-            console.log(e);
-
+        request.execute(function(e) {            
             if (callback) {
                 callback(e);    
             }            
@@ -345,8 +372,7 @@ pm.drive = {
         });        
     },
 
-    trashFile: function(fileId, callback) {
-        console.log(fileId);
+    trashFile: function(fileId, callback) {        
         var request = gapi.client.drive.files.trash({
             'fileId': fileId
         });
@@ -371,5 +397,82 @@ pm.drive = {
         } else {
             callback(null);
       }
+    },
+
+    collections: {
+        checkIfCollectionIsOnDrive: function(id, callback) {
+            pm.indexedDB.driveFiles.getDriveFile(id, function(driveFile) {
+                if (driveFile) {
+                    console.log("Collection found");
+                    callback(true, driveFile);
+                }
+                else {
+                    console.log("Collection not found");
+                    callback(false);
+                }
+                
+            });
+        },
+
+        queuePostFromCollection: function(collection) {
+            if (!pm.drive.isSyncEnabled()) return;
+
+            var id = collection.id;
+            var name = collection.name + ".postman_collection";
+            var filedata = JSON.stringify(collection);
+            
+            pm.drive.queuePost(id, "collection", name, filedata, function() {
+                console.log("Uploaded new collection", name);                
+            });            
+        },
+
+        queuePost: function(id) {
+            if (!pm.drive.isSyncEnabled()) return;
+
+            pm.collections.getCollectionData(id, function(name, type, filedata) {
+                console.log(filedata);
+                pm.drive.queuePost(id, "collection", name + ".postman_collection", filedata, function() {
+                    console.log("Uploaded new collection", name);                
+                });
+            });
+        },
+
+        queueUpdateFromCollection: function(collection) {
+            if (!pm.drive.isSyncEnabled()) return;
+
+            var id = collection.id;
+            var name = collection.name + ".postman_collection";
+            var filedata = JSON.stringify(collection);
+
+            pm.indexedDB.driveFiles.getDriveFile(id, function(driveFile) {
+                pm.drive.queueUpdate(id, "collection", name + ".postman_collection", driveFile.file, filedata, function() {
+                    console.log("Updated collection", collection.id);                
+                });
+            });
+        },
+
+        queueUpdateFromId: function(id) {
+            if (!pm.drive.isSyncEnabled()) return;
+
+            pm.collections.getCollectionDataForDrive(id, function(name, type, filedata) {                
+                pm.indexedDB.driveFiles.getDriveFile(id, function(driveFile) {
+                    pm.drive.queueUpdate(id, "collection", name, driveFile.file, filedata, function() {
+                        console.log("Updated collection from id", id);                
+                    });
+                });                
+            });
+        },
+
+        queueTrash: function(id) {
+            if (!pm.drive.isSyncEnabled()) return;
+
+            pm.drive.collections.checkIfCollectionIsOnDrive(id, function(exists, driveFile) {
+                if (exists) {                
+                    pm.drive.queueTrash(id, "collection", driveFile.file, function() {                    
+                        console.log("Deleted collection", id);                    
+                    });
+                }
+            });            
+        }
     }
 };

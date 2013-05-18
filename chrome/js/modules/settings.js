@@ -22,6 +22,8 @@ pm.settings = {
         pm.settings.create("activeSidebarSection", "history");
         pm.settings.create("forceWindowsLineEndings", false);
         pm.settings.create("requestBodyEditorContainerType", "editor");
+
+        pm.settings.create("driveSyncEnabled", true);
         pm.settings.create("driveStartChangeId", 0);
     },
 

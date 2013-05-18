@@ -48,6 +48,15 @@ function Request() {
     this.timestamp = 0;
 }
 
+function sortAscending(a, b) {
+    if (a >= b) {
+        return 1;
+    }
+    else {
+        return -1;
+    }
+}
+
 function sortAlphabetical(a, b) {
     var counter;
     if (a.name.length > b.name.legnth)

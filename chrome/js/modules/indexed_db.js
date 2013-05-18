@@ -1,3 +1,5 @@
+//Added dependency on drive.js. Will need a wrapper around 
+//both drive.js and indexed_db.js
 pm.indexedDB = {
     TABLE_HEADER_PRESETS: "header_presets",
     TABLE_HELPERS: "helpers",
@@ -206,13 +208,13 @@ pm.indexedDB = {
         
 
         request.onsuccess = function () {
-            callback(collection);
+            callback(collection);            
         };
 
         request.onerror = function (e) {
             console.log(e.value);
         };
-    },
+    },    
 
     updateCollection:function (collection, callback) {
         var db = pm.indexedDB.db;
@@ -463,7 +465,7 @@ pm.indexedDB = {
             var request = store['delete'](id);
 
             request.onsuccess = function () {
-                callback(id);
+                callback(id);                
             };
 
             request.onerror = function (e) {
@@ -485,19 +487,21 @@ pm.indexedDB = {
     },
 
     deleteCollectionRequest:function (id, callback) {
-        var db = pm.indexedDB.db;
-        var trans = db.transaction(["collection_requests"], "readwrite");
-        var store = trans.objectStore(["collection_requests"]);
+        pm.indexedDB.getCollectionRequest(id, function(collectionRequest) {
+            var db = pm.indexedDB.db;
+            var trans = db.transaction(["collection_requests"], "readwrite");
+            var store = trans.objectStore(["collection_requests"]);
 
-        var request = store['delete'](id);
+            var request = store['delete'](id);
 
-        request.onsuccess = function (e) {
-            callback(id);
-        };
+            request.onsuccess = function (e) {
+                callback(id);    
+            };
 
-        request.onerror = function (e) {
-            console.log(e);
-        };
+            request.onerror = function (e) {
+                console.log(e);
+            };
+        });        
     },
 
     deleteAllCollectionRequests:function (id) {
@@ -941,6 +945,7 @@ pm.indexedDB = {
 
                 if (!result) {
                     console.log(driveChanges);
+                    driveChanges.sort(sortAscending);
                     callback(driveChanges);
                     return;
                 }
