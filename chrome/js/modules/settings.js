@@ -25,6 +25,7 @@ pm.settings = {
 
         pm.settings.create("driveSyncEnabled", true);
         pm.settings.create("driveStartChangeId", 0);
+        pm.settings.create("lastDriveChangeTime", "");
     },
 
     initValues: function() {

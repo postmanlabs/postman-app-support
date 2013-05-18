@@ -12,6 +12,7 @@ pm.drive = {
         // Add other scopes needed by your application.
     ],
 
+    changes: [],
     isSyncing: false,
     isQueueRunning: false,
 
@@ -23,6 +24,38 @@ pm.drive = {
 
     isSyncEnabled: function() {
         return pm.settings.get("driveSyncEnabled");
+    },
+
+    areChangesRemaining: function() {
+        var size = pm.drive.changes.length;
+
+        if (size > 0) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    },
+
+    removeChange: function(changeId) {
+        pm.indexedDB.driveChanges.deleteDriveChange(changeId, function(e) {
+            console.log("Removed drive change");
+            
+            var size = pm.drive.changes.length;
+
+            for(var i = 0; i < size; i++) {
+                var c = pm.drive.changes[i];
+
+                if (c.id === changeId) {
+                    break;
+                }
+            }
+
+            pm.drive.changes.splice(i, 1);
+
+            pm.drive.isQueueRunning = false;
+            pm.drive.runChangeQueue();                        
+        });
     },
 
     executeChange: function(change) {
@@ -53,29 +86,27 @@ pm.drive = {
 
         if ("name" in change) {
             name = change.name;
-        }                
+        }                            
 
         if (method === "POST") {
             pm.drive.postFile(name, type, fileData, function(file) {
-                console.log("Posted file");
+                console.log("Posted file", file);
                 //Create file inside driveFiles
                 var localDriveFile = {
                     "id": changeTargetId,
                     "type": changeTargetType,
                     "timestamp":new Date().getTime(),
+                    "fileId": file.id,
                     "file": file
                 };
 
                 pm.indexedDB.driveFiles.addDriveFile(localDriveFile, function(e) {
-                    console.log("Uploaded file");
+                    console.log("Uploaded file", localDriveFile);
                     //Remove the change inside driveChange
-                    pm.indexedDB.driveChanges.deleteDriveChange(changeId, function(e) {
-                        console.log("Removed drive change");
-                        pm.drive.isQueueRunning = false;
-                        pm.drive.runChangeQueue();                        
-                    });
+                    pm.drive.removeChange(changeId);    
 
-                    
+                    var currentTime = new Date().toISOString();
+                    pm.settings.set("lastDriveChangeTime", currentTime);                
                 });                
                 
             });
@@ -84,15 +115,10 @@ pm.drive = {
             pm.drive.trashFile(fileId, function() {
                 pm.indexedDB.driveFiles.deleteDriveFile(changeTargetId, function() {
                     console.log("Deleted local file");
+                    pm.drive.removeChange(changeId);    
 
-                    //Remove the change inside driveChange
-                    pm.indexedDB.driveChanges.deleteDriveChange(changeId, function(e) {
-                        console.log("Removed drive change");
-                        //Call runQueue again   
-                        pm.drive.isQueueRunning = false;
-                        pm.drive.runChangeQueue();                     
-                    });                      
-                            
+                    var currentTime = new Date().toISOString();
+                    pm.settings.set("lastDriveChangeTime", currentTime);                        
                 });
             });
         }
@@ -107,13 +133,10 @@ pm.drive = {
 
                 pm.indexedDB.driveFiles.updateDriveFile(updatedLocalDriveFile, function() {
                     //Remove the change inside driveChange
-                    pm.indexedDB.driveChanges.deleteDriveChange(changeId, function(e) {
-                        console.log("Removed drive change");
-                        //Call runQueue again                        
-                        pm.drive.isQueueRunning = false;
-                        pm.drive.runChangeQueue();              
-                    });                      
-                    
+                    pm.drive.removeChange(changeId);    
+
+                    var currentTime = new Date().toISOString();
+                    pm.settings.set("lastDriveChangeTime", currentTime);                                     
                 });                
             });            
         }
@@ -123,15 +146,15 @@ pm.drive = {
     runChangeQueue: function() {
         console.log("Run change queue called");
         if (pm.drive.isQueueRunning === true) return;
-        pm.indexedDB.driveChanges.getAllDriveChanges(function(changes) {                        
-            if (changes.length > 0) {
-                pm.drive.executeChange(changes[0]);    
-            }
-            else {
-                pm.drive.isQueueRunning = false;
-            }
-            
-        });
+
+        var changes = pm.drive.changes;
+
+        if (changes.length > 0) {
+            pm.drive.executeChange(changes[0]);    
+        }
+        else {
+            pm.drive.isQueueRunning = false;
+        }                
     },
 
     /**
@@ -150,12 +173,130 @@ pm.drive = {
 
             if (changes.length > 0) {
                 console.log("Received changes", changes);    
+                pm.drive.filterChangesFromDrive(changes);
             }
             else {
                 console.log("No new changes");
             }
             
         }, startChangeId);  
+    },
+
+    filterChangesFromDrive: function(changes) {
+        console.log("Changes are ", changes);
+        var lastTime = new Date(pm.settings.get("lastDriveChangeTime"));
+
+        if (!lastTime) {
+            lastTime = 0;
+        }
+
+        var filteredChanges = []; //Only the latest ones
+        var size = changes.length;
+        var change;
+
+        for(var i = 0; i < size; i++) {
+            change = changes[i];
+
+            var deleted = change.deleted;
+
+            if (!deleted) {
+                var file = change.file;
+                var modifiedDate = file.modifiedDate;
+
+                var t = new Date(modifiedDate);
+                console.log(t.getTime(), lastTime.getTime());
+
+                if (lastTime.getTime()) {
+                    if (t.getTime() > lastTime.getTime()) {
+                        filteredChanges.push(change);
+                    }    
+                }
+                else {
+                    filteredChanges.push(change);
+                }
+                
+            }
+            else {
+                filteredChanges.push(change);
+            }
+        }
+
+        pm.drive.implementFilteredChanges(filteredChanges);
+    },
+
+    implementFilteredChanges: function(changes) {
+        console.log("Filtered changes are ", changes);
+        var size = changes.length;
+        var change;
+        for(var i = 0; i < size; i++) {
+            change = changes[i];
+            var deleted = change.deleted;
+            var fileId = change.fileId;
+            if (deleted) {
+                pm.drive.deleteDriveFile(fileId);
+            }
+            else {
+                var file = change.file;
+                pm.drive.createOrUpdateFile(fileId, file);
+            }
+        }
+    },    
+
+    deleteDriveFile: function(fileId) {
+        pm.indexedDB.driveFiles.getDriveFileByFileId(fileId, function(file) {            
+            var type = file.type;
+            var id = file.id;
+
+            if (type === "collection") {
+                pm.collections.deleteCollection(id, false);
+                pm.indexedDB.driveFiles.deleteDriveFile(id);
+            }
+        });
+    },
+
+    createOrUpdateFile: function(fileId, file) {
+        pm.indexedDB.driveFiles.getDriveFileByFileId(fileId, function(localDriveFile) {
+            console.log("Trying to fetch the file", localDriveFile);
+            if (localDriveFile) {
+                console.log("Update file");
+                pm.drive.getFile(file, function(responseText) {
+                    console.log("Obtained file from drive");
+                    if (file.fileExtension === "postman_collection") {
+                        console.log("File extension is", file.fileExtension);
+                        var collection = JSON.parse(responseText);
+                        console.log(collection, responseText);
+                        pm.collections.deleteCollection(collection.id, false, function() {                            
+                            pm.collections.addCollectionDataToDB(collection, false);                                    
+                        });
+                    }
+                });
+            }
+            else {
+                console.log("Add new");
+                pm.drive.getFile(file, function(responseText) {
+                    console.log("Obtained file from drive");
+                    if (file.fileExtension === "postman_collection") {
+                        var collection = JSON.parse(responseText);
+                        console.log("Add to DB");
+                        pm.collections.addCollectionDataToDB(collection, false);
+
+                        var newLocalDriveFile = {
+                            "id": collection.id,
+                            "type": "collection",
+                            "timestamp":new Date().getTime(),
+                            "fileId": file.id,
+                            "file": file
+                        };
+
+                        pm.indexedDB.driveFiles.addDriveFile(newLocalDriveFile, function(e) {
+                            console.log("Uploaded file", newLocalDriveFile);                            
+                            var currentTime = new Date().toISOString();
+                            pm.settings.set("lastDriveChangeTime", currentTime);                
+                        });   
+                    }
+                });
+            }
+        });
     },
 
     /**
@@ -197,12 +338,12 @@ pm.drive = {
             console.log(startChangeId);
             initialRequest = gapi.client.drive.changes.list({
                 'startChangeId' : startChangeId,
-                'fields': 'nextPageToken,largestChangeId,items(fileId,deleted,file(id,title,fileExtension,modifiedDate))'
+                'fields': 'nextPageToken,largestChangeId,items(fileId,deleted,file(id,title,fileExtension,modifiedDate,downloadUrl))'
             });
         } 
         else {
             initialRequest = gapi.client.drive.changes.list({
-                'fields': 'nextPageToken,largestChangeId,items(fileId,deleted,file(id,title,fileExtension,modifiedDate))' 
+                'fields': 'nextPageToken,largestChangeId,items(fileId,deleted,file(id,title,fileExtension,modifiedDate,downloadUrl))' 
             });
         }
 
@@ -257,11 +398,40 @@ pm.drive = {
             timestamp: new Date().getTime()
         };
 
-        pm.indexedDB.driveChanges.addDriveChange(change, function(change) {
+        pm.indexedDB.driveChanges.addDriveChange(change, function(change) {            
             console.log("Post change added");
+            pm.drive.changes.push(change);
             pm.drive.runChangeQueue();
             callback();
         });
+    },
+
+    removeExistingUpdateIfPresent: function(targetId) {
+        var changes = pm.drive.changes;
+        var size = changes.length;
+        var found = false;
+        var changeId;
+        for (var i = 0; i < size; i++) {
+            var change = changes[i];
+
+            if (change.method === "UPDATE" && change.targetId === targetId) {
+                console.log("Duplicate found");
+                console.log(pm.drive.changes);
+                changeId = change.id;
+                found = true;                
+                break;
+            }
+        }
+
+        if (found) {
+            pm.drive.changes.splice(i, 1);
+            console.log(pm.drive.changes);
+            pm.indexedDB.driveChanges.deleteDriveChange(change.id, function(e) {
+                console.log("Deleted existing drive change");
+            });    
+        }
+        
+        return found;        
     },
 
     queueUpdate: function(targetId, targetType, name, file, fileData, callback) {
@@ -276,8 +446,10 @@ pm.drive = {
             timestamp: new Date().getTime()
         };
 
+        pm.drive.removeExistingUpdateIfPresent(targetId);                    
         pm.indexedDB.driveChanges.addDriveChange(change, function(change) {
             console.log("Update change added");
+            pm.drive.changes.push(change);
             pm.drive.runChangeQueue();
             callback();
         });
@@ -295,6 +467,7 @@ pm.drive = {
 
         pm.indexedDB.driveChanges.addDriveChange(change, function(change) {
             console.log("Trash change added");
+            pm.drive.changes.push(change);
             pm.drive.runChangeQueue();
             callback();
         });
@@ -344,7 +517,9 @@ pm.drive = {
 
         var metadata = {
             'title': name,
-            'mimeType': "application/json"
+            'mimeType': "application/json",
+            'useContentAsIndexableText': true,
+            'newRevision': true
         };
 
         var multipartRequestBody =

@@ -32,7 +32,7 @@ pm.indexedDB = {
 
         var request = indexedDB.open("postman", "POSTman request history");
         request.onsuccess = function (e) {
-            var v = "0.7.3";
+            var v = "0.7.4";
             pm.indexedDB.db = e.target.result;
             var db = pm.indexedDB.db;
 
@@ -84,12 +84,17 @@ pm.indexedDB = {
 
                     if (!db.objectStoreNames.contains(pm.indexedDB.TABLE_DRIVE_FILES)) {
                         var requestStore = db.createObjectStore(pm.indexedDB.TABLE_DRIVE_FILES, {keyPath:"id"});
-                        requestStore.createIndex("timestamp", "timestamp", { unique:false});
+                        requestStore.createIndex("timestamp", "timestamp", { unique:false}); 
+                        requestStore.createIndex("fileId", "fileId", { unique:false});                                               
+                    }
+                    else {
+                        var requestStore = request.transaction.objectStore(pm.indexedDB.TABLE_DRIVE_FILES);
+                        requestStore.createIndex("fileId", "fileId", { unique:false});                        
                     }
 
                     if (!db.objectStoreNames.contains(pm.indexedDB.TABLE_DRIVE_CHANGES)) {
                         var requestStore = db.createObjectStore(pm.indexedDB.TABLE_DRIVE_CHANGES, {keyPath:"id"});
-                        requestStore.createIndex("timestamp", "timestamp", { unique:false});
+                        requestStore.createIndex("timestamp", "timestamp", { unique:false});                        
                     }
 
                     var transaction = event.target.result;
@@ -111,7 +116,7 @@ pm.indexedDB = {
     },
 
     open_latest:function () {
-        var v = 17;
+        var v = 20;
         var request = indexedDB.open("postman", v);                        
         request.onupgradeneeded = function (e) {
             console.log("Upgrade DB");
@@ -154,11 +159,16 @@ pm.indexedDB = {
             }
 
             if (!db.objectStoreNames.contains(pm.indexedDB.TABLE_DRIVE_FILES)) {
+                console.log("Drive files does not exist");
                 var requestStore = db.createObjectStore(pm.indexedDB.TABLE_DRIVE_FILES, {keyPath:"id"});
-                requestStore.createIndex("timestamp", "timestamp", { unique:false});
+                requestStore.createIndex("timestamp", "timestamp", { unique:false});       
+                requestStore.createIndex("fileId", "fileId", { unique:false});                                 
             }
-
-            console.log(db.objectStoreNames);
+            else {
+                console.log("Trying to create a new index");
+                var requestStore = request.transaction.objectStore(pm.indexedDB.TABLE_DRIVE_FILES);
+                requestStore.createIndex("fileId", "fileId", { unique:false});                        
+            }
 
             if (!db.objectStoreNames.contains(pm.indexedDB.TABLE_DRIVE_CHANGES)) {
                 var requestStore = db.createObjectStore(pm.indexedDB.TABLE_DRIVE_CHANGES, {keyPath:"id"});
@@ -805,7 +815,34 @@ pm.indexedDB = {
                 var result = e.target.result;
                 callback(result);
             };
+
             cursorRequest.onerror = pm.indexedDB.onerror;
+        },
+
+        getDriveFileByFileId:function (fileId, callback) {
+            var db = pm.indexedDB.db;
+            var trans = db.transaction([pm.indexedDB.TABLE_DRIVE_FILES], "readwrite");
+            var store = trans.objectStore(pm.indexedDB.TABLE_DRIVE_FILES);
+
+            //Get everything in the store
+            var keyRange = IDBKeyRange.only(fileId);
+            var index = store.index("fileId");
+            var cursorRequest = index.openCursor(keyRange);
+
+            cursorRequest.onsuccess = function (e) {
+                var result = e.target.result;          
+                if(result) {
+                    callback(result.value);    
+                }   
+                else {
+                    callback(null);
+                }   
+                
+            };
+
+            cursorRequest.onerror = function(e) {
+                callback(null);
+            };
         },
 
         deleteDriveFile:function (id, callback) {

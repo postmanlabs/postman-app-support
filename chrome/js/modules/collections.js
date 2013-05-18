@@ -87,7 +87,7 @@ pm.collections = {
 
         $('#modal-delete-collection-yes').on("click", function () {
             var id = $(this).attr('data-id');
-            pm.collections.deleteCollection(id);
+            pm.collections.deleteCollection(id, true);
         });
 
         $('#modal-delete-collection-request-yes').on("click", function () {
@@ -248,15 +248,15 @@ pm.collections = {
     },
 
     overwriteCollection:function(originalCollectionId, collection) {
-        pm.collections.deleteCollection(originalCollectionId);            
-        pm.collections.addCollectionDataToDB(collection);
+        pm.collections.deleteCollection(originalCollectionId, true);            
+        pm.collections.addCollectionDataToDB(collection, true);
     },
 
     duplicateCollection:function(collection) {
-        pm.collections.addCollectionDataToDB(collection);
+        pm.collections.addCollectionDataToDB(collection, true);
     },
 
-    addCollectionDataToDB:function(collection) {
+    addCollectionDataToDB:function(collection, toSyncWithDrive) {
         pm.collections.items.push(collection);
         pm.indexedDB.addCollection(collection, function (c) {
             var message = {
@@ -305,7 +305,10 @@ pm.collections = {
 
             //collection has all the data            
             console.log("Queuing update");
-            pm.drive.collections.queuePostFromCollection(collection);
+            if (toSyncWithDrive) {
+                pm.drive.collections.queuePostFromCollection(collection);    
+            }
+            
         });
     },
 
@@ -805,7 +808,7 @@ pm.collections = {
                             order.splice(index, 1);
                             collection["order"] = order;
                             pm.indexedDB.updateCollection(collection, function (collection) {      
-                                console.log("Updated collection order, queue update for drive");                  
+                                console.log("Updated collection order, queue update for drive");            
                                 pm.drive.collections.queueUpdateFromId(collection.id);
                             });    
                         }                        
@@ -856,7 +859,7 @@ pm.collections = {
         });
     },
 
-    deleteCollection:function (id) {
+    deleteCollection:function (id, toSyncWithDrive, callback) {
         var collections = pm.collections.items;
         var size = collections.length;
         
@@ -873,7 +876,9 @@ pm.collections = {
             $(target).remove();
 
             //Sync collection to drive
-            pm.drive.collections.queueTrash(id);
+            if(toSyncWithDrive) {
+                pm.drive.collections.queueTrash(id);    
+            }            
         });
     },
 
