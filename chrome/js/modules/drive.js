@@ -249,9 +249,7 @@ pm.drive = {
                 var id = file.id;
 
                 if (type === "collection") {
-                    pm.collections.deleteCollection(id, false);
-                    pm.indexedDB.driveFiles.deleteDriveFile(id, function() {                        
-                    });
+                    pm.drive.collections.deleteLocalFromDrive(id);
                 }    
             }
             
@@ -268,10 +266,7 @@ pm.drive = {
                 pm.drive.getFile(file, function(responseText) {
                     console.log("Obtained file from drive", responseText);
                     if (file.fileExtension === "postman_collection") {
-                        console.log("File extension is", file.fileExtension);
-                        var collection = JSON.parse(responseText);
-                        console.log(collection, responseText);
-                        pm.collections.mergeCollection(collection, false);                        
+                        pm.drive.collections.updateLocalFromDrive(responseText);         
                     }
                 });
             }
@@ -281,23 +276,7 @@ pm.drive = {
                 pm.drive.getFile(file, function(responseText) {
                     console.log("Obtained file from drive");
                     if (file.fileExtension === "postman_collection") {
-                        var collection = JSON.parse(responseText);
-                        console.log("Add to DB");
-                        pm.collections.addCollectionDataToDB(collection, false);
-
-                        var newLocalDriveFile = {
-                            "id": collection.id,
-                            "type": "collection",
-                            "timestamp":new Date().getTime(),
-                            "fileId": file.id,
-                            "file": file
-                        };
-
-                        pm.indexedDB.driveFiles.addDriveFile(newLocalDriveFile, function(e) {
-                            console.log("Uploaded file", newLocalDriveFile);                            
-                            var currentTime = new Date().toISOString();
-                            pm.settings.set("lastDriveChangeTime", currentTime);                
-                        });   
+                        pm.drive.collections.addLocalFromDrive(file, responseText);
                     }
                 });
             }
@@ -313,6 +292,10 @@ pm.drive = {
     },
 
     refreshAuth: function(callback) {
+
+    },
+
+    getUser: function(callback) {
 
     },
 
@@ -696,6 +679,40 @@ pm.drive = {
                     });
                 }
             });            
+        },
+
+        updateLocalFromDrive: function(responseText) {
+            var collection = JSON.parse(responseText);
+            console.log(collection, responseText);
+            pm.collections.mergeCollection(collection, false);
+        },
+
+
+        deleteLocalFromDrive: function(id) {
+            pm.collections.deleteCollection(id, false);
+            pm.indexedDB.driveFiles.deleteDriveFile(id, function() {                        
+            });
+        },
+
+        addLocalFromDrive: function(file, responseText) {
+            var collection = JSON.parse(responseText);
+            console.log("Add to DB");
+            pm.collections.addCollectionDataToDB(collection, false);
+
+            var newLocalDriveFile = {
+                "id": collection.id,
+                "type": "collection",
+                "timestamp":new Date().getTime(),
+                "fileId": file.id,
+                "file": file
+            };
+
+            pm.indexedDB.driveFiles.addDriveFile(newLocalDriveFile, function(e) {
+                console.log("Uploaded file", newLocalDriveFile);                            
+                var currentTime = new Date().toISOString();
+                pm.settings.set("lastDriveChangeTime", currentTime);                
+            });  
         }
+
     }
 };
