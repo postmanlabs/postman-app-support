@@ -89,8 +89,15 @@ pm.drive = {
             name = change.name;
         }                            
 
-        if (method === "POST") {
+        pm.drive.isSyncing = true;
+
+        pm.drive.onStartSyncing();
+
+        if (method === "POST") {            
             pm.drive.postFile(name, type, fileData, function(file) {
+                pm.drive.isSyncing = false;
+                pm.drive.onFinishSyncing();
+
                 console.log("Posted file", file);
                 //Create file inside driveFiles
                 var localDriveFile = {
@@ -114,6 +121,9 @@ pm.drive = {
         }
         else if (method === "DELETE") {
             pm.drive.deleteFile(fileId, function() {
+                pm.drive.isSyncing = false;
+                pm.drive.onFinishSyncing();
+
                 pm.indexedDB.driveFiles.deleteDriveFile(changeTargetId, function() {
                     console.log("Deleted local file");
                     pm.drive.removeChange(changeId);
@@ -124,6 +134,9 @@ pm.drive = {
         }
         else if (method === "UPDATE") {            
             pm.drive.updateFile(name, file, fileData, function(updatedFile) {
+                pm.drive.isSyncing = false;
+                pm.drive.onFinishSyncing();
+
                 var updatedLocalDriveFile = {
                     "id": changeTargetId,
                     "type": changeTargetType,
@@ -148,7 +161,7 @@ pm.drive = {
         console.log("Run change queue called");
         if (pm.drive.isQueueRunning === true) return;
 
-        var changes = pm.drive.changes;
+        var changes = pm.drive.changes;        
 
         if (changes.length > 0) {
             pm.drive.executeChange(changes[0]);    
@@ -163,37 +176,54 @@ pm.drive = {
      */
     handleClientLoad: function() {
         console.log("Client has loaded");    
-        pm.drive.isSyncing = true;
+        pm.drive.isSyncing = true;        
         var startChangeId = pm.settings.get("driveStartChangeId");
         startChangeId = parseInt(startChangeId, 10) + 1;
         console.log(startChangeId);
 
-        pm.drive.getAbout(function(user) {
-            pm.drive.updateUserStatus(user);
-        });
+        pm.drive.getAbout(function(about) {
+            pm.drive.about = about;     
+            pm.drive.updateUserStatus(about);
 
-        pm.drive.getChangeList(function(changes) {
-            //Show indicator here. Block UI changes with an option to skip
-            //Changes is a collection of file objects
-            pm.drive.isSyncing = false;
+            pm.drive.onStartSyncing();
 
-            if (changes.length > 0) {
-                console.log("Received changes", changes);    
-                pm.drive.filterChangesFromDrive(changes);
-            }
-            else {
-                console.log("No new changes");
-            }
-            
-        }, startChangeId);  
+            pm.drive.getChangeList(function(changes) {
+                //Show indicator here. Block UI changes with an option to skip
+                //Changes is a collection of file objects
+                pm.drive.isSyncing = false;
+
+                pm.drive.onFinishSyncing();
+
+                if (changes.length > 0) {
+                    console.log("Received changes", changes);    
+                    pm.drive.filterChangesFromDrive(changes);
+                }
+                else {
+                    console.log("No new changes");
+                }
+                
+            }, startChangeId);  
+        });        
     },
 
-    updateUserStatus: function(about) {
-        pm.drive.about = about;
-        console.log(about);
+    updateUserStatus: function(about) {        
         $("#user-status-text").html(about.name);
         var pictureUrl = about.user.picture.url;
         $("#user-img").html("<img src='" + pictureUrl + "' width='20px' height='20px'/>");
+    },
+
+    onStartSyncing: function() {
+        $("#user-status-text").html("Syncing...");        
+        //$("#user-img").html("<img src='img/ajax-loader.gif' width='20px' height='20px'/>");
+    },
+
+    onFinishSyncing: function() {
+        if (pm.drive.about) {
+            var about = pm.drive.about;
+            $("#user-status-text").html(about.name);
+            //var pictureUrl = about.user.picture.url;
+            //$("#user-img").html("<img src='" + pictureUrl + "' width='20px' height='20px'/>");    
+        }        
     },
 
     filterChangesFromDrive: function(changes) {
