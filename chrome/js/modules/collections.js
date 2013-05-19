@@ -973,7 +973,7 @@ pm.collections = {
 
             //Sync collection to drive
             if(toSyncWithDrive) {
-                pm.drive.collections.queueTrash(id);    
+                pm.drive.collections.queueDelete(id);    
             }            
         });
     },

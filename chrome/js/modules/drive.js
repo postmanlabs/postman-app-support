@@ -111,12 +111,11 @@ pm.drive = {
                 
             });
         }
-        else if (method === "TRASH") {
-            pm.drive.trashFile(fileId, function() {
+        else if (method === "DELETE") {
+            pm.drive.deleteFile(fileId, function() {
                 pm.indexedDB.driveFiles.deleteDriveFile(changeTargetId, function() {
                     console.log("Deleted local file");
-                    pm.drive.removeChange(changeId);    
-
+                    pm.drive.removeChange(changeId);
                     var currentTime = new Date().toUTCString();
                     pm.settings.set("lastDriveChangeTime", currentTime);                        
                 });
@@ -245,13 +244,17 @@ pm.drive = {
 
     deleteDriveFile: function(fileId) {
         pm.indexedDB.driveFiles.getDriveFileByFileId(fileId, function(file) {            
-            var type = file.type;
-            var id = file.id;
+            if (file) {
+                var type = file.type;
+                var id = file.id;
 
-            if (type === "collection") {
-                pm.collections.deleteCollection(id, false);
-                pm.indexedDB.driveFiles.deleteDriveFile(id);
+                if (type === "collection") {
+                    pm.collections.deleteCollection(id, false);
+                    pm.indexedDB.driveFiles.deleteDriveFile(id, function() {                        
+                    });
+                }    
             }
+            
         });
     },
 
@@ -323,7 +326,9 @@ pm.drive = {
                 var nextPageToken = resp.nextPageToken;
                 if (nextPageToken) {
                     request = gapi.client.drive.changes.list({
-                      'pageToken': nextPageToken
+                      'pageToken': nextPageToken,
+                      'includeDeleted' : true,
+                      'fields': 'nextPageToken,largestChangeId,items(fileId,deleted,file(id,title,fileExtension,modifiedDate,downloadUrl))'
                     });
 
                     pm.settings.set("driveStartChangeId", resp.largestChangeId);
@@ -340,11 +345,13 @@ pm.drive = {
             console.log(startChangeId);
             initialRequest = gapi.client.drive.changes.list({
                 'startChangeId' : startChangeId,
+                'includeDeleted' : true,
                 'fields': 'nextPageToken,largestChangeId,items(fileId,deleted,file(id,title,fileExtension,modifiedDate,downloadUrl))'
             });
         } 
         else {
             initialRequest = gapi.client.drive.changes.list({
+                'includeDeleted' : true,
                 'fields': 'nextPageToken,largestChangeId,items(fileId,deleted,file(id,title,fileExtension,modifiedDate,downloadUrl))' 
             });
         }
@@ -475,6 +482,24 @@ pm.drive = {
         });
     },
 
+    queueDelete: function(targetId, targetType, file, callback) {
+        var change = {
+            id: guid(),            
+            fileId: file.id,
+            method: "DELETE",            
+            targetId: targetId,
+            targetType: targetType,
+            timestamp: new Date().getTime()
+        };
+
+        pm.indexedDB.driveChanges.addDriveChange(change, function(change) {
+            console.log("Delete change added");
+            pm.drive.changes.push(change);
+            pm.drive.runChangeQueue();
+            callback();
+        });
+    },
+
 
     //Testing
     postFile: function(name, type, fileData, callback) {
@@ -551,6 +576,15 @@ pm.drive = {
 
     trashFile: function(fileId, callback) {        
         var request = gapi.client.drive.files.trash({
+            'fileId': fileId
+        });
+        request.execute(function(resp) {
+            callback();
+        });
+    },
+
+    deleteFile: function(fileId, callback) {        
+        var request = gapi.client.drive.files.delete({
             'fileId': fileId
         });
         request.execute(function(resp) {
@@ -646,6 +680,18 @@ pm.drive = {
             pm.drive.collections.checkIfCollectionIsOnDrive(id, function(exists, driveFile) {
                 if (exists) {                
                     pm.drive.queueTrash(id, "collection", driveFile.file, function() {                    
+                        console.log("Deleted collection", id);                    
+                    });
+                }
+            });            
+        },
+
+        queueDelete: function(id) {
+            if (!pm.drive.isSyncEnabled()) return;
+
+            pm.drive.collections.checkIfCollectionIsOnDrive(id, function(exists, driveFile) {
+                if (exists) {                
+                    pm.drive.queueDelete(id, "collection", driveFile.file, function() {                    
                         console.log("Deleted collection", id);                    
                     });
                 }
