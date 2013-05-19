@@ -947,6 +947,25 @@ li .right {
     margin-top: 5px;
 }
 
+#drive-status {
+    float: right;
+    margin-top: 7px;
+    margin-right: 15px;
+}
+
+#drive-status .user-img {
+    float: left;
+}
+
+#drive-status .user-status {
+    float: left;
+    margin-left: 5px;
+}
+#drive-status .user-img img {
+    width: 20px;
+    height: 20px;
+}
+
 .preferences {
     float: right;
     margin-top: 5px;

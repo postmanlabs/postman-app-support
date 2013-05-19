@@ -4,6 +4,7 @@ function handleClientLoad() {
 
 pm.drive = {
     auth: {},
+    user: {},
     CLIENT_ID: '805864674475.apps.googleusercontent.com',
     SCOPES: [
         'https://www.googleapis.com/auth/drive.file',
@@ -166,6 +167,11 @@ pm.drive = {
         var startChangeId = pm.settings.get("driveStartChangeId");
         startChangeId = parseInt(startChangeId, 10) + 1;
         console.log(startChangeId);
+
+        pm.drive.getAbout(function(user) {
+
+        });
+
         pm.drive.getChangeList(function(changes) {
             //Show indicator here. Block UI changes with an option to skip
             //Changes is a collection of file objects
@@ -295,8 +301,13 @@ pm.drive = {
 
     },
 
-    getUser: function(callback) {
-
+    getAbout: function(callback) {
+        var request = gapi.client.drive.about.get();
+        request.execute(function(resp) {
+            pm.drive.user = resp;
+            console.log(resp);
+            callback(resp);            
+        });
     },
 
     getChangeList: function(callback, startChangeId) {
