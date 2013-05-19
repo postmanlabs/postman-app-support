@@ -105,7 +105,7 @@ pm.drive = {
                     //Remove the change inside driveChange
                     pm.drive.removeChange(changeId);    
 
-                    var currentTime = new Date().toISOString();
+                    var currentTime = new Date().toUTCString();
                     pm.settings.set("lastDriveChangeTime", currentTime);                
                 });                
                 
@@ -117,7 +117,7 @@ pm.drive = {
                     console.log("Deleted local file");
                     pm.drive.removeChange(changeId);    
 
-                    var currentTime = new Date().toISOString();
+                    var currentTime = new Date().toUTCString();
                     pm.settings.set("lastDriveChangeTime", currentTime);                        
                 });
             });
@@ -128,6 +128,7 @@ pm.drive = {
                     "id": changeTargetId,
                     "type": changeTargetType,
                     "timestamp":new Date().getTime(),
+                    "fileId": updatedFile.id,
                     "file": updatedFile
                 };
 
@@ -135,7 +136,7 @@ pm.drive = {
                     //Remove the change inside driveChange
                     pm.drive.removeChange(changeId);    
 
-                    var currentTime = new Date().toISOString();
+                    var currentTime = new Date().toUTCString();
                     pm.settings.set("lastDriveChangeTime", currentTime);                                     
                 });                
             });            
@@ -204,8 +205,9 @@ pm.drive = {
                 var modifiedDate = file.modifiedDate;
 
                 var t = new Date(modifiedDate);
-                console.log(t.getTime(), lastTime.getTime());
+                console.log(t.toISOString(), lastTime.toISOString());
 
+                //If file was modified after last change was pushed from this client
                 if (lastTime.getTime()) {
                     if (t.getTime() > lastTime.getTime()) {
                         filteredChanges.push(change);
@@ -213,8 +215,7 @@ pm.drive = {
                 }
                 else {
                     filteredChanges.push(change);
-                }
-                
+                }                
             }
             else {
                 filteredChanges.push(change);
@@ -256,22 +257,23 @@ pm.drive = {
 
     createOrUpdateFile: function(fileId, file) {
         pm.indexedDB.driveFiles.getDriveFileByFileId(fileId, function(localDriveFile) {
-            console.log("Trying to fetch the file", localDriveFile);
+            console.log("Trying to fetch the file", fileId, localDriveFile);
+            
             if (localDriveFile) {
+                //Local drive file exists
                 console.log("Update file");
                 pm.drive.getFile(file, function(responseText) {
-                    console.log("Obtained file from drive");
+                    console.log("Obtained file from drive", responseText);
                     if (file.fileExtension === "postman_collection") {
                         console.log("File extension is", file.fileExtension);
                         var collection = JSON.parse(responseText);
                         console.log(collection, responseText);
-                        pm.collections.deleteCollection(collection.id, false, function() {                            
-                            pm.collections.addCollectionDataToDB(collection, false);                                    
-                        });
+                        pm.collections.mergeCollection(collection, false);                        
                     }
                 });
             }
             else {
+                //Local drive file does not exist
                 console.log("Add new");
                 pm.drive.getFile(file, function(responseText) {
                     console.log("Obtained file from drive");

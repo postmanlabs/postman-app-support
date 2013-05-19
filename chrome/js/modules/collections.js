@@ -256,7 +256,98 @@ pm.collections = {
         pm.collections.addCollectionDataToDB(collection, true);
     },
 
+    //Being used in Google Drive
+    mergeCollection: function(collection, toSyncWithDrive) {        
+        console.log("To merge", collection);
+        //Update local collection
+        var newCollection = {
+            id: collection.id,
+            name: collection.name,
+            timestamp: collection.timestamp
+        };
+
+        if ("order" in collection) {
+            newCollection.order = collection.order;
+        }
+
+        console.log("Merging collection", newCollection);
+
+        pm.indexedDB.updateCollection(newCollection, function(c) {
+            console.log("Collection updated", newCollection);
+
+            var driveCollectionRequests = collection.requests;
+
+            pm.indexedDB.getAllRequestsInCollection(collection, function(collection, oldCollectionRequests) {
+                console.log("Old collection requests", oldCollectionRequests);
+                var updatedRequests = [];
+                var deletedRequests = [];
+                var newRequests = [];
+                var finalRequests = [];
+                var i = 0;
+                var size = driveCollectionRequests.length;
+
+                for (i = 0; i < size; i++) {
+                    var driveRequest = driveCollectionRequests[i];
+                    var existingRequest = _.find(oldCollectionRequests, function(r) {
+                        return driveRequest.id === r.id;
+                    });
+
+                    if (existingRequest) {
+                        updatedRequests.push(driveRequest);
+                        //Remove this request from oldCollectionRequests                        
+                        //Requsts remaining in oldCollectionRequests will be deleted
+                        var sizeOldRequests = oldCollectionRequests.length;
+                        var loc = -1;
+                        for (var j = 0; j < sizeOldRequests; j++) {
+                            if (oldCollectionRequests[j].id === existingRequest.id) {
+                                loc = j;
+                                break;
+                            }
+                        }
+
+                        if (loc >= 0) {
+                            oldCollectionRequests.splice(loc, 1);
+                        }
+                    }
+                    else {
+                        newRequests.push(driveRequest);
+                    }
+                }
+
+                deletedRequests = oldCollectionRequests;
+
+                //Update requests
+                var sizeUpdatedRequests = updatedRequests.length;
+                for(i = 0; i < sizeUpdatedRequests; i++) {
+                    pm.indexedDB.updateCollectionRequest(updatedRequests[i], function(r) {
+                        console.log("Updated the request");
+                    });
+                }
+
+                //Add requests
+                var sizeNewRequests = newRequests.length;
+                for(i = 0; i < sizeNewRequests; i++) {
+                    pm.indexedDB.addCollectionRequest(newRequests[i], function(r) {
+                        console.log("Added the request");
+                    });
+                }
+
+                //Delete requests
+                var sizeDeletedRequests = deletedRequests.length;
+                for(i = 0; i < sizeDeletedRequests; i++) {
+                    pm.indexedDB.deleteCollectionRequest(deletedRequests[i].id, function(id) {
+                        console.log("Deleted the request");
+                    });
+                }
+
+                newCollection.requests = driveCollectionRequests;
+                pm.collections.render(newCollection);
+            }); 
+        });
+    },
+
     addCollectionDataToDB:function(collection, toSyncWithDrive) {
+        console.log("Adding elements to pm.collections.items");
         pm.collections.items.push(collection);
         pm.indexedDB.addCollection(collection, function (c) {
             var message = {
@@ -625,6 +716,7 @@ pm.collections = {
         $('#collection-items').html("");
         $('#select-collection').html("<option>Select</option>");
         pm.indexedDB.getCollections(function (items) {
+            console.log("Got all collections", items);
             pm.collections.items = items;
             pm.collections.items.sort(sortAlphabetical);
 
@@ -705,8 +797,12 @@ pm.collections = {
 
         var currentEl = $('#collection-' + collection.id);
         if (currentEl) {
+            //Found element
             currentEl.remove();
-        }
+
+            //Remove from select too
+            $('#select-collection option[value="' + collection.id + '"]').remove();
+        }        
 
         $('#select-collection').append(Handlebars.templates.item_collection_selector_list(collection));
         $('#collection-items').append(Handlebars.templates.item_collection_sidebar_head(collection));

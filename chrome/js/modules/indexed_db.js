@@ -831,6 +831,7 @@ pm.indexedDB = {
 
             cursorRequest.onsuccess = function (e) {
                 var result = e.target.result;          
+                console.log(result);
                 if(result) {
                     callback(result.value);    
                 }   
