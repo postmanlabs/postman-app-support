@@ -4,7 +4,7 @@ function handleClientLoad() {
 
 pm.drive = {
     auth: {},
-    user: {},
+    about: {},
     CLIENT_ID: '805864674475.apps.googleusercontent.com',
     SCOPES: [
         'https://www.googleapis.com/auth/drive.file',
@@ -169,7 +169,7 @@ pm.drive = {
         console.log(startChangeId);
 
         pm.drive.getAbout(function(user) {
-
+            pm.drive.updateUserStatus(user);
         });
 
         pm.drive.getChangeList(function(changes) {
@@ -186,6 +186,14 @@ pm.drive = {
             }
             
         }, startChangeId);  
+    },
+
+    updateUserStatus: function(about) {
+        pm.drive.about = about;
+        console.log(about);
+        $("#user-status-text").html(about.name);
+        var pictureUrl = about.user.picture.url;
+        $("#user-img").html("<img src='" + pictureUrl + "' width='20px' height='20px'/>");
     },
 
     filterChangesFromDrive: function(changes) {
@@ -304,8 +312,7 @@ pm.drive = {
     getAbout: function(callback) {
         var request = gapi.client.drive.about.get();
         request.execute(function(resp) {
-            pm.drive.user = resp;
-            console.log(resp);
+            pm.drive.about = resp;            
             callback(resp);            
         });
     },
