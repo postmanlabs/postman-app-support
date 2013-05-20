@@ -93,6 +93,8 @@ pm.drive = {
 
         pm.drive.onStartSyncing();
 
+
+        //TODO Do not delete a driveChange if the request was not succesful
         if (method === "POST") {            
             pm.drive.postFile(name, type, fileData, function(file) {
                 pm.drive.isSyncing = false;
@@ -193,15 +195,7 @@ pm.drive = {
                 pm.drive.isSyncing = false;
 
                 pm.drive.onFinishSyncing();
-
-                if (changes.length > 0) {
-                    console.log("Received changes", changes);    
-                    pm.drive.filterChangesFromDrive(changes);
-                }
-                else {
-                    console.log("No new changes");
-                }
-                
+                pm.drive.filterChangesFromDrive(changes);                               
             }, startChangeId);  
         });        
     },
@@ -278,6 +272,8 @@ pm.drive = {
 
         pm.indexedDB.driveChanges.getAllDriveChanges(function(localDriveChanges) {
             pm.drive.changes = localDriveChanges;
+
+            console.log("Local drive changes are", localDriveChanges);
 
             var filteredChanges = []; //Only the latest ones
             var change;
