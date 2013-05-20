@@ -221,8 +221,6 @@ pm.drive = {
         if (pm.drive.about) {
             var about = pm.drive.about;
             $("#user-status-text").html(about.name);
-            //var pictureUrl = about.user.picture.url;
-            //$("#user-img").html("<img src='" + pictureUrl + "' width='20px' height='20px'/>");    
         }        
     },
 
@@ -234,41 +232,130 @@ pm.drive = {
             lastTime = 0;
         }
 
-        var filteredChanges = []; //Only the latest ones
+        /*
+        For the initial filteredChanges:
+        List all fileIds and if a duplicate is found then remove the last one
+        */
+        
         var size = changes.length;
         var change;
 
+        var uniqueChanges = [];
+
         for(var i = 0; i < size; i++) {
             change = changes[i];
-
+            var fileId = change.fileId;
             var deleted = change.deleted;
 
-            if (!deleted) {
-                var file = change.file;
-                var modifiedDate = file.modifiedDate;
+            
+            var index = arrayObjectIndexOf(uniqueChanges, "fileId", fileId);
 
-                var t = new Date(modifiedDate);
-                console.log(t.toISOString(), lastTime.toISOString());
-
-                //If file was modified after last change was pushed from this client
-                if (lastTime.getTime()) {
-                    if (t.getTime() > lastTime.getTime()) {
-                        filteredChanges.push(change);
-                    }    
-                }
-                else {
-                    filteredChanges.push(change);
-                }                
-            }
+            if (index === -1) {
+                uniqueChanges.push(change);
+            }            
             else {
-                filteredChanges.push(change);
+                console.log("Removing duplicate change");
+                //Remove the existing change
+                uniqueChanges.splice(index, 1);
+                uniqueChanges.push(change);
             }
         }
 
-        pm.drive.implementFilteredChanges(filteredChanges);
+        /*
+        1. Get local changes if any
+        2. If the timestamp of the local change is greater than the drive change
+           for the same fileId then discard the drive API change
+        3. If the timestamp of the drive change is greater then keep the change
+        4. last change time would be stored as the last time uploaded on the server
+        5. Implement filteredChanges
+        6. If any local changes are still remaining, then push them on the server by calling runQueue           
+        7. For same fileIds only one change will remain
+        8. How to compare local drive change and drive API change without reading the contents of the file? Use fileIds
+        9. Only have to be concerned with updates and deletes
+        10. POSTs will be created anyway
+        11. DELETEing a non-exist 
+        */        
+
+        pm.indexedDB.driveChanges.getAllDriveChanges(function(localDriveChanges) {
+            pm.drive.changes = localDriveChanges;
+
+            var filteredChanges = []; //Only the latest ones
+            var change;
+            var size = uniqueChanges.length;
+            var filteredLocalDriveChanges = [];
+
+            if (localDriveChanges.length > 0) {                
+                var localDriveChangesSize = localDriveChanges.length;
+                for (var k = 0; k < localDriveChangesSize; k++) {
+                    var localDriveChange = localDriveChanges[k];
+
+                    if (localDriveChange.method === "UPDATE") {
+                        var fileId = localDriveChange.fileId;                        
+                        var existingDriveChange = _.find(uniqueChanges, function(c) {
+                            if (c.fileId === fileId) return true;
+                        });
+
+                        if (existingDriveChange) {                            
+                            var existingDriveModifiedDate = new Date(existingDriveChange.file.modifiedDate);
+                            var localModifiedDate = new Date(localDriveChange.timestamp);
+
+                            if (localModifiedDate.getTime() > existingDriveModifiedDate.getTime()) {
+                                //The state of the file locally will be preferred
+                                filteredLocalDriveChanges.push(localDriveChange);
+                                var pos = arrayObjectIndexOf(uniqueChanges, fileId, "fileId");
+                                console.log("MERGING: Preferring local drive change");
+                                uniqueChanges.splice(pos, 1);
+                            }
+                            else {
+                                //The drive state will be preferred
+                                //Do not push
+                                //Delete local change
+                                pm.indexedDB.driveChanges.deleteDriveChange(localDriveChange.id, function(localDriveChangeId) {
+                                    console.log("Deleted local drive change");
+                                });
+                            }
+                        }
+                    }
+                    else {
+                        filteredLocalDriveChanges.push(localDriveChange);
+                    }
+                }
+            }
+
+            for(var i = 0; i < size; i++) {
+                change = uniqueChanges[i];
+
+                var deleted = change.deleted;
+
+                if (!deleted) {
+                    var file = change.file;
+                    var modifiedDate = file.modifiedDate;
+
+                    var t = new Date(modifiedDate);
+                    console.log(t.toISOString(), lastTime.toISOString());
+
+                    //If file was modified after last change was pushed from this client
+                    if (lastTime.getTime()) {
+                        if (t.getTime() > lastTime.getTime()) {
+                            filteredChanges.push(change);
+                        }    
+                    }
+                    else {
+                        filteredChanges.push(change);
+                    }                
+                }
+                else {
+                    filteredChanges.push(change);
+                }
+            }
+
+            pm.drive.implementFilteredChanges(filteredChanges, filteredLocalDriveChanges);
+        });
+
+        
     },
 
-    implementFilteredChanges: function(changes) {
+    implementFilteredChanges: function(changes, localDriveChanges) {
         console.log("Filtered changes are ", changes);
         var size = changes.length;
         var change;
@@ -284,6 +371,14 @@ pm.drive = {
                 pm.drive.createOrUpdateFile(fileId, file);
             }
         }
+
+        if (localDriveChanges.length > 0) {
+            console.log("Local changes remaining");
+            pm.drive.changes = localDriveChanges;    
+            pm.drive.runChangeQueue();
+        }
+        
+
     },    
 
     deleteDriveFile: function(fileId) {
@@ -479,6 +574,7 @@ pm.drive = {
             id: guid(),            
             fileData: fileData,
             file: file,
+            fileId: file.id,
             method: "UPDATE",
             name: name,
             targetId: targetId,

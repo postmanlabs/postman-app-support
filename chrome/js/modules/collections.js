@@ -620,7 +620,7 @@ pm.collections = {
             //Add the new collection and get guid
             collection.id = guid();
             collection.name = newCollection;
-            collectionId.order = [collectionRequest.id];
+            collection.order = [collectionRequest.id];
 
             pm.indexedDB.addCollection(collection, function (collection) {
                 $('#sidebar-section-collections .empty-message').css("display", "none");
@@ -653,7 +653,7 @@ pm.collections = {
 
                     //Sync collection to drive
                     console.log("Send queue request after adding request for new collection");
-                    pm.drive.collections.queueUpdateFromId(collectionRequest.collectionId);
+                    pm.drive.collections.queuePost(collectionRequest.collectionId);
                 });
             });
         }
