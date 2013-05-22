@@ -349,6 +349,8 @@ pm.collections = {
     addCollectionDataToDB:function(collection, toSyncWithDrive) {
         console.log("Adding elements to pm.collections.items");
         pm.collections.items.push(collection);
+        pm.collections.items.sort(sortAlphabetical);
+
         pm.indexedDB.addCollection(collection, function (c) {
             var message = {
                 name:collection.name,
@@ -534,6 +536,9 @@ pm.collections = {
             collection.name = newCollection;
             collection.order = [];
             pm.indexedDB.addCollection(collection, function (collection) {
+                pm.collections.items.push(collection);
+                pm.collections.items.sort(sortAlphabetical);
+                
                 pm.collections.render(collection);
                 pm.drive.collections.queuePostFromCollection(collection);
             });
@@ -796,16 +801,67 @@ pm.collections = {
         $('#sidebar-section-collections .empty-message').css("display", "none");
 
         var currentEl = $('#collection-' + collection.id);
-        if (currentEl) {
+        var collectionSidebarListPosition = -1;
+        var insertionType;
+        var insertTarget;
+        var collections = pm.collections.items;
+        var collectionSidebarListPosition = arrayObjectIndexOf(collections, collection.id, "id");
+
+        console.log(collections);
+
+        //Does this exist already?
+        if (currentEl.length) {
+            //Find current element list position                                    
+            if (collectionSidebarListPosition == 0) {
+                insertionType = "before";
+                insertTarget = $('#collection-' + collections[collectionSidebarListPosition + 1].id);
+                console.log(insertTarget);
+            }
+            else {
+                insertionType = "after";
+                insertTarget = $('#collection-' + collections[collectionSidebarListPosition - 1].id);
+            }
+
             //Found element
             currentEl.remove();
-
             //Remove from select too
             $('#select-collection option[value="' + collection.id + '"]').remove();
         }        
+        else {
+            //New element
+            if (collectionSidebarListPosition === collections.length - 1) {
+                insertionType = "append";
+            }
+            else {                
+                var nextCollectionId = collections[collectionSidebarListPosition + 1].id;                
+                console.log(collectionSidebarListPosition, nextCollectionId);
+
+                insertTarget = $("#collection-" + nextCollectionId);                
+
+                if (insertTarget.length > 0) {
+                    insertionType = "before";    
+                }
+                else {
+                    insertionType = "append";
+                }                            
+            }
+        }
 
         $('#select-collection').append(Handlebars.templates.item_collection_selector_list(collection));
-        $('#collection-items').append(Handlebars.templates.item_collection_sidebar_head(collection));
+        console.log(insertionType);
+        if (insertionType) {
+            if (insertionType === "after") {
+                $(insertTarget).after(Handlebars.templates.item_collection_sidebar_head(collection));
+            }
+            else if (insertionType === "before") {
+                $(insertTarget).before(Handlebars.templates.item_collection_sidebar_head(collection));
+            }    
+            else {
+                $("#collection-items").append(Handlebars.templates.item_collection_sidebar_head(collection));    
+            }
+        } else {
+            $("#collection-items").append(Handlebars.templates.item_collection_sidebar_head(collection));
+        }        
 
         $('a[rel="tooltip"]').tooltip();
 
