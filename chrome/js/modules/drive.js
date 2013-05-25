@@ -6,7 +6,6 @@ pm.drive = {
     auth: {},
     about: {},
     CLIENT_ID: '805864674475.apps.googleusercontent.com',
-    SERVER_CLIENT_ID: '805864674475-4uitbnghelhcg16ud7b7fvp3uoi9fnlo.apps.googleusercontent.com',
     SCOPES: [
         'https://www.googleapis.com/auth/drive.file',
         'https://www.googleapis.com/auth/userinfo.email',
@@ -230,6 +229,8 @@ pm.drive = {
                         "file": updatedFile
                     };
 
+                    console.log(updatedLocalDriveFile);
+
                     pm.indexedDB.driveFiles.updateDriveFile(updatedLocalDriveFile, function() {
                         //Remove the change inside driveChange
                         pm.drive.removeChange(changeId);    
@@ -262,27 +263,30 @@ pm.drive = {
      * Called when the client library is loaded.
      */
     handleClientLoad: function() {
-        console.log("Client has loaded");    
+        console.log("Client has loaded");        
+        pm.drive.getAbout(function(about) {
+            pm.drive.about = about;     
+            pm.drive.updateUserStatus(about);
+            pm.drive.fetchChanges();              
+        });        
+    },
+
+    fetchChanges: function() {
+        pm.drive.onStartSyncing();
+            
         pm.drive.isSyncing = true;        
         var startChangeId = pm.settings.get("driveStartChangeId");
         startChangeId = parseInt(startChangeId, 10) + 1;
         console.log(startChangeId);
 
-        pm.drive.getAbout(function(about) {
-            pm.drive.about = about;     
-            pm.drive.updateUserStatus(about);
+        pm.drive.getChangeList(function(changes) {
+            //Show indicator here. Block UI changes with an option to skip
+            //Changes is a collection of file objects
+            pm.drive.isSyncing = false;
 
-            pm.drive.onStartSyncing();
-
-            pm.drive.getChangeList(function(changes) {
-                //Show indicator here. Block UI changes with an option to skip
-                //Changes is a collection of file objects
-                pm.drive.isSyncing = false;
-
-                pm.drive.onFinishSyncing();
-                pm.drive.filterChangesFromDrive(changes);                               
-            }, startChangeId);  
-        });        
+            pm.drive.onFinishSyncing();
+            pm.drive.filterChangesFromDrive(changes);                               
+        }, startChangeId);
     },
 
     updateUserStatus: function(about) {        
@@ -478,7 +482,7 @@ pm.drive = {
                 var id = file.id;
 
                 if (type === "collection") {
-                    pm.drive.collections.deleteLocalFromDrive(id);
+                    pm.collections.drive.deleteLocalFromDrive(id);
                 }    
             }
             
@@ -492,10 +496,13 @@ pm.drive = {
             if (localDriveFile) {
                 //Local drive file exists
                 console.log("Update file");
+
                 pm.drive.getFile(file, function(responseText) {
                     console.log("Obtained file from drive", responseText);
+                    //TODO Update local file timestamp
+
                     if (file.fileExtension === "postman_collection") {
-                        pm.drive.collections.updateLocalFromDrive(responseText);         
+                        pm.collections.drive.updateLocalFromDrive(responseText);         
                     }
                 });
             }
@@ -505,7 +512,7 @@ pm.drive = {
                 pm.drive.getFile(file, function(responseText) {
                     console.log("Obtained file from drive");
                     if (file.fileExtension === "postman_collection") {
-                        pm.drive.collections.addLocalFromDrive(file, responseText);
+                        pm.collections.drive.addLocalFromDrive(file, responseText);
                     }
                 });
             }
@@ -825,128 +832,5 @@ pm.drive = {
         } else {
             callback(null);
       }
-    },
-
-    collections: {
-        checkIfCollectionIsOnDrive: function(id, callback) {
-            pm.indexedDB.driveFiles.getDriveFile(id, function(driveFile) {
-                if (driveFile) {
-                    console.log("Collection found");
-                    callback(true, driveFile);
-                }
-                else {
-                    console.log("Collection not found");
-                    callback(false);
-                }
-                
-            });
-        },
-
-        queuePostFromCollection: function(collection) {
-            if (!pm.drive.isSyncEnabled()) return;
-
-            var id = collection.id;
-            var name = collection.name + ".postman_collection";
-            var filedata = JSON.stringify(collection);
-            
-            pm.drive.queuePost(id, "collection", name, filedata, function() {
-                console.log("Uploaded new collection", name);                
-            });            
-        },
-
-        queuePost: function(id) {
-            if (!pm.drive.isSyncEnabled()) return;
-
-            pm.collections.getCollectionData(id, function(name, type, filedata) {
-                console.log(filedata);
-                pm.drive.queuePost(id, "collection", name + ".postman_collection", filedata, function() {
-                    console.log("Uploaded new collection", name);                
-                });
-            });
-        },
-
-        queueUpdateFromCollection: function(collection) {
-            if (!pm.drive.isSyncEnabled()) return;
-
-            var id = collection.id;
-            var name = collection.name + ".postman_collection";
-            var filedata = JSON.stringify(collection);
-
-            pm.indexedDB.driveFiles.getDriveFile(id, function(driveFile) {
-                pm.drive.queueUpdate(id, "collection", name + ".postman_collection", driveFile.file, filedata, function() {
-                    console.log("Updated collection", collection.id);                
-                });
-            });
-        },
-
-        queueUpdateFromId: function(id) {
-            if (!pm.drive.isSyncEnabled()) return;
-
-            pm.collections.getCollectionDataForDrive(id, function(name, type, filedata) {                
-                pm.indexedDB.driveFiles.getDriveFile(id, function(driveFile) {
-                    pm.drive.queueUpdate(id, "collection", name, driveFile.file, filedata, function() {
-                        console.log("Updated collection from id", id);                
-                    });
-                });                
-            });
-        },
-
-        queueTrash: function(id) {
-            if (!pm.drive.isSyncEnabled()) return;
-
-            pm.drive.collections.checkIfCollectionIsOnDrive(id, function(exists, driveFile) {
-                if (exists) {                
-                    pm.drive.queueTrash(id, "collection", driveFile.file, function() {                    
-                        console.log("Deleted collection", id);                    
-                    });
-                }
-            });            
-        },
-
-        queueDelete: function(id) {
-            if (!pm.drive.isSyncEnabled()) return;
-
-            pm.drive.collections.checkIfCollectionIsOnDrive(id, function(exists, driveFile) {
-                if (exists) {                
-                    pm.drive.queueDelete(id, "collection", driveFile.file, function() {                    
-                        console.log("Deleted collection", id);                    
-                    });
-                }
-            });            
-        },
-
-        updateLocalFromDrive: function(responseText) {
-            var collection = JSON.parse(responseText);
-            console.log(collection, responseText);
-            pm.collections.mergeCollection(collection, false);
-        },
-
-
-        deleteLocalFromDrive: function(id) {
-            pm.collections.deleteCollection(id, false);
-            pm.indexedDB.driveFiles.deleteDriveFile(id, function() {                        
-            });
-        },
-
-        addLocalFromDrive: function(file, responseText) {
-            var collection = JSON.parse(responseText);
-            console.log("Add to DB");
-            pm.collections.addCollectionDataToDB(collection, false);
-
-            var newLocalDriveFile = {
-                "id": collection.id,
-                "type": "collection",
-                "timestamp":new Date().getTime(),
-                "fileId": file.id,
-                "file": file
-            };
-
-            pm.indexedDB.driveFiles.addDriveFile(newLocalDriveFile, function(e) {
-                console.log("Uploaded file", newLocalDriveFile);                            
-                var currentTime = new Date().toISOString();
-                pm.settings.set("lastDriveChangeTime", currentTime);                
-            });  
-        }
-
     }
 };
