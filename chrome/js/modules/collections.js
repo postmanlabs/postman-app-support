@@ -7,6 +7,7 @@ pm.collections = {
 
     init:function () {
         this.addCollectionListeners();
+        pm.collections.drive.registerHandlers();
     },
 
     addCollectionListeners:function () {
@@ -1057,6 +1058,16 @@ pm.collections = {
     },
 
     drive: {
+        registerHandlers: function() {
+            if (pm.drive) {
+                if (!pm.drive.isSyncEnabled()) return;
+
+                pm.drive.onUpdate["postman_collection"] = pm.collections.drive.updateLocalFromDrive;
+                pm.drive.onPost["postman_collection"] = pm.collections.drive.addLocalFromDrive;
+                pm.drive.onDelete["collection"] = pm.collections.drive.deleteLocalFromDrive;
+            }
+        },
+
         checkIfCollectionIsOnDrive: function(id, callback) {
             pm.indexedDB.driveFiles.getDriveFile(id, function(driveFile) {
                 if (driveFile) {
@@ -1145,6 +1156,7 @@ pm.collections = {
         },
 
         updateLocalFromDrive: function(responseText) {
+            console.log("Update local from drive", responseText);
             var collection = JSON.parse(responseText);
             console.log(collection, responseText);
             pm.collections.mergeCollection(collection, false);
@@ -1152,6 +1164,7 @@ pm.collections = {
 
 
         deleteLocalFromDrive: function(id) {
+            console.log("Trying to delete", id);
             pm.collections.deleteCollection(id, false);
             pm.indexedDB.driveFiles.deleteDriveFile(id, function() {                        
             });

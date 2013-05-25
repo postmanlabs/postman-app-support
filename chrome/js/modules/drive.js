@@ -17,6 +17,10 @@ pm.drive = {
     isSyncing: false,
     isQueueRunning: false,
 
+    onUpdate: {},
+    onDelete: {},
+    onPost: {},
+
     initiateConnection: function() {
         //Show drive dialog for the first time user
         //Start drive authentication flow only after the user says yes
@@ -194,6 +198,10 @@ pm.drive = {
                     if (response.error.code === 401) {
                         pm.drive.checkAuth();    
                     }
+                    else if (response.error.code === 404) {
+                        pm.drive.removeChange(changeId);
+                    }
+
                     console.log("Something went wrong", response)
                 }
                 else {
@@ -470,9 +478,7 @@ pm.drive = {
             console.log("Local changes remaining");
             pm.drive.changes = localDriveChanges;    
             pm.drive.runChangeQueue();
-        }
-        
-
+        }        
     },    
 
     deleteDriveFile: function(fileId) {
@@ -480,40 +486,31 @@ pm.drive = {
             if (file) {
                 var type = file.type;
                 var id = file.id;
-
-                if (type === "collection") {
-                    pm.collections.drive.deleteLocalFromDrive(id);
-                }    
+                console.log("Delete", pm.drive.onDelete[type]);
+                pm.drive.onDelete[type](id);
             }
             
         });
     },
 
     createOrUpdateFile: function(fileId, file) {
-        pm.indexedDB.driveFiles.getDriveFileByFileId(fileId, function(localDriveFile) {
-            console.log("Trying to fetch the file", fileId, localDriveFile);
-            
+        pm.indexedDB.driveFiles.getDriveFileByFileId(fileId, function(localDriveFile) {                        
             if (localDriveFile) {
                 //Local drive file exists
                 console.log("Update file");
 
                 pm.drive.getFile(file, function(responseText) {
-                    console.log("Obtained file from drive", responseText);
+                    console.log("Obtained file from drive");
                     //TODO Update local file timestamp
-
-                    if (file.fileExtension === "postman_collection") {
-                        pm.collections.drive.updateLocalFromDrive(responseText);         
-                    }
+                    pm.drive.onUpdate[file.fileExtension](responseText);
                 });
             }
             else {
                 //Local drive file does not exist
                 console.log("Add new");
                 pm.drive.getFile(file, function(responseText) {
-                    console.log("Obtained file from drive");
-                    if (file.fileExtension === "postman_collection") {
-                        pm.collections.drive.addLocalFromDrive(file, responseText);
-                    }
+                    console.log("Obtained file from drive", file.fileExtension, pm.drive.onPost);                    
+                    pm.drive.onPost[file.fileExtension](file, responseText);
                 });
             }
         });
