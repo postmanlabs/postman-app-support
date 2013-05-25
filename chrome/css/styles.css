@@ -1548,3 +1548,11 @@ input[type="file"] {
 
 #response-copy-button.zeroclipboard-is-hover { background-color:#eee; }
 #response-copy-button.zeroclipboard-is-active { background-color:#aaa; } 
+
+#drive-first-time-sync-step2 {
+    display: none;
+}
+
+#drive-first-time-sync-step1 .connection-error {
+    display: none;
+}

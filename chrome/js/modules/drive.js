@@ -6,6 +6,7 @@ pm.drive = {
     auth: {},
     about: {},
     CLIENT_ID: '805864674475.apps.googleusercontent.com',
+    SERVER_CLIENT_ID: '805864674475-4uitbnghelhcg16ud7b7fvp3uoi9fnlo.apps.googleusercontent.com',
     SCOPES: [
         'https://www.googleapis.com/auth/drive.file',
         'https://www.googleapis.com/auth/userinfo.email',
@@ -17,10 +18,66 @@ pm.drive = {
     isSyncing: false,
     isQueueRunning: false,
 
-    init: function() {
+    initiateConnection: function() {
         //Show drive dialog for the first time user
         //Start drive authentication flow only after the user says yes
         //Do not pester every time        
+        pm.drive.setupHandlers();
+        var driveSyncConnectionStatus = pm.settings.get("driveSyncConnectionStatus");
+
+        if (driveSyncConnectionStatus === "not_connected") {
+            console.log("Show modal");
+            $("#modal-drive-first-time-sync").modal("show");    
+        }
+        else if (driveSyncConnectionStatus === "connection_started") {
+            $("#modal-drive-first-time-sync").modal("show");    
+            $('#drive-first-time-sync-step1 .connection-error').css("display", "block");
+            $("#drive-first-time-sync-step1").css("display", "block");
+            $("#drive-first-time-sync-step2").css("display", "none");
+        }
+        
+    },
+
+    setupHandlers: function() {
+        $("#drive-sync-start-auth").on("click", function() {
+            pm.drive.initiateClientSideAuth();
+        });
+
+        $("#drive-sync-start-cancel").on("click", function() {
+            pm.settings.set("driveSyncConnectionStatus", "disabled");
+            $("#modal-drive-first-time-sync").modal("hide")
+        });
+
+        $('#drive-sync-start-refresh-auth').on("click", function() {
+            $("#modal-drive-first-time-sync").modal("hide")
+            pm.drive.checkAuth();
+        }); 
+    },
+
+    initiateServerSideAuth: function() {
+        var redirect_uri = 'http://www.getpostman.com/oauth2callback';      
+        var url = 'https://accounts.google.com/o/oauth2/auth?';
+        url += 'scope=' + encodeURIComponent(pm.drive.SCOPES.join(' ')) + '&'; //add scopes
+        url += 'redirect_uri=' + encodeURIComponent(redirect_uri) + '&';
+        // url += 'redirect_uri=' + 'urn:ietf:wg:oauth:2.0:oob' + '&';
+        url += 'response_type=code&client_id=' + pm.drive.SERVER_CLIENT_ID + '&access_type=offline';
+
+        window.open(url, 'name', 'height=400,width=600');
+    },
+
+    initiateClientSideAuth: function() {
+        console.log("Start client side auth");
+        pm.settings.set("driveSyncConnectionStatus", "connection_started");
+        $("#drive-first-time-sync-step1").css("display", "none");
+        $("#drive-first-time-sync-step2").css("display", "block");
+        gapi.auth.authorize(
+            {
+                'client_id': pm.drive.CLIENT_ID,
+                'scope': pm.drive.SCOPES,
+                'immediate': false 
+            },
+            pm.drive.handleAuthResult)
+        ;
     },
 
     isSyncEnabled: function() {
@@ -220,8 +277,8 @@ pm.drive = {
 
     updateUserStatus: function(about) {        
         $("#user-status-text").html(about.name);
-        var pictureUrl = about.user.picture.url;
-        $("#user-img").html("<img src='" + pictureUrl + "' width='20px' height='20px'/>");
+        //var pictureUrl = about.user.picture.url;
+        //$("#user-img").html("<img src='" + pictureUrl + "' width='20px' height='20px'/>");
     },
 
     onStartSyncing: function() {
@@ -521,17 +578,16 @@ pm.drive = {
      *
      * @param {Object} authResult Authorization result.
      */
-    handleAuthResult: function(authResult) {
+    handleAuthResult: function(authResult) {        
         if (authResult) {
+            pm.settings.set("driveSyncConnectionStatus", "connected");
             pm.drive.auth = authResult;
-            pm.drive.loadClient(pm.drive.handleClientLoad);
-            console.log(authResult);
+            pm.drive.loadClient(pm.drive.handleClientLoad);            
             // Access token has been successfully retrieved, requests can be sent to the API
         } else {
+            pm.settings.set("driveSyncConnectionStatus", "not_connected");
             // No access token could be retrieved, force the authorization flow.
-            gapi.auth.authorize(
-                {'client_id': pm.drive.CLIENT_ID, 'scope': pm.drive.SCOPES, 'immediate': false},
-                pm.drive.handleAuthResult);
+            pm.drive.initiateConnection();            
         }
     },
 

@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8"/>
-    <title>Postman</title>
+    <title>Postman - v0.8.2</title>
     <link rel="stylesheet" type="text/css" href="css/custom-theme/jquery-ui-1.9.2.custom.min.css"/>
     <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"/>
     <link rel="stylesheet" type="text/css" href="css/bootstrap-modal.css"/>
@@ -1060,9 +1060,29 @@
 <div id="modal-drive-first-time-sync" class="modal fade">
     <div class="modal-header">
         <a class="close" data-dismiss="modal">x</a>
-        <h3>Set up syncing with Google Drive</h3>
+        <h3>Sync Postman with Google Drive</h3>        
     </div>
     <div class="modal-body">
+        <div id="drive-first-time-sync-step1">
+            <p class="connection-error">Something seems to have gone wrong. You can try connecting again in a few seconds</p>
+            <p>
+                Click connect to give Postman access to your Google Drive account. 
+                If you don't want to do it now you can click Cancel.
+            </p>
+
+            <div class="modal-footer">
+                <a id="drive-sync-start-auth" class="btn">Connect</a>
+                <a id="drive-sync-start-cancel" class="btn">Cancel</a>
+            </div>  
+        </div>
+
+        <div id="drive-first-time-sync-step2">
+            After clicking Allow access, close the popup and click the Start button.
+
+            <div class="modal-footer">
+                <a id="drive-sync-start-refresh-auth" class="btn">Start Sync</a>
+            </div>
+        </div>
     </div>
 </div>
 <div id="modal-drive-user" class="modal fade">
