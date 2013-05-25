@@ -158,6 +158,10 @@ pm.drive = {
                 pm.drive.onFinishSyncing();
 
                 if (file.error) {
+                    if (file.error.code === 401) {
+                        pm.drive.checkAuth();    
+                    }
+                    
                     console.log("Something went wrong", file);
                 }
                 else {
@@ -188,6 +192,9 @@ pm.drive = {
                 pm.drive.onFinishSyncing();
 
                 if (response.error) {
+                    if (response.error.code === 401) {
+                        pm.drive.checkAuth();    
+                    }
                     console.log("Something went wrong", response)
                 }
                 else {
@@ -209,6 +216,9 @@ pm.drive = {
                 pm.drive.onFinishSyncing();
 
                 if (updatedFile.error) {
+                    if (updatedFile.error.code === 401) {
+                        pm.drive.checkAuth();    
+                    }
                     console.log("Something went wrong", updatedFile);
                 }
                 else {                    
@@ -277,8 +287,14 @@ pm.drive = {
 
     updateUserStatus: function(about) {        
         $("#user-status-text").html(about.name);
-        //var pictureUrl = about.user.picture.url;
-        //$("#user-img").html("<img src='" + pictureUrl + "' width='20px' height='20px'/>");
+        if (about.user) {
+            if (about.user.picture) {
+                var pictureUrl = about.user.picture.url;
+                $("#user-img").html("<img src='" + pictureUrl + "' width='20px' height='20px'/>");            
+            }
+        
+        }
+        
     },
 
     onStartSyncing: function() {
