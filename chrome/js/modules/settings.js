@@ -4,6 +4,16 @@ pm.settings = {
     autoSaveRequest:true,
     selectedEnvironmentId:"",
 
+    syncedSettings: [
+        "historyCount",
+        "autoSaveRequest",
+        "retainLinkHeaders",
+        "sendNoCacheHeader",   
+        "variableDelimiter",
+        "languageDetection",
+        "haveDonated",
+    ],
+
     createSettings: function() {
         pm.settings.create("historyCount", 100);
         pm.settings.create("autoSaveRequest", true);
@@ -21,6 +31,8 @@ pm.settings = {
         pm.settings.create("haveDonated", false);
         pm.settings.create("activeSidebarSection", "history");
         pm.settings.create("forceWindowsLineEndings", false);
+
+        //Not implemented yet
         pm.settings.create("requestBodyEditorContainerType", "editor");
 
         //Google Drive related
@@ -152,7 +164,7 @@ pm.settings = {
 
     set:function (key, value) {
         pm.settings[key] = value;
-        localStorage[key] = value;
+        localStorage[key] = value;    
     },
 
     get:function (key) {
@@ -166,5 +178,113 @@ pm.settings = {
         else {
             return localStorage[key];
         }
+    },
+
+    update: function(settings) {
+        pm.settings.set("historyCount", settings.historyCount, false);
+        pm.settings.set("autoSaveRequest", settings.autoSaveRequest, false);
+        pm.settings.set("retainLinkHeaders", settings.retainLinkHeaders, false);
+        pm.settings.set("sendNoCacheHeader", settings.sendNoCacheHeader, false);        
+        pm.settings.set("variableDelimiter", settings.variableDelimiter, false);
+        pm.settings.set("languageDetection", settings.languageDetection, false);
+        pm.settings.set("haveDonated", settings.haveDonated, false);
+
+        pm.settings.initValues();
+        pm.settings.initListeners();
+    },
+
+    getAsJson: function() {
+        var settings = {
+            historyCount: pm.settings.get("historyCount"),
+            autoSaveRequest: pm.settings.get("autoSaveRequest"),
+            retainLinkHeaders: pm.settings.get("retainLinkHeaders"),
+            sendNoCacheHeader: pm.settings.get("sendNoCacheHeader"),            
+            variableDelimiter: pm.settings.get("variableDelimiter"),
+            languageDetection: pm.settings.get("languageDetection"),
+            haveDonated: pm.settings.get("haveDonated")
+        };
+
+        return settings;
+    },
+
+    drive: {
+        registerHandlers: function() {
+            if (pm.drive) {
+                if (!pm.drive.isSyncEnabled()) return;
+
+                pm.drive.onUpdate["postman_settings"] = pm.settings.drive.updateSettingsFromDrive;
+                pm.drive.onPost["postman_settings"] = pm.settings.drive.addSettingsFromDrive;                
+            }
+        },
+
+        checkIfSettingsIsOnDrive: function(id, callback) {
+            pm.indexedDB.driveFiles.getDriveFile(id, function(driveFile) {
+                if (driveFile) {
+                    console.log("Settings found");
+                    callback(true, driveFile);
+                }
+                else {
+                    console.log("Settings not found");
+                    callback(false);
+                }
+                
+            });
+        },
+
+        queueSettingsPost: function(settings) {
+            if (!pm.drive.isSyncEnabled()) return;
+
+            var id = "settings";
+            var name = "settings" + ".postman_settings";
+            var filedata = JSON.stringify(settings);
+            
+            pm.drive.queuePost(id, "settings", name, filedata, function() {
+                console.log("Uploaded new settings", name);                
+            });            
+        },
+
+        queueSettingsUpdate: function(settings) {
+            if (!pm.drive.isSyncEnabled()) return;
+
+            var id = "settings";
+            var name = "settings" + ".postman_settings";
+            var filedata = JSON.stringify(settings);
+
+            pm.indexedDB.driveFiles.getDriveFile(id, function(driveFile) {
+                pm.drive.queueUpdate(id, "settings", name, driveFile.file, filedata, function() {
+                    console.log("Updated settings");
+                });
+            });
+        },
+
+        updateSettingsFromDrive: function(responseText) {
+            console.log("Update settings from drive", responseText);
+            var settings = JSON.parse(responseText);
+            console.log(settings, responseText);
+
+            pm.settings.update(settings);
+        },
+
+        addSettingsFromDrive: function(file, responseText) {
+            var settings = JSON.parse(responseText);
+            console.log("Add to DB");
+
+            pm.settings.update(settings);
+
+            var newLocalDriveFile = {
+                "id": "settings",
+                "type": "settings",
+                "timestamp":new Date().getTime(),
+                "fileId": file.id,
+                "file": file
+            };
+
+            pm.indexedDB.driveFiles.addDriveFile(newLocalDriveFile, function(e) {
+                console.log("Uploaded file", newLocalDriveFile);                            
+                var currentTime = new Date().toISOString();
+                pm.settings.set("lastDriveChangeTime", currentTime);                
+            });  
+        }
     }
+
 };
