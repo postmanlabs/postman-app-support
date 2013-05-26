@@ -23,9 +23,11 @@ pm.settings = {
         pm.settings.create("forceWindowsLineEndings", false);
         pm.settings.create("requestBodyEditorContainerType", "editor");
 
+        //Google Drive related
         pm.settings.create("driveSyncConnectionStatus", "not_connected"); //notconnected, connected, disabled        
         pm.settings.create("driveSyncEnabled", true);
         pm.settings.create("driveStartChangeId", 0);
+        pm.settings.create("driveAppDataFolderId", 0);
         pm.settings.create("lastDriveChangeTime", "");
     },
 

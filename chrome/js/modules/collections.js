@@ -1113,7 +1113,7 @@ pm.collections = {
             var filedata = JSON.stringify(collection);
 
             pm.indexedDB.driveFiles.getDriveFile(id, function(driveFile) {
-                pm.drive.queueUpdate(id, "collection", name + ".postman_collection", driveFile.file, filedata, function() {
+                pm.drive.queueUpdate(id, "collection", name, driveFile.file, filedata, function() {
                     console.log("Updated collection", collection.id);                
                 });
             });

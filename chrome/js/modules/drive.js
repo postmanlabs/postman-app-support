@@ -8,6 +8,7 @@ pm.drive = {
     CLIENT_ID: '805864674475.apps.googleusercontent.com',
     SCOPES: [
         'https://www.googleapis.com/auth/drive.file',
+        'https://www.googleapis.com/auth/drive.appdata',
         'https://www.googleapis.com/auth/userinfo.email',
         'https://www.googleapis.com/auth/userinfo.profile',
         // Add other scopes needed by your application.
@@ -616,6 +617,7 @@ pm.drive = {
     },
 
     queuePost: function(targetId, targetType, name, fileData, callback) {
+        //TODO: Insert parentId here
         var change = {
             id: guid(),            
             fileData: fileData,
@@ -720,13 +722,12 @@ pm.drive = {
         });
     },
 
-
-    //Testing
     postFile: function(name, type, fileData, callback) {
         var boundary = '-------314159265358979323846';
         var delimiter = "\r\n--" + boundary + "\r\n";
         var close_delim = "\r\n--" + boundary + "--";
 
+        //TODO Insert parentId here
         var metadata = {
             'title': name,
             'mimeType': "application/json"
@@ -761,6 +762,7 @@ pm.drive = {
         var boundary = '-------314159265358979323846';
         var delimiter = "\r\n--" + boundary + "\r\n";
         var close_delim = "\r\n--" + boundary + "--";
+
 
         var metadata = {
             'title': name,
@@ -829,5 +831,9 @@ pm.drive = {
         } else {
             callback(null);
       }
-    }
+    },
+
+    getAppDataFolder: function(callback) {
+
+    },
 };
