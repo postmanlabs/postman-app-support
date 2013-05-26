@@ -500,8 +500,11 @@ pm.collections = {
 
     openCollection:function (id) {
         var target = "#collection-requests-" + id;
-        if ($(target).css("display") === "none") {
-            $(target).slideDown(100, function () {
+        $("#collection-" + id + " .sidebar-collection-head-dt").removeClass("disclosure-triangle-close");
+        $("#collection-" + id + " .sidebar-collection-head-dt").addClass("disclosure-triangle-open");
+
+        if ($(target).css("display") === "none") {            
+            $(target).slideDown(100, function () {                
                 pm.layout.refreshScrollPanes();
             });
         }
@@ -511,11 +514,19 @@ pm.collections = {
         var target = "#collection-requests-" + id;
         var label = "#collection-" + id + " .collection-head-actions .label";
         if ($(target).css("display") === "none") {
+            console.log("Slide down");
+            $("#collection-" + id + " .sidebar-collection-head-dt").removeClass("disclosure-triangle-close");
+            $("#collection-" + id + " .sidebar-collection-head-dt").addClass("disclosure-triangle-open");
+
             $(target).slideDown(100, function () {
                 pm.layout.refreshScrollPanes();
             });
         }
         else {
+            console.log("Slide Up");
+
+            $("#collection-" + id + " .sidebar-collection-head-dt").removeClass("disclosure-triangle-open");
+            $("#collection-" + id + " .sidebar-collection-head-dt").addClass("disclosure-triangle-close");            
             $(target).slideUp(100, function () {
                 pm.layout.refreshScrollPanes();
             });

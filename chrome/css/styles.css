@@ -1556,3 +1556,13 @@ input[type="file"] {
 #drive-first-time-sync-step1 .connection-error {
     display: none;
 }
+
+.disclosure-triangle-open {
+    display: inline-block;
+    -webkit-transform:rotate(90deg);
+}
+
+.disclosure-triangle-close {
+    display: inline-block;
+    -webkit-transform:rotate(0deg);
+}
