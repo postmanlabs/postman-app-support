@@ -1557,12 +1557,16 @@ input[type="file"] {
     display: none;
 }
 
+.sidebar-collection-head-dt {
+    -webkit-transition: all 0.1s;
+}
+
 .disclosure-triangle-open {
     display: inline-block;
-    -webkit-transform:rotate(90deg);
+    -webkit-transform: rotate(90deg);
 }
 
 .disclosure-triangle-close {
     display: inline-block;
-    -webkit-transform:rotate(0deg);
+    -webkit-transform: rotate(0deg);
 }
