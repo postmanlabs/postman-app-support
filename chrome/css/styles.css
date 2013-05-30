@@ -1558,7 +1558,7 @@ input[type="file"] {
 }
 
 .sidebar-collection-head-dt {
-    -webkit-transition: all 0.1s;
+    -webkit-transition: all 0.2s;
 }
 
 .disclosure-triangle-open {
