@@ -1,0 +1,16 @@
+{
+  "name": {"message": "Postman - Cliente REST"},
+  "description": {"message": "Teste, desenvolva e documente APIs com prazer!"},
+  "request": {"message": "Requisição"},
+  "debuglink": {"message": "Link para Debug"},
+  "url": {"message": "URL"},
+  "method": {"message": "Método"},
+  "headers": {"message": "Cabeçalhos"},
+  "data": {"message": "Dados"},
+  "send": {"message": "Enviar"},
+  "clear": {"message": "Limpar"},
+  "response": {"message": "Resposta"},
+  "processing": {"message": "Processando"},
+  "status": {"message": "Status"},
+  "bad_request": {"message": "Requisição Ruim"}
+}
