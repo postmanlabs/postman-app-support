@@ -52,6 +52,18 @@ pm.headerPresets = {
             var id = $(this).attr("data-id");
             pm.headerPresets.deleteHeaderPreset(id);
         });
+
+        $("#headers-keyvaleditor-actions-add-preset").on("click", ".header-preset-dropdown-item", function() {
+            var id = $(this).attr("data-id");
+            var preset = pm.headerPresets.getHeaderPreset(id);
+
+            if("headers" in preset) {                    
+                var headers = $('#headers-keyvaleditor').keyvalueeditor('getValues');                                                           
+                
+                var newHeaders = _.union(headers, preset.headers);                
+                $('#headers-keyvaleditor').keyvalueeditor('reset', newHeaders);                
+            }
+        });
     },
 
     loadPresets:function () {
