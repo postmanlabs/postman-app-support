@@ -969,7 +969,7 @@ li .right {
 .preferences {
     float: right;
     margin-top: 5px;
-    width: 60px;
+    width: 30px;
 }
 
 .preferences a {
@@ -1509,7 +1509,7 @@ input[type="file"] {
 
 .request-preview-header-title {
     padding-left: 20px;
-    font-size: 16px;
+    font-size: 16px; 
     font-weight: bold;
     margin-right: 20px;
     padding-top: 20px;

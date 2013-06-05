@@ -60,6 +60,10 @@ pm.headerPresets = {
             pm.headerPresets.refreshAutoCompleteList();
             $('#header-presets-list tbody').html("");
             $('#header-presets-list tbody').append(Handlebars.templates.header_preset_list({"items":items}));
+
+            //TODO Add to the Add preset dropdown
+            $('#headers-keyvaleditor-actions-add-preset ul').html("");
+            $('#headers-keyvaleditor-actions-add-preset ul').append(Handlebars.templates.header_preset_dropdown({"items":items}));            
         });
     },
 
