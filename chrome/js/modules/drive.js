@@ -311,11 +311,15 @@ pm.drive = {
     },
 
     onStartSyncing: function() {
+        pm.drive.startSyncStatusAnimation();
+        
         $("#user-status-text").html("Syncing...");        
         //$("#user-img").html("<img src='img/ajax-loader.gif' width='20px' height='20px'/>");
     },
 
     onFinishSyncing: function() {
+        pm.drive.stopSyncStatusAnimation();
+
         if (pm.drive.about) {
             var about = pm.drive.about;
             $("#user-status-text").html(about.name);
@@ -834,6 +838,17 @@ pm.drive = {
     },
 
     getAppDataFolder: function(callback) {
-
+        //TODO Store settings in the future
     },
+
+    startSyncStatusAnimation: function() {
+        $("#sync-status").removeClass("sync-normal");
+        $("#sync-status").addClass("sync-spin");
+    },
+
+    stopSyncStatusAnimation: function() {
+        console.log("Stop sync status animation");
+        $("#sync-status").removeClass("sync-spin");
+        $("#sync-status").addClass("sync-normal");
+    }
 };
