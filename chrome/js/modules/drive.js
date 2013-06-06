@@ -184,8 +184,7 @@ pm.drive = {
                         //Remove the change inside driveChange
                         pm.drive.removeChange(changeId);    
 
-                        var currentTime = new Date().toUTCString();
-                        pm.settings.set("lastDriveChangeTime", currentTime);                
+                        pm.drive.updateLastChangedTime();
                     });                
                 }                                
             });
@@ -209,8 +208,7 @@ pm.drive = {
                     pm.indexedDB.driveFiles.deleteDriveFile(changeTargetId, function() {
                         console.log("Deleted local file");
                         pm.drive.removeChange(changeId);
-                        var currentTime = new Date().toUTCString();
-                        pm.settings.set("lastDriveChangeTime", currentTime);                        
+                        pm.drive.updateLastChangedTime();
                     });    
                 }
                 
@@ -243,9 +241,7 @@ pm.drive = {
                     pm.indexedDB.driveFiles.updateDriveFile(updatedLocalDriveFile, function() {
                         //Remove the change inside driveChange
                         pm.drive.removeChange(changeId);    
-
-                        var currentTime = new Date().toUTCString();
-                        pm.settings.set("lastDriveChangeTime", currentTime);                                     
+                        pm.drive.updateLastChangedTime();
                     });
                 }
                                 
@@ -311,19 +307,12 @@ pm.drive = {
     },
 
     onStartSyncing: function() {
-        pm.drive.startSyncStatusAnimation();
-        
-        $("#user-status-text").html("Syncing...");        
+        pm.drive.startSyncStatusAnimation();        
         //$("#user-img").html("<img src='img/ajax-loader.gif' width='20px' height='20px'/>");
     },
 
     onFinishSyncing: function() {
         pm.drive.stopSyncStatusAnimation();
-
-        if (pm.drive.about) {
-            var about = pm.drive.about;
-            $("#user-status-text").html(about.name);
-        }        
     },
 
     filterChangesFromDrive: function(changes) {
@@ -584,10 +573,20 @@ pm.drive = {
         retrievePageOfChanges(initialRequest, []);
     },
 
+    setupUiHandlers: function() {
+        console.log("Setup UI handler");
+        $("#sync-status").on("click", function() {
+            console.log("Run change queue");
+            pm.drive.fetchChanges();
+        });
+    },
+
     /**
      * Check if the current user has authorized the application.
      */
     checkAuth: function(){
+        pm.drive.setupUiHandlers();
+
         gapi.auth.authorize(
         {
             'client_id': pm.drive.CLIENT_ID,
@@ -842,13 +841,20 @@ pm.drive = {
     },
 
     startSyncStatusAnimation: function() {
-        $("#sync-status").removeClass("sync-normal");
-        $("#sync-status").addClass("sync-spin");
+        $("#sync-status img").removeClass("sync-normal");
+        $("#sync-status img").addClass("sync-spin");
     },
 
-    stopSyncStatusAnimation: function() {
-        console.log("Stop sync status animation");
-        $("#sync-status").removeClass("sync-spin");
-        $("#sync-status").addClass("sync-normal");
+    stopSyncStatusAnimation: function() {        
+        $("#sync-status img").removeClass("sync-spin");
+        $("#sync-status img").addClass("sync-normal");
+        pm.drive.updateLastChangedTime();
+    },
+
+    updateLastChangedTime: function() {
+        var currentTime = new Date(pm.settings.get("lastDriveChangeTime"));    
+        console.log(currentTime.toLocaleString());
+        $("#sync-status a").attr("data-original-title", "Last sync at " + currentTime.toLocaleString());
     }
+
 };
