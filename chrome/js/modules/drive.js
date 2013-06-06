@@ -42,21 +42,22 @@ pm.drive = {
         
     },
 
-    setupHeaderHandlers: function() {
-        $("#user-status-text").on("click", function() {
-            console.log("Clicked user status text");
-
-            var driveSyncConnectionStatus = pm.settings.get("driveSyncConnectionStatus");
-
-            if (driveSyncConnectionStatus === "not_connected") {
-                console.log("Show modal");
-                $("#modal-drive-first-time-sync").modal("show");    
+    showConnectedStatusModal: function() {
+        var about = pm.drive.about;
+        console.log(about);
+        $("#modal-drive-user").modal("show");
+        $("#user-details-name").html(about.name);
+        if (about.user) {
+            if (about.user.picture) {
+                var pictureUrl = about.user.picture.url;
+                $("#user-details-image").html("<img src='" + pictureUrl + "'/>");            
             }        
-            else if (driveSyncConnectionStatus === "connected") {
-                $("#modal-drive-user").modal("show");
-            }
-        });
-    },
+        }
+
+        var currentTime = new Date(pm.settings.get("lastDriveChangeTime"));    
+        var t = $.timeago(currentTime); 
+        $("#sync-details-last-modified").html("Last synced " + t);
+    }, 
 
     setupHandlers: function() {
         console.log("Initiated drive handlers");
@@ -593,6 +594,20 @@ pm.drive = {
 
     setupUiHandlers: function() {
         console.log("Setup UI handler");
+        
+        $("#user-status-text").on("click", function() {
+            console.log("Clicked user status text");
+
+            var driveSyncConnectionStatus = pm.settings.get("driveSyncConnectionStatus");
+
+            if (driveSyncConnectionStatus === "not_connected") {                
+                $("#modal-drive-first-time-sync").modal("show");    
+            }        
+            else if (driveSyncConnectionStatus === "connected") {
+                pm.drive.showConnectedStatusModal();                
+            }
+        });
+
         $("#sync-status").on("click", function() {
             console.log("Run change queue");
             pm.drive.fetchChanges();
@@ -602,9 +617,7 @@ pm.drive = {
     /**
      * Check if the current user has authorized the application.
      */
-    checkAuth: function(){
-        pm.drive.setupUiHandlers();
-
+    checkAuth: function(){        
         gapi.auth.authorize(
         {
             'client_id': pm.drive.CLIENT_ID,
@@ -871,8 +884,8 @@ pm.drive = {
 
     updateLastChangedTime: function() {
         var currentTime = new Date(pm.settings.get("lastDriveChangeTime"));    
-        console.log(currentTime.toLocaleString());
-        $("#sync-status a").attr("data-original-title", "Last sync at " + currentTime.toLocaleString());
+        var t = $.timeago(currentTime);        
+        $("#sync-status a").attr("data-original-title", "Last synced " + t);
     }
 
 };

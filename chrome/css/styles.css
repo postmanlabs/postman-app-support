@@ -1620,3 +1620,32 @@ input[type="file"] {
 #edit-collection-drive-actions {
     margin-top: 10px;
 }
+
+#user-details-meta-container {
+    float: left;
+    margin-left: 10px;
+}
+#sync-details {
+    color: #999;
+    font-size: 11px;  
+    margin-top: 2px;
+}
+
+#user-details-image {
+    float: left;
+}
+
+#user-details-image img {
+    height: 40px;
+    width: 40px;
+}
+
+#user-details-name {
+    font-size: 16px;
+    font-weight: bold;
+    margin-top: 3px;    
+}
+
+#drive-user-enable {
+    display: none;
+}
