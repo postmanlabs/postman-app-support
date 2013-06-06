@@ -726,28 +726,26 @@
     </div>
     <div class="modal-body">
         <div id="edit-collection-details">
-            <form class="form form-horizontal" id="form-edit-collection">
+            <form class="form form-inline" id="form-edit-collection">
                 <input type="hidden" name="collection-id" class="collection-id"/>
                 <input type="text" name="collection-name" class="medium clean-input collection-name"/>
+                <a class="btn btn-primary">Edit</button>
+                <a id="edit-collection-update-drive" data-collection-id="" class="btn">Update from Drive</a>
             </form>
         </div>
 
         <div id="edit-collection-drive">
             <div>
-                <h4>Google Drive</h4>
-                <span id="edit-collection-drive-status">
-                </span>
-                <br/>
-                <a id="edit-collection-update-drive" data-collection-id="" class="btn">Update from Drive</a>
+                <div id="edit-collection-drive-status-container">
+                    <span>Last modified</span>
+                    <span id="edit-collection-drive-status" title=""></span>
+                </div>
             </div>        
         </div>
+
         <div id="edit-collection-requests">
             <ul id="edit-collection-requests-list"></ul>
         </div>
-    </div>
-    <div class="modal-footer">
-        <a class="btn btn-primary">Edit</a>
-        <a data-dismiss="modal" class="btn btn-secondary">Cancel</a>
     </div>
 </div>
 <div id="modal-edit-collection-request" class="modal fade">
@@ -1403,6 +1401,7 @@
 <script type="text/javascript" src="js/jquery.hotkeys.js"></script>
 <script type="text/javascript" src="js/jquery.mousewheel.js"></script>
 <script type="text/javascript" src="js/jquery.jscrollpane.js"></script>
+<script type="text/javascript" src="js/jquery.timeago.js"></script>
 
 <!-- Bootstrap -->
 <script type="text/javascript" src="js/bootstrap.min.js"></script>

@@ -72,7 +72,8 @@ pm.collections = {
                     pm.collections.drive.checkIfCollectionIsOnDrive(id, function(exists, driveFile) {
                         if (exists) {
                             var modifiedDate = new Date(driveFile.timestamp);
-                            $('#edit-collection-drive-status').html("Last modified on " + modifiedDate);
+                            $('#edit-collection-drive-status').attr("title", modifiedDate);
+                            $('#edit-collection-drive-status').timeago();
                             $('#edit-collection-upload-drive').css("display", "none");
                         }
                         else {
@@ -981,8 +982,11 @@ pm.collections = {
     updateCollectionMeta: function(id, name) {
         pm.indexedDB.getCollection(id, function (collection) {
             collection.name = name;
-            pm.indexedDB.updateCollection(collection, function (collection) {                    
-                $('#collection-' + collection.id + " .sidebar-collection-head-name").html(collection.name);
+            pm.indexedDB.updateCollection(collection, function (collection) {             
+                var collectionHeadHtml = '<span class="sidebar-collection-head-dt"><img src="img/dt.png"/></span>';
+                collectionHeadHtml += " " + collection.name;
+
+                $('#collection-' + collection.id + " .sidebar-collection-head-name").html(collectionHeadHtml);
                 $('#select-collection option[value="' + collection.id + '"]').html(collection.name);  
 
                 //Sync collection to drive           

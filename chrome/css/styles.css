@@ -1392,8 +1392,7 @@ li .right {
 }
 
 #form-edit-collection .collection-name {
-    font-size: 18px;
-    font-weight: bold;
+    font-size: 14px;
 }
 
 #data-mode-selector {
@@ -1605,4 +1604,15 @@ input[type="file"] {
 .disclosure-triangle-close {
     display: inline-block;
     -webkit-transform: rotate(0deg);
+}
+
+#edit-collection-drive {
+}
+
+#edit-collection-drive-status-container {
+    color: #aaa;
+    font-size: 10px;
+}
+#edit-collection-drive-actions {
+    margin-top: 10px;
 }
