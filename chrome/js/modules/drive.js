@@ -1,4 +1,4 @@
-function handleClientLoad() {
+function handleClientLoad() {    
     pm.drive.checkAuth();
 }
 
@@ -42,9 +42,22 @@ pm.drive = {
         
     },
 
+    setupHeaderHandlers: function() {
+        $("#user-status-text").on("click", function() {
+            console.log("Clicked user status text");
+            if (pm.drive.isSyncEnabled()) {
+                $("#modal-drive-user").modal("show");
+            }
+            else {
+                $("#modal-drive-first-time-sync").modal("hide")
+                pm.drive.checkAuth();
+            }
+        });
+    },
+
     setupHandlers: function() {
         console.log("Initiated drive handlers");
-        
+
         $("#drive-sync-start-auth").on("click", function() {
             pm.drive.initiateClientSideAuth();
         });

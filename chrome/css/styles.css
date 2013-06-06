@@ -1501,6 +1501,10 @@ li .right {
     display: none;
 }
 
+.modal-header h3 {
+    font-size: 18px;
+}
+
 .pills li a {
     font-size: 11px;
     font-weight: bold;

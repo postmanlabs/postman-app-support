@@ -178,6 +178,7 @@ pm.init = function () {
     pm.envManager.init();
     pm.filesystem.init();
     pm.indexedDB.open();
+    pm.drive.setupHeaderHandlers();
     pm.broadcasts.init();
     $(":input:first").focus();
 };
