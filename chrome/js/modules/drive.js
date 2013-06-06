@@ -45,12 +45,15 @@ pm.drive = {
     setupHeaderHandlers: function() {
         $("#user-status-text").on("click", function() {
             console.log("Clicked user status text");
-            if (pm.drive.isSyncEnabled()) {
+
+            var driveSyncConnectionStatus = pm.settings.get("driveSyncConnectionStatus");
+
+            if (driveSyncConnectionStatus === "not_connected") {
+                console.log("Show modal");
+                $("#modal-drive-first-time-sync").modal("show");    
+            }        
+            else if (driveSyncConnectionStatus === "connected") {
                 $("#modal-drive-user").modal("show");
-            }
-            else {
-                $("#modal-drive-first-time-sync").modal("hide")
-                pm.drive.checkAuth();
             }
         });
     },
