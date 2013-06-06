@@ -43,6 +43,8 @@ pm.drive = {
     },
 
     setupHandlers: function() {
+        console.log("Initiated drive handlers");
+        
         $("#drive-sync-start-auth").on("click", function() {
             pm.drive.initiateClientSideAuth();
         });

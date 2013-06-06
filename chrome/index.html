@@ -149,7 +149,7 @@
                 <div id="user-img">                    
                 </div>
                 <div id="user-status">
-                    <a id="user-status-text" href="#modal-drive-user" data-toggle="modal">Not connected</a>
+                    <a id="user-status-text" data-toggle="modal">Not connected</a>
                 </div>
             </div>
         </div>
@@ -1100,9 +1100,21 @@
 <div id="modal-drive-user" class="modal fade">
     <div class="modal-header">
         <a class="close" data-dismiss="modal">x</a>
-        <h3>User</h3>
+        <h3>Connected to Google Drive</h3>
     </div>
     <div class="modal-body">
+        <div class="user-details">
+            <div class="user-details-img"></div>
+            <div class="user-details-name"></div>
+        </div>
+
+        <div class="sync-details">
+            <div class="sync-details-last-modified"></div>
+        </div>
+
+        <div id="drive-user-status-actions">
+
+        </div>
     </div>
 </div>
 <div id="modal-settings" class="modal fade">
@@ -1116,6 +1128,7 @@
             <li class="active"><a href="#settings-settings" data-toggle="tab">Settings</a></li>
             <li><a href="#settings-shortcuts" data-toggle="tab">Shortcuts</a></li>
             <li><a href="#settings-data" data-toggle="tab">Data</a></li>            
+            <li><a href="#settings-add-ons" data-toggle="tab">Add-ons</a></li>            
         </ul>
         <div class="tab-content">
             <div class="tab-pane active" id="settings-settings">
@@ -1293,6 +1306,16 @@
                 </table>
             </div>
             <div class="tab-pane" id="settings-data">
+            </div>
+            <div class="tab-pane" id="settings-add-ons">
+                <div class="add-on">
+                    <a href="#">Postman Launcher</a>
+                    <p></p>
+                </div>
+                <div class="add-on">
+                    <a href="#">Postman Proxy</a>
+                    <p></p>
+                </div>
             </div>            
         </div>        
     </div>
