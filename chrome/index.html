@@ -1106,124 +1106,189 @@
         <h3>Settings</h3>
     </div>
     <div class="modal-body">
-        <form class="form-horizontal">
-            <div class="control-group">
-                <label class="control-label" for="history-count">Max history items</label>
+        <ul class="nav nav-tabs">
+            <li class="active"><a href="#settings-settings" data-toggle="tab">Settings</a></li>
+            <li><a href="#settings-shortcuts" data-toggle="tab">Shortcuts</a></li>
+            <li><a href="#settings-data" data-toggle="tab">Data</a></li>            
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane active" id="settings-settings">
+                <form class="form-horizontal">
+                    <div class="control-group">
+                        <label class="control-label" for="history-count">Max history items</label>
 
-                <div class="controls">
-                    <select class="medium" name="history-count" id="history-count">
-                        <option value="50">50</option>
-                        <option value="100">100</option>
-                        <option value="200">200</option>
-                        <option value="-1">Unlimited</option>
-                    </select>
-                </div>
+                        <div class="controls">
+                            <select class="medium" name="history-count" id="history-count">
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                                <option value="200">200</option>
+                                <option value="-1">Unlimited</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label class="control-label" for="auto-save-request">Auto save request</label>
+
+                        <div class="controls">
+                            <select class="medium" name="auto-save-request" id="auto-save-request">
+                                <option value="true">Yes</option>
+                                <option value="false">No</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label class="control-label" for="retain-link-headers">Retain headers on clicking on links</label>
+
+                        <div class="controls">
+                            <select class="medium" name="retain-link-headers" id="retain-link-headers">
+                                <option value="true">Yes</option>
+                                <option value="false">No</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label class="control-label" for="send-no-cache-header">Send no-cache header</label>
+
+                        <div class="controls">
+                            <select class="medium" name="send-no-cache-header" id="send-no-cache-header">
+                                <option value="true">Yes</option>
+                                <option value="false">No</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label class="control-label" for="language-detection">Language detection</label>
+
+                        <div class="controls">
+                            <select class="medium" name="language-detection" id="language-detection">
+                                <option value="auto">Automatic detection</option>
+                                <option value="javascript">Force JSON</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label class="control-label" for="variable-delimiter">Variable delimiter</label>
+
+                        <div class="controls">
+                            <input type="text" name="variable-delimiter" id="variable-delimiter"/>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label class="control-label" for="have-donated">Force Windows line endings?</label>
+
+                        <div class="controls">
+                            <select class="medium" name="force-windows-line-endings" id="force-windows-line-endings">
+                                <option value="true">Yes</option>
+                                <option value="false">No</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label class="control-label" for="use-postman-proxy">Use Postman proxy?</label>
+
+                        <div class="controls">
+                            <select class="medium" name="use-postman-proxy" id="use-postman-proxy">
+                                <option value="true">Yes</option>
+                                <option value="false">No</option>
+                            </select>
+
+                            <p class="help-block">
+                                See <a
+                                    href="https://github.com/a85/POSTMan-Chrome-Extension/wiki/Postman-Proxy">documentation</a>
+                                for usage instructions.
+                            </p>
+                        </div>
+
+                    </div>
+
+                    <div class="control-group" id="postman-proxy-url-container">
+                        <label class="control-label" for="postman-proxy-url">Postman proxy URL</label>
+
+                        <div class="controls">
+                            <input type="text" name="postman-proxy-url" id="postman-proxy-url"/>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label class="control-label" for="have-donated">Donated to Postman?</label>
+
+                        <div class="controls">
+                            <select class="medium" name="have-donated" id="have-donated">
+                                <option value="true">Yes</option>
+                                <option value="false">No</option>
+                            </select>
+
+                            <p class="help-block">
+                                Bad things will happen to you if you lie here.
+                            </p>
+                        </div>
+                    </div>
+                </form>
             </div>
-
-            <div class="control-group">
-                <label class="control-label" for="auto-save-request">Auto save request</label>
-
-                <div class="controls">
-                    <select class="medium" name="auto-save-request" id="auto-save-request">
-                        <option value="true">Yes</option>
-                        <option value="false">No</option>
-                    </select>
-                </div>
+            <div class="tab-pane" id="settings-shortcuts">
+                <table class="table table-bordered table-striped">
+                    <thead>
+                    <tr>
+                        <th>Action</th>
+                        <th>Shortcut key</th>
+                    </tr>
+                    </thead>
+                    <tr>
+                        <td>New request</td>
+                        <td><strong>Alt + n</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Preview request</td>
+                        <td><strong>Alt + p</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Edit URL</td>
+                        <td><strong>Backspace</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Edit headers</td>
+                        <td><strong>h</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Send request</td>
+                        <td><strong>Enter/Return</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Maximize/minimze response</td>
+                        <td><strong>f</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Add request to collection</td>
+                        <td><strong>a</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Clear history</td>
+                        <td><strong>Alt + c</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Manage environments</td>
+                        <td><strong>e</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Toggle Quicklook window</td>
+                        <td><strong>q</strong></td>
+                    </tr>
+                    <tr>
+                        <td>This window</td>
+                        <td><strong>?</strong></td>
+                    </tr>
+                </table>
             </div>
-
-            <div class="control-group">
-                <label class="control-label" for="retain-link-headers">Retain headers on clicking on links</label>
-
-                <div class="controls">
-                    <select class="medium" name="retain-link-headers" id="retain-link-headers">
-                        <option value="true">Yes</option>
-                        <option value="false">No</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="control-group">
-                <label class="control-label" for="send-no-cache-header">Send no-cache header</label>
-
-                <div class="controls">
-                    <select class="medium" name="send-no-cache-header" id="send-no-cache-header">
-                        <option value="true">Yes</option>
-                        <option value="false">No</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="control-group">
-                <label class="control-label" for="language-detection">Language detection</label>
-
-                <div class="controls">
-                    <select class="medium" name="language-detection" id="language-detection">
-                        <option value="auto">Automatic detection</option>
-                        <option value="javascript">Force JSON</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="control-group">
-                <label class="control-label" for="variable-delimiter">Variable delimiter</label>
-
-                <div class="controls">
-                    <input type="text" name="variable-delimiter" id="variable-delimiter"/>
-                </div>
-            </div>
-
-            <div class="control-group">
-                <label class="control-label" for="use-postman-proxy">Use Postman proxy?</label>
-
-                <div class="controls">
-                    <select class="medium" name="use-postman-proxy" id="use-postman-proxy">
-                        <option value="true">Yes</option>
-                        <option value="false">No</option>
-                    </select>
-
-                    <p class="help-block">
-                        See <a
-                            href="https://github.com/a85/POSTMan-Chrome-Extension/wiki/Postman-Proxy">documentation</a>
-                        for usage instructions.
-                    </p>
-                </div>
-
-            </div>
-
-            <div class="control-group" id="postman-proxy-url-container">
-                <label class="control-label" for="postman-proxy-url">Postman proxy URL</label>
-
-                <div class="controls">
-                    <input type="text" name="postman-proxy-url" id="postman-proxy-url"/>
-                </div>
-            </div>
-
-            <div class="control-group">
-                <label class="control-label" for="have-donated">Donated to Postman?</label>
-
-                <div class="controls">
-                    <select class="medium" name="have-donated" id="have-donated">
-                        <option value="true">Yes</option>
-                        <option value="false">No</option>
-                    </select>
-
-                    <p class="help-block">
-                        Bad things will happen to you if you lie here.
-                    </p>
-                </div>
-            </div>
-
-            <div class="control-group">
-                <label class="control-label" for="have-donated">Force Windows line endings?</label>
-
-                <div class="controls">
-                    <select class="medium" name="force-windows-line-endings" id="force-windows-line-endings">
-                        <option value="true">Yes</option>
-                        <option value="false">No</option>
-                    </select>
-                </div>
-            </div>
-        </form>
+            <div class="tab-pane" id="settings-data">
+            </div>            
+        </div>        
     </div>
 </div>
 </div>
@@ -1293,67 +1358,6 @@
             </tr>
         </table>
     </div>
-</div>
-<div id="modal-shortcuts" class="modal fade">
-    <div class="modal-header">
-        <a class="close" data-dismiss="modal">×</a>
-
-        <h3>Shortcuts</h3>
-    </div>
-    <div class="modal-body">
-        <table class="table table-bordered table-striped">
-            <thead>
-            <tr>
-                <th>Action</th>
-                <th>Shortcut key</th>
-            </tr>
-            </thead>
-            <tr>
-                <td>New request</td>
-                <td><strong>Alt + n</strong></td>
-            </tr>
-            <tr>
-                <td>Preview request</td>
-                <td><strong>Alt + p</strong></td>
-            </tr>
-            <tr>
-                <td>Edit URL</td>
-                <td><strong>Backspace</strong></td>
-            </tr>
-            <tr>
-                <td>Edit headers</td>
-                <td><strong>h</strong></td>
-            </tr>
-            <tr>
-                <td>Send request</td>
-                <td><strong>Enter/Return</strong></td>
-            </tr>
-            <tr>
-                <td>Maximize/minimze response</td>
-                <td><strong>f</strong></td>
-            </tr>
-            <tr>
-                <td>Add request to collection</td>
-                <td><strong>a</strong></td>
-            </tr>
-            <tr>
-                <td>Clear history</td>
-                <td><strong>Alt + c</strong></td>
-            </tr>
-            <tr>
-                <td>Manage environments</td>
-                <td><strong>e</strong></td>
-            </tr>
-            <tr>
-                <td>Toggle Quicklook window</td>
-                <td><strong>q</strong></td>
-            </tr>
-            <tr>
-                <td>This window</td>
-                <td><strong>?</strong></td>
-            </tr>
-        </table>
-    </div>    
 </div>
 <!-- Javascript Dependencies -->
 <!-- Base -->
