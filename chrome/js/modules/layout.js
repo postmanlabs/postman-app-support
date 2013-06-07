@@ -197,7 +197,9 @@ pm.layout = {
             pm.collections.updateCollectionRequestMeta(id, name, description);
         });
 
-        chrome.app.window.onBoundsChanged.addListener(function () {
+        console.log("Setting event listener for bounds");
+
+        $(window).on("resize", function () {
             console.log("Size changed");
             pm.layout.setLayout();
         });
@@ -366,7 +368,7 @@ pm.layout = {
     },
 
     setLayout:function () {
-        this.refreshScrollPanes();        
+        pm.layout.refreshScrollPanes();        
     },
 
     refreshScrollPanes:function () {
