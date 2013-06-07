@@ -405,8 +405,7 @@ pm.collections = {
     },
 
     importCollectionData:function (collection) {                
-        var collections = pm.collections.items;
-        console.log(collections);
+        var collections = pm.collections.items;        
         var size = collections.length;
         var found = false;
         var originalCollection;

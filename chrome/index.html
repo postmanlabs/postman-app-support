@@ -885,8 +885,7 @@
                 </div>
             </div>
             <div class="control-group">
-                <a
-                        id="import-collection-url-submit"
+                <a id="import-collection-url-submit"
                         class="btn btn-primary">Import</a>
             </div>
         </div>
@@ -1316,7 +1315,10 @@
                 <div style="margin-top: 20px;">
                     <h4>Import data</h4>
                     <p>Import a Postman data dump. This will overwrite existing data.</p>
-                    <a id="import-all-data" class="btn">Import</a>
+
+                    <div class="control-group">
+                        <input type="file" id="import-all-data-files-input" name="files"/>
+                    </div>
                 </div>
             </div>
             <div class="tab-pane" id="settings-add-ons">

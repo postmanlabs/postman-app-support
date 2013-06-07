@@ -40,7 +40,10 @@ pm.layout = {
     },
 
     init:function () {
-        pm.layout.detectLauncher()   
+        pm.layout.detectLauncher();
+
+        pm.layout.dataDump.init();
+
 
         if (pm.settings.get("haveDonated") == true) {
             console.log("Donated");
@@ -531,6 +534,18 @@ pm.layout = {
         removeCollection:function (id) {
             $('#collection-' + id).remove();
             pm.layout.refreshScrollPanes();
+        }
+    },
+
+    dataDump: {
+        init: function() {
+            $("#download-all-data").on("click", function() {
+                pm.indexedDB.downloadAllData();
+            });
+
+            $("#import-all-data").on("click", function() {
+                
+            });
         }
     }
 };

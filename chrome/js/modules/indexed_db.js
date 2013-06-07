@@ -1018,10 +1018,79 @@ pm.indexedDB = {
 
 
     downloadAllData: function(callback) {
+        //Get globals        
+        var totalCount = 0;
+        var currentCount = 0;
+        var collections = [];
+        var globals = [];
+        var environments = [];
+        var headerPresets = [];
 
+        var onFinishGettingCollectionRequests = function(collection) {
+            collections.push(collection);
+
+            currentCount++;
+
+            if (currentCount == totalCount) {
+                onFinishExportingCollections(collections);
+            }
+        }
+
+        var onFinishExportingCollections = function(c) {            
+            globals = pm.envManager.globals;            
+
+            //Get environments
+            pm.indexedDB.environments.getAllEnvironments(function (e) {
+                environments = e;
+                pm.indexedDB.headerPresets.getAllHeaderPresets(function (hp) {
+                    headerPresets = hp;           
+                    onFinishExporttingAllData();         
+                });
+            });
+        }
+
+        var onFinishExporttingAllData = function() {
+            console.log("collections", collections);
+            console.log("environments", environments);
+            console.log("headerPresets", headerPresets);
+            console.log("globals", globals);
+
+            var dump = {
+                version: 1,
+                collections: collections,
+                environments: environments,
+                headerPresets: headerPresets,
+                globals: globals                
+            };
+
+            var name = "postman_dump.json";
+            var filedata = JSON.stringify(dump);
+            var type = "application/json";
+            pm.filesystem.saveAndOpenFile(name, filedata, type, function () {                
+            });
+        }
+        
+        //Get collections
+        //Get header presets
+        pm.indexedDB.getCollections(function (items) {    
+            totalCount = items.length;        
+            pm.collections.items = items;
+            var itemsLength = items.length;
+
+            if (itemsLength !== 0) {                
+                for (var i = 0; i < itemsLength; i++) {
+                    var collection = items[i];
+                    pm.indexedDB.getAllRequestsInCollection(collection, function (collection, requests) {
+                        collection.requests = requests;       
+
+                        onFinishGettingCollectionRequests(collection);                 
+                    });
+                }
+            }
+        });
     },
 
     importAllData: function(callback) {
-        
+
     }
 };
