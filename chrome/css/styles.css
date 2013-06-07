@@ -1649,3 +1649,12 @@ input[type="file"] {
 #drive-user-enable {
     display: none;
 }
+
+.add-on {
+    margin-bottom: 10px;
+}
+
+.add-on a {
+    font-size: 14px;
+    font-weight: bold;
+}
