@@ -156,20 +156,44 @@ window.requestFileSystem = window.requestFileSystem || window.webkitRequestFileS
 
 pm.init = function () {
     Handlebars.partials = Handlebars.templates;
+
+    console.log("Opening settings");
+    pm.settings.init(function() {   
+        console.log("Opening request");     
+        pm.request.init();
+    });
+
+    console.log("Opening history");
     pm.history.init();
-    pm.collections.init();
-    pm.settings.init();
+
+    console.log("Opening collections");
+    pm.collections.init();        
+
+    console.log("Opening layout");
     pm.layout.init();
+
+    console.log("Opening editor");
     pm.editor.init();
-    pm.jsonlint.init();
-    pm.request.init();
-    pm.urlCache.refreshAutoComplete();
+
+    //pm.jsonlint.init();        
+
+    console.log("Opening helpers");    
     pm.helpers.init();
+
+    console.log("Opening keymap");
     pm.keymap.init();
+
+    console.log("Opening envManager");
     pm.envManager.init();
+
+    console.log("Opening filesystem");
     pm.filesystem.init();
+
+    console.log("Opening latest indexedDB");
     pm.indexedDB.open();
-    pm.broadcasts.init();
+
+    //pm.broadcasts.init();
+    
     $(":input:first").focus();
 };
 
@@ -177,6 +201,6 @@ $(document).ready(function () {
     pm.init();
 });
 
-$(window).on("unload", function () {    
+chrome.app.window.onClosed.addListener(function () {    
     pm.request.saveCurrentRequestToLocalStorage();
 });

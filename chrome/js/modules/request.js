@@ -24,6 +24,8 @@ pm.request = {
         codeMirror:false,
 
         init:function () {
+            console.log("Opening urlCache");            
+
             this.initPreview();
             this.initFormDataEditor();
             this.initUrlEncodedEditor();
@@ -388,7 +390,8 @@ pm.request = {
         }
 
         var lastRequest = pm.settings.get("lastRequest");
-        if (lastRequest !== "") {
+        console.log(lastRequest);
+        if (lastRequest !== "" && lastRequest !== undefined) {
             var lastRequestParsed = JSON.parse(lastRequest);
             pm.request.isFromCollection = false;
             pm.request.loadRequestInEditor(lastRequestParsed);
@@ -1119,10 +1122,12 @@ pm.request = {
         },
 
         loadCookies:function (url) {
+            /*
             chrome.cookies.getAll({url:url}, function (cookies) {
                 var count;
                 pm.request.response.renderCookies(cookies);
             });
+            */
         },
 
         setFormat:function (language, response, format, forceCreate) {
@@ -1973,6 +1978,7 @@ pm.request = {
 
     //Send the current request
     send:function (responseRawDataType) {
+        pm.urlCache.refreshAutoComplete();
         pm.request.prepareForSending();                                        
         if (pm.request.url === "") {
             return;

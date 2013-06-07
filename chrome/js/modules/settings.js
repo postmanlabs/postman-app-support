@@ -3,34 +3,46 @@ pm.settings = {
     lastRequest:"",
     autoSaveRequest:true,
     selectedEnvironmentId:"",
+    type: "chromeStorageArea",
+    items: [],
 
-    createSettings: function() {
-        pm.settings.create("historyCount", 100);
-        pm.settings.create("autoSaveRequest", true);
-        pm.settings.create("selectedEnvironmentId", true);
-        pm.settings.create("lineWrapping", true);
-        pm.settings.create("previewType", "parsed");
-        pm.settings.create("retainLinkHeaders", false);
-        pm.settings.create("sendNoCacheHeader", true);
-        pm.settings.create("usePostmanProxy", false);        
-        pm.settings.create("proxyURL", "");
-        pm.settings.create("lastRequest", "");
-        pm.settings.create("launcherNotificationCount", 0);
-        pm.settings.create("variableDelimiter", "{{...}}");
-        pm.settings.create("languageDetection", "auto");
-        pm.settings.create("haveDonated", false);
-    },
+    initValues: function(callback) {
+        pm.settings.items = {};            
+        chrome.storage.local.get("settings", function(settingsJson) {               
+            pm.settings.items = JSON.parse(settingsJson.settings);
 
-    initValues: function() {
-        $('#history-count').val(pm.settings.get("historyCount"));
-        $('#auto-save-request').val(pm.settings.get("autoSaveRequest") + "");
-        $('#retain-link-headers').val(pm.settings.get("retainLinkHeaders") + "");
-        $('#send-no-cache-header').val(pm.settings.get("sendNoCacheHeader") + "");
-        $('#use-postman-proxy').val(pm.settings.get("usePostmanProxy") + "");
-        $('#postman-proxy-url').val(pm.settings.get("postmanProxyUrl"));
-        $('#variable-delimiter').val(pm.settings.get("variableDelimiter"));
-        $('#language-detection').val(pm.settings.get("languageDetection"));
-        $('#have-donated').val(pm.settings.get("haveDonated") + "");
+            pm.settings.create("historyCount", 100);
+            pm.settings.create("autoSaveRequest", true);
+            pm.settings.create("selectedEnvironmentId", true);
+            pm.settings.create("lineWrapping", true);
+            pm.settings.create("previewType", "parsed");
+            pm.settings.create("retainLinkHeaders", false);
+            pm.settings.create("sendNoCacheHeader", true);
+            pm.settings.create("usePostmanProxy", false);        
+            pm.settings.create("proxyURL", "");
+            pm.settings.create("lastRequest", "");
+            pm.settings.create("launcherNotificationCount", 0);
+            pm.settings.create("variableDelimiter", "{{...}}");
+            pm.settings.create("languageDetection", "auto");
+            pm.settings.create("haveDonated", false);
+
+            console.log(settingsJson);
+
+            $('#history-count').val(pm.settings.get("historyCount"));
+            $('#auto-save-request').val(pm.settings.get("autoSaveRequest") + "");
+            $('#retain-link-headers').val(pm.settings.get("retainLinkHeaders") + "");
+            $('#send-no-cache-header').val(pm.settings.get("sendNoCacheHeader") + "");
+            $('#use-postman-proxy').val(pm.settings.get("usePostmanProxy") + "");
+            $('#postman-proxy-url').val(pm.settings.get("postmanProxyUrl"));
+            $('#variable-delimiter').val(pm.settings.get("variableDelimiter"));
+            $('#language-detection').val(pm.settings.get("languageDetection"));
+            $('#have-donated').val(pm.settings.get("haveDonated") + "");
+
+            console.log(pm.settings.items);
+            pm.settings.initListeners();
+
+            callback();
+        });        
     },
 
     initListeners: function() {
@@ -111,31 +123,34 @@ pm.settings = {
         }
     },
     
-    init:function () {                
-        pm.settings.createSettings();
-        pm.settings.initValues();
-        pm.settings.initListeners();
+    init:function (callback) {                
+        pm.settings.initValues(callback);        
     },
 
     create:function (key, defaultVal) {
-        if (localStorage[key]) {
-            pm.settings[key] = localStorage[key];
-        }
-        else {
+        if (!pm.settings.items[key]) {            
             if (defaultVal !== "undefined") {
-                pm.settings[key] = defaultVal;
-                localStorage[key] = defaultVal;
+                pm.settings.set(key, defaultVal);
             }
         }
     },
 
     set:function (key, value) {
-        pm.settings[key] = value;
+        pm.settings.items[key] = value;
+
+        var o = { 'settings': JSON.stringify(pm.settings.items) };
+        chrome.storage.local.set(o, function() {
+            console.log("Set the values");
+        });
+
+        /*
         localStorage[key] = value;
+        */
     },
 
     get:function (key) {
-        var val = localStorage[key];
+        var val = pm.settings.items[key];
+
         if (val === "true") {
             return true;
         }
@@ -143,7 +158,7 @@ pm.settings = {
             return false;
         }
         else {
-            return localStorage[key];
+            return val;
         }
     }
 };

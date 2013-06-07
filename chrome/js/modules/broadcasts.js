@@ -1,3 +1,4 @@
+/*
 pm.broadcasts = {
     init:function () {
         var broadcasts = localStorage["broadcasts"];
@@ -111,3 +112,4 @@ pm.broadcasts = {
         $("#broadcasts .dropdown-menu").append(Handlebars.templates.broadcasts({"items":broadcasts}));
     }
 };
+*/

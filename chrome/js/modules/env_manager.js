@@ -52,6 +52,7 @@ pm.envManager = {
 
     init:function () {
         pm.envManager.initGlobals();
+
         $('#environment-list').append(Handlebars.templates.environment_list({"items":this.environments}));
 
         $('#environments-list').on("click", ".environment-action-delete", function () {
@@ -287,6 +288,7 @@ pm.envManager = {
     },
 
     initGlobals:function () {
+        /*
         if ('globals' in localStorage) {
             var globalsString = localStorage['globals'];
             pm.envManager.globals = JSON.parse(globalsString);
@@ -294,6 +296,16 @@ pm.envManager = {
         else {
             pm.envManager.globals = [];
         }
+        */
+        pm.envManager.globals = [];
+        chrome.storage.local.get('globals', function(s) {            ;
+            if (s.globals) {
+                pm.envManager.globals = JSON.parse(s.globals);    
+            }
+            else {
+                pm.envManager.globals = [];
+            }            
+        });
 
     },
 
@@ -301,7 +313,15 @@ pm.envManager = {
         var globals = $('#globals-keyvaleditor').keyvalueeditor('getValues');
         pm.envManager.globals = globals;
         pm.envManager.quicklook.refreshGlobals(globals);
+
+        /*
         localStorage['globals'] = JSON.stringify(globals);
+        */
+
+        var o = { 'globals': JSON.stringify(globals) };
+        chrome.storage.local.set(o, function() {
+            console.log("Set the values");
+        });
     },
 
     showSelector:function () {

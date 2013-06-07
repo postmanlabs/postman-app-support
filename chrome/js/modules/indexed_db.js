@@ -127,10 +127,12 @@ pm.indexedDB = {
     },
 
     open:function () {
+        console.log("Opening latest indexedDB");
         if (parseInt(navigator.userAgent.match(/Chrom(e|ium)\/([0-9]+)\./)[2]) < 23) {
             pm.indexedDB.open_v21();
         }
         else {
+            console.log("Opening latest indexedDB");
             pm.indexedDB.open_latest();
         }
     },

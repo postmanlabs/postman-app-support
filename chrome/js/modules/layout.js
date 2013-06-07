@@ -50,7 +50,7 @@ pm.layout = {
 
         $('#make-postman-better').on("click", function () {
             $('#modal-spread-the-word').modal('show');
-            pm.layout.attachSocialButtons();
+            //pm.layout.attachSocialButtons();
         });
 
         $('#donate').on("click", function () {
@@ -197,7 +197,8 @@ pm.layout = {
             pm.collections.updateCollectionRequestMeta(id, name, description);
         });
 
-        $(window).resize(function () {
+        chrome.app.window.onBoundsChanged.addListener(function () {
+            console.log("Size changed");
             pm.layout.setLayout();
         });
 
