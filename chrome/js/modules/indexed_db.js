@@ -1014,8 +1014,14 @@ pm.indexedDB = {
                 console.log(e.value);
             };
         }        
+    },
+
+
+    downloadAllData: function(callback) {
+
+    },
+
+    importAllData: function(callback) {
+        
     }
-
-
-
 };

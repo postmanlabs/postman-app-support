@@ -71,9 +71,10 @@ pm.collections = {
 
                     pm.collections.drive.checkIfCollectionIsOnDrive(id, function(exists, driveFile) {
                         if (exists) {
-                            var modifiedDate = new Date(driveFile.timestamp);
-                            $('#edit-collection-drive-status').attr("title", modifiedDate);
-                            $('#edit-collection-drive-status').timeago();
+                            console.log(driveFile.file.modifiedDate);
+                            var modifiedDate = new Date(driveFile.file.modifiedDate);
+                            var t = jQuery.timeago(modifiedDate);
+                            $('#edit-collection-drive-status').html("Last synced " + t);                            
                             $('#edit-collection-upload-drive').css("display", "none");
                         }
                         else {

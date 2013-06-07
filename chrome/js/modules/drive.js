@@ -515,6 +515,13 @@ pm.drive = {
                 pm.drive.getFile(file, function(responseText) {
                     console.log("Obtained file from drive");
                     //TODO Update local file timestamp
+                    localDriveFile.file = file;
+                    localDriveFile.timestamp = new Date().getTime();
+
+                    pm.indexedDB.driveFiles.updateDriveFile(localDriveFile, function() {                        
+                        console.log("Updated local drive file");
+                    });
+
                     pm.drive.onUpdate[file.fileExtension](responseText);
                 });
             }
