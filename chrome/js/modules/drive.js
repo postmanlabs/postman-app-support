@@ -1,11 +1,11 @@
-function handleClientLoad() {    
+function gapiIsLoaded() {    
     pm.drive.checkAuth();
 }
 
 pm.drive = {
     auth: {},
     about: {},
-    CLIENT_ID: '805864674475.apps.googleusercontent.com',
+    CLIENT_ID: '805864674475-vk0l2h2dpb3urf8f7rq83r9ktf899afi.apps.googleusercontent.com',
     SCOPES: [
         'https://www.googleapis.com/auth/drive.file',
         'https://www.googleapis.com/auth/drive.appdata',
@@ -93,14 +93,19 @@ pm.drive = {
         pm.settings.set("driveSyncConnectionStatus", "connection_started");
         $("#drive-first-time-sync-step1").css("display", "none");
         $("#drive-first-time-sync-step2").css("display", "block");
-        gapi.auth.authorize(
-            {
-                'client_id': pm.drive.CLIENT_ID,
-                'scope': pm.drive.SCOPES,
-                'immediate': false 
-            },
-            pm.drive.handleAuthResult)
-        ;
+        console.log("Drive ID is ", pm.drive.CLIENT_ID);
+        chrome.experimental.identity.getAuthToken(function(token) {
+            console.log(token);
+        });
+
+        // gapi.auth.authorize(
+        //     {
+        //         'client_id': pm.drive.CLIENT_ID,
+        //         'scope': pm.drive.SCOPES,
+        //         'immediate': false 
+        //     },
+        //     pm.drive.handleAuthResult)
+        // ;
     },
 
     isSyncEnabled: function() {
@@ -625,6 +630,15 @@ pm.drive = {
      * Check if the current user has authorized the application.
      */
     checkAuth: function(){        
+        console.log(pm.drive.CLIENT_ID);
+        
+        chrome.experimental.identity.getAuthToken({ 'interactive': true }, function(token) {
+            console.log(token);
+        });
+        
+        /*                
+        Using the gapi modules does not work with chrome packaged apps
+
         gapi.auth.authorize(
         {
             'client_id': pm.drive.CLIENT_ID,
@@ -633,6 +647,7 @@ pm.drive = {
         },
 
         pm.drive.handleAuthResult);
+        */
     },
 
     /**

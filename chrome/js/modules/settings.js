@@ -26,8 +26,6 @@ pm.settings = {
             pm.settings.create("languageDetection", "auto");
             pm.settings.create("haveDonated", false);
 
-            console.log(settingsJson);
-
             $('#history-count').val(pm.settings.get("historyCount"));
             $('#auto-save-request').val(pm.settings.get("autoSaveRequest") + "");
             $('#retain-link-headers').val(pm.settings.get("retainLinkHeaders") + "");
@@ -38,7 +36,6 @@ pm.settings = {
             $('#language-detection').val(pm.settings.get("languageDetection"));
             $('#have-donated').val(pm.settings.get("haveDonated") + "");
 
-            console.log(pm.settings.items);
             pm.settings.initListeners();
 
             callback();

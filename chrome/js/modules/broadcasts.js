@@ -32,8 +32,7 @@ pm.broadcasts = {
 
     fetch:function () {
         var broadcast_url = "http://www.getpostman.com/broadcasts";        
-        $.get(broadcast_url, function (data) {
-            console.log(data);
+        $.get(broadcast_url, function (data) {            
             pm.broadcasts.setBroadcasts(data["broadcasts"]);
             pm.broadcasts.renderBroadcasts();
         });
@@ -45,8 +44,7 @@ pm.broadcasts = {
 
     setBroadcasts:function (broadcasts) {
         var old_broadcasts;
-        pm.storage.get("broadcasts", function(broadcastsJson) {            
-            console.log(broadcastsJson);
+        pm.storage.get("broadcasts", function(broadcastsJson) {                        
             if (broadcastsJson) {
                 old_broadcasts = JSON.parse(broadcastsJson);
             }
@@ -62,8 +60,7 @@ pm.broadcasts = {
                 }
                 count = broadcasts.length;
                 var broadcastsJson = JSON.stringify(broadcasts);
-                pm.storage.set({"broadcasts": broadcastsJson}, function() {
-                    console.log("Set broadcasts");
+                pm.storage.set({"broadcasts": broadcastsJson}, function() {                    
                 });
             }
             else {
@@ -85,7 +82,6 @@ pm.broadcasts = {
                 old_broadcasts = _.union(new_broadcasts, old_broadcasts);
                 var broadcastsJson = JSON.stringify(old_broadcasts);
                 pm.storage.set({"broadcasts": broadcastsJson}, function() {
-                    console.log("Set broadcasts");
                 });
             }
 
@@ -123,8 +119,7 @@ pm.broadcasts = {
             }
 
             var outBroadcastsJsons = JSON.stringify(broadcasts);            
-            pm.storage.set({"broadcasts": outBroadcastsJsons}, function() {
-                console.log("Set broadcasts");
+            pm.storage.set({"broadcasts": outBroadcastsJsons}, function() {                
             });
 
             pm.broadcasts.renderBroadcasts();
@@ -132,9 +127,7 @@ pm.broadcasts = {
     },
 
     renderBroadcasts:function () {
-        console.log("Render broadcasts");
-        pm.storage.get("broadcasts", function(broadcastsJson) {   
-            console.log("Received JSON", broadcastsJson);
+        pm.storage.get("broadcasts", function(broadcastsJson) {               
             var broadcasts = JSON.parse(broadcastsJson);            
             $("#broadcasts .dropdown-menu").html("");
             $("#broadcasts .dropdown-menu").append(Handlebars.templates.broadcasts({"items":broadcasts}));
