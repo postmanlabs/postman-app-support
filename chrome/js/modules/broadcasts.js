@@ -1,24 +1,26 @@
-/*
 pm.broadcasts = {
+    items: [],
+
     init:function () {
-        var broadcasts = localStorage["broadcasts"];
-        var last_update_time = localStorage["broadcast_last_update_time"];
+        pm.storage.get("broadcasts", function(broadcasts) {
+            pm.storage.get("broadcast_last_update_time", function(last_update_time) {
+                var today = new Date();
 
-        var today = new Date();
+                pm.broadcasts.showBlank();
+                pm.broadcasts.fetch();
+                if (last_update_time) {
+                    var last_update = new Date(last_update_time);
+                    pm.broadcasts.setLastUpdateTime(today);
+                }
+                else {
+                    pm.broadcasts.setLastUpdateTime(today);
+                }
 
-        pm.broadcasts.showBlank();
-        pm.broadcasts.fetch();
-        if (last_update_time) {
-            var last_update = new Date(last_update_time);
-            pm.broadcasts.setLastUpdateTime(today);
-        }
-        else {
-            pm.broadcasts.setLastUpdateTime(today);
-        }
-
-        $("#broadcasts-count").on("click", function () {
-            pm.broadcasts.markAllAsRead();
-        });
+                $("#broadcasts-count").on("click", function () {
+                    pm.broadcasts.markAllAsRead();
+                });
+            });
+        });        
     },
 
     showBlank:function() {
@@ -31,62 +33,72 @@ pm.broadcasts = {
     fetch:function () {
         var broadcast_url = "http://www.getpostman.com/broadcasts";        
         $.get(broadcast_url, function (data) {
+            console.log(data);
             pm.broadcasts.setBroadcasts(data["broadcasts"]);
             pm.broadcasts.renderBroadcasts();
         });
     },
 
     setLastUpdateTime:function (last_update) {
-        localStorage["broadcast_last_update_time"] = last_update.toUTCString();
+        pm.storage.set({"broadcast_last_update_time": last_update.toUTCString()});        
     },
 
     setBroadcasts:function (broadcasts) {
         var old_broadcasts;
-        if ("broadcasts" in localStorage) {
-            old_broadcasts = JSON.parse(localStorage["broadcasts"]);
-        }
-        else {
-            old_broadcasts = [];
-        }
-
-        var i, c, count;
-        if (old_broadcasts.length == 0) {
-            c = broadcasts.length;
-            for (i = 0; i < c; i++) {
-                broadcasts[i]["status"] = "unread";
+        pm.storage.get("broadcasts", function(broadcastsJson) {            
+            console.log(broadcastsJson);
+            if (broadcastsJson) {
+                old_broadcasts = JSON.parse(broadcastsJson);
             }
-            count = broadcasts.length;
-            localStorage["broadcasts"] = JSON.stringify(broadcasts);
-        }
-        else {
-            c = broadcasts.length;
-            var new_broadcasts = [];
-            for (i = 0; i < c; i++) {
-                var b = broadcasts[i];
+            else {
+                old_broadcasts = [];
+            }
 
-                var existing = _.find(old_broadcasts, function (br) {
-                    return br.id === b.id;
-                });
-                if (!existing) {
-                    b["status"] = "unread";
-                    new_broadcasts.push(b);
+            var i, c, count;
+            if (old_broadcasts.length == 0) {
+                c = broadcasts.length;
+                for (i = 0; i < c; i++) {
+                    broadcasts[i]["status"] = "unread";
                 }
+                count = broadcasts.length;
+                var broadcastsJson = JSON.stringify(broadcasts);
+                pm.storage.set({"broadcasts": broadcastsJson}, function() {
+                    console.log("Set broadcasts");
+                });
+            }
+            else {
+                c = broadcasts.length;
+                var new_broadcasts = [];
+                for (i = 0; i < c; i++) {
+                    var b = broadcasts[i];
+
+                    var existing = _.find(old_broadcasts, function (br) {
+                        return br.id === b.id;
+                    });
+                    if (!existing) {
+                        b["status"] = "unread";
+                        new_broadcasts.push(b);
+                    }
+                }
+
+                count = new_broadcasts.length;
+                old_broadcasts = _.union(new_broadcasts, old_broadcasts);
+                var broadcastsJson = JSON.stringify(old_broadcasts);
+                pm.storage.set({"broadcasts": broadcastsJson}, function() {
+                    console.log("Set broadcasts");
+                });
             }
 
-            count = new_broadcasts.length;
-            old_broadcasts = _.union(new_broadcasts, old_broadcasts);
-            localStorage["broadcasts"] = JSON.stringify(old_broadcasts);
-        }
-
-        var $broadcasts_count = $("#broadcasts-count");
-        $broadcasts_count.html(count);
-        $broadcasts_count.removeClass();
-        if (count > 0) {
-            $broadcasts_count.addClass("new-broadcasts");
-        }
-        else {
-            $broadcasts_count.addClass("no-new-broadcasts");
-        }
+            var $broadcasts_count = $("#broadcasts-count");
+            $broadcasts_count.html(count);
+            $broadcasts_count.removeClass();
+            if (count > 0) {
+                $broadcasts_count.addClass("new-broadcasts");
+            }
+            else {
+                $broadcasts_count.addClass("no-new-broadcasts");
+            } 
+        });        
     },
 
     markAllAsRead:function () {
@@ -94,22 +106,38 @@ pm.broadcasts = {
         $broadcasts_count.removeClass();
         $broadcasts_count.addClass("no-new-broadcasts");
         $broadcasts_count.html("0");
+        
+        pm.storage.get("broadcasts", function(broadcastsJson) {
+            var broadcasts;
 
-        var broadcasts = JSON.parse(localStorage["broadcasts"]);
-        var c = broadcasts.length;
-        for (var i = 0; i < c; i++) {
-            broadcasts[i]["status"] = "read";
-        }
+            if (broadcastsJson) {
+                broadcasts = JSON.parse(broadcastsJson);    
+            }
+            else {
+                broadcasts = [];
+            }
+            
+            var c = broadcasts.length;
+            for (var i = 0; i < c; i++) {
+                broadcasts[i]["status"] = "read";
+            }
 
-        localStorage["broadcasts"] = JSON.stringify(broadcasts);
-        pm.broadcasts.renderBroadcasts();
+            var outBroadcastsJsons = JSON.stringify(broadcasts);            
+            pm.storage.set({"broadcasts": outBroadcastsJsons}, function() {
+                console.log("Set broadcasts");
+            });
+
+            pm.broadcasts.renderBroadcasts();
+        });    
     },
 
     renderBroadcasts:function () {
-        var broadcasts = JSON.parse(localStorage["broadcasts"]);
-
-        $("#broadcasts .dropdown-menu").html("");
-        $("#broadcasts .dropdown-menu").append(Handlebars.templates.broadcasts({"items":broadcasts}));
+        console.log("Render broadcasts");
+        pm.storage.get("broadcasts", function(broadcastsJson) {   
+            console.log("Received JSON", broadcastsJson);
+            var broadcasts = JSON.parse(broadcastsJson);            
+            $("#broadcasts .dropdown-menu").html("");
+            $("#broadcasts .dropdown-menu").append(Handlebars.templates.broadcasts({"items":broadcasts}));
+        });        
     }
 };
-*/

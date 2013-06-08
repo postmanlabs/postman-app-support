@@ -69,6 +69,13 @@ function sortAlphabetical(a, b) {
 
 var pm = {};
 
+pm.targets = {
+    CHROME_LEGACY_APP: 0,
+    CHROME_PACKAGED_APP: 1    
+};
+
+pm.target = pm.targets.CHROME_PACKAGED_APP;
+
 pm.debug = true;
 
 pm.indexedDB = {};
@@ -192,7 +199,7 @@ pm.init = function () {
     console.log("Opening latest indexedDB");
     pm.indexedDB.open();
 
-    //pm.broadcasts.init();
+    pm.broadcasts.init();
     
     $(":input:first").focus();
 };

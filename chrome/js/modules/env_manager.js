@@ -51,121 +51,121 @@ pm.envManager = {
     },
 
     init:function () {
-        pm.envManager.initGlobals();
+        pm.envManager.initGlobals(function() {
+            $('#environment-list').append(Handlebars.templates.environment_list({"items":pm.envManager.environments}));
 
-        $('#environment-list').append(Handlebars.templates.environment_list({"items":this.environments}));
+            $('#environments-list').on("click", ".environment-action-delete", function () {
+                var id = $(this).attr('data-id');
+                $('a[rel="tooltip"]').tooltip('hide');
+                pm.envManager.deleteEnvironment(id);
+            });
 
-        $('#environments-list').on("click", ".environment-action-delete", function () {
-            var id = $(this).attr('data-id');
-            $('a[rel="tooltip"]').tooltip('hide');
-            pm.envManager.deleteEnvironment(id);
-        });
+            $('#environments-list').on("click", ".environment-action-edit", function () {
+                var id = $(this).attr('data-id');
+                pm.envManager.showEditor(id);
+            });
 
-        $('#environments-list').on("click", ".environment-action-edit", function () {
-            var id = $(this).attr('data-id');
-            pm.envManager.showEditor(id);
-        });
+            $('#environments-list').on("click", ".environment-action-duplicate", function () {
+                var id = $(this).attr('data-id');
+                pm.envManager.duplicateEnvironment(id);
+            });
 
-        $('#environments-list').on("click", ".environment-action-duplicate", function () {
-            var id = $(this).attr('data-id');
-            pm.envManager.duplicateEnvironment(id);
-        });
+            $('#environments-list').on("click", ".environment-action-download", function () {
+                var id = $(this).attr('data-id');
+                pm.envManager.downloadEnvironment(id);
+            });
 
-        $('#environments-list').on("click", ".environment-action-download", function () {
-            var id = $(this).attr('data-id');
-            pm.envManager.downloadEnvironment(id);
-        });
+            $('.environment-action-back').on("click", function () {
+                pm.envManager.showSelector();
+            });
 
-        $('.environment-action-back').on("click", function () {
-            pm.envManager.showSelector();
-        });
+            $('#environment-selector').on("click", ".environment-list-item", function () {
+                var id = $(this).attr('data-id');
+                var selectedEnv = pm.envManager.getEnvironmentFromId(id);
+                pm.envManager.selectedEnv = selectedEnv;
+                pm.settings.set("selectedEnvironmentId", selectedEnv.id);
+                pm.envManager.quicklook.refreshEnvironment(selectedEnv);
+                $('#environment-selector .environment-list-item-selected').html(selectedEnv.name);
+            });
 
-        $('#environment-selector').on("click", ".environment-list-item", function () {
-            var id = $(this).attr('data-id');
-            var selectedEnv = pm.envManager.getEnvironmentFromId(id);
-            pm.envManager.selectedEnv = selectedEnv;
-            pm.settings.set("selectedEnvironmentId", selectedEnv.id);
-            pm.envManager.quicklook.refreshEnvironment(selectedEnv);
-            $('#environment-selector .environment-list-item-selected').html(selectedEnv.name);
-        });
+            $('#environment-selector').on("click", ".environment-list-item-noenvironment", function () {
+                pm.envManager.selectedEnv = null;
+                pm.settings.set("selectedEnvironmentId", "");
+                pm.envManager.quicklook.removeEnvironmentData();
+                $('#environment-selector .environment-list-item-selected').html("No environment");
+            });
 
-        $('#environment-selector').on("click", ".environment-list-item-noenvironment", function () {
-            pm.envManager.selectedEnv = null;
-            pm.settings.set("selectedEnvironmentId", "");
-            pm.envManager.quicklook.removeEnvironmentData();
-            $('#environment-selector .environment-list-item-selected').html("No environment");
-        });
+            $('#environment-quicklook').on("mouseenter", function () {
+                $('#environment-quicklook-content').css("display", "block");
+            });
 
-        $('#environment-quicklook').on("mouseenter", function () {
-            $('#environment-quicklook-content').css("display", "block");
-        });
+            $('#environment-quicklook').on("mouseleave", function () {
+                $('#environment-quicklook-content').css("display", "none");
+            });
 
-        $('#environment-quicklook').on("mouseleave", function () {
-            $('#environment-quicklook-content').css("display", "none");
-        });
-
-        $('#environment-files-input').on('change', function (event) {
-            var files = event.target.files;
-            pm.envManager.importEnvironments(files);
-            $('#environment-files-input').val("");
-        });
+            $('#environment-files-input').on('change', function (event) {
+                var files = event.target.files;
+                pm.envManager.importEnvironments(files);
+                $('#environment-files-input').val("");
+            });
 
 
-        $('.environments-actions-add').on("click", function () {
-            pm.envManager.showEditor();
-        });
+            $('.environments-actions-add').on("click", function () {
+                pm.envManager.showEditor();
+            });
 
-        $('.environments-actions-import').on('click', function () {
-            pm.envManager.showImporter();
-        });
+            $('.environments-actions-import').on('click', function () {
+                pm.envManager.showImporter();
+            });
 
-        $('.environments-actions-manage-globals').on('click', function () {
-            pm.envManager.showGlobals();
-        });
+            $('.environments-actions-manage-globals').on('click', function () {
+                pm.envManager.showGlobals();
+            });
 
-        $('.environments-actions-add-submit').on("click", function () {
-            var id = $('#environment-editor-id').val();
-            if (id === "0") {
-                pm.envManager.addEnvironment();
-            }
-            else {
-                pm.envManager.updateEnvironment();
-            }
+            $('.environments-actions-add-submit').on("click", function () {
+                var id = $('#environment-editor-id').val();
+                if (id === "0") {
+                    pm.envManager.addEnvironment();
+                }
+                else {
+                    pm.envManager.updateEnvironment();
+                }
 
-            $('#environment-editor-name').val("");
-            $('#environment-keyvaleditor').keyvalueeditor('reset', []);
+                $('#environment-editor-name').val("");
+                $('#environment-keyvaleditor').keyvalueeditor('reset', []);
 
-        });
+            });
 
-        $('.environments-actions-add-back').on("click", function () {
-            pm.envManager.saveGlobals();
-            pm.envManager.showSelector();
-            $('#environment-editor-name').val("");
-            $('#environment-keyvaleditor').keyvalueeditor('reset', []);
-        });
+            $('.environments-actions-add-back').on("click", function () {
+                pm.envManager.saveGlobals();
+                pm.envManager.showSelector();
+                $('#environment-editor-name').val("");
+                $('#environment-keyvaleditor').keyvalueeditor('reset', []);
+            });
 
-        $('#environments-list-help-toggle').on("click", function () {
-            var d = $('#environments-list-help-detail').css("display");
-            if (d === "none") {
-                $('#environments-list-help-detail').css("display", "inline");
-                $(this).html("Hide");
-            }
-            else {
-                $('#environments-list-help-detail').css("display", "none");
-                $(this).html("Tell me more");
-            }
-        });
+            $('#environments-list-help-toggle').on("click", function () {
+                var d = $('#environments-list-help-detail').css("display");
+                if (d === "none") {
+                    $('#environments-list-help-detail').css("display", "inline");
+                    $(this).html("Hide");
+                }
+                else {
+                    $('#environments-list-help-detail').css("display", "none");
+                    $(this).html("Tell me more");
+                }
+            });
 
-        var params = {
-            placeHolderKey:"Key",
-            placeHolderValue:"Value",
-            deleteButton:'<img class="deleteButton" src="img/delete.png">'
-        };
+            var params = {
+                placeHolderKey:"Key",
+                placeHolderValue:"Value",
+                deleteButton:'<img class="deleteButton" src="img/delete.png">'
+            };
 
-        $('#environment-keyvaleditor').keyvalueeditor('init', params);
-        $('#globals-keyvaleditor').keyvalueeditor('init', params);
-        $('#globals-keyvaleditor').keyvalueeditor('reset', pm.envManager.globals);
-        pm.envManager.quicklook.init();
+            $('#environment-keyvaleditor').keyvalueeditor('init', params);
+            $('#globals-keyvaleditor').keyvalueeditor('init', params);
+            $('#globals-keyvaleditor').keyvalueeditor('reset', pm.envManager.globals);
+            pm.envManager.quicklook.init();
+        });        
     },
 
     getEnvironmentFromId:function (id) {
@@ -287,24 +287,17 @@ pm.envManager = {
         })
     },
 
-    initGlobals:function () {
-        /*
-        if ('globals' in localStorage) {
-            var globalsString = localStorage['globals'];
-            pm.envManager.globals = JSON.parse(globalsString);
-        }
-        else {
-            pm.envManager.globals = [];
-        }
-        */
+    initGlobals:function (callback) {        
         pm.envManager.globals = [];
-        chrome.storage.local.get('globals', function(s) {            ;
-            if (s.globals) {
-                pm.envManager.globals = JSON.parse(s.globals);    
+        pm.storage.get('globals', function(s) {            ;            
+            if (s) {
+                pm.envManager.globals = JSON.parse(s);    
             }
             else {
                 pm.envManager.globals = [];
             }            
+
+            callback();
         });
 
     },
@@ -313,13 +306,8 @@ pm.envManager = {
         var globals = $('#globals-keyvaleditor').keyvalueeditor('getValues');
         pm.envManager.globals = globals;
         pm.envManager.quicklook.refreshGlobals(globals);
-
-        /*
-        localStorage['globals'] = JSON.stringify(globals);
-        */
-
-        var o = { 'globals': JSON.stringify(globals) };
-        chrome.storage.local.set(o, function() {
+        var o = {'globals': JSON.stringify(globals)};
+        pm.storage.set(o, function() {
             console.log("Set the values");
         });
     },

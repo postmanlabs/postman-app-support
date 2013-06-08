@@ -7,9 +7,7 @@ pm.urlCache = {
         }        
     },
 
-    refreshAutoComplete:function () {        
-        console.log(pm.urlCache.urls);
-
+    refreshAutoComplete:function () {
         if (pm.urlCache.urls.length == 0) return;
 
         /*

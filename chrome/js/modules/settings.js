@@ -8,8 +8,8 @@ pm.settings = {
 
     initValues: function(callback) {
         pm.settings.items = {};            
-        chrome.storage.local.get("settings", function(settingsJson) {               
-            pm.settings.items = JSON.parse(settingsJson.settings);
+        pm.storage.get("settings", function(settingsJson) {               
+            pm.settings.items = JSON.parse(settingsJson);
 
             pm.settings.create("historyCount", 100);
             pm.settings.create("autoSaveRequest", true);
@@ -128,7 +128,7 @@ pm.settings = {
     },
 
     create:function (key, defaultVal) {
-        if (!pm.settings.items[key]) {            
+        if (!(key in pm.settings.items)) {            
             if (defaultVal !== "undefined") {
                 pm.settings.set(key, defaultVal);
             }
@@ -138,14 +138,10 @@ pm.settings = {
     set:function (key, value) {
         pm.settings.items[key] = value;
 
-        var o = { 'settings': JSON.stringify(pm.settings.items) };
-        chrome.storage.local.set(o, function() {
+        var o = {'settings': JSON.stringify(pm.settings.items)};
+        pm.storage.set(o, function() {
             console.log("Set the values");
         });
-
-        /*
-        localStorage[key] = value;
-        */
     },
 
     get:function (key) {

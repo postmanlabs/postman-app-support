@@ -13,6 +13,7 @@ a, a:hover {
 }
 
 #container {
+    border-top: solid thin #ccc;
     height: 100%;
     width: 100%;
 }
