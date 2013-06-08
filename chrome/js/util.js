@@ -194,10 +194,29 @@ function string2ArrayBuffer(string, callback) {
 
 function find(collection, filter) {
     for (var i = 0; i < filter.length; i++) {
-        if (filter(collection[i], i, collection)) {
-            console.log(i);
+        if (filter(collection[i], i, collection)) {            
             return i;
         }
+    }
+    return -1;
+}
+
+function copyToClipboard(text){
+    var copyDiv = document.createElement('textarea');
+    copyDiv.contentEditable = true;
+    document.body.appendChild(copyDiv);
+    copyDiv.innerHTML = text;
+    copyDiv.unselectable = "off";
+    copyDiv.focus();
+    console.log(text);
+    document.execCommand('selectall');
+    document.execCommand("copy", false, null);
+    document.body.removeChild(copyDiv);
+}
+
+function arrayObjectIndexOf(myArray, searchTerm, property) {
+    for(var i = 0, len = myArray.length; i < len; i++) {
+        if (myArray[i][property] === searchTerm) return i;
     }
     return -1;
 }

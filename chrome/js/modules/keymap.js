@@ -112,11 +112,12 @@ pm.keymap = {
         $(document).bind('keydown', 'shift+/', function () {
             if(pm.layout.isModalOpen) return;
 
-            $('#modal-shortcuts').modal({
+            $('#modal-settings').modal({
                 keyboard: true
             });
 
-            $('#modal-shortcuts').modal('show');
+            $('#modal-settings').modal('show');
+            $('#modal-settings a[href="#settings-shortcuts"]').tab('show');
         });
 
         $(document).bind('keydown', 'a', function () {

@@ -30,8 +30,8 @@ var dropbox = {};
 
 
 //Change to your own Dropbox API keys
-dropbox.consumerKey = "9a3t6ah2b9198ox";
-dropbox.consumerSecret = "pt9txtw6p2l7e52";
+dropbox.consumerKey = "";
+dropbox.consumerSecret = "";
 
 //Prefix for data storate - MUST be unique
 dropbox.prefix = "postman_";

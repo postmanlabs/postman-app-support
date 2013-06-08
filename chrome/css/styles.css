@@ -948,10 +948,61 @@ li .right {
     margin-top: 5px;
 }
 
+#drive-status {
+    float: right;
+    margin-top: 7px;
+    margin-right: 15px;
+}
+
+#sync-status {
+    cursor: pointer;
+    float: left;
+    margin-right: 10px;        
+}
+
+#sync-status img {
+    width: 20px;
+    height: 20px;
+}
+
+.sync-normal {
+    -webkit-transform: rotate(0deg);
+}
+
+.sync-spin {
+    -webkit-animation-name: spin;
+    -webkit-animation-duration: 4000ms;
+    -webkit-animation-iteration-count: infinite;
+    -webkit-animation-timing-function: linear;
+    
+    animation-name: spin;
+    animation-duration: 4000ms;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+
+@-webkit-keyframes spin {
+    from { -webkit-transform: rotate(360deg); }
+    to { -webkit-transform: rotate(0deg); }
+}
+
+#drive-status #user-img {
+    float: left;
+}
+
+#drive-status #user-status {
+    float: left;
+    margin-left: 5px;
+}
+#drive-status #user-img img {
+    width: 20px;
+    height: 20px;
+}
+
 .preferences {
     float: right;
     margin-top: 5px;
-    width: 60px;
+    width: 30px;
 }
 
 .preferences a {
@@ -1342,8 +1393,7 @@ li .right {
 }
 
 #form-edit-collection .collection-name {
-    font-size: 18px;
-    font-weight: bold;
+    font-size: 14px;
 }
 
 #data-mode-selector {
@@ -1448,6 +1498,14 @@ li .right {
 }
 
 /*Bootstrap overrides*/
+.modal {
+    display: none;
+}
+
+.modal-header h3 {
+    font-size: 18px;
+}
+
 .pills li a {
     font-size: 11px;
     font-weight: bold;
@@ -1491,7 +1549,7 @@ input[type="file"] {
 
 .request-preview-header-title {
     padding-left: 20px;
-    font-size: 16px;
+    font-size: 16px; 
     font-weight: bold;
     margin-right: 20px;
     padding-top: 20px;
@@ -1511,4 +1569,93 @@ input[type="file"] {
 
 #request-preview-header .dropdown-menu li:last-child {
     border-bottom: none;
+}
+
+#request-body-editor-container-type {
+    float: right;
+    margin-right: 20px;
+}
+
+#body-data-container-textarea {
+    display: none;
+}
+
+#response-copy-container {
+    float: right;
+    margin-top: 10px;
+    margin-right: 20px;
+}
+
+#response-copy-button.zeroclipboard-is-hover { background-color:#eee; }
+#response-copy-button.zeroclipboard-is-active { background-color:#aaa; } 
+
+#drive-first-time-sync-step2 {
+    display: none;
+}
+
+#drive-first-time-sync-step1 .connection-error {
+    display: none;
+}
+
+.sidebar-collection-head-dt {
+    -webkit-transition: all 0.2s;
+}
+
+.disclosure-triangle-open {
+    display: inline-block;
+    -webkit-transform: rotate(90deg);
+}
+
+.disclosure-triangle-close {
+    display: inline-block;
+    -webkit-transform: rotate(0deg);
+}
+
+#edit-collection-drive {
+}
+
+#edit-collection-drive-status-container {
+    color: #aaa;
+    font-size: 10px;
+}
+#edit-collection-drive-actions {
+    margin-top: 10px;
+}
+
+#user-details-meta-container {
+    float: left;
+    margin-left: 10px;
+}
+#sync-details {
+    color: #999;
+    font-size: 11px;  
+    margin-top: 2px;
+}
+
+#user-details-image {
+    float: left;
+}
+
+#user-details-image img {
+    height: 40px;
+    width: 40px;
+}
+
+#user-details-name {
+    font-size: 16px;
+    font-weight: bold;
+    margin-top: 3px;    
+}
+
+#drive-user-enable {
+    display: none;
+}
+
+.add-on {
+    margin-bottom: 10px;
+}
+
+.add-on a {
+    font-size: 14px;
+    font-weight: bold;
 }

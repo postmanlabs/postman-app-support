@@ -4,8 +4,7 @@ pm.layout = {
 
     socialButtons:{
         "facebook":'<iframe src="http://www.facebook.com/plugins/like.php?href=https%3A%2F%2Fchrome.google.com%2Fwebstore%2Fdetail%2Ffdmmgilgnpjigdojojpjoooidkmcomcm&amp;send=false&amp;layout=button_count&amp;width=250&amp;show_faces=true&amp;action=like&amp;colorscheme=light&amp;font&amp;height=21&amp;appId=26438002524" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:250px; height:21px;" allowTransparency="true"></iframe>',
-        "twitter":'<a href="https://twitter.com/share" class="twitter-share-button" data-url="https://chrome.google.com/webstore/detail/fdmmgilgnpjigdojojpjoooidkmcomcm" data-text="I am using Postman to super-charge REST API testing and development!" data-count="horizontal" data-via="postmanclient">Tweet</a><script type="text/javascript" src="https://platform.twitter.com/widgets.js"></script>',
-        "plusOne":'<script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script><g:plusone size="medium" href="https://chrome.google.com/webstore/detail/fdmmgilgnpjigdojojpjoooidkmcomcm"></g:plusone>'
+        "twitter":'<a href="https://twitter.com/share" class="twitter-share-button" data-url="https://chrome.google.com/webstore/detail/fdmmgilgnpjigdojojpjoooidkmcomcm" data-text="I am using Postman to super-charge REST API testing and development!" data-count="horizontal" data-via="postmanclient">Tweet</a><script type="text/javascript" src="https://platform.twitter.com/widgets.js"></script>'        
     },
 
     detectLauncher: function() {
@@ -41,7 +40,10 @@ pm.layout = {
     },
 
     init:function () {
-        pm.layout.detectLauncher()   
+        pm.layout.detectLauncher();
+
+        pm.layout.dataDump.init();
+
 
         if (pm.settings.get("haveDonated") == true) {
             console.log("Donated");
@@ -207,6 +209,7 @@ pm.layout = {
         $('#response-data').on("mousedown", ".cm-link", function () {
             var link = $(this).html();
             var headers = $('#headers-keyvaleditor').keyvalueeditor('getValues');
+            console.log(headers);
             pm.request.loadRequestFromLink(link, headers);
         });
 
@@ -407,7 +410,10 @@ pm.layout = {
         maximizeSidebar:function () {
             var animationDuration = pm.layout.sidebar.animationDuration;
             $('#sidebar-toggle').animate({left:"350px"}, animationDuration, function () {
-                $('#sidebar-footer').fadeIn();
+                if (pm.settings.get("haveDonated") === false) {
+                    $('#sidebar-footer').fadeIn();    
+                }
+                
             });
             $('#sidebar').animate({width:pm.layout.sidebar.width + "px"}, animationDuration);
             $('#sidebar div').animate({opacity:1}, animationDuration);
@@ -450,6 +456,11 @@ pm.layout = {
         },
 
         select:function (section) {
+            $("#sidebar-selectors li").removeClass("active");
+            $("#sidebar-selectors-" + section).addClass("active");
+
+            pm.settings.set("activeSidebarSection", section);
+
             if (pm.collections.areLoaded === false) {
                 pm.collections.getAllCollections();
             }
@@ -526,6 +537,18 @@ pm.layout = {
         removeCollection:function (id) {
             $('#collection-' + id).remove();
             pm.layout.refreshScrollPanes();
+        }
+    },
+
+    dataDump: {
+        init: function() {
+            $("#download-all-data").on("click", function() {
+                pm.indexedDB.downloadAllData();
+            });
+
+            $("#import-all-data").on("click", function() {
+                
+            });
         }
     }
 };

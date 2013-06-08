@@ -1,7 +1,30 @@
+//Added dependency on drive.js. Will need a wrapper around 
+//both drive.js and indexed_db.js
 pm.indexedDB = {
     TABLE_HEADER_PRESETS: "header_presets",
+    TABLE_HELPERS: "helpers",
+    TABLE_DRIVE_FILES: "drive_files",
+    TABLE_DRIVE_CHANGES: "drive_changes",
+
+    onTransactionComplete: function() {        
+        console.log("onTransactionComplete");
+        pm.history.getAllRequests();
+        pm.envManager.getAllEnvironments();
+        pm.headerPresets.init();
+        pm.helpers.loadFromDB();
+
+        var activeSidebarSection = pm.settings.get("activeSidebarSection");
+
+        if (activeSidebarSection) {
+            pm.layout.sidebar.select(activeSidebarSection);    
+        }        
+        else {
+            pm.layout.sidebar.select("history");
+        }
+    },    
 
     onerror:function (event, callback) {
+        console.log("error");
         console.log(event);
     },
 
@@ -9,7 +32,7 @@ pm.indexedDB = {
 
         var request = indexedDB.open("postman", "POSTman request history");
         request.onsuccess = function (e) {
-            var v = "0.6";
+            var v = "0.7.4";
             pm.indexedDB.db = e.target.result;
             var db = pm.indexedDB.db;
 
@@ -54,12 +77,28 @@ pm.indexedDB = {
                         requestStore.createIndex("timestamp", "timestamp", { unique:false});
                     }
 
+                    if (!db.objectStoreNames.contains(pm.indexedDB.TABLE_HELPERS)) {
+                        var requestStore = db.createObjectStore(pm.indexedDB.TABLE_HELPERS, {keyPath:"id"});
+                        requestStore.createIndex("timestamp", "timestamp", { unique:false});
+                    }
+
+                    if (!db.objectStoreNames.contains(pm.indexedDB.TABLE_DRIVE_FILES)) {
+                        var requestStore = db.createObjectStore(pm.indexedDB.TABLE_DRIVE_FILES, {keyPath:"id"});
+                        requestStore.createIndex("timestamp", "timestamp", { unique:false}); 
+                        requestStore.createIndex("fileId", "fileId", { unique:false});                                               
+                    }
+                    else {
+                        var requestStore = request.transaction.objectStore(pm.indexedDB.TABLE_DRIVE_FILES);
+                        requestStore.createIndex("fileId", "fileId", { unique:false});                        
+                    }
+
+                    if (!db.objectStoreNames.contains(pm.indexedDB.TABLE_DRIVE_CHANGES)) {
+                        var requestStore = db.createObjectStore(pm.indexedDB.TABLE_DRIVE_CHANGES, {keyPath:"id"});
+                        requestStore.createIndex("timestamp", "timestamp", { unique:false});                        
+                    }
+
                     var transaction = event.target.result;
-                    transaction.oncomplete = function () {
-                        pm.history.getAllRequests();
-                        pm.envManager.getAllEnvironments();
-                        pm.headerPresets.init();
-                    };
+                    transaction.oncomplete = pm.indexedDB.onTransactionComplete;
                 };
 
                 setVrequest.onupgradeneeded = function (evt) {
@@ -77,11 +116,10 @@ pm.indexedDB = {
     },
 
     open_latest:function () {
-
-        var v = 11;
-        var request = indexedDB.open("postman", v);        
+        var v = 20;
+        var request = indexedDB.open("postman", v);                        
         request.onupgradeneeded = function (e) {
-
+            console.log("Upgrade DB");
             var db = e.target.result;
             pm.indexedDB.db = db;
             if (!db.objectStoreNames.contains("requests")) {
@@ -114,13 +152,33 @@ pm.indexedDB = {
                 var requestStore = db.createObjectStore("header_presets", {keyPath:"id"});
                 requestStore.createIndex("timestamp", "timestamp", { unique:false});
             }
+
+            if (!db.objectStoreNames.contains(pm.indexedDB.TABLE_HELPERS)) {
+                var requestStore = db.createObjectStore(pm.indexedDB.TABLE_HELPERS, {keyPath:"id"});
+                requestStore.createIndex("timestamp", "timestamp", { unique:false});
+            }
+
+            if (!db.objectStoreNames.contains(pm.indexedDB.TABLE_DRIVE_FILES)) {
+                console.log("Drive files does not exist");
+                var requestStore = db.createObjectStore(pm.indexedDB.TABLE_DRIVE_FILES, {keyPath:"id"});
+                requestStore.createIndex("timestamp", "timestamp", { unique:false});       
+                requestStore.createIndex("fileId", "fileId", { unique:false});                                 
+            }
+            else {
+                console.log("Trying to create a new index");
+                var requestStore = request.transaction.objectStore(pm.indexedDB.TABLE_DRIVE_FILES);
+                requestStore.createIndex("fileId", "fileId", { unique:false});                        
+            }
+
+            if (!db.objectStoreNames.contains(pm.indexedDB.TABLE_DRIVE_CHANGES)) {
+                var requestStore = db.createObjectStore(pm.indexedDB.TABLE_DRIVE_CHANGES, {keyPath:"id"});
+                requestStore.createIndex("timestamp", "timestamp", { unique:false});
+            }
         };
 
         request.onsuccess = function (e) {
             pm.indexedDB.db = e.target.result;
-            pm.history.getAllRequests();
-            pm.envManager.getAllEnvironments();
-            pm.headerPresets.init();
+            pm.indexedDB.onTransactionComplete();
         };
 
         request.onerror = pm.indexedDB.onerror;
@@ -162,13 +220,13 @@ pm.indexedDB = {
         
 
         request.onsuccess = function () {
-            callback(collection);
+            callback(collection);            
         };
 
         request.onerror = function (e) {
             console.log(e.value);
         };
-    },
+    },    
 
     updateCollection:function (collection, callback) {
         var db = pm.indexedDB.db;
@@ -419,7 +477,7 @@ pm.indexedDB = {
             var request = store['delete'](id);
 
             request.onsuccess = function () {
-                callback(id);
+                callback(id);                
             };
 
             request.onerror = function (e) {
@@ -441,19 +499,21 @@ pm.indexedDB = {
     },
 
     deleteCollectionRequest:function (id, callback) {
-        var db = pm.indexedDB.db;
-        var trans = db.transaction(["collection_requests"], "readwrite");
-        var store = trans.objectStore(["collection_requests"]);
+        pm.indexedDB.getCollectionRequest(id, function(collectionRequest) {
+            var db = pm.indexedDB.db;
+            var trans = db.transaction(["collection_requests"], "readwrite");
+            var store = trans.objectStore(["collection_requests"]);
 
-        var request = store['delete'](id);
+            var request = store['delete'](id);
 
-        request.onsuccess = function (e) {
-            callback(id);
-        };
+            request.onsuccess = function (e) {
+                callback(id);    
+            };
 
-        request.onerror = function (e) {
-            console.log(e);
-        };
+            request.onerror = function (e) {
+                console.log(e);
+            };
+        });        
     },
 
     deleteAllCollectionRequests:function (id) {
@@ -596,6 +656,39 @@ pm.indexedDB = {
         }
     },
 
+    helpers:{
+        addHelper:function (helper, callback) {
+            var db = pm.indexedDB.db;
+            var trans = db.transaction([pm.indexedDB.TABLE_HELPERS], "readwrite");
+            var store = trans.objectStore(pm.indexedDB.TABLE_HELPERS);
+            var request = store.put(helper);
+
+            request.onsuccess = function (e) {
+                callback(helper);
+            };
+
+            request.onerror = function (e) {
+                console.log(e);
+            };    
+        },
+
+        getHelper:function (id, callback) {
+            var db = pm.indexedDB.db;
+            var trans = db.transaction([pm.indexedDB.TABLE_HELPERS], "readwrite");
+            var store = trans.objectStore(pm.indexedDB.TABLE_HELPERS);
+
+            //Get everything in the store
+            var cursorRequest = store.get(id);
+
+            cursorRequest.onsuccess = function (e) {
+                var result = e.target.result;
+                callback(result);
+            };
+            
+            cursorRequest.onerror = pm.indexedDB.onerror;
+        }
+    },
+
     headerPresets:{
         addHeaderPreset:function (headerPreset, callback) {
             var db = pm.indexedDB.db;
@@ -693,5 +786,313 @@ pm.indexedDB = {
                 console.log(e.value);
             };
         }
+    },
+
+    driveFiles: {
+        addDriveFile:function (driveFile, callback) {
+            var db = pm.indexedDB.db;
+            var trans = db.transaction([pm.indexedDB.TABLE_DRIVE_FILES], "readwrite");
+            var store = trans.objectStore(pm.indexedDB.TABLE_DRIVE_FILES);
+            var request = store.put(driveFile);
+
+            request.onsuccess = function (e) {
+                console.log("Added file");
+                callback(driveFile);
+            };
+
+            request.onerror = function (e) {
+                console.log(e);
+            };
+        },
+
+        getDriveFile:function (id, callback) {
+            var db = pm.indexedDB.db;
+            var trans = db.transaction([pm.indexedDB.TABLE_DRIVE_FILES], "readwrite");
+            var store = trans.objectStore(pm.indexedDB.TABLE_DRIVE_FILES);
+
+            //Get everything in the store
+            var cursorRequest = store.get(id);
+
+            cursorRequest.onsuccess = function (e) {
+                var result = e.target.result;
+                callback(result);
+            };
+
+            cursorRequest.onerror = pm.indexedDB.onerror;
+        },
+
+        getDriveFileByFileId:function (fileId, callback) {
+            var db = pm.indexedDB.db;
+            var trans = db.transaction([pm.indexedDB.TABLE_DRIVE_FILES], "readwrite");
+            var store = trans.objectStore(pm.indexedDB.TABLE_DRIVE_FILES);
+
+            //Get everything in the store
+            var keyRange = IDBKeyRange.only(fileId);
+            var index = store.index("fileId");
+            var cursorRequest = index.openCursor(keyRange);
+
+            cursorRequest.onsuccess = function (e) {
+                var result = e.target.result;          
+                console.log(result);
+                if(result) {
+                    callback(result.value);    
+                }   
+                else {
+                    callback(null);
+                }   
+                
+            };
+
+            cursorRequest.onerror = function(e) {
+                callback(null);
+            };
+        },
+
+        deleteDriveFile:function (id, callback) {
+            var db = pm.indexedDB.db;
+            var trans = db.transaction([pm.indexedDB.TABLE_DRIVE_FILES], "readwrite");
+            var store = trans.objectStore([pm.indexedDB.TABLE_DRIVE_FILES]);
+
+            var request = store['delete'](id);
+
+            request.onsuccess = function () {
+                callback(id);
+            };
+
+            request.onerror = function (e) {
+                console.log(e);
+            };
+        },
+
+        getAllDriveFiles:function (callback) {
+            var db = pm.indexedDB.db;
+            if (db == null) {
+                console.log("Db is null");
+                return;
+            }
+
+            var trans = db.transaction([pm.indexedDB.TABLE_DRIVE_FILES], "readwrite");
+            var store = trans.objectStore(pm.indexedDB.TABLE_DRIVE_FILES);
+
+            //Get everything in the store
+            var keyRange = IDBKeyRange.lowerBound(0);
+            var index = store.index("timestamp");
+            var cursorRequest = index.openCursor(keyRange);
+            var driveFiles = [];
+
+            cursorRequest.onsuccess = function (e) {
+                var result = e.target.result;
+
+                if (!result) {
+                    callback(driveFiles);
+                    return;
+                }
+
+                var request = result.value;
+                driveFiles.push(request);
+
+                //This wil call onsuccess again and again until no more request is left
+                result['continue']();
+            };
+
+            cursorRequest.onerror = pm.indexedDB.onerror;
+        },
+
+        updateDriveFile:function (driveFile, callback) {
+            var db = pm.indexedDB.db;
+            var trans = db.transaction([pm.indexedDB.TABLE_DRIVE_FILES], "readwrite");
+            var store = trans.objectStore(pm.indexedDB.TABLE_DRIVE_FILES);
+
+            var boundKeyRange = IDBKeyRange.only(driveFile.id);
+            var request = store.put(driveFile);
+
+            request.onsuccess = function (e) {
+                callback(driveFile);
+            };
+
+            request.onerror = function (e) {
+                console.log(e.value);
+            };
+        }
+    },
+
+
+    driveChanges: {
+        addDriveChange:function (driveChange, callback) {
+            var db = pm.indexedDB.db;
+            var trans = db.transaction([pm.indexedDB.TABLE_DRIVE_CHANGES], "readwrite");
+            var store = trans.objectStore(pm.indexedDB.TABLE_DRIVE_CHANGES);
+            var request = store.put(driveChange);
+
+            request.onsuccess = function (e) {
+                callback(driveChange);
+            };
+
+            request.onerror = function (e) {
+                console.log(e);
+            };
+        },
+
+        getDriveChange:function (id, callback) {
+            var db = pm.indexedDB.db;
+            var trans = db.transaction([pm.indexedDB.TABLE_DRIVE_CHANGES], "readwrite");
+            var store = trans.objectStore(pm.indexedDB.TABLE_DRIVE_CHANGES);
+
+            //Get everything in the store
+            var cursorRequest = store.get(id);
+
+            cursorRequest.onsuccess = function (e) {
+                var result = e.target.result;
+                callback(result);
+            };
+            cursorRequest.onerror = pm.indexedDB.onerror;
+        },
+
+        deleteDriveChange:function (id, callback) {
+            var db = pm.indexedDB.db;
+            var trans = db.transaction([pm.indexedDB.TABLE_DRIVE_CHANGES], "readwrite");
+            var store = trans.objectStore([pm.indexedDB.TABLE_DRIVE_CHANGES]);
+
+            var request = store['delete'](id);
+
+            request.onsuccess = function () {
+                callback(id);
+            };
+
+            request.onerror = function (e) {
+                console.log(e);
+            };
+        },
+
+        getAllDriveChanges:function (callback) {
+            var db = pm.indexedDB.db;
+            if (db == null) {
+                console.log("Db is null");
+                return;
+            }
+
+            var trans = db.transaction([pm.indexedDB.TABLE_DRIVE_CHANGES], "readwrite");
+            var store = trans.objectStore(pm.indexedDB.TABLE_DRIVE_CHANGES);
+
+            //Get everything in the store
+            var keyRange = IDBKeyRange.lowerBound(0);
+            var index = store.index("timestamp");
+            var cursorRequest = index.openCursor(keyRange);
+            var driveChanges = [];
+
+            cursorRequest.onsuccess = function (e) {
+                var result = e.target.result;
+
+                if (!result) {
+                    console.log(driveChanges);
+                    driveChanges.sort(sortAscending);
+                    callback(driveChanges);
+                    return;
+                }
+
+                var request = result.value;
+                driveChanges.push(request);
+
+                //This wil call onsuccess again and again until no more request is left
+                result['continue']();
+            };
+
+            cursorRequest.onerror = pm.indexedDB.onerror;
+        },
+
+        updateDriveChange:function (driveChange, callback) {
+            var db = pm.indexedDB.db;
+            var trans = db.transaction([pm.indexedDB.TABLE_DRIVE_CHANGES], "readwrite");
+            var store = trans.objectStore(pm.indexedDB.TABLE_DRIVE_CHANGES);
+
+            var boundKeyRange = IDBKeyRange.only(driveChange.id);
+            var request = store.put(driveChange);
+
+            request.onsuccess = function (e) {
+                callback(driveChange);
+            };
+
+            request.onerror = function (e) {
+                console.log(e.value);
+            };
+        }        
+    },
+
+
+    downloadAllData: function(callback) {
+        //Get globals        
+        var totalCount = 0;
+        var currentCount = 0;
+        var collections = [];
+        var globals = [];
+        var environments = [];
+        var headerPresets = [];
+
+        var onFinishGettingCollectionRequests = function(collection) {
+            collections.push(collection);
+
+            currentCount++;
+
+            if (currentCount == totalCount) {
+                onFinishExportingCollections(collections);
+            }
+        }
+
+        var onFinishExportingCollections = function(c) {            
+            globals = pm.envManager.globals;            
+
+            //Get environments
+            pm.indexedDB.environments.getAllEnvironments(function (e) {
+                environments = e;
+                pm.indexedDB.headerPresets.getAllHeaderPresets(function (hp) {
+                    headerPresets = hp;           
+                    onFinishExporttingAllData();         
+                });
+            });
+        }
+
+        var onFinishExporttingAllData = function() {
+            console.log("collections", collections);
+            console.log("environments", environments);
+            console.log("headerPresets", headerPresets);
+            console.log("globals", globals);
+
+            var dump = {
+                version: 1,
+                collections: collections,
+                environments: environments,
+                headerPresets: headerPresets,
+                globals: globals                
+            };
+
+            var name = "postman_dump.json";
+            var filedata = JSON.stringify(dump);
+            var type = "application/json";
+            pm.filesystem.saveAndOpenFile(name, filedata, type, function () {                
+            });
+        }
+        
+        //Get collections
+        //Get header presets
+        pm.indexedDB.getCollections(function (items) {    
+            totalCount = items.length;        
+            pm.collections.items = items;
+            var itemsLength = items.length;
+
+            if (itemsLength !== 0) {                
+                for (var i = 0; i < itemsLength; i++) {
+                    var collection = items[i];
+                    pm.indexedDB.getAllRequestsInCollection(collection, function (collection, requests) {
+                        collection.requests = requests;       
+
+                        onFinishGettingCollectionRequests(collection);                 
+                    });
+                }
+            }
+        });
+    },
+
+    importAllData: function(callback) {
+
     }
 };

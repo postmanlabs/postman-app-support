@@ -22,6 +22,7 @@ pm.request = {
         data:"",
         isEditorInitialized:false,
         codeMirror:false,
+        rawEditorType:"editor",
 
         init:function () {
             console.log("Opening urlCache");            
@@ -29,7 +30,7 @@ pm.request = {
             this.initPreview();
             this.initFormDataEditor();
             this.initUrlEncodedEditor();
-            this.initEditorListeners();
+            this.initEditorListeners();            
         },
 
         initPreview:function () {
@@ -42,9 +43,28 @@ pm.request = {
             $("#data").css("display", "none");
         },
 
+        //TODO: Complete this function
+        setRequestBodyEditorType: function(type) {
+            pm.request.body.rawEditorType = type;
+            
+            if (type === "editor") {
+
+            }
+            else if (type === "textarea") {
+                
+            }
+        },
+
         getRawData:function () {
             if (pm.request.body.isEditorInitialized) {
-                return pm.request.body.codeMirror.getValue();
+                var data = pm.request.body.codeMirror.getValue();
+
+                if (pm.settings.get("forceWindowsLineEndings") === true) {
+                    data = data.replace(/\r/g, '');
+                    data = data.replace(/\n/g, "\r\n");
+                }
+
+                return data;
             }
             else {
                 return "";
@@ -66,6 +86,7 @@ pm.request = {
             pm.request.body.codeMirror = CodeMirror.fromTextArea(bodyTextarea,
             {
                 mode:"htmlmixed",
+                lineWrapping: true,
                 lineNumbers:true,
                 theme:'eclipse'
             });
@@ -84,8 +105,10 @@ pm.request = {
             pm.request.body.codeMirror.refresh();
         },
 
-        setEditorMode:function (mode, language) {
-            var displayMode = $("#body-editor-mode-selector a[data-language='" + language + "']").html();
+        setEditorMode:function (mode, language, toSetHeader) {            
+            var displayMode = $("#body-editor-mode-selector a[data-language='" + language + "']").html();          
+            console.log(mode, language);
+
             $('#body-editor-mode-item-selected').html(displayMode);
 
             if (pm.request.body.isEditorInitialized) {
@@ -101,6 +124,34 @@ pm.request = {
                 } else {
                   $('#body-editor-mode-selector-format').removeClass('disabled');
                 }
+
+                //Add proper content-type header
+                if (toSetHeader) {
+                    var headers = pm.request.headers;
+                    var contentTypeHeaderKey = "Content-Type";
+                    var pos = findPosition(headers, "key", contentTypeHeaderKey);
+
+                    if (language === 'text') {
+                        if (pos >= 0) {
+                            headers.splice(pos, 1);
+                        }
+                    }
+                    else {
+                        if (pos >= 0) {
+                            headers[pos] = {
+                                key: contentTypeHeaderKey,
+                                name: contentTypeHeaderKey,
+                                value: language
+                            };
+                        }
+                        else {
+                            headers.push({key: contentTypeHeaderKey, name: contentTypeHeaderKey, value: language});
+                        }
+                    }
+
+                    pm.request.headers = headers;
+                    $('#headers-keyvaleditor').keyvalueeditor('reset', headers);    
+                }                
 
                 //pm.request.body.autoFormatEditor(mode);
                 pm.request.body.codeMirror.refresh();
@@ -184,7 +235,7 @@ pm.request = {
             $('#body-editor-mode-selector .dropdown-menu').on("click", "a", function (event) {
                 var editorMode = $(event.target).attr("data-editor-mode");
                 var language = $(event.target).attr("data-language");
-                pm.request.body.setEditorMode(editorMode, language);
+                pm.request.body.setEditorMode(editorMode, language, true);
             });
             
             // 'Format code' button listener.
@@ -196,6 +247,15 @@ pm.request = {
               }
 
               //pm.request.body.autoFormatEditor(pm.request.body.codeMirror.getMode().name);
+            });
+
+            var type = pm.settings.get("requestBodyEditorContainerType");
+            $('#request-body-editor-container-type a').removeClass('active');
+            $('#request-body-editor-container-type a[data-container-type="' + type + '"]').addClass('active');
+
+            $('#request-body-editor-container-type').on('click', 'a', function(evt) {
+                var type = $(this).attr('data-container-type');
+                pm.settings.set("requestBodyEditorContainerType", type);
             });
         },
 
@@ -396,6 +456,16 @@ pm.request = {
             pm.request.isFromCollection = false;
             pm.request.loadRequestInEditor(lastRequestParsed);
         }
+
+        this.intClipboardCopier();
+    },
+
+    intClipboardCopier:function () {
+        $("#response-copy-button").on("click", function() {            
+            var scrollTop = $(window).scrollTop();
+            copyToClipboard(pm.request.response.text);            
+            $(document).scrollTop(scrollTop);
+        });
     },
 
     setHeaderValue:function (key, value) {
@@ -945,17 +1015,27 @@ pm.request = {
                 pm.request.response.showBody();
 
                 var responseCodeName;
+                var responseCodeDetail;
+
                 if ("statusText" in response) {
                     responseCodeName = response.statusText;
+                    responseCodeDetail = "";
                 }
                 else {
-                    responseCodeName = httpStatusCodes[response.status]['name'];
+                    if (response.status in httpStatusCodes) {
+                        responseCodeName = httpStatusCodes[response.status]['name'];
+                        responseCodeDetail = httpStatusCodes[response.status]['detail'];    
+                    }
+                    else {
+                        responseCodeName = "";
+                        responseCodeDetail = "";
+                    }
                 }
 
                 var responseCode = {
                     'code':response.status,
                     'name':responseCodeName,
-                    'detail':httpStatusCodes[response.status]['detail']
+                    'detail':responseCodeDetail
                 };
 
                 var responseData;
@@ -1109,9 +1189,12 @@ pm.request = {
 
                 for (var i = 0; i < count; i++) {
                     var cookie = cookies[i];
+                    cookie.name = limitStringLineWidth(cookie.name, 20);
+                    cookie.value = limitStringLineWidth(cookie.value, 20);
+                    cookie.path = limitStringLineWidth(cookie.path, 20);
                     if ("expirationDate" in cookie) {
                         var date = new Date(cookie.expirationDate * 1000);
-                        cookies[i].expires = date.toUTCString();
+                        cookies[i].expires = date.toLocaleString();
                     }
                 }
 
@@ -1630,19 +1713,19 @@ pm.request = {
         }
         else if (contentType.search(/json/i) !== -1 || contentType.search(/javascript/i) !== -1) {
             mode = 'javascript';
-            language = 'json';
+            language = contentType;
         }
         else if (contentType.search(/xml/i) !== -1) {
             mode = 'xml';
-            language = 'xml';
+            language = contentType;
         }
         else if (contentType.search(/html/i) !== -1) {
             mode = 'xml';
-            language = 'html';
+            language = contentType;
         }
         else {
             language = 'text';
-            contentType = 'text';
+            language = contentType;
         }
 
         pm.request.body.setEditorMode(mode, language);
@@ -1670,6 +1753,9 @@ pm.request = {
         for (var i = 0; i < params.length; i++) {
             var p = params[i];
             if (p.key && p.key !== "") {
+                p.key = p.key.replace(/&/g, '%26');
+                p.value = p.value.replace(/&/g, '%26');
+
                 paramArr.push(p.key + "=" + p.value);
             }
         }
@@ -1829,8 +1915,7 @@ pm.request = {
                     params.push(textObj);
                 }
             }
-
-            console.log(params);
+            
             var paramsCount = params.length;
             var body = "";
             for(i = 0; i < paramsCount; i++) {

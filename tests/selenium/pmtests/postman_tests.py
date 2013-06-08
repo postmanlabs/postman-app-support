@@ -13,7 +13,7 @@ import traceback
 class PostmanTests:
     def __init__(self):
         init()
-        s = service.Service('/Users/asthana/Documents/www/chromedriver')  # Optional argument, if not specified will search path.
+        s = service.Service('/Users/a85/Documents/www/chromedriver')  # Optional argument, if not specified will search path.
         s.start()
     
         capabilities = {'chrome.switches': ["--load-extension=/Users/asthana/Documents/www/postman/POSTMan-Chrome-Extension/chrome"]}
