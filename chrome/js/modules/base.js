@@ -187,6 +187,8 @@ pm.init = function () {
         pm.indexedDB.open();
         pm.drive.setupUiHandlers();
         pm.broadcasts.init();
+
+        pm.logger.debug("Test", pm);
         
         $(":input:first").focus();
     });    
