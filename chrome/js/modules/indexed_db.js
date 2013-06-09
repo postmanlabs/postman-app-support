@@ -1052,7 +1052,7 @@ pm.indexedDB = {
                 globals: globals                
             };
 
-            var name = "postman_dump.json";
+            var name = "Backup.postman_dump";
             var filedata = JSON.stringify(dump);
             var type = "application/json";
             pm.filesystem.saveAndOpenFile(name, filedata, type, function () {                

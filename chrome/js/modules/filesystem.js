@@ -88,46 +88,28 @@ pm.filesystem = {
         });
     },
 
-    saveAndOpenFile:function (name, data, type, callback) {
-        name = encodeURI(name);
-        name = name.replace("/", "_");
-        pm.filesystem.removeFileIfExists(name, function () {
-            pm.filesystem.fs.root.getFile(name,
-                {create:true},
-                function (fileEntry) {
-                    fileEntry.createWriter(function (fileWriter) {
+    saveAndOpenFile:function (name, data, type, callback) {            
+        chrome.fileSystem.chooseEntry({type: 'saveFile', suggestedName: name}, function(writableFileEntry) {
+            writableFileEntry.createWriter(function(writer) {
+            writer.onerror = function (e) {
+                callback();
+            };;
+            
+            writer.onwriteend = function(e) {
+                console.log('write complete');
+            };
 
-                        fileWriter.onwriteend = function (e) {
-                            var properties = {
-                                url:fileEntry.toURL()
-                            };
+            var blob;
+            if (type == "pdf") {
+                blob = new Blob([data], {type:'application/pdf'});
+            }
+            else {
+                blob = new Blob([data], {type:'text/plain'});
+            }
 
-                            if (typeof chrome !== "undefined") {
-                                chrome.tabs.create(properties, function (tab) {
-                                });
-                            }
+            writer.write(blob);
 
-                            callback();
-                        };
-
-                        fileWriter.onerror = function (e) {
-                            callback();
-                        };
-
-                        var blob;
-                        if (type == "pdf") {
-                            blob = new Blob([data], {type:'application/pdf'});
-                        }
-                        else {
-                            blob = new Blob([data], {type:'text/plain'});
-                        }
-                        fileWriter.write(blob);
-
-                    }, pm.filesystem.errorHandler);
-
-
-                }, pm.filesystem.errorHandler
-            );
+            }, pm.filesystem.errorHandler);
         });
 
     }

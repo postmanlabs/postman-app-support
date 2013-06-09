@@ -437,7 +437,7 @@ pm.envManager = {
 
     downloadEnvironment:function (id) {
         var env = pm.envManager.getEnvironmentFromId(id);
-        var name = env.name + "-environment.json";
+        var name = env.name + ".postman_environment";
         var type = "application/json";
         var filedata = JSON.stringify(env);
         pm.filesystem.saveAndOpenFile(name, filedata, type, function () {

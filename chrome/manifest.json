@@ -29,7 +29,7 @@
     },
 
     "default_locale":"en",
-    "permissions":["http://*/*", "https://*/*", "unlimitedStorage", "storage", "identity", "experimental"],    
+    "permissions":["http://*/*", "https://*/*", "unlimitedStorage", "storage", "identity", "experimental", "fileSystem", "fileSystem.write"],    
     "manifest_version": 2,
     "offline_enabled":true
 }

@@ -225,7 +225,8 @@ pm.collections = {
 
     saveCollection:function (id) {
         pm.collections.getCollectionData(id, function (name, type, filedata) {
-            pm.filesystem.saveAndOpenFile(name, filedata, type, function () {
+            var filename = name + ".postman_collection";
+            pm.filesystem.saveAndOpenFile(filename, filedata, type, function () {
             });
         });
     },
