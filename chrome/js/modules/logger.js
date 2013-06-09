@@ -1,9 +1,9 @@
 pm.logger = {
-	show: true,
+	toShow: true,
 
 	//For debug messages
 	debug: function() {
-		if (toShow) {
+		if (pm.logger.toShow) {
 			console.log(arguments);	
 		}		
 	},

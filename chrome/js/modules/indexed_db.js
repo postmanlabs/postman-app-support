@@ -6,21 +6,8 @@ pm.indexedDB = {
     TABLE_DRIVE_FILES: "drive_files",
     TABLE_DRIVE_CHANGES: "drive_changes",
 
-    onTransactionComplete: function() {        
-        console.log("onTransactionComplete");
-        pm.history.getAllRequests();
-        pm.envManager.getAllEnvironments();
-        pm.headerPresets.init();
-        pm.helpers.loadFromDB();
-
-        var activeSidebarSection = pm.settings.get("activeSidebarSection");
-
-        if (activeSidebarSection) {
-            pm.layout.sidebar.select(activeSidebarSection);    
-        }        
-        else {
-            pm.layout.sidebar.select("history");
-        }
+    onTransactionComplete: function(callback) {               
+        callback();
     },    
 
     onerror:function (event, callback) {
@@ -28,7 +15,7 @@ pm.indexedDB = {
         console.log(event);
     },
 
-    open_v21:function () {
+    open_v21:function (callback) {
 
         var request = indexedDB.open("postman", "POSTman request history");
         request.onsuccess = function (e) {
@@ -115,7 +102,7 @@ pm.indexedDB = {
         request.onfailure = pm.indexedDB.onerror;
     },
 
-    open_latest:function () {
+    open_latest:function (callback) {
         var v = 20;
         var request = indexedDB.open("postman", v);                        
         request.onupgradeneeded = function (e) {
@@ -178,20 +165,20 @@ pm.indexedDB = {
 
         request.onsuccess = function (e) {
             pm.indexedDB.db = e.target.result;
-            pm.indexedDB.onTransactionComplete();
+            pm.indexedDB.onTransactionComplete(callback);
         };
 
         request.onerror = pm.indexedDB.onerror;
     },
 
-    open:function () {
+    open:function (callback) {
         console.log("Opening latest indexedDB");
         if (parseInt(navigator.userAgent.match(/Chrom(e|ium)\/([0-9]+)\./)[2]) < 23) {
-            pm.indexedDB.open_v21();
+            pm.indexedDB.open_v21(callback);
         }
         else {
             console.log("Opening latest indexedDB");
-            pm.indexedDB.open_latest();
+            pm.indexedDB.open_latest(callback);
         }
     },
 

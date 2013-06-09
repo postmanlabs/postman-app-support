@@ -172,23 +172,37 @@ window.requestFileSystem = window.requestFileSystem || window.webkitRequestFileS
 
 pm.init = function () {
     Handlebars.partials = Handlebars.templates;
+    
+    pm.settings.init(function() {           
+        pm.indexedDB.open(function() {
+            pm.request.init();
+            pm.history.init();
+            pm.collections.init();        
+            pm.layout.init();
+            pm.editor.init();
+            pm.helpers.init();
+            pm.keymap.init();
+            pm.envManager.init();
+            pm.filesystem.init();
 
-    console.log("Opening settings");
-    pm.settings.init(function() {   
-        pm.request.init();
-        pm.history.init();
-        pm.collections.init();        
-        pm.layout.init();
-        pm.editor.init();
-        pm.helpers.init();
-        pm.keymap.init();
-        pm.envManager.init();
-        pm.filesystem.init();
-        pm.indexedDB.open();
+            
+            pm.history.getAllRequests();
+            pm.envManager.getAllEnvironments();
+            pm.headerPresets.init();
+            pm.helpers.loadFromDB();
+
+            var activeSidebarSection = pm.settings.get("activeSidebarSection");
+
+            if (activeSidebarSection) {
+                pm.layout.sidebar.select(activeSidebarSection);    
+            }        
+            else {
+                pm.layout.sidebar.select("history");
+            }
+        });
+
         pm.drive.setupUiHandlers();
         pm.broadcasts.init();
-
-        pm.logger.debug("Test", pm);
         
         $(":input:first").focus();
     });    
