@@ -956,6 +956,7 @@ li .right {
 
 #sync-status {
     cursor: pointer;
+    display: none;
     float: left;
     margin-right: 10px;        
 }

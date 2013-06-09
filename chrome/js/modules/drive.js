@@ -605,13 +605,12 @@ pm.drive = {
     },
 
     setupUiHandlers: function() {
-        console.log("Setup UI handler");
-        
+        pm.settings.set("driveSyncConnectionStatus", "not_connected");
+        console.log("Setup UI handler");                
         $("#user-status-text").on("click", function() {
             console.log("Clicked user status text");
 
-            var driveSyncConnectionStatus = pm.settings.get("driveSyncConnectionStatus");
-
+            var driveSyncConnectionStatus = pm.settings.get("driveSyncConnectionStatus");            
             if (driveSyncConnectionStatus === "not_connected") {                
                 $("#modal-drive-first-time-sync").modal("show");    
             }        
@@ -659,7 +658,8 @@ pm.drive = {
         if (authResult) {
             pm.settings.set("driveSyncConnectionStatus", "connected");
             pm.drive.auth = authResult;
-            pm.drive.loadClient(pm.drive.handleClientLoad);            
+            pm.drive.loadClient(pm.drive.handleClientLoad);           
+            $("#sync-status").css("display", "block");
             // Access token has been successfully retrieved, requests can be sent to the API
         } else {
             pm.settings.set("driveSyncConnectionStatus", "not_connected");

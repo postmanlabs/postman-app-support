@@ -10,13 +10,16 @@ pm.urlCache = {
     refreshAutoComplete:function () {
         if (pm.urlCache.urls.length == 0) return;
 
-        /*
-        $("#url").autocomplete({
-            source:pm.urlCache.urls,
-            delay:50,
-            select:function (event, item) {
-            }
-        });        
-*/
+        try {
+            $("#url").autocomplete({
+                source:pm.urlCache.urls,
+                delay:50
+            });        
+        }   
+        catch(e) {
+            console.log("Some issue with onbeforeunload");
+            console.log(e);                
+        }     
+        
     }
 };

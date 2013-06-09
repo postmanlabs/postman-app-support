@@ -8,7 +8,9 @@ pm.settings = {
 
     initValues: function(callback) {
         pm.settings.items = {};            
-        pm.storage.get("settings", function(settingsJson) {               
+
+        console.log("Getting settings");
+        pm.storage.get("settings", function(settingsJson) {                           
             pm.settings.items = JSON.parse(settingsJson);
 
             pm.settings.create("historyCount", 100);
@@ -25,6 +27,17 @@ pm.settings = {
             pm.settings.create("variableDelimiter", "{{...}}");
             pm.settings.create("languageDetection", "auto");
             pm.settings.create("haveDonated", false);
+
+            pm.settings.create("requestBodyEditorContainerType", "editor");
+
+            //Google Drive related
+            pm.settings.create("driveSyncConnectionStatus", "not_connected"); //notconnected, connected, disabled        
+            pm.settings.create("driveSyncEnabled", true);
+            pm.settings.create("driveStartChangeId", 0);
+            pm.settings.create("driveAppDataFolderId", 0);
+            pm.settings.create("lastDriveChangeTime", "");
+
+            console.log("Settings are", pm.settings.items);
 
             $('#history-count').val(pm.settings.get("historyCount"));
             $('#auto-save-request').val(pm.settings.get("autoSaveRequest") + "");

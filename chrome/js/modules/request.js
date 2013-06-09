@@ -951,6 +951,8 @@ pm.request = {
                     $("#response-language").css("display", "none");
                     $("#response-as-preview").css("display", "none");
                     $("#response-pretty-modifiers").css("display", "none");
+
+                    console.log("Render image here", imgLink);
                     $("#response-as-image").html("<img src='" + imgLink + "'/>");
                 } 
                 else {
@@ -1100,7 +1102,21 @@ pm.request = {
                         $("#response-language").css("display", "none");
                         $("#response-as-preview").css("display", "none");
                         $("#response-pretty-modifiers").css("display", "none");
-                        $("#response-as-image").html("<img src='" + imgLink + "'/>");
+                        console.log("Render image here");
+                        $("#response-as-image").html("<img id=\"response-as-image-container\"/>");          
+
+                        console.log(this.text);
+                        
+                        console.log(imgLink);
+                        var remoteImage = new RAL.RemoteImage(imgLink);
+                        var container = document.querySelector('#response-as-image-container');
+
+                        remoteImage.addEventListener('loaded', function(remoteImage) {
+                            console.log("Image loaded");
+                        });
+                        container.appendChild(remoteImage.element);
+                        RAL.Queue.add(remoteImage);
+                        RAL.Queue.start();
                     }
                     else if (contentType.search(/pdf/i) >= 0 && response.responseRawDataType == "arraybuffer") {
                         responsePreviewType = 'pdf';
