@@ -1,7 +1,7 @@
 {
     "name":"Postman Packaged App (Alpha)",
-    "version":"0.9.0.7",
-    "manifest_version": 28,
+    "version":"0.9.0.8",
+    "minimum_chrome_version": "28",
     "icons":{
         "16":"icon_16.png",
         "32":"icon_32.png",
@@ -24,6 +24,11 @@
         "https://www.googleapis.com/auth/userinfo.email",
         "https://www.googleapis.com/auth/userinfo.profile"
       ]
+    },
+
+    "sandbox": {
+      "pages": ["embedded_ga_host.html"],
+      "content_security_policy": "sandbox allow-scripts; script-src https://ssl.google-analytics.com"
     },
 
     "default_locale":"en",
