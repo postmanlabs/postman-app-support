@@ -443,12 +443,7 @@ pm.helpers = {
 
             var realm = $('#request-helper-oauth1-realm').val();
 
-            if (realm === '') {
-                processedUrl = pm.envManager.convertString($('#url').val()).trim();
-            }
-            else {
-                processedUrl = pm.envManager.convertString(realm);
-            }
+            processedUrl = pm.envManager.convertString(realm);
 
             processedUrl = ensureProperUrl(processedUrl);
 
