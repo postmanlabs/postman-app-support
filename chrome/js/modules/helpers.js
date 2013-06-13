@@ -86,7 +86,6 @@ pm.helpers = {
     digest: {
         getHeader: function () {
             var algorithm = pm.envManager.getCurrentValue($("#request-helper-digestAuth-realm").val());
-
             var username = pm.envManager.getCurrentValue($("#request-helper-digestAuth-username").val());
             var realm = pm.envManager.getCurrentValue($("#request-helper-digestAuth-realm").val());
             var password = pm.envManager.getCurrentValue($("#request-helper-digestAuth-password").val());
@@ -239,16 +238,7 @@ pm.helpers = {
                 return null;
             }
 
-            var processedUrl;
-
-            var realm = $('#request-helper-oauth1-realm').val();
-
-            if (realm === '') {
-                processedUrl = pm.envManager.convertString($('#url').val()).trim();
-            }
-            else {
-                processedUrl = pm.envManager.convertString(realm);
-            }
+            var processedUrl = pm.envManager.convertString($('#url').val()).trim();
 
             processedUrl = ensureProperUrl(processedUrl);
 
@@ -375,14 +365,6 @@ pm.helpers = {
 
             if (addToHeader) {
                 var realm = $('#request-helper-oauth1-realm').val();
-
-                if (realm === '') {
-                    realm = pm.envManager.convertString($('#url').val()).trim();
-                }
-
-                if (realm.indexOf('?') > 0) {
-                    realm = realm.split("?")[0];
-                }
                 var headers = pm.request.headers;
                 var authHeaderKey = "Authorization";
                 var pos = findPosition(headers, "key", authHeaderKey);
