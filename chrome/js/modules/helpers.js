@@ -369,7 +369,7 @@ pm.helpers = {
                 var authHeaderKey = "Authorization";
                 var pos = findPosition(headers, "key", authHeaderKey);
 
-                var rawString = "OAuth realm=\"" + realm + "\",";
+                var rawString = "OAuth realm=\"" + encodeURIComponent(realm) + "\",";
                 var len = params.length;
                 for (i = 0; i < len; i++) {
                     rawString += encodeURIComponent(params[i].key) + "=\"" + encodeURIComponent(params[i].value) + "\",";
