@@ -16,9 +16,8 @@ pm.urlCache = {
                 delay:50
             });        
         }   
-        catch(e) {
-            console.log("Some issue with onbeforeunload");
-            console.log(e);                
+        catch(e) {            
+            pm.logger.debug("urlCache:", "onbeforeunload error", e);                
         }     
         
     }

@@ -16,7 +16,6 @@ pm.storage = {
         }
         else if (pm.target === pm.targets.CHROME_PACKAGED_APP) {            
             chrome.storage.local.set(kvpair, function() {
-                console.log("Finished setting the values");
             });
         }
     }

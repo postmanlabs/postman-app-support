@@ -25,8 +25,6 @@ pm.request = {
         rawEditorType:"editor",
 
         init:function () {
-            console.log("Opening urlCache");            
-
             this.initPreview();
             this.initFormDataEditor();
             this.initUrlEncodedEditor();

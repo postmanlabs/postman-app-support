@@ -619,11 +619,8 @@ pm.drive = {
     },
 
     setupUiHandlers: function() {
-        pm.settings.set("driveSyncConnectionStatus", "not_connected");
-        console.log("Setup UI handler");                
+        pm.settings.set("driveSyncConnectionStatus", "not_connected");                    
         $("#user-status-text").on("click", function() {
-            console.log("Clicked user status text");
-
             var driveSyncConnectionStatus = pm.settings.get("driveSyncConnectionStatus");            
             if (driveSyncConnectionStatus === "not_connected") {                
                 $("#modal-drive-first-time-sync").modal("show");    
@@ -633,8 +630,7 @@ pm.drive = {
             }
         });
 
-        $("#sync-status").on("click", function() {
-            console.log("Run change queue");
+        $("#sync-status").on("click", function() {            
             pm.drive.fetchChanges();
         });
     },
@@ -642,11 +638,8 @@ pm.drive = {
     /**
      * Check if the current user has authorized the application.
      */
-    checkAuth: function(){        
-        console.log(pm.drive.CLIENT_ID);
-        
-        chrome.experimental.identity.getAuthToken({ 'interactive': true }, function(token) {
-            console.log(token);
+    checkAuth: function() {        
+        chrome.experimental.identity.getAuthToken({ 'interactive': true }, function(token) {            
         });
         
         /*                

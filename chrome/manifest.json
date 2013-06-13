@@ -32,7 +32,16 @@
     },
 
     "default_locale":"en",
-    "permissions":["http://*/*", "https://*/*", "unlimitedStorage", "storage", "identity", "fileSystem", "fileSystem.write"],    
+    "permissions":[
+        "http://*/*", 
+        "https://*/*", 
+        "unlimitedStorage", 
+        "storage", 
+        "identity", 
+        "fileSystem", 
+        "fileSystem.write",
+        "experimental"
+        ],    
     "manifest_version": 2,
     "offline_enabled":true
 }

@@ -7,9 +7,7 @@ pm.settings = {
     items: [],
 
     initValues: function(callback) {
-        pm.settings.items = {};            
-
-        console.log("Getting settings");
+        pm.settings.items = {};                    
         pm.storage.get("settings", function(settingsJson) {                           
             pm.settings.items = JSON.parse(settingsJson);
 
@@ -36,8 +34,6 @@ pm.settings = {
             pm.settings.create("driveStartChangeId", 0);
             pm.settings.create("driveAppDataFolderId", 0);
             pm.settings.create("lastDriveChangeTime", "");
-
-            console.log("Settings are", pm.settings.items);
 
             $('#history-count').val(pm.settings.get("historyCount"));
             $('#auto-save-request').val(pm.settings.get("autoSaveRequest") + "");
@@ -159,7 +155,6 @@ pm.settings = {
         pm.settings.items[key] = value;
         var o = {'settings': JSON.stringify(pm.settings.items)};
         pm.storage.set(o, function() {
-            console.log("Set the values");
         });
     },
 
@@ -217,11 +212,9 @@ pm.settings = {
         checkIfSettingsIsOnDrive: function(id, callback) {
             pm.indexedDB.driveFiles.getDriveFile(id, function(driveFile) {
                 if (driveFile) {
-                    console.log("Settings found");
                     callback(true, driveFile);
                 }
                 else {
-                    console.log("Settings not found");
                     callback(false);
                 }
                 
@@ -235,8 +228,7 @@ pm.settings = {
             var name = "settings" + ".postman_settings";
             var filedata = JSON.stringify(settings);
             
-            pm.drive.queuePost(id, "settings", name, filedata, function() {
-                console.log("Uploaded new settings", name);                
+            pm.drive.queuePost(id, "settings", name, filedata, function() {                
             });            
         },
 
@@ -248,24 +240,18 @@ pm.settings = {
             var filedata = JSON.stringify(settings);
 
             pm.indexedDB.driveFiles.getDriveFile(id, function(driveFile) {
-                pm.drive.queueUpdate(id, "settings", name, driveFile.file, filedata, function() {
-                    console.log("Updated settings");
+                pm.drive.queueUpdate(id, "settings", name, driveFile.file, filedata, function() {                    
                 });
             });
         },
 
         updateSettingsFromDrive: function(responseText) {
-            console.log("Update settings from drive", responseText);
             var settings = JSON.parse(responseText);
-            console.log(settings, responseText);
-
             pm.settings.update(settings);
         },
 
         addSettingsFromDrive: function(file, responseText) {
-            var settings = JSON.parse(responseText);
-            console.log("Add to DB");
-
+            var settings = JSON.parse(responseText);            
             pm.settings.update(settings);
 
             var newLocalDriveFile = {
@@ -276,8 +262,7 @@ pm.settings = {
                 "file": file
             };
 
-            pm.indexedDB.driveFiles.addDriveFile(newLocalDriveFile, function(e) {
-                console.log("Uploaded file", newLocalDriveFile);                            
+            pm.indexedDB.driveFiles.addDriveFile(newLocalDriveFile, function(e) {                                        
                 var currentTime = new Date().toISOString();
                 pm.settings.set("lastDriveChangeTime", currentTime);                
             });  

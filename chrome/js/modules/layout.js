@@ -45,8 +45,7 @@ pm.layout = {
         pm.layout.dataDump.init();
 
 
-        if (pm.settings.get("haveDonated") == true) {
-            console.log("Donated");
+        if (pm.settings.get("haveDonated") == true) {            
             pm.layout.hideDonationBar();
         }
 
@@ -198,8 +197,6 @@ pm.layout = {
             var description = $('#form-edit-collection-request .collection-request-description').val();
             pm.collections.updateCollectionRequestMeta(id, name, description);
         });
-
-        console.log("Setting event listener for bounds");
 
         $(window).on("resize", function () {
             console.log("Size changed");

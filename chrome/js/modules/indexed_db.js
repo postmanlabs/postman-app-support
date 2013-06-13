@@ -145,14 +145,12 @@ pm.indexedDB = {
                 requestStore.createIndex("timestamp", "timestamp", { unique:false});
             }
 
-            if (!db.objectStoreNames.contains(pm.indexedDB.TABLE_DRIVE_FILES)) {
-                console.log("Drive files does not exist");
+            if (!db.objectStoreNames.contains(pm.indexedDB.TABLE_DRIVE_FILES)) {                
                 var requestStore = db.createObjectStore(pm.indexedDB.TABLE_DRIVE_FILES, {keyPath:"id"});
                 requestStore.createIndex("timestamp", "timestamp", { unique:false});       
                 requestStore.createIndex("fileId", "fileId", { unique:false});                                 
             }
             else {
-                console.log("Trying to create a new index");
                 var requestStore = request.transaction.objectStore(pm.indexedDB.TABLE_DRIVE_FILES);
                 requestStore.createIndex("fileId", "fileId", { unique:false});                        
             }
@@ -172,12 +170,10 @@ pm.indexedDB = {
     },
 
     open:function (callback) {
-        console.log("Opening latest indexedDB");
         if (parseInt(navigator.userAgent.match(/Chrom(e|ium)\/([0-9]+)\./)[2]) < 23) {
             pm.indexedDB.open_v21(callback);
         }
         else {
-            console.log("Opening latest indexedDB");
             pm.indexedDB.open_latest(callback);
         }
     },

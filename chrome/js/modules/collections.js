@@ -730,8 +730,7 @@ pm.collections = {
     getAllCollections:function () {
         $('#collection-items').html("");
         $('#select-collection').html("<option>Select</option>");
-        pm.indexedDB.getCollections(function (items) {
-            console.log("Got all collections", items);
+        pm.indexedDB.getCollections(function (items) {            
             pm.collections.items = items;
             pm.collections.items.sort(sortAlphabetical);
 
@@ -817,8 +816,6 @@ pm.collections = {
         var collections = pm.collections.items;
         var collectionSidebarListPosition = arrayObjectIndexOf(collections, collection.id, "id");
 
-        console.log(collections);
-
         //Does this exist already?
         if (currentEl.length) {
             //Find current element list position                                    
@@ -843,9 +840,7 @@ pm.collections = {
                 insertionType = "append";
             }
             else {                
-                var nextCollectionId = collections[collectionSidebarListPosition + 1].id;                
-                console.log(collectionSidebarListPosition, nextCollectionId);
-
+                var nextCollectionId = collections[collectionSidebarListPosition + 1].id;
                 insertTarget = $("#collection-" + nextCollectionId);                
 
                 if (insertTarget.length > 0) {
@@ -858,7 +853,7 @@ pm.collections = {
         }
 
         $('#select-collection').append(Handlebars.templates.item_collection_selector_list(collection));
-        console.log(insertionType);
+        
         if (insertionType) {
             if (insertionType === "after") {
                 $(insertTarget).after(Handlebars.templates.item_collection_sidebar_head(collection));
