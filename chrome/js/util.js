@@ -208,7 +208,6 @@ function copyToClipboard(text){
     copyDiv.innerHTML = text;
     copyDiv.unselectable = "off";
     copyDiv.focus();
-    console.log(text);
     document.execCommand('selectall');
     document.execCommand("copy", false, null);
     document.body.removeChild(copyDiv);

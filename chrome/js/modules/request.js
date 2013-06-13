@@ -105,7 +105,7 @@ pm.request = {
 
         setEditorMode:function (mode, language, toSetHeader) {            
             var displayMode = $("#body-editor-mode-selector a[data-language='" + language + "']").html();          
-            console.log(mode, language);
+            pm.logger.debug("Mode: ", mode, "Language: ", language, pm);
 
             $('#body-editor-mode-item-selected').html(displayMode);
 
@@ -1099,21 +1099,33 @@ pm.request = {
                         $('#response-actions').css("display", "none");
                         $("#response-language").css("display", "none");
                         $("#response-as-preview").css("display", "none");
-                        $("#response-pretty-modifiers").css("display", "none");
-                        console.log("Render image here");
-                        $("#response-as-image").html("<img id=\"response-as-image-container\"/>");          
-
-                        console.log(this.text);
+                        $("#response-pretty-modifiers").css("display", "none");                        
+                        //$("#response-as-image").html("<img id=\"response-as-image-container\"/>");          
                         
-                        console.log(imgLink);
-                        var remoteImage = new RAL.RemoteImage(imgLink);
-                        var container = document.querySelector('#response-as-image-container');
+                        console.log(RAL);
+                        RAL.debug = true;
+                        
+                        if(RAL.FileSystem.isReady()) {
+                            console.log("RAL is ready");
+                        }
+                        else {
+                            console.log("RAL is not ready");
+                        }
+                        var remoteImage = new RAL.RemoteImage({
+                            priority: 0,
+                            src: imgLink,
+                            placeholder: "img/download.png"
+                        });
 
                         remoteImage.addEventListener('loaded', function(remoteImage) {
-                            console.log("Image loaded");
+                            console.log("Loaded remoteImage", remoteImage);
+                            var container = document.querySelector('#response-as-image');
+                            container.appendChild(remoteImage.element);
+                            pm.logger.debug("Image loaded");
                         });
-                        container.appendChild(remoteImage.element);
+                        
                         RAL.Queue.add(remoteImage);
+                        RAL.Queue.setMaxConnections(4);
                         RAL.Queue.start();
                     }
                     else if (contentType.search(/pdf/i) >= 0 && response.responseRawDataType == "arraybuffer") {

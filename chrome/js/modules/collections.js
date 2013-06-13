@@ -515,8 +515,7 @@ pm.collections = {
     toggleRequestList:function (id) {
         var target = "#collection-requests-" + id;
         var label = "#collection-" + id + " .collection-head-actions .label";
-        if ($(target).css("display") === "none") {
-            console.log("Slide down");
+        if ($(target).css("display") === "none") {            
             $("#collection-" + id + " .sidebar-collection-head-dt").removeClass("disclosure-triangle-close");
             $("#collection-" + id + " .sidebar-collection-head-dt").addClass("disclosure-triangle-open");
 
@@ -525,8 +524,6 @@ pm.collections = {
             });
         }
         else {
-            console.log("Slide Up");
-
             $("#collection-" + id + " .sidebar-collection-head-dt").removeClass("disclosure-triangle-open");
             $("#collection-" + id + " .sidebar-collection-head-dt").addClass("disclosure-triangle-close");            
             $(target).slideUp(100, function () {

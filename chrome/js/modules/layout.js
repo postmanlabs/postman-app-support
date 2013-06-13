@@ -198,15 +198,13 @@ pm.layout = {
             pm.collections.updateCollectionRequestMeta(id, name, description);
         });
 
-        $(window).on("resize", function () {
-            console.log("Size changed");
+        $(window).on("resize", function () {            
             pm.layout.setLayout();
         });
 
         $('#response-data').on("mousedown", ".cm-link", function () {
             var link = $(this).html();
-            var headers = $('#headers-keyvaleditor').keyvalueeditor('getValues');
-            console.log(headers);
+            var headers = $('#headers-keyvaleditor').keyvalueeditor('getValues');        
             pm.request.loadRequestFromLink(link, headers);
         });
 
