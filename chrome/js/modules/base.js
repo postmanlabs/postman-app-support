@@ -17,6 +17,8 @@
  under the License.
  */
 "use strict";
+
+//TODO: Remove these model classes
 function Collection() {
     this.id = "";
     this.name = "";
@@ -48,34 +50,6 @@ function Request() {
     this.timestamp = 0;
 }
 
-function sortAscending(a, b) {
-    if (a >= b) {
-        return 1;
-    }
-    else {
-        return -1;
-    }
-}
-
-function sortAlphabetical(a, b) {
-    var counter;
-    if (a.name.length > b.name.legnth)
-        counter = b.name.length;
-    else
-        counter = a.name.length;
-
-    for (var i = 0; i < counter; i++) {
-        if (a.name[i] == b.name[i]) {
-            continue;
-        } else if (a.name[i] > b.name[i]) {
-            return 1;
-        } else {
-            return -1;
-        }
-    }
-    return 1;
-}
-
 var pm = {};
 
 pm.targets = {
@@ -95,6 +69,7 @@ pm.indexedDB.modes = {
 };
 
 pm.fs = {};
+
 pm.webUrl = "http://getpostman.com";
 pm.bannedHeaders = [
     'accept-charset',
@@ -212,6 +187,9 @@ $(document).ready(function () {
     pm.init();
 });
 
-chrome.app.window.onClosed.addListener(function () {    
+
+//TODO: Not getting called
+chrome.app.window.onClosed.addListener(function () {
+    console.log("Save current request to local storage");
     pm.request.saveCurrentRequestToLocalStorage();
 });

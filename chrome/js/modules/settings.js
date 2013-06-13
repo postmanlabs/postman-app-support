@@ -35,6 +35,8 @@ pm.settings = {
             pm.settings.create("driveAppDataFolderId", 0);
             pm.settings.create("lastDriveChangeTime", "");
 
+            console.log(pm.settings.get("lastRequest"));
+
             $('#history-count').val(pm.settings.get("historyCount"));
             $('#auto-save-request').val(pm.settings.get("autoSaveRequest") + "");
             $('#retain-link-headers').val(pm.settings.get("retainLinkHeaders") + "");

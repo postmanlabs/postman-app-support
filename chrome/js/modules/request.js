@@ -1104,13 +1104,14 @@ pm.request = {
                         
                         console.log(RAL);
                         RAL.debug = true;
-                        
+
                         if(RAL.FileSystem.isReady()) {
                             console.log("RAL is ready");
                         }
                         else {
                             console.log("RAL is not ready");
                         }
+
                         var remoteImage = new RAL.RemoteImage({
                             priority: 0,
                             src: imgLink,
@@ -2142,6 +2143,7 @@ pm.request = {
                 pm.request.dataMode);
         }
 
+        pm.request.saveCurrentRequestToLocalStorage();
         //Show the final UI
         pm.request.updateUiPostSending();
     },
