@@ -33,6 +33,7 @@ a, a:hover {
     position: fixed;
     overflow-y: scroll;
     overflow-x: hidden;
+    border-top: solid thin #ccc;
 }
 
 #sidebar:focus,
@@ -905,6 +906,7 @@ li .right {
     height: 35px;
     margin-left: -20px;
     margin-bottom: 12px;
+    border-top: solid thin #ccc;
 }
 
 #request-helpers {

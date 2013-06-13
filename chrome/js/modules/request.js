@@ -104,8 +104,7 @@ pm.request = {
         },
 
         setEditorMode:function (mode, language, toSetHeader) {            
-            var displayMode = $("#body-editor-mode-selector a[data-language='" + language + "']").html();          
-            pm.logger.debug("Mode: ", mode, "Language: ", language, pm);
+            var displayMode = $("#body-editor-mode-selector a[data-language='" + language + "']").html();                      
 
             $('#body-editor-mode-item-selected').html(displayMode);
 
