@@ -1655,3 +1655,7 @@ input[type="file"] {
     font-size: 14px;
     font-weight: bold;
 }
+
+.navbar {
+    height: 20px;
+}

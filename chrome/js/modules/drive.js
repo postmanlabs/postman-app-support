@@ -3,7 +3,9 @@ function gapiIsLoaded() {
 }
 
 pm.drive = {
+    DRIVE_API_URL: "https://www.googleapis.com/drive/v2/",
     auth: {},
+    authToken: false,
     about: {},
     CLIENT_ID: '805864674475-vk0l2h2dpb3urf8f7rq83r9ktf899afi.apps.googleusercontent.com',
     SCOPES: [
@@ -95,6 +97,7 @@ pm.drive = {
         $("#drive-first-time-sync-step2").css("display", "block");
         console.log("Drive ID is ", pm.drive.CLIENT_ID);
         chrome.experimental.identity.getAuthToken(function(token) {
+            pm.drive.authToken = token;
             console.log(token);
         });
 
@@ -553,7 +556,13 @@ pm.drive = {
 
     },
 
+    /*
+        https://developers.google.com/drive/v2/reference/about
+    */
+
     getAbout: function(callback) {
+        var url = pm.drive.DRIVE_API_URL + "/about";
+
         var request = gapi.client.drive.about.get();
         request.execute(function(resp) {
             pm.drive.about = resp;            
@@ -561,7 +570,12 @@ pm.drive = {
         });
     },
 
+    /*
+    https://developers.google.com/drive/v2/reference/changes/list
+    */    
     getChangeList: function(callback, startChangeId) {
+        var url = pm.drive.DRIVE_API_URL + "/changes";
+
         var retrievePageOfChanges = function(request, result) {
             request.execute(function(resp) {
                 if ("items" in resp) {
@@ -778,7 +792,23 @@ pm.drive = {
         });
     },
 
+    /* https://developers.google.com/drive/v2/reference/files/insert */
     postFile: function(name, type, fileData, callback) {
+        var url = pm.drive.DRIVE_API_URL + "/files";
+        var method = 'POST';
+        var xhr = new XMLHttpRequest();
+        xhr.open(method, url);
+        xhr.setRequestHeader('Authorization', 'Bearer ' + accessToken);        
+
+        xhr.onload = function() {
+            console.log("succesful");
+            callback(xhr.responseText);
+        };
+
+        xhr.onerror = function() {
+            console.log("error");
+        };
+
         var boundary = '-------314159265358979323846';
         var delimiter = "\r\n--" + boundary + "\r\n";
         var close_delim = "\r\n--" + boundary + "--";
@@ -815,6 +845,21 @@ pm.drive = {
     },
 
     updateFile: function(name, file, fileData, callback) {
+        var url = pm.drive.DRIVE_API_URL + "/files/" + file.id;
+        var method = 'PUT';
+        var xhr = new XMLHttpRequest();
+        xhr.open(method, url);
+        xhr.setRequestHeader('Authorization', 'Bearer ' + accessToken);        
+
+        xhr.onload = function() {
+            console.log("succesful");
+            callback(xhr.responseText);
+        };
+
+        xhr.onerror = function() {
+            console.log("error");
+        };
+
         var boundary = '-------314159265358979323846';
         var delimiter = "\r\n--" + boundary + "\r\n";
         var close_delim = "\r\n--" + boundary + "--";
@@ -854,6 +899,20 @@ pm.drive = {
     },
 
     trashFile: function(fileId, callback) {        
+        var url = pm.drive.DRIVE_API_URL + "/files/" + fileId + "/trash";
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', url);
+        xhr.setRequestHeader('Authorization', 'Bearer ' + accessToken);        
+
+        xhr.onload = function() {
+            console.log("succesful");
+            callback(xhr.responseText);
+        };
+
+        xhr.onerror = function() {
+            console.log("error");
+        };
+
         var request = gapi.client.drive.files.trash({
             'fileId': fileId
         });
@@ -863,6 +922,20 @@ pm.drive = {
     },
 
     deleteFile: function(fileId, callback) {        
+        var url = pm.drive.DRIVE_API_URL + "/files/" + fileId; //Set URL here
+        var xhr = new XMLHttpRequest();
+        xhr.open('DELETE', url);
+        xhr.setRequestHeader('Authorization', 'Bearer ' + accessToken);        
+
+        xhr.onload = function() {
+            console.log("succesful");
+            callback(xhr.responseText);
+        };
+
+        xhr.onerror = function() {
+            console.log("error");
+        };
+
         var request = gapi.client.drive.files.delete({
             'fileId': fileId
         });
