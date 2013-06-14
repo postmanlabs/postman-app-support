@@ -17,11 +17,11 @@ module.exports = function(grunt) {
       },
       html: {
         src: [
-          'chrome/html/header.html', 
-          'chrome/html/sidebar.html',
-          'chrome/html/main.html',
-          'chrome/html/modals/*.html', 
-          'chrome/html/footer.html'
+          'chrome/html/requester/header.html', 
+          'chrome/html/requester/sidebar.html',
+          'chrome/html/requester/main.html',
+          'chrome/html/requester/modals/*.html', 
+          'chrome/html/requester/footer.html'
           ],
         dest: 'chrome/requester.html'
       }
