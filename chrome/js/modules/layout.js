@@ -538,15 +538,29 @@ pm.layout = {
     dataDump: {
         init: function() {
             $("#download-all-data").on("click", function() {
-                pm.indexedDB.downloadAllData();
+                pm.indexedDB.downloadAllData(function() {
+                    noty(
+                    {
+                        type:'success',
+                        text:'Saved the data dump',
+                        layout:'topRight',
+                        timeout:750
+                    });
+                });
             });
 
             $("#import-all-data-files-input").on("change", function(event) {
                 console.log("Process file and import data");
-                var files = event.target.files;
-                console.log(files);
+                var files = event.target.files;                
                 pm.indexedDB.importAllData(files, function() {
                     $("#import-all-data-files-input").val("");
+                    noty(
+                    {
+                        type:'success',
+                        text:'Imported the data dump',
+                        layout:'topRight',
+                        timeout:750
+                    });
                 });
             });
         }

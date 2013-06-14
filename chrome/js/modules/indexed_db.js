@@ -1,5 +1,3 @@
-//Added dependency on drive.js. Will need a wrapper around 
-//both drive.js and indexed_db.js
 pm.indexedDB = {
     TABLE_HEADER_PRESETS: "header_presets",
     TABLE_HELPERS: "helpers",
@@ -1029,7 +1027,7 @@ pm.indexedDB = {
                 environments = e;
                 pm.indexedDB.headerPresets.getAllHeaderPresets(function (hp) {
                     headerPresets = hp;           
-                    onFinishExporttingAllData();         
+                    onFinishExporttingAllData(callback);         
                 });
             });
         }
@@ -1052,6 +1050,7 @@ pm.indexedDB = {
             var filedata = JSON.stringify(dump);
             var type = "application/json";
             pm.filesystem.saveAndOpenFile(name, filedata, type, function () {                
+                callback();
             });
         }
         
