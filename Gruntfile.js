@@ -14,6 +14,16 @@ module.exports = function(grunt) {
       dist: {
         src: ['chrome/js/modules/*.js'],
         dest: 'chrome/js/requester.js'
+      },
+      html: {
+        src: [
+          'chrome/html/header.html', 
+          'chrome/html/sidebar.html',
+          'chrome/html/main.html',
+          'chrome/html/modals/*.html', 
+          'chrome/html/footer.html'
+          ],
+        dest: 'chrome/requester.html'
       }
     },
     mindirect: {

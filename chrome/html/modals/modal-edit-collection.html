@@ -1,0 +1,28 @@
+<div id="modal-edit-collection" class="modal hide fade" tabindex="-1">
+    <div class="modal-header">
+        <a class="close" data-dismiss="modal">×</a>
+        <h3>Edit collection</h3>
+    </div>
+    <div class="modal-body">
+        <div id="edit-collection-details">
+            <form class="form form-inline" id="form-edit-collection">
+                <input type="hidden" name="collection-id" class="collection-id"/>
+                <input type="text" name="collection-name" class="medium clean-input collection-name"/>
+                <a class="btn btn-primary">Edit</button>
+                <a id="edit-collection-update-drive" data-collection-id="" class="btn">Update from Drive</a>
+            </form>
+        </div>
+
+        <div id="edit-collection-drive">
+            <div>
+                <div id="edit-collection-drive-status-container">                    
+                    <span id="edit-collection-drive-status" title=""></span>
+                </div>
+            </div>        
+        </div>
+
+        <div id="edit-collection-requests">
+            <ul id="edit-collection-requests-list"></ul>
+        </div>
+    </div>
+</div>

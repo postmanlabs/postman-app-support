@@ -816,8 +816,6 @@ pm.collections = {
 
         var currentEl = $('#collection-' + collection.id);
 
-        console.log(currentEl);
-
         var collectionSidebarListPosition = -1;
         var insertionType;
         var insertTarget;

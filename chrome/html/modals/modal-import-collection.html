@@ -1,0 +1,35 @@
+<div id="modal-import-collection" class="modal fade">
+    <div class="modal-header">
+        <a class="close" data-dismiss="modal">x</a>
+
+        <h3>Import a collection</h3>
+    </div>
+
+    <div class="modal-body">
+        <h4>Import from disk</h4>
+
+        <div class="modal-import-alerts"></div>
+        <div id="import-collection-dropzone">
+            <h3>Drop files here or</h3>
+            <input type="file" id="collection-files-input"
+                   name="files[]" multiple/>
+        </div>
+        <hr/>
+        <div id="import-collection-url-container">
+            <h4>Import from a URL</h4>
+
+            <div class="control-group">
+                <div class="controls">
+                    <input type="text"
+                           class="large clean-input"
+                           placeholder="Enter URL and press import"
+                           id="import-collection-url-input"/>
+                </div>
+            </div>
+            <div class="control-group">
+                <a id="import-collection-url-submit"
+                        class="btn btn-primary">Import</a>
+            </div>
+        </div>
+    </div>
+</div>

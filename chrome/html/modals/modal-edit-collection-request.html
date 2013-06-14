@@ -1,0 +1,34 @@
+<div id="modal-edit-collection-request" class="modal fade">
+    <div class="modal-header">
+        <a class="close" data-dismiss="modal">×</a>
+
+        <h3>Edit request</h3>
+    </div>
+    <div class="modal-body">
+        <form class="form-horizontal" id="form-edit-collection-request">
+            <div class="control-group">
+                <label class="control-label" for="new-collection">Request name</label>
+
+                <div class="controls">
+                    <div class="input">
+                        <input type="hidden" class="collection-request-id"/>
+                        <input type="text" class="medium clean-input collection-request-name" data-tabindex="1"/>
+                    </div>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="new-collection">Request description</label>
+
+                <div class="controls">
+                    <div class="input">
+                        <textarea class="medium collection-request-description" data-tabindex="2"></textarea>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <a class="btn btn-primary" data-tabindex="3">Edit</a>
+        <a data-dismiss="modal" class="btn btn-secondary" data-tabindex="4">Cancel</a>
+    </div>
+</div>
