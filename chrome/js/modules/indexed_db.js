@@ -1075,7 +1075,53 @@ pm.indexedDB = {
         });
     },
 
-    importAllData: function(callback) {
+    importAllData: function(files, callback) {
+        console.log(files, callback);
+        if (files.length != 1) return;
 
+        var f = files[0];
+        var reader = new FileReader();
+
+        // Closure to capture the file information.
+        reader.onload = (function (theFile) {
+            return function (e) {
+                // Render thumbnail.
+                var data = e.currentTarget.result;
+                var j = JSON.parse(data);
+                var version = j.version;
+                pm.indexedDB.importDataForVersion(version, j, callback);                                
+            };            
+        })(files[0]);
+
+        // Read in the image file as a data URL.
+        reader.readAsText(files[0]);
+    },
+
+    importDataForVersion: function(version, data, callback) {
+        if (version === 1) {
+            console.log(version, data, callback);
+
+            if ("collections" in data) {
+                console.log("Import collections");
+                pm.collections.mergeCollections(data.collections);
+            }
+
+            if ("environments" in data) {
+                console.log("Import environments");
+                pm.envManager.mergeEnvironments(data.environments);
+            }
+
+            if ("globals" in data) {
+                console.log("Import globals");
+                pm.envManager.mergeGlobals(data.globals);
+            }
+
+            if ("headerPresets" in data) {
+                console.log("Import headerPresets");
+                pm.headerPresets.mergeHeaderPresets(data.headerPresets);
+            }
+        }
+
+        callback();
     }
 };

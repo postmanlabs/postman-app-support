@@ -460,6 +460,14 @@ pm.collections = {
         });
     },
 
+    mergeCollections: function (collections) {
+        var size = collections.length;
+        for(var i = 0; i < size; i++) {
+            var collection = collections[i];
+            pm.collections.mergeCollection(collection, true);
+        }
+    },
+
     getCollectionRequest:function (id) {
         $('.sidebar-collection-request').removeClass('sidebar-collection-request-active');
         $('#sidebar-request-' + id).addClass('sidebar-collection-request-active');
@@ -807,6 +815,9 @@ pm.collections = {
         $('#sidebar-section-collections .empty-message').css("display", "none");
 
         var currentEl = $('#collection-' + collection.id);
+
+        console.log(currentEl);
+
         var collectionSidebarListPosition = -1;
         var insertionType;
         var insertTarget;

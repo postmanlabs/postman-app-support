@@ -541,8 +541,13 @@ pm.layout = {
                 pm.indexedDB.downloadAllData();
             });
 
-            $("#import-all-data").on("click", function() {
-                
+            $("#import-all-data-files-input").on("change", function(event) {
+                console.log("Process file and import data");
+                var files = event.target.files;
+                console.log(files);
+                pm.indexedDB.importAllData(files, function() {
+                    $("#import-all-data-files-input").val("");
+                });
             });
         }
     }

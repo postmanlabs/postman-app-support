@@ -477,6 +477,23 @@ pm.envManager = {
         }
     },
 
+    mergeEnvironments: function(environments) {
+        var size = environments.length;
+        for(var i = 0; i < size; i++) {
+            var environment = environments[i];
+            pm.indexedDB.environments.updateEnvironment(environment, function () {
+                pm.envManager.getAllEnvironments();                
+            });    
+        }        
+    },
+
+    mergeGlobals: function(globals) {
+        var o = {'globals': JSON.stringify(globals)};
+        pm.storage.set(o, function() {
+            console.log("Updated globals");
+        });
+    },
+
     drive: {
         registerHandlers: function() {
             if (pm.drive) {
@@ -583,6 +600,7 @@ pm.envManager = {
             });
         },
 
+        //TOOD: Make this use the chrome storage API
         updateGlobalsFromDrive: function(responseText) {
             console.log("Update global from drive", responseText);
             var globals = JSON.parse(responseText);
