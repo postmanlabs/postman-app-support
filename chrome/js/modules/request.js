@@ -1113,16 +1113,17 @@ pm.request = {
 
                         var remoteImage = new RAL.RemoteImage({
                             priority: 0,
-                            src: imgLink,
-                            placeholder: "img/download.png"
+                            src: imgLink
                         });
 
                         remoteImage.addEventListener('loaded', function(remoteImage) {
                             console.log("Loaded remoteImage", remoteImage);
-                            var container = document.querySelector('#response-as-image');
-                            container.appendChild(remoteImage.element);
-                            pm.logger.debug("Image loaded");
+                                                        
                         });
+
+                        $("#response-as-image").html("");
+                        var container = document.querySelector('#response-as-image');
+                        container.appendChild(remoteImage.element);
                         
                         RAL.Queue.add(remoteImage);
                         RAL.Queue.setMaxConnections(4);

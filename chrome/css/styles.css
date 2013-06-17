@@ -794,6 +794,10 @@ li .right {
     margin-top: 20px;
 }
 
+#repsonse-as-image img {
+    border: 0;
+}
+
 #about-postman-social-buttons {
     margin: 5px 0 5px 0;
 }
