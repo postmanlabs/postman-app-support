@@ -1862,6 +1862,16 @@ pm.request = {
             headers.push(noCacheHeader);            
         }
 
+        if(pm.settings.get("sendPostmanTokenHeader") === true) {
+            var noCacheHeader = {
+                key: "Postman-Token",
+                name: "Postman-Token",
+                value: guid()
+            };
+
+            headers.push(noCacheHeader);            
+        }
+
         if(pm.request.dataMode === "urlencoded") {
             var urlencodedHeader = {
                 key: "Content-Type",
