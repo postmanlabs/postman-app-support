@@ -138,7 +138,7 @@ pm.layout = {
 
         pm.request.response.clear();
 
-        $('#sidebar-selectors li a').click(function () {
+        $('#sidebar-selectors li').click(function () {
             var id = $(this).attr('data-id');
             pm.layout.sidebar.select(id);
         });

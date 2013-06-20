@@ -25,7 +25,7 @@ module.exports = function(grunt) {
       }
     },
     watch: {
-      files: ['chrome/js/modules/*.js', 'chrome/js/templates/*', 'chrome/html/requester/modals/*'],
+      files: ['chrome/js/modules/*.js', 'chrome/js/templates/*', 'chrome/html/requester/modals/*', 'chrome/html/requester/*'],
       tasks: ['concat', 'handlebars']
     },
     jshint: {

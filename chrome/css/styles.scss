@@ -1,4 +1,18 @@
-$font: Helvetica, Arial, sans-serif;
+@font-face {
+    font-family: 'Source Sans Pro';
+    src: url('fonts/SourceSansPro/SourceSansPro-Regular.ttf');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Source Sans Pro';
+    src: url('fonts/SourceSansPro/SourceSansPro-Bold.ttf');
+    font-weight: bold;
+    font-style: normal;
+}
+
+$font: "Source Sans Pro", Helvetica, Arial, sans-serif;
 $input_text_color: #333;
 $input_border_color: #ccc;
 $input_border_color_focus: #999;
@@ -12,10 +26,6 @@ html, body {
     width: 100%;
     padding: 0;
     margin: 0;    
-}
-
-body {
-    overflow: auto;
 }
 
 a, a:hover {
@@ -92,7 +102,94 @@ li .right {
 #container {
     height: 100%;
     width: 100%;
+    margin-top: 40px;
+    overflow: auto;
 }
+
+.request-helper-tabs {
+    margin: 0;
+    padding: 0;
+}
+
+.request-helper-tabs li {
+    float: left;
+    font-size: 11px;
+    font-weight: bold;
+    list-style: none;
+    padding: 10px;
+    border-left: solid thin #ccc;
+    border-bottom: solid thin #fff;
+    color: #ccc;
+    cursor: pointer;
+    height: 14px;
+}
+
+.request-helper-tabs li:hover {
+    color: #333;
+}
+
+.request-helper-tabs li.active {
+    color: black;
+    height: 15px;
+}
+
+.request-helper-tabs li:last-child {
+    border-right: solid thin #ccc;
+}
+
+.request-helper-tabs li:first-child {
+    border-left: none;
+}
+
+/*Top bar*/
+#navbar {
+    border-top: solid 1px #ccc;
+    border-bottom: solid 1px #111;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 40px;
+    width: 100%;
+    z-index: 100;
+
+    background: #444444; /* Old browsers */
+    background: -moz-linear-gradient(top,  #444444 0%, #333232 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#444444), color-stop(100%,#333232)); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top,  #444444 0%,#333232 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top,  #444444 0%,#333232 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(top,  #444444 0%,#333232 100%); /* IE10+ */
+    background: linear-gradient(to bottom,  #444444 0%,#333232 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#444444', endColorstr='#333232',GradientType=0 ); /* IE6-9 */
+}
+
+.sidebar-helper-tabs {
+    height: 36px;
+}
+
+.sidebar-helper-tabs li {
+    border-left: solid thin #ccc;
+    border-bottom: solid thin #ccc;    
+    padding: 0;
+    height: 36px;
+    float: left;
+}
+
+.sidebar-helper-tabs li span {
+    display: inline-block;
+    padding: 10px;
+}
+
+.sidebar-helper-tabs li.active {
+    background-color: #eaeaea;
+    border-bottom: solid thin #eaeaea;    
+    height: 36px;
+}
+
+.sidebar-helper-tabs li:last-child {
+    border-right: solid thin #ccc;
+}
+
+/*End top bar*/
 
 /*Sidebar*/
 /*Links at the top*/
@@ -176,7 +273,13 @@ li .right {
 }
 
 #sidebar-sections {
-    padding-top: 10px;
+}
+
+#sidebar-selectors {
+    position: absolute;
+    width: 110%;
+    border-bottom: solid thin #ccc;
+    left: 0;
 }
 
 #sidebar-sections ul {
@@ -237,6 +340,7 @@ li .right {
 
 #sidebar-section-data {
     margin-bottom: 50px;
+    margin-top: 45px;
 }
 
 #sidebar-section-data ul {
@@ -354,7 +458,7 @@ li .right {
 .section-options {
     position: absolute;
     margin-left: 200px;
-    margin-top: 5px;
+    margin-top: 8px;
 }
 
 .section-options img {
@@ -477,6 +581,7 @@ li .right {
 
 .btn {
     border-radius: 0;
+    font-family: $font;
 }
 
 input[type="file"] {
@@ -663,41 +768,6 @@ input[type="file"] {
 
 .request-actions img:hover {
     opacity: 1;
-}
-
-.request-helper-tabs {
-    margin: 0;
-    padding: 0;
-}
-
-.request-helper-tabs li {
-    float: left;
-    font-size: 11px;
-    font-weight: bold;
-    list-style: none;
-    padding: 10px;
-    border-left: solid thin #ccc;
-    border-bottom: solid thin #fff;
-    color: #ccc;
-    cursor: pointer;
-    height: 14px;
-}
-
-.request-helper-tabs li:hover {
-    color: #333;
-}
-
-.request-helper-tabs li.active {
-    color: black;
-    height: 15px;
-}
-
-.request-helper-tabs li:last-child {
-    border-right: solid thin #ccc;
-}
-
-.request-helper-tabs li:first-child {
-    border-left: none;
 }
 
 #request-types {
@@ -907,7 +977,7 @@ input[type="file"] {
 }
 
 .response-header {
-    font-family: Helvetica, arial, sans-serif;
+    font-family: $font;
     list-style: none;
     margin-bottom: 5px;
     color: #111;
@@ -1208,7 +1278,7 @@ input[type="file"] {
 }
 
 #import-collection-dropzone h3 {
-    font: 20pt bold "Helvetica";
+    font: 20pt bold $font;
     color: #BBB;
 }
 
@@ -1352,6 +1422,7 @@ input[type="file"] {
 /*Broadcasts*/
 #broadcasts {
     float: right;
+    margin-top: 10px;
     margin-right: 25px;
 }
 
@@ -1408,6 +1479,7 @@ input[type="file"] {
 /*Drive*/
 #drive-status {
     float: right;
+    margin-top: 10px;
     margin-right: 15px;
 }
 
@@ -1549,13 +1621,14 @@ input[type="file"] {
 
 .ui-menu-item {
     font-size: 12px;
-    font-family: Helvetica, Arial, sans-serif;
+    font-family: $font;
 }
 
 /*Preferences*/
 .preferences {
     float: right;
     width: 30px;
+    margin-top: 10px;
 }
 
 .preferences a {

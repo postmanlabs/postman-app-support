@@ -18,4 +18,30 @@
     <link rel="stylesheet" media="all" href="embedded_ga_host.css"></link>
 </head>
 <body>
+<div id="navbar">
+    <div id="broadcasts" class="btn-group">
+        <a data-toggle="dropdown" rel="tooltip" id="broadcasts-count">0</a>
+        <ul class="dropdown-menu">
+        </ul>
+    </div>            
+    <div class="preferences">                
+        <a href="#modal-settings" data-toggle="modal"
+           rel="tooltip"
+           data-placement="bottom" data-original-title="Settings">
+            <img src="img/settings.png" style="vertical-align: middle;"/></a>
+    </div>
+    <div id="drive-status">
+        <div id="sync-status">
+            <a rel="tooltip"
+                data-placement="bottom" data-original-title="Sync">
+                <img src="img/sync.png" style="vertical-align: middle;"/>
+            </a>
+        </div>
+        <div id="user-img">                    
+        </div>
+        <div id="user-status">
+            <a id="user-status-text"><img src="img/drive-16.png"/></a>
+        </div>
+    </div>
+</div>
 <div id="container" class="clearfix">

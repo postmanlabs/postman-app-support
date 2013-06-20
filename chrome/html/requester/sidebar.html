@@ -1,37 +1,10 @@
-<div id="sidebar-footer">    
-    <a id="make-postman-better">Make Postman better!</a>
-    <a id="donate" href="http://www.getpostman.com/donate">Donate</a>
-</div>
 <div id="sidebar-toggle">
     <img src="img/tri_arrow_left.png"/>
 </div>
-<div id="sidebar">
-    <div id="header" class="clearfix">
-        <div id="logo">
-            <a target="_blank">
-                <img src="img/logo-grey.png" alt="Postman" height="15px"
-                     width="100px"/>
-            </a>
-        </div>
-        <div id="external-links">
-            <ul>
-                <li>
-                    <a href="http://www.twitter.com/postmanclient"
-                        target="_blank"><img src="img/twitter.png"/>
-                    </a>
-                </li>
-                <li>
-                    <a href="http://www.github.com/a85/POSTMan-Chrome-Extension/wiki"
-                       target="_blank"><img src="img/question_mark.png"/>
-                    </a>
-                </li>
-            </ul>
-        </div>
-    </div>
+<div id="sidebar">    
     <div id="sidebar-sections" class="clearfix">
         <div id="history-options" class="section-options">
-            <a
-                    class="history-actions-delete" rel="tooltip"
+            <a class="history-actions-delete" rel="tooltip"
                     data-placement="bottom"
                     data-original-title="Clear history">
                 <img src="img/trash-empty.png" style="width:24px; height:24px; vertical-align: middle;"/>
@@ -51,10 +24,12 @@
                data-keyboard="true"><img src="img/inbox_in.png"
                                          style="width:20px; height:20px; vertical-align: middle;"/></a>
         </div>
-        <ul id="sidebar-selectors" class="nav nav-pills">
-            <li id="sidebar-selectors-history"><a href="#sidebar-section-history" data-id="history" data-toggle="tab">History</a></li>
-            <li id="sidebar-selectors-collections"><a href="#sidebar-section-collections" data-id="collections" data-toggle="tab">Collections</a></li>
-        </ul>
+        <div class="clearfix">
+            <ul id="sidebar-selectors" class="request-helper-tabs sidebar-helper-tabs clearfix">
+                <li id="sidebar-selectors-history" data-id="history" class="active"><span>History</span></a></li>
+                <li id="sidebar-selectors-collections" data-id="collections"><span>Collections</span></li>
+            </ul>
+        </div>
         <div id="sidebar-section-data">
             <div class="tab-pane active" id="sidebar-section-history">
                 <ul id="history-items" class="clearfix">
