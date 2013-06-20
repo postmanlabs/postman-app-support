@@ -1473,7 +1473,7 @@ pm.request = {
         //@todoSet params using keyvalueeditor function
         $('#url-keyvaleditor').keyvalueeditor('reset', newUrlParams);
         $('#headers-keyvaleditor').keyvalueeditor('reset', pm.request.headers);
-        
+
         $('#headers-keyvaleditor-actions-open .headers-count').html(pm.request.headers.length);
         $('#submit-request').button("reset");
         $('#data-mode-selector a').removeClass("active");
@@ -2185,6 +2185,29 @@ pm.request = {
         var partsCount = parts.length;
         for(var i = 3; i < partsCount; i++) {
             path += "/" + parts[i];
+        }        
+
+        var quesLocation = path.indexOf('?');
+        var hasParams = quesLocation >= 0 ? true : false;
+
+        if (hasParams) {
+            var parts = getUrlVars(path);
+            var count = parts.length;
+            var encodedPath = path.substr(0, quesLocation + 1);
+            for (var j = 0; j < count; j++) {
+                var value = parts[j].value;
+                var key = parts[j].key;
+                value = encodeURIComponent(value); 
+                key = encodeURIComponent(key);
+                
+                encodedPath += key + "=" + value + "&";
+            }
+
+            encodedPath = encodedPath.substr(0, encodedPath.length - 1);
+
+            console.log("Encoded path is ", encodedPath);
+
+            path = encodedPath;
         }
 
         return { host: host, path: path };
@@ -2218,8 +2241,10 @@ pm.request = {
         var method = pm.request.method.toUpperCase();
         var httpVersion = "HTTP/1.1";
         var hostAndPath = pm.request.splitUrlIntoHostAndPath(pm.request.url);
+        
         var path = hostAndPath.path;
         var host = hostAndPath.host;
+
         var headers = pm.request.getXhrHeaders();
         var hasBody = pm.request.isMethodWithBody(pm.request.method.toUpperCase());
         var body;
