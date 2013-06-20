@@ -10,11 +10,14 @@ RAL.RemoteImage = function(options) {
 
   options = options || {};
 
+  console.log("This is a custom build of RAL");
+
   this.element = options.element || document.createElement('img');
   this.src = this.element.dataset.src || options.src;
   this.width = this.element.width || options.width || null;
   this.height = this.element.height || options.height || null;
   this.placeholder = this.element.dataset.placeholder || null;
+  this.headers = options.headers || [];
   this.priority = options.priority || 0;
 
   // attach on specific events for images

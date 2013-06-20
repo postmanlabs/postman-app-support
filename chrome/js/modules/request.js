@@ -891,6 +891,7 @@ pm.request = {
             $(active_id).css("display", "block");
         },
 
+        //Needs to be updated
         render:function (response) {
             pm.request.response.showScreen("success");
             $('#response-status').html(Handlebars.templates.item_response_code(response.responseCode));
@@ -947,10 +948,10 @@ pm.request = {
                     $('#response-actions').css("display", "none");
                     $("#response-language").css("display", "none");
                     $("#response-as-preview").css("display", "none");
-                    $("#response-pretty-modifiers").css("display", "none");
-
-                    console.log("Render image here", imgLink);
+                    $("#response-pretty-modifiers").css("display", "none");                    
                     $("#response-as-image").html("<img src='" + imgLink + "'/>");
+
+                    //TODO: Needs to be updated
                 } 
                 else {
                     responsePreviewType = 'html';
@@ -1103,7 +1104,8 @@ pm.request = {
                         
                         var remoteImage = new RAL.RemoteImage({
                             priority: 0,
-                            src: imgLink
+                            src: imgLink,
+                            headers: pm.request.getXhrHeaders()
                         });
 
                         remoteImage.addEventListener('loaded', function(remoteImage) {                                                                                    
@@ -1915,8 +1917,6 @@ pm.request = {
                 finalHeaders.push(header);
             }
         }
-
-        console.log("Final header values are ", finalHeaders);
 
         return finalHeaders;
     },

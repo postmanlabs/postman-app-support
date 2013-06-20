@@ -64,8 +64,7 @@ RAL.Loader = (function() {
    * @param {Function} callbackSuccess The callback for successful loading.
    * @param {Function} callbackError The callback for failed loading.
    */
-  function load(source, type, callbackSuccess, callbackFail) {
-
+  function load(source, headers, type, callbackSuccess, callbackFail) {
     // check we're online, or schedule the load
     if(RAL.NetworkMonitor.isOnline()) {
 
@@ -75,7 +74,14 @@ RAL.Loader = (function() {
       xhr.responseType = type;
       xhr.onerror = callbacks.onError.bind(this, callbackFail);
       xhr.onload = callbacks.onLoad.bind(this, source, callbackSuccess, callbackFail);
+
+      console.log("Setting Authorization header");      
       xhr.open('GET', source, true);
+      
+      for(var i = 0; i < headers.length; i++) {
+        xhr.setRequestHeader(headers[i].name, headers[i].value);
+      }
+
       xhr.send();
 
       // register our interest in the connection
