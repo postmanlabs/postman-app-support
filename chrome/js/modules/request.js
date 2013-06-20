@@ -1090,7 +1090,7 @@ pm.request = {
                         responsePreviewType = 'image';
 
                         $('#response-as-code').css("display", "none");
-                        $('#response-as-text').css("display", "none");
+                        $('#response-as-text').css("display", "none");                        
                         $('#response-as-image').css("display", "block");
                         var imgLink = pm.request.processUrl($('#url').val());
 
@@ -1098,27 +1098,15 @@ pm.request = {
                         $('#response-actions').css("display", "none");
                         $("#response-language").css("display", "none");
                         $("#response-as-preview").css("display", "none");
-                        $("#response-pretty-modifiers").css("display", "none");                        
-                        //$("#response-as-image").html("<img id=\"response-as-image-container\"/>");          
+                        $("#response-copy-container").css("display", "none");
+                        $("#response-pretty-modifiers").css("display", "none");                               
                         
-                        console.log(RAL);
-                        RAL.debug = true;
-
-                        if(RAL.FileSystem.isReady()) {
-                            console.log("RAL is ready");
-                        }
-                        else {
-                            console.log("RAL is not ready");
-                        }
-
                         var remoteImage = new RAL.RemoteImage({
                             priority: 0,
                             src: imgLink
                         });
 
-                        remoteImage.addEventListener('loaded', function(remoteImage) {
-                            console.log("Loaded remoteImage", remoteImage);
-                                                        
+                        remoteImage.addEventListener('loaded', function(remoteImage) {                                                                                    
                         });
 
                         $("#response-as-image").html("");
@@ -1139,6 +1127,7 @@ pm.request = {
                         $('#response-formatting').css("display", "none");
                         $('#response-actions').css("display", "none");
                         $("#response-language").css("display", "none");
+                        $("#response-copy-container").css("display", "none");
 
                         $("#response-as-preview").html("");
                         $("#response-as-preview").css("display", "block");
@@ -1242,6 +1231,7 @@ pm.request = {
 
         setFormat:function (language, response, format, forceCreate) {
             //Keep CodeMirror div visible otherwise the response gets cut off
+            $("#response-copy-container").css("display", "block");
             $('#response-as-code').css("display", "block");
             $('#response-as-text').css("display", "none");
 
