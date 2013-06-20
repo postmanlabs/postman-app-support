@@ -71,15 +71,9 @@ li .left {
 li .right {
   float: right; }
 
-.editorFields input {
-  margin: 2px; }
-
 #container {
   height: 100%;
   width: 100%; }
-
-.navbar {
-  height: 20px; }
 
 /*Sidebar*/
 /*Links at the top*/
