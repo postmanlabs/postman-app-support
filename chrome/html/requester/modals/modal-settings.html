@@ -61,6 +61,22 @@
                     </div>
 
                     <div class="control-group">
+                        <label class="control-label" for="send-postman-token-header">Send postman-token header</label>
+
+                        <div class="controls">
+                            <select class="medium" name="send-postman-token-header" id="send-postman-token-header">
+                                <option value="true">Yes</option>
+                                <option value="false">No</option>
+                            </select>
+                        </div>
+
+                        <p class="help-block">
+                            Helps avoid a <a href="https://github.com/a85/POSTMan-Chrome-Extension/issues/257">bug</a>
+                            if the exact same request is sent simultaneously
+                        </p>
+                    </div>
+
+                    <div class="control-group">
                         <label class="control-label" for="language-detection">Language detection</label>
 
                         <div class="controls">

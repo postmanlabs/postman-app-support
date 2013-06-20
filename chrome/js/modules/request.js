@@ -25,10 +25,10 @@ pm.request = {
         rawEditorType:"editor",
 
         init:function () {
-            this.initPreview();
-            this.initFormDataEditor();
-            this.initUrlEncodedEditor();
-            this.initEditorListeners();            
+            pm.request.body.initPreview();
+            pm.request.body.initFormDataEditor();
+            pm.request.body.initUrlEncodedEditor();
+            pm.request.body.initEditorListeners();            
         },
 
         initPreview:function () {
@@ -428,22 +428,22 @@ pm.request = {
 
 
     init:function () {
-        this.url = "";
-        this.urlParams = {};
-        this.body.data = "";
-        this.bodyParams = {};
+        pm.request.url = "";
+        pm.request.urlParams = {};
+        pm.request.body.data = "";
+        pm.request.bodyParams = {};
 
-        this.headers = [];
+        pm.request.headers = [];
 
-        this.method = "GET";
-        this.dataMode = "params";
+        pm.request.method = "GET";
+        pm.request.dataMode = "params";
 
-        if (!this.areListenersAdded) {
-            this.areListenersAdded = true;
-            this.initializeHeaderEditor();
-            this.initializeUrlEditor();
-            this.body.init();
-            this.addListeners();
+        if (!pm.request.areListenersAdded) {
+            pm.request.areListenersAdded = true;
+            pm.request.initializeHeaderEditor();
+            pm.request.initializeUrlEditor();
+            pm.request.body.init();
+            pm.request.addListeners();
         }
 
         var lastRequest = pm.settings.get("lastRequest");
@@ -454,7 +454,7 @@ pm.request = {
             pm.request.loadRequestInEditor(lastRequestParsed);
         }
 
-        this.intClipboardCopier();
+        pm.request.intClipboardCopier();
     },
 
     intClipboardCopier:function () {
@@ -772,8 +772,8 @@ pm.request = {
     },
 
     getTotalTime:function () {
-        this.totalTime = this.endTime - this.startTime;
-        return this.totalTime;
+        pm.request.totalTime = pm.request.endTime - pm.request.startTime;
+        return pm.request.totalTime;
     },
 
     response:{
@@ -802,13 +802,13 @@ pm.request = {
         },
 
         changePreviewType:function (newType) {
-            if (this.previewType === newType) {
+            if (pm.request.response.previewType === newType) {
                 return;
             }
 
-            this.previewType = newType;
+            pm.request.response.previewType = newType;
             $('#response-formatting a').removeClass('active');
-            $('#response-formatting a[data-type="' + this.previewType + '"]').addClass('active');
+            $('#response-formatting a[data-type="' + pm.request.response.previewType + '"]').addClass('active');
 
             pm.settings.set("previewType", newType);
 
@@ -816,7 +816,7 @@ pm.request = {
                 $('#response-as-text').css("display", "block");
                 $('#response-as-code').css("display", "none");
                 $('#response-as-preview').css("display", "none");
-                $('#code-data-raw').val(this.text);
+                $('#code-data-raw').val(pm.request.response.text);
                 var codeDataWidth = $(document).width() - $('#sidebar').width() - 60;
                 $('#code-data-raw').css("width", codeDataWidth + "px");
                 $('#code-data-raw').css("height", "600px");
@@ -840,41 +840,41 @@ pm.request = {
         },
 
         loadHeaders:function (data) {
-            this.headers = pm.request.unpackResponseHeaders(data);            
+            pm.request.response.headers = pm.request.unpackResponseHeaders(data);            
 
             if(pm.settings.get("usePostmanProxy") === true) {
-                var count = this.headers.length;                
+                var count = pm.request.response.headers.length;                
                 for(var i = 0; i < count; i++) {
-                    if(this.headers[i].key == "Postman-Location") {
-                        this.headers[i].key = "Location";
-                        this.headers[i].name = "Location";
+                    if(pm.request.response.headers[i].key == "Postman-Location") {
+                        pm.request.response.headers[i].key = "Location";
+                        pm.request.response.headers[i].name = "Location";
                         break;
                     }                        
                 }
             }
 
             $('#response-headers').html("");
-            this.headers = _.sortBy(this.headers, function (header) {
+            pm.request.response.headers = _.sortBy(pm.request.response.headers, function (header) {
                 return header.name;
             });
 
 
-            $("#response-headers").append(Handlebars.templates.response_headers({"items":this.headers}));
+            $("#response-headers").append(Handlebars.templates.response_headers({"items":pm.request.response.headers}));
             $('.response-header-name').popover({
                 trigger: "hover",
             });
         },
 
         clear:function () {
-            this.startTime = 0;
-            this.endTime = 0;
-            this.totalTime = 0;
-            this.status = "";
-            this.time = 0;
-            this.headers = {};
-            this.mime = "";
-            this.state.size = "normal";
-            this.previewType = "parsed";
+            pm.request.response.startTime = 0;
+            pm.request.response.endTime = 0;
+            pm.request.response.totalTime = 0;
+            pm.request.response.status = "";
+            pm.request.response.time = 0;
+            pm.request.response.headers = {};
+            pm.request.response.mime = "";
+            pm.request.response.state.size = "normal";
+            pm.request.response.previewType = "parsed";
             $('#response').css("display", "none");
         },
 
@@ -1042,7 +1042,7 @@ pm.request = {
                     responseData = response.response;
                 }
                 else {
-                    this.text = response.responseText;
+                    pm.request.response.text = response.responseText;
                 }
 
                 pm.request.endTime = new Date().getTime();
@@ -1058,9 +1058,9 @@ pm.request = {
                 });
 
                 //This sets pm.request.response.headers
-                this.loadHeaders(response.getAllResponseHeaders());
+                pm.request.response.loadHeaders(response.getAllResponseHeaders());
 
-                $('.response-tabs li[data-section="headers"]').html("Headers (" + this.headers.length + ")");
+                $('.response-tabs li[data-section="headers"]').html("Headers (" + pm.request.response.headers.length + ")");
                 $("#response-data").css("display", "block");
 
                 $("#loader").css("display", "none");
@@ -1143,14 +1143,14 @@ pm.request = {
                     }
                     else {
                         responsePreviewType = 'html';
-                        this.setFormat(language, this.text, pm.settings.get("previewType"), true);
+                        pm.request.response.setFormat(language, pm.request.response.text, pm.settings.get("previewType"), true);
                     }
                 }
                 else {
                     if (pm.settings.get("languageDetection") == 'javascript') {
                         language = 'javascript';
                     }
-                    this.setFormat(language, this.text, pm.settings.get("previewType"), true);
+                    pm.request.response.setFormat(language, pm.request.response.text, pm.settings.get("previewType"), true);
                 }
 
                 var url = pm.request.url;
@@ -1221,7 +1221,7 @@ pm.request = {
         },
 
         loadCookies:function (url) {
-            /*
+            /* TODO: Not available in Chrome packaged apps
             chrome.cookies.getAll({url:url}, function (cookies) {
                 var count;
                 pm.request.response.renderCookies(cookies);
@@ -1352,13 +1352,13 @@ pm.request = {
             }
 
             $('a[rel="tooltip"]').tooltip('hide');
-            if (this.state.size === "normal") {
-                this.state.size = "maximized";
+            if (pm.request.response.state.size === "normal") {
+                pm.request.response.state.size = "maximized";
                 $('#response-body-toggle img').attr("src", "img/full-screen-exit-alt-2.png");
-                this.state.width = $('#response-data').width();
-                this.state.height = $('#response-data').height();
-                this.state.display = $('#response-data').css("display");
-                this.state.position = $('#response-data').css("position");
+                pm.request.response.state.width = $('#response-data').width();
+                pm.request.response.state.height = $('#response-data').height();
+                pm.request.response.state.display = $('#response-data').css("display");
+                pm.request.response.state.position = $('#response-data').css("position");
 
                 $('#response-data').css("position", "absolute");
                 $('#response-data').css("left", 0);
@@ -1370,13 +1370,13 @@ pm.request = {
                 $('#response-data').css("padding", "10px");
             }
             else {
-                this.state.size = "normal";
+                pm.request.response.state.size = "normal";
                 $('#response-body-toggle img').attr("src", "img/full-screen-alt-4.png");
-                $('#response-data').css("position", this.state.position);
+                $('#response-data').css("position", pm.request.response.state.position);
                 $('#response-data').css("left", 0);
                 $('#response-data').css("top", 0);
-                $('#response-data').css("width", this.state.width);
-                $('#response-data').css("height", this.state.height);
+                $('#response-data').css("width", pm.request.response.state.width);
+                $('#response-data').css("height", pm.request.response.state.height);
                 $('#response-data').css("z-index", 10);
                 $('#response-data').css("background-color", "#fff");
                 $('#response-data').css("padding", "0px");
@@ -1423,25 +1423,25 @@ pm.request = {
             pm.request.xhr.abort();
         }
 
-        this.url = "";
-        this.urlParams = {};
-        this.body.data = "";
-        this.bodyParams = {};
-        this.name = "";
-        this.description = "";
-        this.headers = [];
+        pm.request.url = "";
+        pm.request.urlParams = {};
+        pm.request.body.data = "";
+        pm.request.bodyParams = {};
+        pm.request.name = "";
+        pm.request.description = "";
+        pm.request.headers = [];
 
-        this.method = "GET";
-        this.dataMode = "params";
+        pm.request.method = "GET";
+        pm.request.dataMode = "params";
 
-        this.refreshLayout();
+        pm.request.refreshLayout();
         $('#url-keyvaleditor').keyvalueeditor('reset');
         $('#headers-keyvaleditor').keyvalueeditor('reset');
         $('#formdata-keyvaleditor').keyvalueeditor('reset');
         $('#update-request-in-collection').css("display", "none");
         $('#url').val();
         $('#url').focus();
-        this.response.clear();
+        pm.request.response.clear();
     },
 
     cancel:function () {
@@ -1453,30 +1453,30 @@ pm.request = {
     },
 
     setMethod:function (method) {
-        this.url = $('#url').val();
-        this.method = method;
-        this.refreshLayout();
+        pm.request.url = $('#url').val();
+        pm.request.method = method;
+        pm.request.refreshLayout();
     },
 
     refreshLayout:function () {
-        $('#url').val(this.url);
-        $('#request-method-selector').val(this.method);
+        $('#url').val(pm.request.url);
+        $('#request-method-selector').val(pm.request.method);
         pm.request.body.loadRawData(pm.request.body.getData());
-        $('#headers-keyvaleditor').keyvalueeditor('reset', this.headers);
-        $('#headers-keyvaleditor-actions-open .headers-count').html(this.headers.length);
+        $('#headers-keyvaleditor').keyvalueeditor('reset', pm.request.headers);
+        $('#headers-keyvaleditor-actions-open .headers-count').html(pm.request.headers.length);
         $('#submit-request').button("reset");
         $('#data-mode-selector a').removeClass("active");
-        $('#data-mode-selector a[data-mode="' + this.dataMode + '"]').addClass("active");
+        $('#data-mode-selector a[data-mode="' + pm.request.dataMode + '"]').addClass("active");
 
-        if (this.isMethodWithBody(this.method)) {
+        if (pm.request.isMethodWithBody(pm.request.method)) {
             $("#data").css("display", "block");
-            var mode = this.dataMode;
+            var mode = pm.request.dataMode;
             pm.request.body.setDataMode(mode);
         } else {
             pm.request.body.hide();
         }
 
-        if (this.name !== "") {
+        if (pm.request.name !== "") {
             $('#request-meta').css("display", "block");
             $('#request-name').css("display", "inline-block");
             if ($('#request-description').css("display") === "block") {
@@ -1498,9 +1498,9 @@ pm.request = {
     },
 
     loadRequestFromLink:function (link, headers) {
-        this.startNew();
-        this.url = link;
-        this.method = "GET";
+        pm.request.startNew();
+        pm.request.url = link;
+        pm.request.method = "GET";
 
         pm.request.isFromCollection = false;
         if (pm.settings.get("retainLinkHeaders") === true) {
@@ -1509,7 +1509,7 @@ pm.request = {
             }
         }
 
-        this.refreshLayout();
+        pm.request.refreshLayout();
     },
 
     isMethodWithBody:function (method) {
@@ -1531,7 +1531,7 @@ pm.request = {
     },
 
     getPackedHeaders:function () {
-        return this.packHeaders(this.headers);
+        return pm.request.packHeaders(pm.request.headers);
     },
 
     unpackResponseHeaders:function (data) {
@@ -1605,38 +1605,38 @@ pm.request = {
         pm.request.showRequestBuilder();
         pm.helpers.showRequestHelper("normal");
 
-        this.url = request.url;
-        this.body.data = request.body;
-        this.method = request.method.toUpperCase();
+        pm.request.url = request.url;
+        pm.request.body.data = request.body;
+        pm.request.method = request.method.toUpperCase();
 
         if (isFromCollection) {
             $('#update-request-in-collection').css("display", "inline-block");
 
             if (typeof request.name !== "undefined") {
-                this.name = request.name;
+                pm.request.name = request.name;
                 $('#request-meta').css("display", "block");
-                $('#request-name').html(this.name);
+                $('#request-name').html(pm.request.name);
                 $('#request-name').css("display", "inline-block");
             }
             else {
-                this.name = "";
+                pm.request.name = "";
                 $('#request-meta').css("display", "none");
                 $('#request-name').css("display", "none");
             }
 
             if (typeof request.description !== "undefined") {
-                this.description = request.description;
-                $('#request-description').html(this.description);
+                pm.request.description = request.description;
+                $('#request-description').html(pm.request.description);
                 $('#request-description').css("display", "block");
             }
             else {
-                this.description = "";
+                pm.request.description = "";
                 $('#request-description').css("display", "none");
             }
 
             $('#response-sample-save-form').css("display", "none");
 
-            //Disabling this. Will enable after resolving indexedDB issues
+            //Disabling pm.request. Will enable after resolving indexedDB issues
             //$('#response-sample-save-start-container').css("display", "inline-block");
 
             $('.request-meta-actions-togglesize').attr('data-action', 'minimize');
@@ -1673,34 +1673,34 @@ pm.request = {
             $('#update-request-in-collection').css("display", "inline-block");
         }
         else {
-            this.name = "";
+            pm.request.name = "";
             $('#request-meta').css("display", "none");
             $('#update-request-in-collection').css("display", "none");
         }
 
         if (typeof request.headers !== "undefined") {
-            this.headers = this.unpackHeaders(request.headers);
+            pm.request.headers = pm.request.unpackHeaders(request.headers);
         }
         else {
-            this.headers = [];
+            pm.request.headers = [];
         }
 
-        $('#headers-keyvaleditor-actions-open .headers-count').html(this.headers.length);
+        $('#headers-keyvaleditor-actions-open .headers-count').html(pm.request.headers.length);
 
-        $('#url').val(this.url);
+        $('#url').val(pm.request.url);
 
-        var newUrlParams = getUrlVars(this.url, false);
+        var newUrlParams = getUrlVars(pm.request.url, false);
 
         //@todoSet params using keyvalueeditor function
         $('#url-keyvaleditor').keyvalueeditor('reset', newUrlParams);
-        $('#headers-keyvaleditor').keyvalueeditor('reset', this.headers);
+        $('#headers-keyvaleditor').keyvalueeditor('reset', pm.request.headers);
 
-        this.response.clear();
+        pm.request.response.clear();
 
-        $('#request-method-selector').val(this.method);
+        $('#request-method-selector').val(pm.request.method);
 
-        if (this.isMethodWithBody(this.method)) {
-            this.dataMode = request.dataMode;
+        if (pm.request.isMethodWithBody(pm.request.method)) {
+            pm.request.dataMode = request.dataMode;
             $('#data').css("display", "block");
 
             if("version" in request) {
@@ -1762,8 +1762,8 @@ pm.request = {
     },
 
     setUrlParamString:function (params) {
-        this.url = $('#url').val();
-        var url = this.url;
+        pm.request.url = $('#url').val();
+        var url = pm.request.url;
 
         var paramArr = [];
 

@@ -18,6 +18,7 @@ pm.settings = {
             pm.settings.create("previewType", "parsed");
             pm.settings.create("retainLinkHeaders", false);
             pm.settings.create("sendNoCacheHeader", true);
+            pm.settings.create("sendPostmanTokenHeader", true);
             pm.settings.create("usePostmanProxy", false);        
             pm.settings.create("proxyURL", "");
             pm.settings.create("lastRequest", "");
@@ -35,12 +36,11 @@ pm.settings = {
             pm.settings.create("driveAppDataFolderId", 0);
             pm.settings.create("lastDriveChangeTime", "");
 
-            console.log(pm.settings.get("lastRequest"));
-
             $('#history-count').val(pm.settings.get("historyCount"));
             $('#auto-save-request').val(pm.settings.get("autoSaveRequest") + "");
             $('#retain-link-headers').val(pm.settings.get("retainLinkHeaders") + "");
             $('#send-no-cache-header').val(pm.settings.get("sendNoCacheHeader") + "");
+            $('#send-postman-token-header').val(pm.settings.get("sendPostmanTokenHeader") + "");
             $('#use-postman-proxy').val(pm.settings.get("usePostmanProxy") + "");
             $('#postman-proxy-url').val(pm.settings.get("postmanProxyUrl"));
             $('#variable-delimiter').val(pm.settings.get("variableDelimiter"));
@@ -87,6 +87,16 @@ pm.settings = {
                 pm.settings.set("sendNoCacheHeader", false);
             }
         });
+
+        $('#send-postman-token-header').change(function () {
+            var val = $('#send-postman-token-header').val();
+            if (val == "true") {
+                pm.settings.set("sendPostmanTokenHeader", true);
+            }
+            else {
+                pm.settings.set("sendPostmanTokenHeader", false);
+            }
+        });        
 
         $('#use-postman-proxy').change(function () {
             var val = $('#use-postman-proxy').val();
