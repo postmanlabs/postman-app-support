@@ -1468,7 +1468,12 @@ pm.request = {
         $('#url').val(pm.request.url);
         $('#request-method-selector').val(pm.request.method);
         pm.request.body.loadRawData(pm.request.body.getData());
+
+        var newUrlParams = getUrlVars(pm.request.url, false);
+        //@todoSet params using keyvalueeditor function
+        $('#url-keyvaleditor').keyvalueeditor('reset', newUrlParams);
         $('#headers-keyvaleditor').keyvalueeditor('reset', pm.request.headers);
+        
         $('#headers-keyvaleditor-actions-open .headers-count').html(pm.request.headers.length);
         $('#submit-request').button("reset");
         $('#data-mode-selector a').removeClass("active");
@@ -1503,9 +1508,13 @@ pm.request = {
         $('.request-help-actions-togglesize img').attr('src', 'img/circle_minus.png');
     },
 
+    decodeLink:function (link) {
+        return $(document.createElement('div')).html(link).text();
+    },
+
     loadRequestFromLink:function (link, headers) {
         pm.request.startNew();
-        pm.request.url = link;
+        pm.request.url = pm.request.decodeLink(link);
         pm.request.method = "GET";
 
         pm.request.isFromCollection = false;
@@ -1880,7 +1889,7 @@ pm.request = {
         }
 
         console.log(pm.request.dataMode);
-        
+
         if (pm.request.isMethodWithBody(pm.request.method)) {
             if(pm.request.dataMode === "urlencoded") {
                 var urlencodedHeader = {
