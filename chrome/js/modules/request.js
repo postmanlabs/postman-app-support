@@ -447,7 +447,7 @@ pm.request = {
         }
 
         var lastRequest = pm.settings.get("lastRequest");
-        console.log(lastRequest);
+        
         if (lastRequest !== "" && lastRequest !== undefined) {
             var lastRequestParsed = JSON.parse(lastRequest);
             pm.request.isFromCollection = false;
@@ -1454,7 +1454,13 @@ pm.request = {
 
     setMethod:function (method) {
         pm.request.url = $('#url').val();
-        pm.request.method = method;
+        pm.request.method = method;        
+
+        if (!pm.request.isMethodWithBody(method)) {        
+            console.log("Does not have body. Change data mode");            
+            pm.request.dataMode = "params";
+        }
+
         pm.request.refreshLayout();
     },
 
@@ -1717,6 +1723,7 @@ pm.request = {
             
         }
         else {
+            pm.request.dataMode = "params";
             $('#data').css("display", "none");
         }
 
@@ -1872,16 +1879,20 @@ pm.request = {
             headers.push(noCacheHeader);            
         }
 
-        if(pm.request.dataMode === "urlencoded") {
-            var urlencodedHeader = {
-                key: "Content-Type",
-                name: "Content-Type",
-                value: "application/x-www-form-urlencoded"
-            };
+        console.log(pm.request.dataMode);
+        
+        if (pm.request.isMethodWithBody(pm.request.method)) {
+            if(pm.request.dataMode === "urlencoded") {
+                var urlencodedHeader = {
+                    key: "Content-Type",
+                    name: "Content-Type",
+                    value: "application/x-www-form-urlencoded"
+                };
 
-            headers.push(urlencodedHeader);
+                headers.push(urlencodedHeader);
+            }    
         }
-
+        
         if (pm.settings.get("usePostmanProxy") == true) {
             headers = pm.request.prepareHeadersForProxy(headers);
         }
@@ -1895,6 +1906,8 @@ pm.request = {
                 finalHeaders.push(header);
             }
         }
+
+        console.log("Final header values are ", finalHeaders);
 
         return finalHeaders;
     },
