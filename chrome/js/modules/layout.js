@@ -376,7 +376,7 @@ pm.layout = {
         if ($('#sidebar').width() > 100) {
             $('#sidebar').jScrollPane({
                 mouseWheelSpeed:24
-            });
+            });            
         }
     },
 

@@ -100,9 +100,8 @@ li .right {
 }
 
 #container {
-    height: 100%;
     width: 100%;
-    margin-top: 40px;
+    margin-top: 45px;
     overflow: auto;
 }
 
@@ -113,7 +112,7 @@ li .right {
 
 .request-helper-tabs li {
     float: left;
-    font-size: 11px;
+    font-size: 13px;
     font-weight: bold;
     list-style: none;
     padding: 10px;
@@ -122,6 +121,7 @@ li .right {
     color: #ccc;
     cursor: pointer;
     height: 14px;
+    letter-spacing: 0.05em;
 }
 
 .request-helper-tabs li:hover {
@@ -129,7 +129,7 @@ li .right {
 }
 
 .request-helper-tabs li.active {
-    color: black;
+    color: black;    
     height: 15px;
 }
 
@@ -148,7 +148,7 @@ li .right {
     position: absolute;
     top: 0;
     left: 0;
-    height: 40px;
+    height: 45px;
     width: 100%;
     z-index: 100;
 
@@ -736,7 +736,7 @@ input[type="file"] {
 
 #request-actions-secondary {
     float: right;
-    margin-right: 22px;
+    margin-right: 36px;
 }
 
 #update-request-in-collection {
@@ -1216,13 +1216,11 @@ input[type="file"] {
 /*Code editors*/
 .keyvaleditor-left {
     float: left;
-    border-right: solid thin #efefef;
-    padding-right: 20px
+    margin-right: 10px
 }
 
 .keyvaleditor-right {
     float: left;
-    margin-left: 20px;
     padding-top: 5px;
 }
 
@@ -1365,7 +1363,7 @@ input[type="file"] {
 
 #environment-selector-wrapper {
     margin-top: 8px;
-    margin-left: 310px;
+    margin-left: 325px;
     font-size: 11px;
 }
 

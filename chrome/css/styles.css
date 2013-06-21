@@ -81,9 +81,8 @@ li .right {
   float: right; }
 
 #container {
-  height: 100%;
   width: 100%;
-  margin-top: 40px;
+  margin-top: 45px;
   overflow: auto; }
 
 .request-helper-tabs {
@@ -92,7 +91,7 @@ li .right {
 
 .request-helper-tabs li {
   float: left;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: bold;
   list-style: none;
   padding: 10px;
@@ -100,7 +99,8 @@ li .right {
   border-bottom: solid thin #fff;
   color: #ccc;
   cursor: pointer;
-  height: 14px; }
+  height: 14px;
+  letter-spacing: 0.05em; }
 
 .request-helper-tabs li:hover {
   color: #333; }
@@ -122,7 +122,7 @@ li .right {
   position: absolute;
   top: 0;
   left: 0;
-  height: 40px;
+  height: 45px;
   width: 100%;
   z-index: 100;
   background: #444444;
@@ -381,7 +381,7 @@ li .right {
 .section-options {
   position: absolute;
   margin-left: 200px;
-  margin-top: 7px; }
+  margin-top: 8px; }
 
 .section-options img {
   opacity: 0.5; }
@@ -602,7 +602,7 @@ input[type="file"] {
 
 #request-actions-secondary {
   float: right;
-  margin-right: 22px; }
+  margin-right: 36px; }
 
 #update-request-in-collection {
   display: none; }
@@ -993,12 +993,10 @@ input[type="file"] {
 /*Code editors*/
 .keyvaleditor-left {
   float: left;
-  border-right: solid thin #efefef;
-  padding-right: 20px; }
+  margin-right: 10px; }
 
 .keyvaleditor-right {
   float: left;
-  margin-left: 20px;
   padding-top: 5px; }
 
 .cm-link {
@@ -1113,7 +1111,7 @@ input[type="file"] {
 
 #environment-selector-wrapper {
   margin-top: 8px;
-  margin-left: 310px;
+  margin-left: 325px;
   font-size: 11px; }
 
 #environment-selector {
