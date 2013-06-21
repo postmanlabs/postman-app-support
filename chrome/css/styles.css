@@ -125,6 +125,7 @@ li .right {
   height: 45px;
   width: 100%;
   z-index: 100;
+  box-shadow: 0px 3px 5px 0px #CCC;
   background: #444444;
   /* Old browsers */
   background: -moz-linear-gradient(top, #444444 0%, #333232 100%);
@@ -142,6 +143,12 @@ li .right {
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#444444', endColorstr='#333232',GradientType=0 );
   /* IE6-9 */ }
 
+#logo {
+  margin-top: 14px;
+  margin-left: 10px; }
+
+/*End top bar*/
+/*Sidebar*/
 .sidebar-helper-tabs {
   height: 36px; }
 
@@ -164,8 +171,6 @@ li .right {
 .sidebar-helper-tabs li:last-child {
   border-right: solid thin #ccc; }
 
-/*End top bar*/
-/*Sidebar*/
 /*Links at the top*/
 #external-links {
   float: right; }
@@ -976,7 +981,7 @@ input[type="file"] {
 #response-copy-container {
   float: right;
   margin-top: 17px;
-  margin-right: 20px; }
+  margin-right: 36px; }
 
 #response-copy-button.zeroclipboard-is-hover {
   background-color: #eee; }
@@ -1176,7 +1181,7 @@ input[type="file"] {
   background-color: #8b0000; }
 
 .no-new-broadcasts {
-  background-color: #d3d3d3; }
+  background-color: #555; }
 
 #broadcasts .dropdown-menu {
   position: absolute;
@@ -1201,6 +1206,7 @@ input[type="file"] {
 
 /*Drive*/
 #drive-status {
+  display: none;
   float: right;
   margin-top: 10px;
   margin-right: 15px; }
@@ -1323,17 +1329,17 @@ input[type="file"] {
 /*Preferences*/
 .preferences {
   float: right;
-  width: 30px;
-  margin-top: 10px; }
+  margin-top: 12px;
+  margin-right: 10px; }
 
 .preferences a {
   font-size: 11px;
   font-weight: bold;
   text-decoration: none;
-  margin-right: 5px; }
+  margin-right: 9px; }
 
 .preferences img {
-  height: 14px; }
+  height: 20px; }
 
 .preferences a:hover {
   text-decoration: none; }
