@@ -17,7 +17,7 @@ pm.urlCache = {
             });        
         }   
         catch(e) {            
-            pm.logger.debug("urlCache:", "onbeforeunload error", e);                
+            console.log("urlCache:", "onbeforeunload error", e);                
         }     
         
     }

@@ -640,6 +640,7 @@ pm.drive = {
      */
     checkAuth: function() {        
         chrome.experimental.identity.getAuthToken({ 'interactive': true }, function(token) {            
+            console.log("Obtained token", token);
         });
         
         /*                

@@ -1,6 +1,6 @@
 {
     "name":"Postman Packaged App (Alpha)",
-    "version":"0.9.0.8",
+    "version":"0.9.0.9",
     "minimum_chrome_version": "28",
     "icons":{
         "16":"icon_16.png",
@@ -14,6 +14,8 @@
             "scripts": ["background.js"]
         }
     },
+
+    "key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC5Sq1NeTWSJlXL55lPcec6Fi5RBDBwjOsuvlypR8BkBsSN6e+nPiOBT432mA6xHDQT2SiAKK4jtoUcfdUrvR+4J5K1/3UmCrTqNQ0773sD14W+u9WDowsIwehh0Pso1jxTdoM31JRExRKBI8/w2Sup7zr40dLmV+bVAnT9ruwtuwIDAQAB",
 
     "oauth2": {
       "client_id": "986289894049-gfdof5fk4mcv0igaldjr8g8976d3rgoi.apps.googleusercontent.com",

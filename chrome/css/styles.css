@@ -364,6 +364,21 @@ li .right {
 #history-items .request-actions {
   margin-left: 287px; }
 
+#history-items-search {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  background: #ccc;
+  width: 338px;
+  padding: 6px;
+  z-index: 20; }
+
+#history-items-search .form-search {
+  margin-bottom: 0; }
+
+#sidebar-search {
+  width: 306px; }
+
 #collection-items .request-actions {
   margin-left: 270px;
   opacity: 1; }
@@ -386,7 +401,7 @@ li .right {
 .section-options {
   position: absolute;
   margin-left: 200px;
-  margin-top: 8px; }
+  top: 8px; }
 
 .section-options img {
   opacity: 0.5; }
@@ -410,7 +425,7 @@ li .right {
   opacity: 0.5;
   z-index: 100;
   cursor: pointer;
-  height: 24px;
+  height: 34px;
   width: 16px;
   background: #ccc;
   border-top-right-radius: 5px;
@@ -419,7 +434,8 @@ li .right {
 
 #sidebar-toggle img {
   width: 10px;
-  height: 10px; }
+  height: 10px;
+  margin-top: 8px; }
 
 #sidebar-toggle:hover {
   opacity: 1; }

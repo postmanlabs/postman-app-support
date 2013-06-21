@@ -148,6 +148,9 @@ window.requestFileSystem = window.requestFileSystem || window.webkitRequestFileS
 pm.init = function () {
     Handlebars.partials = Handlebars.templates;
     
+    var logger = new Logger;
+    logger.debug("Testing backbone");
+
     pm.settings.init(function() {           
         pm.indexedDB.open(function() {
             pm.request.init();

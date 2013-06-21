@@ -397,7 +397,7 @@ pm.layout = {
             var animationDuration = pm.layout.sidebar.animationDuration;
             $('#sidebar-toggle').animate({left:"0"}, animationDuration);
             $('#sidebar').animate({width:"5px"}, animationDuration);
-            $('#sidebar-footer').css("display", "none");
+            $('#history-items-search').css("display", "none");            
             $('#sidebar div').animate({opacity:0}, animationDuration);
             var newMainWidth = $(document).width() - 5;
             $('#main').animate({width:newMainWidth + "px", "margin-left":"5px"}, animationDuration);
@@ -408,12 +408,13 @@ pm.layout = {
             var animationDuration = pm.layout.sidebar.animationDuration;
             $('#sidebar-toggle').animate({left:"350px"}, animationDuration, function () {
                 if (pm.settings.get("haveDonated") === false) {
-                    $('#sidebar-footer').fadeIn();    
+                    $('#history-items-search').fadeIn();    
                 }
                 
             });
+
             $('#sidebar').animate({width:pm.layout.sidebar.width + "px"}, animationDuration);
-            $('#sidebar div').animate({opacity:1}, animationDuration);
+            $('#sidebar div').animate({opacity:1}, animationDuration);            
             $('#sidebar-toggle img').attr('src', 'img/tri_arrow_left.png');
             var newMainWidth = $(document).width() - pm.layout.sidebar.width;
             $('#main').animate({width:newMainWidth + "px", "margin-left":pm.layout.sidebar.width + "px"}, animationDuration);
