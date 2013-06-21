@@ -371,7 +371,9 @@ pm.layout = {
 
     refreshScrollPanes:function () {
         var newMainWidth = $('#container').width() - $('#sidebar').width();
+        var newMainHeight = $(document).height() - 55;
         $('#main').width(newMainWidth + "px");
+        $('#main').height(newMainHeight + "px");
 
         if ($('#sidebar').width() > 100) {
             $('#sidebar').jScrollPane({
