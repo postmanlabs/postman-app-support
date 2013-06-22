@@ -397,7 +397,7 @@ pm.layout = {
             var animationDuration = pm.layout.sidebar.animationDuration;
             $('#sidebar-toggle').animate({left:"0"}, animationDuration);
             $('#sidebar').animate({width:"5px"}, animationDuration);
-            $('#history-items-search').css("display", "none");            
+            $('#sidebar-search-container').css("display", "none");            
             $('#sidebar div').animate({opacity:0}, animationDuration);
             var newMainWidth = $(document).width() - 5;
             $('#main').animate({width:newMainWidth + "px", "margin-left":"5px"}, animationDuration);
@@ -408,7 +408,7 @@ pm.layout = {
             var animationDuration = pm.layout.sidebar.animationDuration;
             $('#sidebar-toggle').animate({left:"350px"}, animationDuration, function () {
                 if (pm.settings.get("haveDonated") === false) {
-                    $('#history-items-search').fadeIn();    
+                    $('#sidebar-search-container').fadeIn();    
                 }
                 
             });

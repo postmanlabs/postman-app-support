@@ -164,5 +164,10 @@ pm.history = {
         pm.indexedDB.deleteHistory(function () {
             $('#history-items').html("");
         });
+    },
+
+    filter: function(term) {
+        var requests = pm.history.requests;
+        return requests;
     }
 };

@@ -118,10 +118,11 @@ pm.init = function () {
             pm.request.init();
             pm.history.init();
             pm.collections.init();        
+            pm.search.init();
             pm.layout.init();
             pm.editor.init();
             pm.helpers.init();
-            pm.keymap.init();
+            pm.keymap.init();            
             pm.envManager.init();
             pm.filesystem.init();
 
