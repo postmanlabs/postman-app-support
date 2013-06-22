@@ -374,12 +374,6 @@ pm.layout = {
         var newMainHeight = $(document).height() - 55;
         $('#main').width(newMainWidth + "px");
         $('#main').height(newMainHeight + "px");
-
-        if ($('#sidebar').width() > 100) {
-            $('#sidebar').jScrollPane({
-                mouseWheelSpeed:24
-            });            
-        }
     },
 
     hideDonationBar: function () {
