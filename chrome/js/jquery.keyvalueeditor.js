@@ -150,8 +150,6 @@
         },
 
         focusEventHandler:function (event) {
-            console.log("Called last row focus event", event.target);
-
             var params = {key:"", value:""};
             var editor = event.data.editor;
             $(this).removeClass('keyvalueeditor-last');

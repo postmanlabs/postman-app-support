@@ -536,7 +536,7 @@ pm.envManager = {
             });
         },
 
-        queueEnvironmentPost: function(environment) {
+        queueEnvironmentPost: function(environment) {            
             if (!pm.drive.isSyncEnabled()) return;
 
             var id = environment.id;

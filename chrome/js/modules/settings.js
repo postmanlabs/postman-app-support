@@ -31,7 +31,7 @@ pm.settings = {
 
             //Google Drive related
             pm.settings.create("driveSyncConnectionStatus", "not_connected"); //notconnected, connected, disabled        
-            pm.settings.create("driveSyncEnabled", true);
+            pm.settings.create("driveSyncEnabled", false);
             pm.settings.create("driveStartChangeId", 0);
             pm.settings.create("driveAppDataFolderId", 0);
             pm.settings.create("lastDriveChangeTime", "");

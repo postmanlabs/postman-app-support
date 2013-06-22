@@ -387,7 +387,7 @@ li .right {
   right: 15px; }
 
 #sidebar-search-cancel:hover {
-  opacity: 0.5; }
+  opacity: 0.4; }
 
 #collection-items .request-actions {
   margin-left: 270px;
@@ -597,10 +597,10 @@ input[type="file"] {
   float: left; }
 
 #request-url-container {
-  margin-right: 380px; }
+  margin-right: 370px; }
 
 #request-modifiers {
-  width: 363px;
+  width: 348px;
   float: right; }
 
 #request-method-container {
@@ -633,7 +633,7 @@ input[type="file"] {
 
 #request-actions-secondary {
   float: right;
-  margin-right: 36px; }
+  margin-right: 22px; }
 
 #update-request-in-collection {
   display: none; }
@@ -1007,7 +1007,7 @@ input[type="file"] {
 #response-copy-container {
   float: right;
   margin-top: 17px;
-  margin-right: 36px; }
+  margin-right: 22px; }
 
 #response-copy-button.zeroclipboard-is-hover {
   background-color: #eee; }

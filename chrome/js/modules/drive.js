@@ -112,7 +112,15 @@ pm.drive = {
     },
 
     isSyncEnabled: function() {
-        return pm.settings.get("driveSyncEnabled");
+        console.log(pm.settings.get("driveSyncConnectionStatus"));
+        if (pm.settings.get("driveSyncConnectionStatus") === "not_connected") {
+            pm.settings.set("driveSyncEnabled", false);
+            return false;
+        }
+        else {
+            pm.settings.set("driveSyncEnabled", true);
+            return true;
+        }
     },
 
     areChangesRemaining: function() {
@@ -680,7 +688,9 @@ pm.drive = {
             pm.drive.authToken = result;
             // Access token has been successfully retrieved, requests can be sent to the API
             //pm.drive.loadClient(pm.drive.handleClientLoad);           
-            pm.settings.set("driveSyncConnectionStatus", "connected");
+
+            //TODO Disabled drive for now
+            //pm.settings.set("driveSyncConnectionStatus", "connected");
 
             pm.drive.getAbout(function(about) {
                 //pm.drive.updateUserStatus(pm.drive.about);
