@@ -13,8 +13,12 @@ pm.search = {
 					pm.search.term = searchTerm;	
 					pm.search.filterSidebar(searchTerm);
 				}					
-			}, 250);
-			
+			}, 250);			
+		});
+
+		$("#sidebar-search-cancel").on("click", function() {
+			$("#sidebar-search").val("");
+			pm.search.revertSidebar();
 		});
 	},
 

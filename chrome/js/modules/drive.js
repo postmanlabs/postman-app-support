@@ -303,6 +303,27 @@ pm.drive = {
         });        
     },
 
+    getAbout: function(callback) {
+        //jQuery call here with callback
+        var url = "https://www.googleapis.com/oauth2/v1/userinfo?alt=json";
+        
+        $.ajax(url, {
+            headers: {
+                "Authorization": pm.drive.getAuthHeader()
+            },
+
+            success: function(data, textStatus, jqXHR) {
+                console.log("Received user details", data);
+                pm.drive.about = data;
+                callback(data);
+            },
+
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.log(errorThrown, textStatus, jqXHR);                
+            }
+        });        
+    },
+
     fetchChanges: function() {
         pm.drive.onStartSyncing();
             
@@ -323,14 +344,8 @@ pm.drive = {
 
     updateUserStatus: function(about) {        
         $("#user-status-text").html(about.name);
-        if (about.user) {
-            if (about.user.picture) {
-                var pictureUrl = about.user.picture.url;
-                $("#user-img").html("<img src='" + pictureUrl + "' width='20px' height='20px'/>");            
-            }
-        
-        }
-        
+        var pictureUrl = about.picture;
+        $("#user-img").html("<img src='" + pictureUrl + "' width='20px' height='20px'/>");        
     },
 
     onStartSyncing: function() {
@@ -557,9 +572,7 @@ pm.drive = {
     },
 
     /*
-        https://developers.google.com/drive/v2/reference/about
-    */
-
+        https://developers.google.com/drive/v2/reference/about    
     getAbout: function(callback) {
         var url = pm.drive.DRIVE_API_URL + "/about";
 
@@ -569,6 +582,7 @@ pm.drive = {
             callback(resp);            
         });
     },
+    */
 
     /*
     https://developers.google.com/drive/v2/reference/changes/list
@@ -639,9 +653,7 @@ pm.drive = {
      * Check if the current user has authorized the application.
      */
     checkAuth: function() {        
-        chrome.experimental.identity.getAuthToken({ 'interactive': true }, function(token) {            
-            console.log("Obtained token", token);
-        });
+        chrome.experimental.identity.getAuthToken({ 'interactive': true }, pm.drive.handleAuthResult);
         
         /*                
         Using the gapi modules does not work with chrome packaged apps
@@ -662,17 +674,25 @@ pm.drive = {
      *
      * @param {Object} authResult Authorization result.
      */
-    handleAuthResult: function(authResult) {        
-        if (authResult) {
-            pm.settings.set("driveSyncConnectionStatus", "connected");
-            pm.drive.auth = authResult;
-            pm.drive.loadClient(pm.drive.handleClientLoad);           
-            $("#sync-status").css("display", "block");
+    handleAuthResult: function(result) {        
+        console.log("Auth result", result);
+        if (result) {
+            pm.drive.authToken = result;
             // Access token has been successfully retrieved, requests can be sent to the API
+            //pm.drive.loadClient(pm.drive.handleClientLoad);           
+            pm.settings.set("driveSyncConnectionStatus", "connected");
+
+            pm.drive.getAbout(function(about) {
+                //pm.drive.updateUserStatus(pm.drive.about);
+                //pm.drive.fetchChanges();
+            });
+
+            $("#sync-status").css("display", "block");            
         } else {
+            console.log("Could not connect to drive");
             pm.settings.set("driveSyncConnectionStatus", "not_connected");
             // No access token could be retrieved, force the authorization flow.
-            pm.drive.initiateConnection();            
+            //pm.drive.initiateConnection();            
         }
     },
 
@@ -954,6 +974,10 @@ pm.drive = {
         } else {
             callback(null);
       }
+    },
+
+    getAuthHeader: function() {
+        return "Bearer " + pm.drive.authToken;
     },
 
     getAppDataFolder: function(callback) {

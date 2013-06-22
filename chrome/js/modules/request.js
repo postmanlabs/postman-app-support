@@ -1016,12 +1016,16 @@ pm.request = {
 
                 var responseCodeName;
                 var responseCodeDetail;
-
-                if ("statusText" in response) {
+                
+                if ("statusText" in response) {                    
                     responseCodeName = response.statusText;
                     responseCodeDetail = "";
+
+                    if (response.status in httpStatusCodes) {
+                        responseCodeDetail = httpStatusCodes[response.status]['detail'];    
+                    }
                 }
-                else {
+                else {                    
                     if (response.status in httpStatusCodes) {
                         responseCodeName = httpStatusCodes[response.status]['name'];
                         responseCodeDetail = httpStatusCodes[response.status]['detail'];    

@@ -379,6 +379,16 @@ li .right {
 #sidebar-search {
   width: 306px; }
 
+#sidebar-search-cancel {
+  cursor: pointer;
+  opacity: 0.2;
+  position: absolute;
+  top: 10px;
+  right: 15px; }
+
+#sidebar-search-cancel:hover {
+  opacity: 0.5; }
+
 #collection-items .request-actions {
   margin-left: 270px;
   opacity: 1; }
