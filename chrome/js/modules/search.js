@@ -88,8 +88,7 @@ pm.search = {
 		pm.layout.refreshScrollPanes();
 	},
 
-	revertSidebar: function() {
-		console.log("Reverting sidebar to original state");
+	revertSidebar: function() {		
 		$("#history-items li").css("display", "block");
 		$(".sidebar-collection").css("display", "block");
 		$(".sidebar-collection-request").css("display", "block");		
