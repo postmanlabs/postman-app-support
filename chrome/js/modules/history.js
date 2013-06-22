@@ -179,7 +179,7 @@ pm.history = {
                 url: url,
                 toShow: false
             };
-
+            url = url.toLowerCase();
             if (url.indexOf(term) >= 0) {
                 filteredItem.toShow = true;
             }

@@ -24,18 +24,13 @@ pm.search = {
 		}
 		else {
 			var filteredHistoryItems = pm.history.filter(term);
-			
-			if (filteredHistoryItems.length === 0) {
-
-			}
-			else {
-				pm.search.toggleHistoryItemVisibility(filteredHistoryItems);
-			}
+			var filteredCollectionItems = pm.collections.filter(term);						
+			pm.search.toggleHistoryItemsVisibility(filteredHistoryItems);
+			pm.search.toggleCollectionItemsVisibility(filteredCollectionItems);			
 		}		
 	},
 
-	toggleHistoryItemVisibility: function(filteredHistoryItems) {
-		console.log("Filter history items", filteredHistoryItems);
+	toggleHistoryItemsVisibility: function(filteredHistoryItems) {		
 		var count = filteredHistoryItems.length;
 		for(var i = 0; i < count; i++) {
 			var item = filteredHistoryItems[i];
@@ -48,10 +43,56 @@ pm.search = {
 				$(id).css("display", "none");
 			}
 		}
+
+		pm.layout.refreshScrollPanes();
+	},
+
+	toggleCollectionItemsVisibility: function(filteredCollectionItems) {		
+		console.log("Filtered items = ", filteredCollectionItems);
+		var collectionsCount = filteredCollectionItems.length;
+		for(var i = 0; i < collectionsCount; i++) {
+			var c = filteredCollectionItems[i];
+			var collectionDomId = "#collection-" + c.id;
+			var collectionRequestsDomId = "#collection-requests-" + c.id;
+			var dtDomId = "#collection-" + c.id + " .sidebar-collection-head-dt";
+
+			if(c.toShow) {
+				$(collectionDomId).css("display", "block");
+				$(collectionRequestsDomId).css("display", "block");
+				$(dtDomId).removeClass("disclosure-triangle-close");
+				$(dtDomId).addClass("disclosure-triangle-open");				
+
+				var requests = c.requests;
+				if(requests) {
+					var requestsCount = requests.length;
+					for(var j = 0; j < requestsCount; j++) {
+						var r = requests[j];
+						var requestDomId = "#sidebar-request-" + r.id;	
+						if(r.toShow) {
+							$(requestDomId).css("display", "block");
+						}
+						else {
+							$(requestDomId).css("display", "none");	
+						}
+					}
+				}
+			}
+			else {
+				$(collectionDomId).css("display", "none");
+				$(collectionRequestsDomId).css("display", "none");
+				$(dtDomId).removeClass("disclosure-triangle-open");
+				$(dtDomId).addClass("disclosure-triangle-close");				
+			}
+		}
+
+		pm.layout.refreshScrollPanes();
 	},
 
 	revertSidebar: function() {
 		console.log("Reverting sidebar to original state");
 		$("#history-items li").css("display", "block");
+		$(".sidebar-collection").css("display", "block");
+		$(".sidebar-collection-request").css("display", "block");		
+		pm.layout.refreshScrollPanes();
 	}
 };

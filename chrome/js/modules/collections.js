@@ -1074,6 +1074,57 @@ pm.collections = {
         });
     },
 
+    filter: function(term) {
+        term = term.toLowerCase();
+        var collections = pm.collections.items;
+        var collectionCount = collections.length;
+        var filteredCollections = [];
+        for(var i = 0; i < collectionCount; i++) {
+            var c = {
+                id: collections[i].id,
+                name: collections[i].name,
+                requests: [],
+                toShow: false,                
+            };
+
+            var name = collections[i].name.toLowerCase();
+
+            if (name.indexOf(term) >= 0) {
+                c.toShow = true;
+            }
+
+            var requests = collections[i].requests;
+
+            if (requests) {
+                var requestsCount = requests.length;
+
+                for(var j = 0; j < requestsCount; j++) {
+                    var r = {
+                        id: requests[j].id,
+                        name: requests[j].name,
+                        toShow: false
+                    };
+
+                    c.requests.push(r);
+
+                    var name = requests[j].name.toLowerCase();
+
+                    if (name.indexOf(term) >= 0) {
+                        r.toShow = true;
+                        c.toShow = true;
+                    }
+                    else {
+                        r.toShow = false;
+                    }
+                }
+            }            
+
+            filteredCollections.push(c);
+        }
+
+        return filteredCollections;
+    },
+
     drive: {
         registerHandlers: function() {
             if (pm.drive) {
