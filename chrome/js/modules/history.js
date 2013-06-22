@@ -168,6 +168,28 @@ pm.history = {
 
     filter: function(term) {
         var requests = pm.history.requests;
-        return requests;
+        var count = requests.length;
+        var filteredItems = [];
+        for (var i = 0; i < count; i++) {            
+            var id = requests[i].id;
+            var url = requests[i].url;
+
+            var filteredItem = {
+                id: id,
+                url: url,
+                toShow: false
+            };
+
+            if (url.indexOf(term) >= 0) {
+                filteredItem.toShow = true;
+            }
+            else {
+                filteredItem.toShow = false;
+            }
+
+            filteredItems.push(filteredItem);
+        }
+
+        return filteredItems;
     }
 };

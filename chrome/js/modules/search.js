@@ -24,11 +24,34 @@ pm.search = {
 		}
 		else {
 			var filteredHistoryItems = pm.history.filter(term);
-			console.log(filteredHistoryItems);
+			
+			if (filteredHistoryItems.length === 0) {
+
+			}
+			else {
+				pm.search.toggleHistoryItemVisibility(filteredHistoryItems);
+			}
 		}		
+	},
+
+	toggleHistoryItemVisibility: function(filteredHistoryItems) {
+		console.log("Filter history items", filteredHistoryItems);
+		var count = filteredHistoryItems.length;
+		for(var i = 0; i < count; i++) {
+			var item = filteredHistoryItems[i];
+			var id = "#sidebar-request-" + item.id;
+
+			if(item.toShow) {
+				$(id).css("display", "block");
+			}
+			else {
+				$(id).css("display", "none");
+			}
+		}
 	},
 
 	revertSidebar: function() {
 		console.log("Reverting sidebar to original state");
+		$("#history-items li").css("display", "block");
 	}
 };
