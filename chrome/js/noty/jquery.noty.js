@@ -105,6 +105,9 @@ if (typeof Object.create !== 'function') {
 
             if ($.inArray('click', self.options.closeWith) > -1)
                 self.$bar.css('cursor', 'pointer').one('click', function () {
+                    if (self.options.callback.onCloseClick) {
+                        self.options.callback.onCloseClick.apply(self);
+                    }
                     self.close();
                 });
 
@@ -146,6 +149,7 @@ if (typeof Object.create !== 'function') {
         close:function () {
 
             if (this.closed) return;
+            if (this.$bar && this.$bar.hasClass('i-am-closing-now')) return;
 
             var self = this;
 
@@ -402,6 +406,8 @@ if (typeof Object.create !== 'function') {
             onClose:function () {
             },
             afterClose:function () {
+            },
+            onCloseClick:function () {
             }
         },
         buttons:false
@@ -428,6 +434,7 @@ function noty(options) {
             'onShow':'callback.onShow',
             'onShown':'callback.afterShow',
             'onClose':'callback.onClose',
+            'onCloseClick':'callback.onCloseClick',
             'onClosed':'callback.afterClose'
         };
 
@@ -482,14 +489,7 @@ function noty(options) {
     }
 
     if (!options.hasOwnProperty('dismissQueue')) {
-        if (options.layout == 'topLeft'
-            || options.layout == 'topRight'
-            || options.layout == 'bottomLeft'
-            || options.layout == 'bottomRight') {
-            options.dismissQueue = true;
-        } else {
-            options.dismissQueue = false;
-        }
+        options.dismissQueue = jQuery.noty.defaults.dismissQueue;
     }
 
     if (options.buttons) {

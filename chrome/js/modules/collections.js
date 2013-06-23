@@ -597,7 +597,7 @@ pm.collections = {
                     {
                         type:'success',
                         text:'Saved request',
-                        layout:'topRight',
+                        layout:'topCenter',
                         timeout:750
                     });
 
