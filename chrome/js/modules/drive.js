@@ -922,19 +922,7 @@ pm.drive = {
     /* https://developers.google.com/drive/v2/reference/files/insert */
     postFile: function(name, type, fileData, callback) {
         var url = pm.drive.DRIVE_API_URL + "/files";
-        var method = 'POST';
-        var xhr = new XMLHttpRequest();
-        xhr.open(method, url);
-        xhr.setRequestHeader('Authorization', 'Bearer ' + accessToken);        
-
-        xhr.onload = function() {
-            console.log("succesful");
-            callback(xhr.responseText);
-        };
-
-        xhr.onerror = function() {
-            console.log("error");
-        };
+        var method = 'POST';        
 
         var boundary = '-------314159265358979323846';
         var delimiter = "\r\n--" + boundary + "\r\n";
@@ -955,42 +943,55 @@ pm.drive = {
                 fileData +
                 close_delim;
 
-        var request = gapi.client.request({
-            'path': '/upload/drive/v2/files',
-            'method': 'POST',
-            'params': {'uploadType': 'multipart'},
-            'headers': {
-                'Content-Type': 'multipart/mixed; boundary="' + boundary + '"'
-            },
-            'body': multipartRequestBody});
+        if (pm.target === pm.targets.CHROME_LEGACY_APP) {
+            var request = gapi.client.request({
+                'path': '/upload/drive/v2/files',
+                'method': 'POST',
+                'params': {'uploadType': 'multipart'},
+                'headers': {
+                    'Content-Type': 'multipart/mixed; boundary="' + boundary + '"'
+                },
+                'body': multipartRequestBody});
 
-        request.execute(function(e) {            
-            if (callback) {
-                callback(e);    
-            }            
-        });        
+            request.execute(function(e) {            
+                if (callback) {
+                    callback(e);    
+                }            
+            });
+        }
+        else {
+            url += "?uploadType=multipart";
+
+            $.ajax(url, {
+                type: method,
+
+                headers: {
+                    'Authorization': pm.drive.getAuthHeader(),
+                    'Content-Type': 'multipart/mixed; boundary="' + boundary + '"'
+                },
+
+                data: multipartRequestBody,
+
+                success: function(data, textStatus, jqXHR) {
+                    if (callback) {
+                        callback(data);    
+                    }
+                },
+
+                error: function(jqXHR, textStatus, errorThrown) {
+                    console.log(errorThrown, textStatus, jqXHR);                
+                }
+            });
+        }                
     },
 
     updateFile: function(name, file, fileData, callback) {
         var url = pm.drive.DRIVE_API_URL + "/files/" + file.id;
-        var method = 'PUT';
-        var xhr = new XMLHttpRequest();
-        xhr.open(method, url);
-        xhr.setRequestHeader('Authorization', 'Bearer ' + accessToken);        
-
-        xhr.onload = function() {
-            console.log("succesful");
-            callback(xhr.responseText);
-        };
-
-        xhr.onerror = function() {
-            console.log("error");
-        };
+        var method = 'PUT';        
 
         var boundary = '-------314159265358979323846';
         var delimiter = "\r\n--" + boundary + "\r\n";
         var close_delim = "\r\n--" + boundary + "--";
-
 
         var metadata = {
             'title': name,
@@ -1008,67 +1009,117 @@ pm.drive = {
                 fileData +
                 close_delim;
 
-        var request = gapi.client.request({
-            'path': '/upload/drive/v2/files/' + file.id,
-            'method': 'PUT',
-            'params': {'uploadType': 'multipart'},
-            'headers': {
-                'Content-Type': 'multipart/mixed; boundary="' + boundary + '"'
-            },
-            'body': multipartRequestBody});
+        if (pm.target === pm.targets.CHROME_LEGACY_APP) {
+            var request = gapi.client.request({
+                'path': '/upload/drive/v2/files/' + file.id,
+                'method': 'PUT',
+                'params': {'uploadType': 'multipart'},
+                'headers': {
+                    'Content-Type': 'multipart/mixed; boundary="' + boundary + '"'
+                },
+                'body': multipartRequestBody});
 
-        request.execute(function(resp) {            
-            if (callback) {
-                console.log(resp);
-                callback(resp);    
-            }
-        });        
+            request.execute(function(resp) {            
+                if (callback) {
+                    console.log(resp);
+                    callback(resp);    
+                }
+            });
+        }
+        else {
+            url += "?uploadType=multipart";
+
+            $.ajax(url, {
+                type: method,
+
+                headers: {
+                    'Authorization': pm.drive.getAuthHeader(),
+                    'Content-Type': 'multipart/mixed; boundary="' + boundary + '"'
+                },
+
+                data: multipartRequestBody,
+
+                success: function(data, textStatus, jqXHR) {
+                    if (callback) {
+                        callback(data);    
+                    }
+                },
+
+                error: function(jqXHR, textStatus, errorThrown) {
+                    console.log(errorThrown, textStatus, jqXHR);                
+                }
+            });
+        }        
     },
 
     trashFile: function(fileId, callback) {        
         var url = pm.drive.DRIVE_API_URL + "/files/" + fileId + "/trash";
-        var xhr = new XMLHttpRequest();
-        xhr.open('POST', url);
-        xhr.setRequestHeader('Authorization', 'Bearer ' + accessToken);        
+        var method = "POST";
 
-        xhr.onload = function() {
-            console.log("succesful");
-            callback(xhr.responseText);
-        };
+        if (pm.target === pm.targets.CHROME_LEGACY_APP) {
+            var request = gapi.client.drive.files.trash({
+                'fileId': fileId
+            });
+            request.execute(function(resp) {
+                callback();
+            });
+        }
+        else {
+            $.ajax(url, {
+                type: method,
 
-        xhr.onerror = function() {
-            console.log("error");
-        };
+                headers: {
+                    'Authorization': pm.drive.getAuthHeader()
+                },
 
-        var request = gapi.client.drive.files.trash({
-            'fileId': fileId
-        });
-        request.execute(function(resp) {
-            callback();
-        });
+                success: function(data, textStatus, jqXHR) {
+                    if (callback) {
+                        callback();    
+                    }
+                },
+
+                error: function(jqXHR, textStatus, errorThrown) {
+                    console.log(errorThrown, textStatus, jqXHR);                
+                }
+            });
+        }        
     },
 
     deleteFile: function(fileId, callback) {        
         var url = pm.drive.DRIVE_API_URL + "/files/" + fileId; //Set URL here
-        var xhr = new XMLHttpRequest();
-        xhr.open('DELETE', url);
-        xhr.setRequestHeader('Authorization', 'Bearer ' + accessToken);        
-
-        xhr.onload = function() {
-            console.log("succesful");
-            callback(xhr.responseText);
-        };
-
-        xhr.onerror = function() {
-            console.log("error");
-        };
+        var method = "DELETE";        
 
         var request = gapi.client.drive.files.delete({
             'fileId': fileId
         });
-        request.execute(function(resp) {
-            callback(resp);
-        });
+
+        if (pm.target === pm.targets.CHROME_LEGACY_APP) {
+            var request = gapi.client.drive.files.delete({
+                'fileId': fileId
+            });
+            request.execute(function(resp) {
+                callback(resp);
+            });
+        }
+        else {
+            $.ajax(url, {
+                type: method,
+
+                headers: {
+                    'Authorization': pm.drive.getAuthHeader()
+                },
+
+                success: function(data, textStatus, jqXHR) {
+                    if (callback) {
+                        callback(data);    
+                    }
+                },
+
+                error: function(jqXHR, textStatus, errorThrown) {
+                    console.log(errorThrown, textStatus, jqXHR);                
+                }
+            });
+        }        
     },
 
     getFile: function(file, callback) {
