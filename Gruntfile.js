@@ -1,19 +1,21 @@
 /*global module:false*/
 module.exports = function(grunt) {
   // Project configuration.
-  grunt.initConfig({
-    meta: {
-      version: '0.1.0',
-      banner: '/*! PROJECT_NAME - v<%= meta.version %> - ' +
-        '<%= grunt.template.today("yyyy-mm-dd") %>\n' +
-        '* http://PROJECT_WEBSITE/\n' +
-        '* Copyright (c) <%= grunt.template.today("yyyy") %> ' +
-        'YOUR_NAME; Licensed MIT */'
-    },
+  grunt.initConfig({    
     concat: {
       dist: {
         src: ['chrome/js/modules/*.js'],
         dest: 'chrome/js/requester.js'
+      },
+      html: {
+        src: [
+          'chrome/html/requester/header.html', 
+          'chrome/html/requester/sidebar.html',
+          'chrome/html/requester/main.html',
+          'chrome/html/requester/modals/*.html', 
+          'chrome/html/requester/footer.html'
+          ],
+        dest: 'chrome/requester.html'
       }
     },
     mindirect: {
@@ -23,7 +25,7 @@ module.exports = function(grunt) {
       }
     },
     watch: {
-      files: ['chrome/js/modules/*.js', 'chrome/js/templates/*'],
+      files: ['chrome/js/modules/*.js', 'chrome/js/templates/*', 'chrome/html/requester/modals/*', 'chrome/html/requester/*'],
       tasks: ['concat', 'handlebars']
     },
     jshint: {

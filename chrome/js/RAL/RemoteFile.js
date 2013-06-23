@@ -212,6 +212,7 @@ RAL.RemoteFile.prototype = {
   loadFromRemote: function() {
 
     RAL.Loader.load(this.src,
+      this.headers,
       'blob',
       this.callbacks.onRemoteFileLoaded.bind(this),
       this.callbacks.onRemoteFileUnavailable.bind(this));

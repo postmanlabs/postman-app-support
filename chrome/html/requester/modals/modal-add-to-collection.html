@@ -1,0 +1,51 @@
+<div id="modal-add-to-collection" class="modal fade" data-keyboard="true">
+    <div class="modal-header">
+        <a class="close" data-dismiss="modal">×</a>
+
+        <h3>Add request to a collection</h3>
+    </div>
+    <div class="modal-body">
+        <form class="form-horizontal" id="form-add-to-collection">
+            <div class="control-group" id="select-collection-container">
+                <label class="control-label" for="select-collection">Existing collection</label>
+
+                <div class="controls">
+                    <select name="select-collection" class="medium" id="select-collection">
+                        <option value="_select">Select</option>
+                    </select>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="new-collection">or create a new one</label>
+
+                <div class="controls">
+                    <div class="input">
+                        <input type="text" class="medium clean-input" id="new-collection"/>
+                    </div>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="new-collection">Request name</label>
+
+                <div class="controls">
+                    <div class="input">
+                        <input type="text" class="medium clean-input" id="new-request-name"/>
+                    </div>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="new-collection">Request description</label>
+
+                <div class="controls">
+                    <div class="input">
+                        <textarea class="medium" id="new-request-description"></textarea>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <a class="btn btn-primary">Add to collection</a>
+        <a data-dismiss="modal" class="btn btn-secondary">Cancel</a>
+    </div>
+</div>

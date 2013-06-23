@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>Postman - v0.9 (Packaged app)</title>
+    <link rel="stylesheet" type="text/css" href="css/custom-theme/jquery-ui-1.9.2.custom.min.css"/>
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"/>
+    <link rel="stylesheet" type="text/css" href="css/bootstrap-modal.css"/>
+    <link rel="stylesheet" type="text/css" href="css/jquery.jscrollpane.css"/>
+    <link rel="stylesheet" type="text/css" href="codemirror/lib/codemirror.css"/>
+    <link rel="stylesheet" type="text/css" href="codemirror/theme/eclipse.css"/>
+    <link rel="stylesheet" type="text/css" href="css/styles.css"/>
+    <link rel="stylesheet" type="text/css" href="css/keyvalueeditor.css"/>
+
+    <!-- Google Analytics -->
+    <script type="text/javascript" src="ga_details.js"></script>
+    <script type="text/javascript" src="embedded_ga_host.js"></script>    
+    <link rel="stylesheet" media="all" href="embedded_ga_host.css"></link>
+</head>
+<body>
+<div class="postman-navbar">
+    <div id="logo">
+        <img src="img/v2/logo.png"/>
+    </div>
+    <div class="preferences">                
+        <a href="#modal-settings" data-toggle="modal"
+           rel="tooltip"
+           data-placement="bottom" data-original-title="Settings">
+            <img src="img/v2/settings.png" style="vertical-align: middle;"/></a>
+        <a href="https://www.twitter.com/postmanclient"
+           rel="tooltip"
+           target="_blank"
+           data-placement="bottom" data-original-title="@postmanclient">
+            <img src="img/v2/twitter.png" style="vertical-align: middle;"/></a>
+        <a href="https://www.github.com/a85/POSTMan-Chrome-Extension/wiki"
+           rel="tooltip"
+           target="_blank"
+           data-placement="bottom" data-original-title="Help">
+            <img src="img/v2/question_mark.png" style="vertical-align: middle;"/></a>
+        <a href="http://www.getpostman.com/donate"
+            id="header-donate-link"
+            target="_blank">Donate</a>
+    </div>
+    <div id="drive-status">
+        <div id="sync-status">
+            <a rel="tooltip"
+                data-placement="bottom" data-original-title="Sync">
+                <img src="img/sync.png" style="vertical-align: middle;"/>
+            </a>
+        </div>
+        <div id="user-img">                    
+        </div>
+        <div id="user-status">
+            <a id="user-status-text"><img src="img/drive-16.png"/></a>
+        </div>
+    </div>
+</div>
+<div id="container" class="clearfix">

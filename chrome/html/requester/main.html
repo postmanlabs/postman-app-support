@@ -1,0 +1,579 @@
+<div id="main" class="content">
+    <section id="request">
+        <div id="request-builder">
+            <div id="request-types" class="clearfix">
+                <ul class="request-helper-tabs">
+                    <li class="active" data-id="normal">Normal</li>
+                    <li data-id="basicAuth">Basic Auth</li>
+                    <li data-id="digestAuth">Digest Auth</li>
+                    <li data-id="oAuth1">OAuth 1.0</li>
+                </ul>
+                <div id="environment-selector-wrapper">
+                    <div id="environment-quicklook-wrapper">
+                        <a id="environment-quicklook">
+                            <img src="img/eye.png"/>
+                        </a>
+                    </div>
+                    <div id="environment-quicklook-content" class="clearfix">
+                        <div id="environment-quicklook-environments">
+                            <h6>No environment</h6>
+                            <ul></ul>
+                        </div>
+                        <div id="environment-quicklook-globals">
+                            <h6>Globals</h6>
+                            <ul></ul>
+                        </div>
+                    </div>
+                    <div id="environment-selector">
+                        <div class="btn-group">
+                            <a data-toggle="dropdown">
+                                <span class="environment-list-item-selected">No environment</span>
+                                <span class="caret" style="margin-top: 8px;"></span></a>
+                            <ul class="dropdown-menu">
+                            </ul>
+                        </div>
+                    </div>
+                </div>                
+            </div>
+            <div id="request-helpers" class="clearfix">
+                <div id="request-helper-normal" class="request-helpers"></div>
+                <div id="request-helper-basicAuth" class="request-helpers">
+                    <div class="request-helper-form-container">
+                        <form class="form form-horizontal">
+                            <div class="control-group">
+                                <label class="control-label">Username</label>
+
+                                <div class="controls">
+                                    <input type="text" id="request-helper-basicAuth-username" class="clean-input"/>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">Password</label>
+
+                                <div class="controls">
+                                    <input type="password" id="request-helper-basicAuth-password" class="clean-input"/>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <div class="controls">
+                                    <a class="btn btn-secondary request-helper-clear"
+                                            data-type="basic">Clear</a>
+                                    <a class="btn btn-secondary request-helper-submit"
+                                            data-type="basic">Refresh headers</a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="request-helper-form-description">
+                        <h4>Note</h4>
+                        The authorization header will be generated and added as a custom header.
+                    </div>
+                </div>
+                <div id="request-helper-digestAuth" class="request-helpers">
+                    <div class="request-helper-form-container">
+                        <form class="form-horizontal">
+                            <div class="control-group">
+                                <label class="control-label">Username</label>
+
+                                <div class="controls">
+                                    <input type="text" id="request-helper-digestAuth-username" class="clean-input"/>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">Realm</label>
+
+                                <div class="controls">
+                                    <input type="text" id="request-helper-digestAuth-realm" class="clean-input"/>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">Password</label>
+
+                                <div class="controls">
+                                    <input type="password" id="request-helper-digestAuth-password" class="clean-input"/>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">Nonce</label>
+
+                                <div class="controls">
+                                    <input type="text" id="request-helper-digestAuth-nonce" class="clean-input"/>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">Algorithm</label>
+
+                                <div class="controls">
+                                    <input type="text" id="request-helper-digestAuth-algorithm" class="clean-input"
+                                           placeholder="MD5/MD5-sess, default = MD5" value="MD5"/>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">qop</label>
+
+                                <div class="controls">
+                                    <input type="text" id="request-helper-digestAuth-qop" class="clean-input"/>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">Nonce count</label>
+
+                                <div class="controls">
+                                    <input type="text" id="request-helper-digestAuth-nonceCount" class="clean-input"/>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">Client nonce</label>
+
+                                <div class="controls">
+                                    <input type="text" id="request-helper-digestAuth-clientNonce" class="clean-input"/>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">Opaque</label>
+
+                                <div class="controls">
+                                    <input type="text" id="request-helper-digestAuth-opaque" class="clean-input"/>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <div class="controls">
+                                    <a class="btn btn-secondary request-helper-clear"
+                                            data-type="digest">Clear</a>
+                                    <a class="btn btn-secondary request-helper-submit"
+                                            data-type="digest">Refresh headers</a>                                                                        
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="request-helper-form-description">
+                        <h4>Note</h4>
+                        The authorization header will be generated and added as a custom header.
+                    </div>
+                </div>
+                <div id="request-helper-oAuth1" class="request-helpers">
+                    <div class="request-helper-form-container">
+                        <form class="form-horizontal">
+                            <div class="control-group">
+                                <label class="control-label">Consumer Key</label>
+
+                                <div class="controls">
+                                    <input type="text" id="request-helper-oauth1-consumerKey"
+                                           class="clean-input signatureParam"
+                                           key="oauth_consumer_key"/>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">Consumer Secret</label>
+
+                                <div class="controls">
+                                    <input type="text" id="request-helper-oauth1-consumerSecret" class="clean-input"
+                                           key="oauth_consumer_secret"/>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">Token</label>
+
+                                <div class="controls">
+                                    <input type="text" id="request-helper-oauth1-token" class="clean-input signatureParam"
+                                           key="oauth_token"/>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">Token Secret</label>
+
+                                <div class="controls">
+                                    <input type="text" id="request-helper-oauth1-tokenSecret" class="clean-input"
+                                           key="oauth_token_secret"/>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">Signature Method</label>
+
+                                <div class="controls">
+                                    <input type="text" id="request-helper-oauth1-signatureMethod"
+                                           class="clean-input signatureParam"
+                                           value="HMAC-SHA1" key="oauth_signature_method"/>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">Timestamp</label>
+
+                                <div class="controls">
+                                    <input type="text" id="request-helper-oauth1-timestamp" class="clean-input signatureParam"
+                                           key="oauth_timestamp"/>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">Nonce</label>
+
+                                <div class="controls">
+                                    <input type="text" id="request-helper-oauth1-nonce" class="clean-input signatureParam"
+                                           key="oauth_nonce"/>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">Version</label>
+
+                                <div class="controls">
+                                    <input type="text" id="request-helper-oauth1-version" class="clean-input signatureParam"
+                                           value="1.0"
+                                           key="oauth_version"/>
+                                </div>
+                            </div>
+
+                            <div class="control-group">
+                                <label class="control-label">Realm</label>
+
+                                <div class="controls">
+                                    <input type="text" id="request-helper-oauth1-realm" class="clean-input"
+                                            placeholder="Optional"
+                                           value=""
+                                           key="oauth_realm"/>
+                                </div>
+                            </div>
+
+                            <div class="control-group">
+                                <label class="control-label">Add params to header</label>
+                                <div class="controls">
+                                    <input type="checkbox" class="checkbox" id="request-helper-oauth1-header"/>
+                                </div>
+                            </div>
+                            
+                            <div class="control-group">
+                                <label class="control-label">Auto add parameters</label>
+                                <div class="controls">
+                                    <input type="checkbox" class="checkbox" id="request-helper-oauth1-auto"/>                        
+                                </div>
+                            </div>
+
+                            <div class="control-group">
+                                <div class="controls">
+                                    <a class="btn btn-secondary request-helper-clear"
+                                            data-type="oAuth1">Clear</a>
+                                    <a class="btn btn-secondary request-helper-submit"
+                                       data-type="oAuth1">
+                                        Refresh request
+                                    </a>                                
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="request-helper-form-description">
+                        <h4>Note</h4>
+                        If auto addition is enabled, OAuth parameters will be added when you send the request
+                    </div>
+                </div>
+            </div>
+
+            <div id="request-meta">
+                <div class="request-meta-actions">
+                    <a class="request-meta-actions-togglesize" data-action="minimize">
+                        <img src="img/circle_minus.png"/>
+                    </a>
+                </div>
+                <h5 id="request-name"></h5><span id="request-last-saved-time">Saved</span>
+
+                <div id="request-description-container">
+                    <p id="request-description"></p>
+
+                    <div id="request-samples">
+                        <h4>Sample responses</h4>
+                        <table class="table table-striped table-bordered"></table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="request-url" class="clearfix">
+                <div id="request-url-wrapper">
+                    <div id="request-url-container">
+                        <input type="text" name="url" id="url" tabindex="1" class="input-text-light"
+                               placeholder="Enter request URL here"/>
+                    </div>
+                </div>
+                <div id="request-modifiers">
+                    <div id="request-method-container">
+                        <select id="request-method-selector">
+                            <option value="GET" selected>GET</option>
+                            <option value="POST">POST</option>
+                            <option value="PUT">PUT</option>
+                            <option value="PATCH">PATCH</option>
+                            <option value="DELETE">DELETE</option>
+                            <option value="COPY">COPY</option>
+                            <option value="HEAD">HEAD</option>
+                            <option value="OPTIONS">OPTIONS</option>                            
+                            <option value="LINK">LINK</option>
+                            <option value="UNLINK">UNLINK</option>
+                            <option value="PURGE">PURGE</option>
+                        </select>
+                    </div>
+                    <div id="request-url-buttons-container">
+                        <button class="btn"
+                                id="url-keyvaleditor-actions-open"><i
+                                class="icon-edit"></i> URL params
+                        </button>
+                        <button class="btn"
+                                id="headers-keyvaleditor-actions-open"><i
+                                class="icon-edit"></i> Headers (<span class="headers-count">0</span>)
+                        </button>
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+
+            <div id="url-keyvaleditor-container" class="row" style="margin-left: 0px; display: none;">
+                <div id="url-keyvaleditor"></div>    
+            </div>
+
+            <div id="headers-keyvaleditor-container" class="row clearfix" style="margin-left: 0px; display: none;">
+                <div class="keyvaleditor-left">
+                    <div id="headers-keyvaleditor"></div>
+                </div>
+                <div class="keyvaleditor-right">
+                    <div id="headers-keyvaleditor-actions">
+                        <div id="headers-keyvaleditor-actions-add-preset" class="btn-group">
+                            <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+                                Add preset
+                                <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu">
+                            </ul>
+                        </div>
+                        <input type="button" id="headers-keyvaleditor-actions-manage-presets"
+                               class="btn"
+                               rel="popover" 
+                               data-trigger="hover"
+                               data-placement="bottom" data-content="Presets let you define groups of headers for quick addition" data-original-title="Header presets"
+                               value="Manage presets"/><br/>           
+                    </div>
+                </div>
+            </div>
+
+            <div id="data">
+                <div class="clearfix">
+                    <div id="data-mode-selector" class="btn-group clearfix"
+                         data-toggle="buttons-radio">
+                        <a class="btn" data-mode="params">form-data</a>
+                        <a class="btn" data-mode="urlencoded">x-www-form-urlencoded</a>
+                        <a class="btn" data-mode="raw">raw</a>
+                    </div>
+                    <div id="body-editor-mode-selector">
+                        <div class="btn-group">
+                            <a class="dropdown" data-toggle="dropdown">
+                                <span id="body-editor-mode-item-selected">Text</span>
+                                <span class="caret" style="margin-top: 8px;"></span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a data-editor-mode="text" data-language="text">Text (No Content-Type header)</a></li>
+                                <li><a data-editor-mode="text" data-language="text/plain">Text (text/plain)</a></li>
+                                <li><a data-editor-mode="javascript" data-language="application/json">JSON (application/json)</a></li>
+                                <li><a data-editor-mode="javascript" data-language="text/json">JSON (text/json)</a></li>                            
+                                <li><a data-editor-mode="xml" data-language="application/xml">XML (application/xml)</a></li>
+                                <li><a data-editor-mode="xml" data-language="text/xml">XML (text/xml)</a></li>
+                                <li><a data-editor-mode="xml" data-language="text/html">HTML (text/html)</a></li>
+                            </ul>                
+                        </div>                    
+                    </div>
+                </div>
+                <div id="body-data-containers">
+                    <div id="formdata-keyvaleditor-container" class="row" style="margin-left: 0;">
+                        <div id="formdata-keyvaleditor"></div>
+                    </div>
+                    <div id="urlencoded-keyvaleditor-container" class="row" style="margin-left: 0;">
+                        <div id="urlencoded-keyvaleditor"></div>
+                    </div>
+                    <div id="body-data-container">
+                        <div id="body-data-container-editor">
+                            <textarea name="data" id="body" tabindex="4" class="inputText"></textarea>
+                            <pre id="body-editor-mode-selector-format-result">
+                            </pre>
+                        </div>
+                        <div id="body-data-container-textarea">
+                            <textarea name="data" id="body-textarea" tabindex="4" class="inputText"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>    
+        </div>
+
+        <div id="request-preview">
+            <div id="request-preview-header" class="dropdown">
+                <span class="request-preview-header-title">Preview</span>
+                <a data-toggle="dropdown-toggle" class="dropdown-toggle request-preview-header-limitations">
+                    Limitations
+                </a>
+                <ul class="dropdown-menu" role="menu">
+                    <li>Automatic headers sent by Chrome can not be previewed</li>
+                    <li>Can not preview form-data files</li>
+                </ul>
+            </div>
+            <div id="request-preview-content">
+            </div>
+        </div>
+
+    <div id="request-actions" class="clearfix">
+        <div id="request-actions-primary">
+            <button class="btn btn-primary" data-loading-text="Fetching data..." type="button"
+                    data-complete-text="Send request" id="submit-request" tabindex="5">
+                Send
+            </button>
+            <button class="btn"
+                    id="update-request-in-collection">Save
+            </button>
+            <button class="btn"
+                    data-action="preview"
+                    id="preview-request">Preview
+            </button>
+            <button class="btn"
+                    id="add-to-collection"
+                    href="#modal-add-to-collection"
+                    data-toggle="modal" data-backdrop="static"
+                    data-keyboard="true">Add to collection
+            </button>
+        </div>
+        <div id="request-actions-secondary">
+            <button class="btn btn-danger" id="request-actions-reset">Reset</button>
+        </div>
+    </div>
+    </section>
+
+    <section id="response">
+        <div id="response-waiting-container">
+            <h3>Loading...</h3>
+            <button id="cancel-request" class="btn">Cancel request</button>
+        </div>
+        <div id="response-failed-container">
+            <h3>Could not get any response</h3>
+
+            <p>
+                This seems to be like an error connecting to <span id="connection-error-url"></span>.
+                The response status was 0.<br/>
+                Check out the
+                <a href="http://www.w3.org/TR/XMLHttpRequest/#the-status-attribute" target="_blank">W3C XMLHttpRequest Level
+                    2 spec</a>
+                for more details about when this happens.
+            </p>
+        </div>
+        <div id="response-success-container">
+            <div id="response-top-bar">
+                <ul class="response-tabs clearfix">
+                    <li class="active" data-section="body">Body</li>
+                    <li data-section="cookies" id="response-tabs-cookies">Cookies</li>
+                    <li data-section="headers">Headers</li>
+                </ul>
+                <div id="response-status">
+                </div>
+
+                <div id="response-time">
+                    <span class="label">Time</span>
+                    <span class="data">0 millisecs</span>
+                </div>
+
+                <div id="response-sample-status" class="span1">
+                    <span class="label label-info">Sample</span>
+                </div>
+            </div>
+
+            <div id="response-data-container" class="clearfix">
+                <div id="response-data" style="display:none" class="clearfix">
+                    <div id="response-data-options" class="clearfix">
+                        <div id="response-formatting" class="btn-group clearfix" data-toggle="buttons-radio">
+                            <a data-type="parsed" class="btn">Pretty</a>
+                            <a data-type="raw" class="btn">Raw</a>
+                            <a data-type="preview" class="btn">Preview</a>
+                        </div>
+                        <div id="response-actions" class="clearfix">
+                            <a class="btn"
+                               rel="tooltip"
+                               data-placement="bottom"
+                               data-original-title="Toggle size"
+                               id="response-body-toggle">
+                                <img src="img/full-screen-alt-4.png"
+                                     style="width:16px; height:16px; vertical-align: middle;"/>
+                            </a>
+                        </div>
+                        <div id="response-pretty-modifiers" class="clearfix">
+                            <a class="btn"
+                               rel="tooltip"
+                               data-placement="bottom"
+                               data-original-title="Toggle wrapping"
+                               id="response-body-line-wrapping">
+                                <img src="img/right_indent.png"
+                                     style="width:16px; height:16px; vertical-align: middle;"/>
+                            </a>
+
+                            <div id="response-language" class="btn-group clearfix" data-toggle="buttons-radio">
+                                <a data-mode="javascript" class="btn">JSON</a>
+                                <a data-mode="html" class="btn">XML</a>
+                            </div>                        
+                        </div>
+                        <div id="response-copy-container">
+                            <div class="btn" id="response-copy-button" data-clipboard-text="Copy Me!">Copy</div>
+                        </div>                    
+                        <div id="response-collection-request-actions" class="clearfix">                        
+                            <span id="response-sample-save-start-container">
+                                <a class="btn"
+                                   rel="tooltip"
+                                   data-placement="bottom"
+                                   data-original-title="Save sample response"
+                                   id="response-sample-save-start">
+                                    <i class="icon-bookmark"></i>
+                                </a>
+                            </span>
+                            <span id="response-sample-save-form">
+                                <form class="form-inline">
+                                    <input type="text" class="input-small" placeholder="Name" id="response-sample-name">
+                                    <a class="btn"
+                                       rel="tooltip"
+                                       data-placement="bottom"
+                                       data-original-title="Save"
+                                       id="response-sample-save">
+                                        <i class="icon-ok-sign"></i>
+                                    </a>
+                                    <a class="btn"
+                                       rel="tooltip"
+                                       data-placement="bottom"
+                                       data-original-title="Cancel"
+                                       id="response-sample-cancel">
+                                        <i class="icon-remove-sign"></i>
+                                    </a>
+                                </form>
+                            </span>
+                        </div>
+
+                    </div>
+                    <div id="response-editors">
+                        <div id="response-as-code">
+                            <textarea id="code-data" data-formatted="false"></textarea>
+                        </div>
+                        <div id="response-as-text">
+                            <textarea id="code-data-raw"></textarea>
+                        </div>
+                        <div id="response-as-preview">
+                            <iframe src=""></iframe>
+                        </div>
+                        <div id="response-as-image"></div>
+                    </div>
+                </div>
+            </div>
+            <div id="response-cookies-container">
+                <table id="response-cookies" class="table table-striped table-bordered">
+                    <thead>
+                    <th>Name</th>
+                    <th>Value</th>
+                    <th>Domain</th>
+                    <th>Path</th>
+                    <th>Expires</th>
+                    <th>HTTP</th>
+                    <th>Secure</th>
+                    </thead>
+                    <tbody id="response-cookies-items">
+                    </tbody>
+                </table>
+            </div>
+            <div id="response-headers-container">
+                <ul id="response-headers"></ul>
+            </div>
+        </div>
+    </section>
+</div>

@@ -176,6 +176,16 @@ pm.headerPresets = {
         pm.headerPresets.presetsForAutoComplete = _.union(presets, chromeHeaders);
     },
 
+    mergeHeaderPresets: function(headerPresets) {
+        var size = headerPresets.length;
+        for(var i = 0; i < size; i++) {
+            var headerPreset = headerPresets[i];
+            pm.indexedDB.headerPresets.updateHeaderPreset(headerPreset, function () {
+                pm.headerPresets.loadPresets();
+            });    
+        }        
+    },
+
     drive: {
         registerHandlers: function() {
             if (pm.drive) {

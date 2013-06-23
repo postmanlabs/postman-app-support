@@ -45,8 +45,7 @@ pm.layout = {
         pm.layout.dataDump.init();
 
 
-        if (pm.settings.get("haveDonated") == true) {
-            console.log("Donated");
+        if (pm.settings.get("haveDonated") == true) {            
             pm.layout.hideDonationBar();
         }
 
@@ -139,7 +138,7 @@ pm.layout = {
 
         pm.request.response.clear();
 
-        $('#sidebar-selectors li a').click(function () {
+        $('#sidebar-selectors li').click(function () {
             var id = $(this).attr('data-id');
             pm.layout.sidebar.select(id);
         });
@@ -199,17 +198,13 @@ pm.layout = {
             pm.collections.updateCollectionRequestMeta(id, name, description);
         });
 
-        console.log("Setting event listener for bounds");
-
-        $(window).on("resize", function () {
-            console.log("Size changed");
+        $(window).on("resize", function () {            
             pm.layout.setLayout();
         });
 
         $('#response-data').on("mousedown", ".cm-link", function () {
             var link = $(this).html();
-            var headers = $('#headers-keyvaleditor').keyvalueeditor('getValues');
-            console.log(headers);
+            var headers = $('#headers-keyvaleditor').keyvalueeditor('getValues');                    
             pm.request.loadRequestFromLink(link, headers);
         });
 
@@ -375,14 +370,10 @@ pm.layout = {
     },
 
     refreshScrollPanes:function () {
-        var newMainWidth = $('#container').width() - $('#sidebar').width();
+        var newMainWidth = $('#container').width() - $('#sidebar').width() - 10;
+        var newMainHeight = $(document).height() - 55;
         $('#main').width(newMainWidth + "px");
-
-        if ($('#sidebar').width() > 100) {
-            $('#sidebar').jScrollPane({
-                mouseWheelSpeed:24
-            });
-        }
+        $('#main').height(newMainHeight + "px");
     },
 
     hideDonationBar: function () {
@@ -400,7 +391,7 @@ pm.layout = {
             var animationDuration = pm.layout.sidebar.animationDuration;
             $('#sidebar-toggle').animate({left:"0"}, animationDuration);
             $('#sidebar').animate({width:"5px"}, animationDuration);
-            $('#sidebar-footer').css("display", "none");
+            $('#sidebar-search-container').css("display", "none");            
             $('#sidebar div').animate({opacity:0}, animationDuration);
             var newMainWidth = $(document).width() - 5;
             $('#main').animate({width:newMainWidth + "px", "margin-left":"5px"}, animationDuration);
@@ -411,12 +402,13 @@ pm.layout = {
             var animationDuration = pm.layout.sidebar.animationDuration;
             $('#sidebar-toggle').animate({left:"350px"}, animationDuration, function () {
                 if (pm.settings.get("haveDonated") === false) {
-                    $('#sidebar-footer').fadeIn();    
+                    $('#sidebar-search-container').fadeIn();    
                 }
                 
             });
+
             $('#sidebar').animate({width:pm.layout.sidebar.width + "px"}, animationDuration);
-            $('#sidebar div').animate({opacity:1}, animationDuration);
+            $('#sidebar div').animate({opacity:1}, animationDuration);            
             $('#sidebar-toggle img').attr('src', 'img/tri_arrow_left.png');
             var newMainWidth = $(document).width() - pm.layout.sidebar.width;
             $('#main').animate({width:newMainWidth + "px", "margin-left":pm.layout.sidebar.width + "px"}, animationDuration);
@@ -543,11 +535,30 @@ pm.layout = {
     dataDump: {
         init: function() {
             $("#download-all-data").on("click", function() {
-                pm.indexedDB.downloadAllData();
+                pm.indexedDB.downloadAllData(function() {
+                    noty(
+                    {
+                        type:'success',
+                        text:'Saved the data dump',
+                        layout:'topRight',
+                        timeout:750
+                    });
+                });
             });
 
-            $("#import-all-data").on("click", function() {
-                
+            $("#import-all-data-files-input").on("change", function(event) {
+                console.log("Process file and import data");
+                var files = event.target.files;                
+                pm.indexedDB.importAllData(files, function() {
+                    $("#import-all-data-files-input").val("");
+                    noty(
+                    {
+                        type:'success',
+                        text:'Imported the data dump',
+                        layout:'topRight',
+                        timeout:750
+                    });
+                });
             });
         }
     }

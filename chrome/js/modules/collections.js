@@ -460,6 +460,14 @@ pm.collections = {
         });
     },
 
+    mergeCollections: function (collections) {
+        var size = collections.length;
+        for(var i = 0; i < size; i++) {
+            var collection = collections[i];
+            pm.collections.mergeCollection(collection, true);
+        }
+    },
+
     getCollectionRequest:function (id) {
         $('.sidebar-collection-request').removeClass('sidebar-collection-request-active');
         $('#sidebar-request-' + id).addClass('sidebar-collection-request-active');
@@ -515,8 +523,7 @@ pm.collections = {
     toggleRequestList:function (id) {
         var target = "#collection-requests-" + id;
         var label = "#collection-" + id + " .collection-head-actions .label";
-        if ($(target).css("display") === "none") {
-            console.log("Slide down");
+        if ($(target).css("display") === "none") {            
             $("#collection-" + id + " .sidebar-collection-head-dt").removeClass("disclosure-triangle-close");
             $("#collection-" + id + " .sidebar-collection-head-dt").addClass("disclosure-triangle-open");
 
@@ -525,8 +532,6 @@ pm.collections = {
             });
         }
         else {
-            console.log("Slide Up");
-
             $("#collection-" + id + " .sidebar-collection-head-dt").removeClass("disclosure-triangle-open");
             $("#collection-" + id + " .sidebar-collection-head-dt").addClass("disclosure-triangle-close");            
             $(target).slideUp(100, function () {
@@ -730,8 +735,7 @@ pm.collections = {
     getAllCollections:function () {
         $('#collection-items').html("");
         $('#select-collection').html("<option>Select</option>");
-        pm.indexedDB.getCollections(function (items) {
-            console.log("Got all collections", items);
+        pm.indexedDB.getCollections(function (items) {            
             pm.collections.items = items;
             pm.collections.items.sort(sortAlphabetical);
 
@@ -811,13 +815,12 @@ pm.collections = {
         $('#sidebar-section-collections .empty-message').css("display", "none");
 
         var currentEl = $('#collection-' + collection.id);
+
         var collectionSidebarListPosition = -1;
         var insertionType;
         var insertTarget;
         var collections = pm.collections.items;
         var collectionSidebarListPosition = arrayObjectIndexOf(collections, collection.id, "id");
-
-        console.log(collections);
 
         //Does this exist already?
         if (currentEl.length) {
@@ -843,9 +846,7 @@ pm.collections = {
                 insertionType = "append";
             }
             else {                
-                var nextCollectionId = collections[collectionSidebarListPosition + 1].id;                
-                console.log(collectionSidebarListPosition, nextCollectionId);
-
+                var nextCollectionId = collections[collectionSidebarListPosition + 1].id;
                 insertTarget = $("#collection-" + nextCollectionId);                
 
                 if (insertTarget.length > 0) {
@@ -858,7 +859,7 @@ pm.collections = {
         }
 
         $('#select-collection').append(Handlebars.templates.item_collection_selector_list(collection));
-        console.log(insertionType);
+        
         if (insertionType) {
             if (insertionType === "after") {
                 $(insertTarget).after(Handlebars.templates.item_collection_sidebar_head(collection));
@@ -1071,6 +1072,57 @@ pm.collections = {
             });
 
         });
+    },
+
+    filter: function(term) {
+        term = term.toLowerCase();
+        var collections = pm.collections.items;
+        var collectionCount = collections.length;
+        var filteredCollections = [];
+        for(var i = 0; i < collectionCount; i++) {
+            var c = {
+                id: collections[i].id,
+                name: collections[i].name,
+                requests: [],
+                toShow: false,                
+            };
+
+            var name = collections[i].name.toLowerCase();
+
+            if (name.indexOf(term) >= 0) {
+                c.toShow = true;
+            }
+
+            var requests = collections[i].requests;
+
+            if (requests) {
+                var requestsCount = requests.length;
+
+                for(var j = 0; j < requestsCount; j++) {
+                    var r = {
+                        id: requests[j].id,
+                        name: requests[j].name,
+                        toShow: false
+                    };
+
+                    c.requests.push(r);
+
+                    var name = requests[j].name.toLowerCase();
+
+                    if (name.indexOf(term) >= 0) {
+                        r.toShow = true;
+                        c.toShow = true;
+                    }
+                    else {
+                        r.toShow = false;
+                    }
+                }
+            }            
+
+            filteredCollections.push(c);
+        }
+
+        return filteredCollections;
     },
 
     drive: {

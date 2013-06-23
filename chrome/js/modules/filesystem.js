@@ -97,6 +97,7 @@ pm.filesystem = {
             
             writer.onwriteend = function(e) {
                 console.log('write complete');
+                callback();
             };
 
             var blob;

@@ -16,7 +16,7 @@ class PostmanTests:
         s = service.Service('/Users/a85/Documents/www/chromedriver')  # Optional argument, if not specified will search path.
         s.start()
     
-        capabilities = {'chrome.switches': ["--load-extension=/Users/asthana/Documents/www/postman/POSTMan-Chrome-Extension/chrome"]}
+        capabilities = {'chrome.switches': ["--load-extension=/Users/asthana/Documents/www/postman-packaged-app/POSTMan-Chrome-Extension/chrome"]}
         browser = webdriver.Remote(s.service_url, capabilities)        
         
         self.s = s

@@ -17,6 +17,8 @@
  under the License.
  */
 "use strict";
+
+//TODO: Remove these model classes
 function Collection() {
     this.id = "";
     this.name = "";
@@ -48,34 +50,6 @@ function Request() {
     this.timestamp = 0;
 }
 
-function sortAscending(a, b) {
-    if (a >= b) {
-        return 1;
-    }
-    else {
-        return -1;
-    }
-}
-
-function sortAlphabetical(a, b) {
-    var counter;
-    if (a.name.length > b.name.legnth)
-        counter = b.name.length;
-    else
-        counter = a.name.length;
-
-    for (var i = 0; i < counter; i++) {
-        if (a.name[i] == b.name[i]) {
-            continue;
-        } else if (a.name[i] > b.name[i]) {
-            return 1;
-        } else {
-            return -1;
-        }
-    }
-    return 1;
-}
-
 var pm = {};
 
 pm.targets = {
@@ -95,6 +69,7 @@ pm.indexedDB.modes = {
 };
 
 pm.fs = {};
+
 pm.webUrl = "http://getpostman.com";
 pm.bannedHeaders = [
     'accept-charset',
@@ -131,57 +106,23 @@ var IDBCursor = window.IDBCursor || window.webkitIDBCursor;
 
 window.requestFileSystem = window.requestFileSystem || window.webkitRequestFileSystem;
 
-/*
- Components
-
- history - History of sent requests. Can be toggled on and off
- collections - Groups of requests. Can be saved to a file. Saved requests can have a name and description to document
- the request properly.
- settings - Settings Postman behavior
- layout - Manages quite a bit of the interface
- currentRequest - Everything to do with the current request loaded in Postman. Also manages sending, receiving requests
- and processing additional parameters
- urlCache - Needed for the autocomplete functionality
- helpers - Basic and OAuth helper management. More helpers will be added later.
- keymap - Keyboard shortcuts
- envManager - Environments to customize requests using variables.
- filesystem - Loading and saving files from the local filesystem.
- indexedDB - Backend database. Right now Postman uses indexedDB.
-
- Plugins
-
- keyvaleditor - Used for URL params, headers and POST params.
-
- Dependencies
-
- jQuery
- jQuery UI - AutoComplete plugin
- jQuery HotKeys
- jQuery jScrollPane
- jQuery MouseWheel
- Bootstrap
- CodeMirror
- Underscore
-
- Code status
-
- I am not exactly happy with the code I have written. Most of this has resulted from rapid UI
- prototyping. I hope to rewrite this using either Ember or Backbone one day! Till then I'll be
- cleaning this up bit by bit.
- */
 
 pm.init = function () {
     Handlebars.partials = Handlebars.templates;
     
+    var logger = new Logger;
+    logger.debug("Testing backbone");
+
     pm.settings.init(function() {           
         pm.indexedDB.open(function() {
             pm.request.init();
             pm.history.init();
             pm.collections.init();        
+            pm.search.init();
             pm.layout.init();
             pm.editor.init();
             pm.helpers.init();
-            pm.keymap.init();
+            pm.keymap.init();            
             pm.envManager.init();
             pm.filesystem.init();
 
@@ -210,8 +151,4 @@ pm.init = function () {
 
 $(document).ready(function () {
     pm.init();
-});
-
-chrome.app.window.onClosed.addListener(function () {    
-    pm.request.saveCurrentRequestToLocalStorage();
 });

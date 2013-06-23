@@ -164,5 +164,32 @@ pm.history = {
         pm.indexedDB.deleteHistory(function () {
             $('#history-items').html("");
         });
+    },
+
+    filter: function(term) {
+        var requests = pm.history.requests;
+        var count = requests.length;
+        var filteredItems = [];
+        for (var i = 0; i < count; i++) {            
+            var id = requests[i].id;
+            var url = requests[i].url;
+
+            var filteredItem = {
+                id: id,
+                url: url,
+                toShow: false
+            };
+            url = url.toLowerCase();
+            if (url.indexOf(term) >= 0) {
+                filteredItem.toShow = true;
+            }
+            else {
+                filteredItem.toShow = false;
+            }
+
+            filteredItems.push(filteredItem);
+        }
+
+        return filteredItems;
     }
 };

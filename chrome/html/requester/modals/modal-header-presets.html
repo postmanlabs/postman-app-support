@@ -1,0 +1,40 @@
+<div id="modal-header-presets" class="modal fade">
+    <div class="modal-header">
+        <a class="close" data-dismiss="modal">x</a>
+
+        <h3>Manage header presets</h3>
+    </div>
+
+    <div class="modal-body">
+        <div id="header-presets-list-wrapper">
+            <p>
+                Quickly add groups of header key/value pairs to the request. Start typing the name of
+                the preset name and it'll show up in the dropdown list.
+            </p>
+
+            <div class="toolbar">
+                <button class="btn  header-presets-actions-add">
+                    Add
+                </button>
+            </div>
+            <table id="header-presets-list" class="table table-striped table-bordered"
+                   style="margin-top: 10px;">
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+        <div id="header-presets-editor">
+            <input type="text" name="header-presets-editor-name" id="header-presets-editor-name" class="clean-input"
+                   placeholder="New preset name"/>
+            <input type="hidden" name="header-presets-editor-id" id="header-presets-editor-id" value="0"
+                   class="clean-input"/>
+
+            <div id="header-presets-keyvaleditor"></div>
+        </div>
+
+        <div class="modal-footer">
+            <a class="btn btn-primary header-presets-actions-submit">Submit</a>
+            <a class="btn header-presets-actions-back">Back</a>
+        </div>
+    </div>
+</div>

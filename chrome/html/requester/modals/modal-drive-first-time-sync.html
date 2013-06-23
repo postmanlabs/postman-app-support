@@ -1,0 +1,35 @@
+<div id="modal-drive-first-time-sync" class="modal fade">
+    <div class="modal-header">
+        <a class="close" data-dismiss="modal">x</a>
+        <h3>Sync Postman with Google Drive (Beta)</h3>        
+    </div>
+    <div class="modal-body">
+        <div id="drive-first-time-sync-step1">
+            <p class="connection-error">Something seems to have gone wrong. You can try connecting again in a few seconds</p>
+            <p>
+                Postman now supports syncing all your data with Google Drive! This is still under heavy testing so I recommend
+                downloading all your data before you begin.
+                <br/>
+                <a id="drive-sync-start-backup">Download Postman data</a>
+            </p>
+            <p>
+                Click connect to give Postman access to your Google Drive account. 
+                If you don't want to do it now you can click Cancel.
+            </p>
+
+            <div class="modal-footer">                
+                <a id="drive-sync-start-auth" class="btn">Connect</a>
+                <a id="drive-sync-start-cancel" class="btn">Cancel</a>
+            </div>  
+        </div>
+
+        <div id="drive-first-time-sync-step2">
+            After clicking Allow access, close the popup and click the Start button. (You can close the connect popup if it's stuck
+            at Connecting...)
+
+            <div class="modal-footer">
+                <a id="drive-sync-start-refresh-auth" class="btn">Start Sync</a>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,5 +1,3 @@
-//Added dependency on drive.js. Will need a wrapper around 
-//both drive.js and indexed_db.js
 pm.indexedDB = {
     TABLE_HEADER_PRESETS: "header_presets",
     TABLE_HELPERS: "helpers",
@@ -145,14 +143,12 @@ pm.indexedDB = {
                 requestStore.createIndex("timestamp", "timestamp", { unique:false});
             }
 
-            if (!db.objectStoreNames.contains(pm.indexedDB.TABLE_DRIVE_FILES)) {
-                console.log("Drive files does not exist");
+            if (!db.objectStoreNames.contains(pm.indexedDB.TABLE_DRIVE_FILES)) {                
                 var requestStore = db.createObjectStore(pm.indexedDB.TABLE_DRIVE_FILES, {keyPath:"id"});
                 requestStore.createIndex("timestamp", "timestamp", { unique:false});       
                 requestStore.createIndex("fileId", "fileId", { unique:false});                                 
             }
             else {
-                console.log("Trying to create a new index");
                 var requestStore = request.transaction.objectStore(pm.indexedDB.TABLE_DRIVE_FILES);
                 requestStore.createIndex("fileId", "fileId", { unique:false});                        
             }
@@ -172,12 +168,10 @@ pm.indexedDB = {
     },
 
     open:function (callback) {
-        console.log("Opening latest indexedDB");
         if (parseInt(navigator.userAgent.match(/Chrom(e|ium)\/([0-9]+)\./)[2]) < 23) {
             pm.indexedDB.open_v21(callback);
         }
         else {
-            console.log("Opening latest indexedDB");
             pm.indexedDB.open_latest(callback);
         }
     },
@@ -1033,7 +1027,7 @@ pm.indexedDB = {
                 environments = e;
                 pm.indexedDB.headerPresets.getAllHeaderPresets(function (hp) {
                     headerPresets = hp;           
-                    onFinishExporttingAllData();         
+                    onFinishExporttingAllData(callback);         
                 });
             });
         }
@@ -1056,6 +1050,7 @@ pm.indexedDB = {
             var filedata = JSON.stringify(dump);
             var type = "application/json";
             pm.filesystem.saveAndOpenFile(name, filedata, type, function () {                
+                callback();
             });
         }
         
@@ -1079,7 +1074,53 @@ pm.indexedDB = {
         });
     },
 
-    importAllData: function(callback) {
+    importAllData: function(files, callback) {
+        console.log(files, callback);
+        if (files.length != 1) return;
 
+        var f = files[0];
+        var reader = new FileReader();
+
+        // Closure to capture the file information.
+        reader.onload = (function (theFile) {
+            return function (e) {
+                // Render thumbnail.
+                var data = e.currentTarget.result;
+                var j = JSON.parse(data);
+                var version = j.version;
+                pm.indexedDB.importDataForVersion(version, j, callback);                                
+            };            
+        })(files[0]);
+
+        // Read in the image file as a data URL.
+        reader.readAsText(files[0]);
+    },
+
+    importDataForVersion: function(version, data, callback) {
+        if (version === 1) {
+            console.log(version, data, callback);
+
+            if ("collections" in data) {
+                console.log("Import collections");
+                pm.collections.mergeCollections(data.collections);
+            }
+
+            if ("environments" in data) {
+                console.log("Import environments");
+                pm.envManager.mergeEnvironments(data.environments);
+            }
+
+            if ("globals" in data) {
+                console.log("Import globals");
+                pm.envManager.mergeGlobals(data.globals);
+            }
+
+            if ("headerPresets" in data) {
+                console.log("Import headerPresets");
+                pm.headerPresets.mergeHeaderPresets(data.headerPresets);
+            }
+        }
+
+        callback();
     }
 };

@@ -1,3 +1,31 @@
+function sortAscending(a, b) {
+    if (a >= b) {
+        return 1;
+    }
+    else {
+        return -1;
+    }
+}
+
+function sortAlphabetical(a, b) {
+    var counter;
+    if (a.name.length > b.name.legnth)
+        counter = b.name.length;
+    else
+        counter = a.name.length;
+
+    for (var i = 0; i < counter; i++) {
+        if (a.name[i] == b.name[i]) {
+            continue;
+        } else if (a.name[i] > b.name[i]) {
+            return 1;
+        } else {
+            return -1;
+        }
+    }
+    return 1;
+}
+
 $.widget("custom.catcomplete", $.ui.autocomplete, {
     _renderMenu:function (ul, items) {
         var that = this,
@@ -208,7 +236,6 @@ function copyToClipboard(text){
     copyDiv.innerHTML = text;
     copyDiv.unselectable = "off";
     copyDiv.focus();
-    console.log(text);
     document.execCommand('selectall');
     document.execCommand("copy", false, null);
     document.body.removeChild(copyDiv);

@@ -3,7 +3,9 @@ function gapiIsLoaded() {
 }
 
 pm.drive = {
+    DRIVE_API_URL: "https://www.googleapis.com/drive/v2/",
     auth: {},
+    authToken: false,
     about: {},
     CLIENT_ID: '805864674475-vk0l2h2dpb3urf8f7rq83r9ktf899afi.apps.googleusercontent.com',
     SCOPES: [
@@ -94,22 +96,35 @@ pm.drive = {
         $("#drive-first-time-sync-step1").css("display", "none");
         $("#drive-first-time-sync-step2").css("display", "block");
         console.log("Drive ID is ", pm.drive.CLIENT_ID);
-        chrome.experimental.identity.getAuthToken(function(token) {
-            console.log(token);
-        });
 
-        // gapi.auth.authorize(
-        //     {
-        //         'client_id': pm.drive.CLIENT_ID,
-        //         'scope': pm.drive.SCOPES,
-        //         'immediate': false 
-        //     },
-        //     pm.drive.handleAuthResult)
-        // ;
+        if (pm.target === pm.targets.CHROME_PACKAGED_APP) {
+            chrome.experimental.identity.getAuthToken(function(token) {
+                pm.drive.authToken = token;
+                console.log(token);
+            });
+        }
+        else {
+            gapi.auth.authorize(
+                {
+                    'client_id': pm.drive.CLIENT_ID,
+                    'scope': pm.drive.SCOPES,
+                    'immediate': false 
+                },
+                pm.drive.handleAuthResult)
+            ;
+        }        
     },
 
     isSyncEnabled: function() {
-        return pm.settings.get("driveSyncEnabled");
+        console.log(pm.settings.get("driveSyncConnectionStatus"));
+        if (pm.settings.get("driveSyncConnectionStatus") === "not_connected") {
+            pm.settings.set("driveSyncEnabled", false);
+            return false;
+        }
+        else {
+            pm.settings.set("driveSyncEnabled", true);
+            return true;
+        }
     },
 
     areChangesRemaining: function() {
@@ -300,6 +315,36 @@ pm.drive = {
         });        
     },
 
+    getAbout: function(callback) {
+        if (pm.target = pm.targets.CHROME_PACKAGED_APP) {
+            //jQuery call here with callback
+            var url = "https://www.googleapis.com/oauth2/v1/userinfo?alt=json";
+            
+            $.ajax(url, {
+                headers: {
+                    "Authorization": pm.drive.getAuthHeader()
+                },
+
+                success: function(data, textStatus, jqXHR) {
+                    console.log("Received user details", data);
+                    pm.drive.about = data;
+                    callback(data);
+                },
+
+                error: function(jqXHR, textStatus, errorThrown) {
+                    console.log(errorThrown, textStatus, jqXHR);                
+                }
+            });
+        }
+        else {
+            var request = gapi.client.drive.about.get();
+            request.execute(function(resp) {
+                pm.drive.about = resp;            
+                callback(resp);            
+            });
+        }            
+    },
+
     fetchChanges: function() {
         pm.drive.onStartSyncing();
             
@@ -308,7 +353,7 @@ pm.drive = {
         startChangeId = parseInt(startChangeId, 10) + 1;
         console.log(startChangeId);
 
-        pm.drive.getChangeList(function(changes) {
+        pm.drive.getAllChanges(function(changes) {
             //Show indicator here. Block UI changes with an option to skip
             //Changes is a collection of file objects
             pm.drive.isSyncing = false;
@@ -320,14 +365,8 @@ pm.drive = {
 
     updateUserStatus: function(about) {        
         $("#user-status-text").html(about.name);
-        if (about.user) {
-            if (about.user.picture) {
-                var pictureUrl = about.user.picture.url;
-                $("#user-img").html("<img src='" + pictureUrl + "' width='20px' height='20px'/>");            
-            }
-        
-        }
-        
+        var pictureUrl = about.picture;
+        $("#user-img").html("<img src='" + pictureUrl + "' width='20px' height='20px'/>");        
     },
 
     onStartSyncing: function() {
@@ -546,22 +585,20 @@ pm.drive = {
      * @param {Function} callback Function to call when the client is loaded.
      */
     loadClient: function(callback) {
-        gapi.client.load('drive', 'v2', pm.drive.handleClientLoad);
+        if (pm.target = pm.targets.CHROME_LEGACY_APP) {
+            gapi.client.load('drive', 'v2', pm.drive.handleClientLoad);    
+        }        
     },
 
     refreshAuth: function(callback) {
-
     },
 
-    getAbout: function(callback) {
-        var request = gapi.client.drive.about.get();
-        request.execute(function(resp) {
-            pm.drive.about = resp;            
-            callback(resp);            
-        });
-    },
+    /*
+    https://developers.google.com/drive/v2/reference/changes/list
+        
+    getAllChanges: function(callback, startChangeId) {
+        var url = pm.drive.DRIVE_API_URL + "/changes";
 
-    getChangeList: function(callback, startChangeId) {
         var retrievePageOfChanges = function(request, result) {
             request.execute(function(resp) {
                 if ("items" in resp) {
@@ -603,13 +640,98 @@ pm.drive = {
 
         retrievePageOfChanges(initialRequest, []);
     },
+    */
+
+    getAllChanges: function(callback, startChangeId) {
+        var retrievePageOfChanges = function(requestParams, result) {
+            var url = pm.drive.DRIVE_API_URL + "changes";
+            
+            $.ajax(url, {
+                type: "GET",
+
+                headers: {
+                    "Authorization": pm.drive.getAuthHeader()
+                },
+
+                data: requestParams,
+
+                success: function(resp, textStatus, jqXHR) {
+                    console.log("Received changes", resp, textStatus, jqXHR);
+
+                    if ("items" in resp) {
+                        result = result.concat(resp.items);      
+                    }
+                    
+                    var nextPageToken = resp.nextPageToken;
+
+                    if (nextPageToken) {
+                        nextParams = {
+                          'pageToken': nextPageToken,
+                          'includeDeleted' : true,
+                          'fields': 'nextPageToken,largestChangeId,items(fileId,deleted,file(id,title,fileExtension,modifiedDate,downloadUrl))'
+                        };
+
+                        pm.settings.set("driveStartChangeId", resp.largestChangeId);
+                        retrievePageOfChanges(nextParams, result);
+                    } else {
+                        pm.settings.set("driveStartChangeId", resp.largestChangeId);                    
+                        callback(result);
+                    }
+                },
+
+                error: function(jqXHR, textStatus, errorThrown) {
+                    console.log(errorThrown, textStatus, jqXHR);
+                    callback(false);                
+                }
+            });
+        }
+
+        var initialRequest;
+        if (startChangeId > 1) {
+            console.log(startChangeId);
+            initialParams = {
+                'startChangeId' : startChangeId,
+                'includeDeleted' : true,
+                'fields': 'nextPageToken,largestChangeId,items(fileId,deleted,file(id,title,fileExtension,modifiedDate,downloadUrl))'
+            };
+        } 
+        else {
+            initialParams = {
+                'includeDeleted' : true,
+                'fields': 'nextPageToken,largestChangeId,items(fileId,deleted,file(id,title,fileExtension,modifiedDate,downloadUrl))' 
+            };
+        }
+
+        retrievePageOfChanges(initialParams, []);
+    },
+
+    getChangeList: function(params, callback) {
+        var url = pm.drive.DRIVE_API_URL + "changes";
+        
+        $.ajax(url, {
+            type: "GET",
+
+            headers: {
+                "Authorization": pm.drive.getAuthHeader()
+            },
+
+            data: params,
+
+            success: function(data, textStatus, jqXHR) {
+                console.log("Received changes", data);                
+                callback(data);
+            },
+
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.log(errorThrown, textStatus, jqXHR);
+                callback(false);                
+            }
+        });
+    },
 
     setupUiHandlers: function() {
-        pm.settings.set("driveSyncConnectionStatus", "not_connected");
-        console.log("Setup UI handler");                
+        pm.settings.set("driveSyncConnectionStatus", "not_connected");                    
         $("#user-status-text").on("click", function() {
-            console.log("Clicked user status text");
-
             var driveSyncConnectionStatus = pm.settings.get("driveSyncConnectionStatus");            
             if (driveSyncConnectionStatus === "not_connected") {                
                 $("#modal-drive-first-time-sync").modal("show");    
@@ -619,8 +741,7 @@ pm.drive = {
             }
         });
 
-        $("#sync-status").on("click", function() {
-            console.log("Run change queue");
+        $("#sync-status").on("click", function() {            
             pm.drive.fetchChanges();
         });
     },
@@ -628,25 +749,20 @@ pm.drive = {
     /**
      * Check if the current user has authorized the application.
      */
-    checkAuth: function(){        
-        console.log(pm.drive.CLIENT_ID);
-        
-        chrome.experimental.identity.getAuthToken({ 'interactive': true }, function(token) {
-            console.log(token);
-        });
-        
-        /*                
-        Using the gapi modules does not work with chrome packaged apps
+    checkAuth: function() {        
+        if (pm.target === pm.targets.CHROME_PACKAGED_APP) {
+            chrome.experimental.identity.getAuthToken({ 'interactive': true }, pm.drive.handleAuthResult);
+        }
+        else {
+            gapi.auth.authorize(
+            {
+                'client_id': pm.drive.CLIENT_ID,
+                'scope': pm.drive.SCOPES.join(' '),
+                'immediate': true
+            },
 
-        gapi.auth.authorize(
-        {
-            'client_id': pm.drive.CLIENT_ID,
-            'scope': pm.drive.SCOPES.join(' '),
-            'immediate': true
-        },
-
-        pm.drive.handleAuthResult);
-        */
+            pm.drive.handleAuthResult);
+        }        
     },
 
     /**
@@ -654,18 +770,43 @@ pm.drive = {
      *
      * @param {Object} authResult Authorization result.
      */
-    handleAuthResult: function(authResult) {        
-        if (authResult) {
-            pm.settings.set("driveSyncConnectionStatus", "connected");
-            pm.drive.auth = authResult;
-            pm.drive.loadClient(pm.drive.handleClientLoad);           
-            $("#sync-status").css("display", "block");
-            // Access token has been successfully retrieved, requests can be sent to the API
-        } else {
-            pm.settings.set("driveSyncConnectionStatus", "not_connected");
-            // No access token could be retrieved, force the authorization flow.
-            pm.drive.initiateConnection();            
+    handleAuthResult: function(result) {        
+        console.log("Auth result", result);
+        if (pm.target === pm.targets.CHROME_PACKAGED_APP) {
+            if (result) {
+                pm.drive.authToken = result;
+                // Access token has been successfully retrieved, requests can be sent to the API
+                //pm.drive.loadClient(pm.drive.handleClientLoad);           
+
+                //TODO Disabled drive for now
+                //pm.settings.set("driveSyncConnectionStatus", "connected");
+
+                pm.drive.getAbout(function(about) {
+                    //pm.drive.updateUserStatus(pm.drive.about);
+                    //pm.drive.fetchChanges();
+                });
+
+                $("#sync-status").css("display", "block");            
+            } else {
+                console.log("Could not connect to drive");
+                pm.settings.set("driveSyncConnectionStatus", "not_connected");
+                // No access token could be retrieved, force the authorization flow.
+                //pm.drive.initiateConnection();            
+            }
         }
+        else {
+            if (result) {
+                pm.settings.set("driveSyncConnectionStatus", "connected");
+                pm.drive.auth = result;
+                pm.drive.loadClient(pm.drive.handleClientLoad);            
+                // Access token has been successfully retrieved, requests can be sent to the API
+            } else {
+                pm.settings.set("driveSyncConnectionStatus", "not_connected");
+                // No access token could be retrieved, force the authorization flow.
+                pm.drive.initiateConnection();            
+            }
+        }
+        
     },
 
     createFolder: function(folderName, callback) {
@@ -778,7 +919,11 @@ pm.drive = {
         });
     },
 
+    /* https://developers.google.com/drive/v2/reference/files/insert */
     postFile: function(name, type, fileData, callback) {
+        var url = pm.drive.DRIVE_API_URL + "/files";
+        var method = 'POST';        
+
         var boundary = '-------314159265358979323846';
         var delimiter = "\r\n--" + boundary + "\r\n";
         var close_delim = "\r\n--" + boundary + "--";
@@ -798,27 +943,55 @@ pm.drive = {
                 fileData +
                 close_delim;
 
-        var request = gapi.client.request({
-            'path': '/upload/drive/v2/files',
-            'method': 'POST',
-            'params': {'uploadType': 'multipart'},
-            'headers': {
-                'Content-Type': 'multipart/mixed; boundary="' + boundary + '"'
-            },
-            'body': multipartRequestBody});
+        if (pm.target === pm.targets.CHROME_LEGACY_APP) {
+            var request = gapi.client.request({
+                'path': '/upload/drive/v2/files',
+                'method': 'POST',
+                'params': {'uploadType': 'multipart'},
+                'headers': {
+                    'Content-Type': 'multipart/mixed; boundary="' + boundary + '"'
+                },
+                'body': multipartRequestBody});
 
-        request.execute(function(e) {            
-            if (callback) {
-                callback(e);    
-            }            
-        });        
+            request.execute(function(e) {            
+                if (callback) {
+                    callback(e);    
+                }            
+            });
+        }
+        else {
+            url += "?uploadType=multipart";
+
+            $.ajax(url, {
+                type: method,
+
+                headers: {
+                    'Authorization': pm.drive.getAuthHeader(),
+                    'Content-Type': 'multipart/mixed; boundary="' + boundary + '"'
+                },
+
+                data: multipartRequestBody,
+
+                success: function(data, textStatus, jqXHR) {
+                    if (callback) {
+                        callback(data);    
+                    }
+                },
+
+                error: function(jqXHR, textStatus, errorThrown) {
+                    console.log(errorThrown, textStatus, jqXHR);                
+                }
+            });
+        }                
     },
 
     updateFile: function(name, file, fileData, callback) {
+        var url = pm.drive.DRIVE_API_URL + "/files/" + file.id;
+        var method = 'PUT';        
+
         var boundary = '-------314159265358979323846';
         var delimiter = "\r\n--" + boundary + "\r\n";
         var close_delim = "\r\n--" + boundary + "--";
-
 
         var metadata = {
             'title': name,
@@ -836,39 +1009,117 @@ pm.drive = {
                 fileData +
                 close_delim;
 
-        var request = gapi.client.request({
-            'path': '/upload/drive/v2/files/' + file.id,
-            'method': 'PUT',
-            'params': {'uploadType': 'multipart'},
-            'headers': {
-                'Content-Type': 'multipart/mixed; boundary="' + boundary + '"'
-            },
-            'body': multipartRequestBody});
+        if (pm.target === pm.targets.CHROME_LEGACY_APP) {
+            var request = gapi.client.request({
+                'path': '/upload/drive/v2/files/' + file.id,
+                'method': 'PUT',
+                'params': {'uploadType': 'multipart'},
+                'headers': {
+                    'Content-Type': 'multipart/mixed; boundary="' + boundary + '"'
+                },
+                'body': multipartRequestBody});
 
-        request.execute(function(resp) {            
-            if (callback) {
-                console.log(resp);
-                callback(resp);    
-            }
-        });        
+            request.execute(function(resp) {            
+                if (callback) {
+                    console.log(resp);
+                    callback(resp);    
+                }
+            });
+        }
+        else {
+            url += "?uploadType=multipart";
+
+            $.ajax(url, {
+                type: method,
+
+                headers: {
+                    'Authorization': pm.drive.getAuthHeader(),
+                    'Content-Type': 'multipart/mixed; boundary="' + boundary + '"'
+                },
+
+                data: multipartRequestBody,
+
+                success: function(data, textStatus, jqXHR) {
+                    if (callback) {
+                        callback(data);    
+                    }
+                },
+
+                error: function(jqXHR, textStatus, errorThrown) {
+                    console.log(errorThrown, textStatus, jqXHR);                
+                }
+            });
+        }        
     },
 
     trashFile: function(fileId, callback) {        
-        var request = gapi.client.drive.files.trash({
-            'fileId': fileId
-        });
-        request.execute(function(resp) {
-            callback();
-        });
+        var url = pm.drive.DRIVE_API_URL + "/files/" + fileId + "/trash";
+        var method = "POST";
+
+        if (pm.target === pm.targets.CHROME_LEGACY_APP) {
+            var request = gapi.client.drive.files.trash({
+                'fileId': fileId
+            });
+            request.execute(function(resp) {
+                callback();
+            });
+        }
+        else {
+            $.ajax(url, {
+                type: method,
+
+                headers: {
+                    'Authorization': pm.drive.getAuthHeader()
+                },
+
+                success: function(data, textStatus, jqXHR) {
+                    if (callback) {
+                        callback();    
+                    }
+                },
+
+                error: function(jqXHR, textStatus, errorThrown) {
+                    console.log(errorThrown, textStatus, jqXHR);                
+                }
+            });
+        }        
     },
 
     deleteFile: function(fileId, callback) {        
+        var url = pm.drive.DRIVE_API_URL + "/files/" + fileId; //Set URL here
+        var method = "DELETE";        
+
         var request = gapi.client.drive.files.delete({
             'fileId': fileId
         });
-        request.execute(function(resp) {
-            callback(resp);
-        });
+
+        if (pm.target === pm.targets.CHROME_LEGACY_APP) {
+            var request = gapi.client.drive.files.delete({
+                'fileId': fileId
+            });
+            request.execute(function(resp) {
+                callback(resp);
+            });
+        }
+        else {
+            $.ajax(url, {
+                type: method,
+
+                headers: {
+                    'Authorization': pm.drive.getAuthHeader()
+                },
+
+                success: function(data, textStatus, jqXHR) {
+                    if (callback) {
+                        callback(data);    
+                    }
+                },
+
+                error: function(jqXHR, textStatus, errorThrown) {
+                    console.log(errorThrown, textStatus, jqXHR);                
+                }
+            });
+        }        
     },
 
     getFile: function(file, callback) {
@@ -887,6 +1138,10 @@ pm.drive = {
         } else {
             callback(null);
       }
+    },
+
+    getAuthHeader: function() {
+        return "Bearer " + pm.drive.authToken;
     },
 
     getAppDataFolder: function(callback) {

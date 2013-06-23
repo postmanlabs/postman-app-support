@@ -1,0 +1,53 @@
+<div id="sidebar-toggle">
+    <img src="img/tri_arrow_left.png"/>
+</div>
+<div id="sidebar">       
+    <div id="sidebar-sections" class="clearfix">        
+        <div class="clearfix">
+            <ul id="sidebar-selectors" class="request-helper-tabs sidebar-helper-tabs clearfix">
+                <li id="sidebar-selectors-history" data-id="history" class="active"><span>History</span></a></li>
+                <li id="sidebar-selectors-collections" data-id="collections"><span>Collections</span></li>
+            </ul>
+        </div>
+        <div id="sidebar-section-data">
+            <div class="tab-pane active" id="sidebar-section-history">
+                <ul id="history-items" class="clearfix">
+                </ul>                
+            </div>
+            <div class="tab-pane active" id="sidebar-section-collections">
+                <ul id="collection-items" class="clearfix">
+                </ul>
+            </div>
+        </div>
+        <div id="history-options" class="section-options">
+            <a class="history-actions-delete" rel="tooltip"
+                    data-placement="bottom"
+                    data-original-title="Clear history">
+                <img src="img/trash-empty.png" style="width:24px; height:24px; vertical-align: middle;"/>
+            </a>            
+        </div>
+        <div id="collections-options" class="section-options">
+            <a href="#modal-new-collection" rel="tooltip" data-original-title="Add new collection"
+               data-toggle="modal"
+               data-backdrop="static"
+               data-placement="bottom"
+               data-keyboard="true"><img src="img/folder_plus.png"
+                                         style="width:20px; height:20px; vertical-align: middle;"/></a>
+            <a href="#modal-import-collection" rel="tooltip" data-original-title="Import collection"
+               data-toggle="modal"
+               data-backdrop="static"
+               data-placement="bottom"
+               data-keyboard="true"><img src="img/inbox_in.png"
+                                         style="width:20px; height:20px; vertical-align: middle;"/></a>
+        </div>        
+    </div>
+    <div id="sidebar-filler"></div>
+</div>
+<div id="sidebar-search-container">
+    <form class="form-search">
+        <input id="sidebar-search" type="text" class="input-medium search-query" placeholder="Type to filter">        
+        <div id="sidebar-search-cancel">
+            <img src="img/delete.png"/>
+        </div>
+    </form>
+</div>
