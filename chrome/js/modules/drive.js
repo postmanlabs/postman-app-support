@@ -96,19 +96,23 @@ pm.drive = {
         $("#drive-first-time-sync-step1").css("display", "none");
         $("#drive-first-time-sync-step2").css("display", "block");
         console.log("Drive ID is ", pm.drive.CLIENT_ID);
-        chrome.experimental.identity.getAuthToken(function(token) {
-            pm.drive.authToken = token;
-            console.log(token);
-        });
 
-        // gapi.auth.authorize(
-        //     {
-        //         'client_id': pm.drive.CLIENT_ID,
-        //         'scope': pm.drive.SCOPES,
-        //         'immediate': false 
-        //     },
-        //     pm.drive.handleAuthResult)
-        // ;
+        if (pm.target === pm.targets.CHROME_PACKAGED_APP) {
+            chrome.experimental.identity.getAuthToken(function(token) {
+                pm.drive.authToken = token;
+                console.log(token);
+            });
+        }
+        else {
+            gapi.auth.authorize(
+                {
+                    'client_id': pm.drive.CLIENT_ID,
+                    'scope': pm.drive.SCOPES,
+                    'immediate': false 
+                },
+                pm.drive.handleAuthResult)
+            ;
+        }        
     },
 
     isSyncEnabled: function() {
@@ -661,20 +665,19 @@ pm.drive = {
      * Check if the current user has authorized the application.
      */
     checkAuth: function() {        
-        chrome.experimental.identity.getAuthToken({ 'interactive': true }, pm.drive.handleAuthResult);
-        
-        /*                
-        Using the gapi modules does not work with chrome packaged apps
+        if (pm.target === pm.targets.CHROME_PACKAGED_APP) {
+            chrome.experimental.identity.getAuthToken({ 'interactive': true }, pm.drive.handleAuthResult);
+        }
+        else {
+            gapi.auth.authorize(
+            {
+                'client_id': pm.drive.CLIENT_ID,
+                'scope': pm.drive.SCOPES.join(' '),
+                'immediate': true
+            },
 
-        gapi.auth.authorize(
-        {
-            'client_id': pm.drive.CLIENT_ID,
-            'scope': pm.drive.SCOPES.join(' '),
-            'immediate': true
-        },
-
-        pm.drive.handleAuthResult);
-        */
+            pm.drive.handleAuthResult);
+        }        
     },
 
     /**
@@ -684,26 +687,41 @@ pm.drive = {
      */
     handleAuthResult: function(result) {        
         console.log("Auth result", result);
-        if (result) {
-            pm.drive.authToken = result;
-            // Access token has been successfully retrieved, requests can be sent to the API
-            //pm.drive.loadClient(pm.drive.handleClientLoad);           
+        if (pm.target === pm.targets.CHROME_PACKAGED_APP) {
+            if (result) {
+                pm.drive.authToken = result;
+                // Access token has been successfully retrieved, requests can be sent to the API
+                //pm.drive.loadClient(pm.drive.handleClientLoad);           
 
-            //TODO Disabled drive for now
-            //pm.settings.set("driveSyncConnectionStatus", "connected");
+                //TODO Disabled drive for now
+                //pm.settings.set("driveSyncConnectionStatus", "connected");
 
-            pm.drive.getAbout(function(about) {
-                //pm.drive.updateUserStatus(pm.drive.about);
-                //pm.drive.fetchChanges();
-            });
+                pm.drive.getAbout(function(about) {
+                    //pm.drive.updateUserStatus(pm.drive.about);
+                    //pm.drive.fetchChanges();
+                });
 
-            $("#sync-status").css("display", "block");            
-        } else {
-            console.log("Could not connect to drive");
-            pm.settings.set("driveSyncConnectionStatus", "not_connected");
-            // No access token could be retrieved, force the authorization flow.
-            //pm.drive.initiateConnection();            
+                $("#sync-status").css("display", "block");            
+            } else {
+                console.log("Could not connect to drive");
+                pm.settings.set("driveSyncConnectionStatus", "not_connected");
+                // No access token could be retrieved, force the authorization flow.
+                //pm.drive.initiateConnection();            
+            }
         }
+        else {
+            if (result) {
+                pm.settings.set("driveSyncConnectionStatus", "connected");
+                pm.drive.auth = result;
+                pm.drive.loadClient(pm.drive.handleClientLoad);            
+                // Access token has been successfully retrieved, requests can be sent to the API
+            } else {
+                pm.settings.set("driveSyncConnectionStatus", "not_connected");
+                // No access token could be retrieved, force the authorization flow.
+                pm.drive.initiateConnection();            
+            }
+        }
+        
     },
 
     createFolder: function(folderName, callback) {
