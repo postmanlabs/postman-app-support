@@ -18,16 +18,36 @@ module.exports = function(grunt) {
         dest: 'chrome/requester.html'
       }
     },
+
     mindirect: {
       dist: {
         src: ['chrome/js/requester.js'],
         dest: 'chrome/js/requester.min.js'
       }
     },
+
     watch: {
-      files: ['chrome/js/modules/*.js', 'chrome/js/templates/*', 'chrome/html/requester/modals/*', 'chrome/html/requester/*'],
-      tasks: ['concat', 'handlebars']
+      requester_templates: {
+        files: ['chrome/js/templates/*'],
+        tasks: ['handlebars']
+      },
+
+      requester_js: {
+        files: ['chrome/js/modules/*.js'],
+        tasks: ['concat:dist']
+      },
+
+      requester_html: {
+        files: ['chrome/html/requester/*', 'chrome/html/requester/modals/*'],
+        tasks: ['concat:html']
+      },
+
+      requester_css: {
+        files: ['chrome/css/styles.scss'],
+        tasks: ['sass']
+      }
     },
+
     jshint: {
       options: {
         curly: true,
@@ -66,7 +86,14 @@ module.exports = function(grunt) {
           "chrome/js/templates.js": "chrome/js/templates/*"
         }
       }
-    }
+    },
+    sass: {
+        dist: {
+          files: {
+            'chrome/css/styles.css': 'chrome/css/styles.scss'
+          }
+        }
+      }
   });
 
   // These plugins provide necessary tasks.
@@ -75,6 +102,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-mindirect');
   grunt.loadNpmTasks('grunt-contrib-watch');
+  grunt.loadNpmTasks('grunt-contrib-sass');
 
   // Default task.
   grunt.registerTask('default', ['jshint', 'concat']);
