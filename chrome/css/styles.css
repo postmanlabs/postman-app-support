@@ -1476,6 +1476,11 @@ input[type="file"] {
 .preferences a:hover {
   text-decoration: none; }
 
+#header-donate-link {
+  color: #999;
+  font-size: 12px;
+  font-weight: bold; }
+
 /* Notifications */
 #notification {
   background: #fff;

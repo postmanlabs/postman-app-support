@@ -370,7 +370,7 @@ pm.layout = {
     },
 
     refreshScrollPanes:function () {
-        var newMainWidth = $('#container').width() - $('#sidebar').width();
+        var newMainWidth = $('#container').width() - $('#sidebar').width() - 10;
         var newMainHeight = $(document).height() - 55;
         $('#main').width(newMainWidth + "px");
         $('#main').height(newMainHeight + "px");
