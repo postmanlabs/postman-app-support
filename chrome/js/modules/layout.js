@@ -388,12 +388,14 @@ pm.layout = {
         animationDuration:250,
 
         minimizeSidebar:function () {
+            pm.layout.sidebar.width = $("#sidebar").width();
+
             var animationDuration = pm.layout.sidebar.animationDuration;
             $('#sidebar-toggle').animate({left:"0"}, animationDuration);
-            $('#sidebar').animate({width:"5px"}, animationDuration);
+            $('#sidebar').animate({width:"0px", marginLeft: "-10px"}, animationDuration);
             $('#sidebar-search-container').css("display", "none");            
             $('#sidebar div').animate({opacity:0}, animationDuration);
-            var newMainWidth = $(document).width() - 5;
+            var newMainWidth = $(document).width();
             $('#main').animate({width:newMainWidth + "px", "margin-left":"5px"}, animationDuration);
             $('#sidebar-toggle img').attr('src', 'img/tri_arrow_right.png');
         },
@@ -407,11 +409,12 @@ pm.layout = {
                 
             });
 
-            $('#sidebar').animate({width:pm.layout.sidebar.width + "px"}, animationDuration);
+            $('#sidebar').animate({width:pm.layout.sidebar.width + "px", marginLeft: "0px"}, animationDuration);
             $('#sidebar div').animate({opacity:1}, animationDuration);            
             $('#sidebar-toggle img').attr('src', 'img/tri_arrow_left.png');
-            var newMainWidth = $(document).width() - pm.layout.sidebar.width;
-            $('#main').animate({width:newMainWidth + "px", "margin-left":pm.layout.sidebar.width + "px"}, animationDuration);
+            var newMainWidth = $(document).width() - pm.layout.sidebar.width - 10;
+            var marginLeft = pm.layout.sidebar.width + 10;
+            $('#main').animate({width:newMainWidth + "px", "margin-left": marginLeft+ "px"}, animationDuration);
             pm.layout.refreshScrollPanes();
         },
 
