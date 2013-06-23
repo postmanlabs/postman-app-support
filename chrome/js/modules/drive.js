@@ -316,24 +316,33 @@ pm.drive = {
     },
 
     getAbout: function(callback) {
-        //jQuery call here with callback
-        var url = "https://www.googleapis.com/oauth2/v1/userinfo?alt=json";
-        
-        $.ajax(url, {
-            headers: {
-                "Authorization": pm.drive.getAuthHeader()
-            },
+        if (pm.target = pm.targets.CHROME_PACKAGED_APP) {
+            //jQuery call here with callback
+            var url = "https://www.googleapis.com/oauth2/v1/userinfo?alt=json";
+            
+            $.ajax(url, {
+                headers: {
+                    "Authorization": pm.drive.getAuthHeader()
+                },
 
-            success: function(data, textStatus, jqXHR) {
-                console.log("Received user details", data);
-                pm.drive.about = data;
-                callback(data);
-            },
+                success: function(data, textStatus, jqXHR) {
+                    console.log("Received user details", data);
+                    pm.drive.about = data;
+                    callback(data);
+                },
 
-            error: function(jqXHR, textStatus, errorThrown) {
-                console.log(errorThrown, textStatus, jqXHR);                
-            }
-        });        
+                error: function(jqXHR, textStatus, errorThrown) {
+                    console.log(errorThrown, textStatus, jqXHR);                
+                }
+            });
+        }
+        else {
+            var request = gapi.client.drive.about.get();
+            request.execute(function(resp) {
+                pm.drive.about = resp;            
+                callback(resp);            
+            });
+        }            
     },
 
     fetchChanges: function() {
@@ -344,7 +353,7 @@ pm.drive = {
         startChangeId = parseInt(startChangeId, 10) + 1;
         console.log(startChangeId);
 
-        pm.drive.getChangeList(function(changes) {
+        pm.drive.getAllChanges(function(changes) {
             //Show indicator here. Block UI changes with an option to skip
             //Changes is a collection of file objects
             pm.drive.isSyncing = false;
@@ -576,30 +585,18 @@ pm.drive = {
      * @param {Function} callback Function to call when the client is loaded.
      */
     loadClient: function(callback) {
-        gapi.client.load('drive', 'v2', pm.drive.handleClientLoad);
+        if (pm.target = pm.targets.CHROME_LEGACY_APP) {
+            gapi.client.load('drive', 'v2', pm.drive.handleClientLoad);    
+        }        
     },
 
     refreshAuth: function(callback) {
-
     },
-
-    /*
-        https://developers.google.com/drive/v2/reference/about    
-    getAbout: function(callback) {
-        var url = pm.drive.DRIVE_API_URL + "/about";
-
-        var request = gapi.client.drive.about.get();
-        request.execute(function(resp) {
-            pm.drive.about = resp;            
-            callback(resp);            
-        });
-    },
-    */
 
     /*
     https://developers.google.com/drive/v2/reference/changes/list
-    */    
-    getChangeList: function(callback, startChangeId) {
+        
+    getAllChanges: function(callback, startChangeId) {
         var url = pm.drive.DRIVE_API_URL + "/changes";
 
         var retrievePageOfChanges = function(request, result) {
@@ -642,6 +639,94 @@ pm.drive = {
         }
 
         retrievePageOfChanges(initialRequest, []);
+    },
+    */
+
+    getAllChanges: function(callback, startChangeId) {
+        var retrievePageOfChanges = function(requestParams, result) {
+            var url = pm.drive.DRIVE_API_URL + "changes";
+            
+            $.ajax(url, {
+                type: "GET",
+
+                headers: {
+                    "Authorization": pm.drive.getAuthHeader()
+                },
+
+                data: requestParams,
+
+                success: function(resp, textStatus, jqXHR) {
+                    console.log("Received changes", resp, textStatus, jqXHR);
+
+                    if ("items" in resp) {
+                        result = result.concat(resp.items);      
+                    }
+                    
+                    var nextPageToken = resp.nextPageToken;
+
+                    if (nextPageToken) {
+                        nextParams = {
+                          'pageToken': nextPageToken,
+                          'includeDeleted' : true,
+                          'fields': 'nextPageToken,largestChangeId,items(fileId,deleted,file(id,title,fileExtension,modifiedDate,downloadUrl))'
+                        };
+
+                        pm.settings.set("driveStartChangeId", resp.largestChangeId);
+                        retrievePageOfChanges(nextParams, result);
+                    } else {
+                        pm.settings.set("driveStartChangeId", resp.largestChangeId);                    
+                        callback(result);
+                    }
+                },
+
+                error: function(jqXHR, textStatus, errorThrown) {
+                    console.log(errorThrown, textStatus, jqXHR);
+                    callback(false);                
+                }
+            });
+        }
+
+        var initialRequest;
+        if (startChangeId > 1) {
+            console.log(startChangeId);
+            initialParams = {
+                'startChangeId' : startChangeId,
+                'includeDeleted' : true,
+                'fields': 'nextPageToken,largestChangeId,items(fileId,deleted,file(id,title,fileExtension,modifiedDate,downloadUrl))'
+            };
+        } 
+        else {
+            initialParams = {
+                'includeDeleted' : true,
+                'fields': 'nextPageToken,largestChangeId,items(fileId,deleted,file(id,title,fileExtension,modifiedDate,downloadUrl))' 
+            };
+        }
+
+        retrievePageOfChanges(initialParams, []);
+    },
+
+    getChangeList: function(params, callback) {
+        var url = pm.drive.DRIVE_API_URL + "changes";
+        
+        $.ajax(url, {
+            type: "GET",
+
+            headers: {
+                "Authorization": pm.drive.getAuthHeader()
+            },
+
+            data: params,
+
+            success: function(data, textStatus, jqXHR) {
+                console.log("Received changes", data);                
+                callback(data);
+            },
+
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.log(errorThrown, textStatus, jqXHR);
+                callback(false);                
+            }
+        });
     },
 
     setupUiHandlers: function() {
