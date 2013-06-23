@@ -533,7 +533,7 @@ pm.helpers = {
         },
 
         process: function () {
-            var i, count, length;
+            var i, j, count, length;
             var params = [];
             var urlParams = pm.request.getUrlEditorParams();
             var bodyParams = [];
@@ -551,16 +551,24 @@ pm.helpers = {
             params = pm.helpers.oAuth1.removeOAuthKeys(params);
             var signatureKey = "oauth_signature";
 
+            var oAuthParams = [];
+
             $('input.signatureParam').each(function () {
                 if ($(this).val() != '') {
                     var val = $(this).val();
-                    params.push({key: $(this).attr('key'), value: val});
+                    oAuthParams.push({key: $(this).attr('key'), value: val});
                 }
             });
+
+            console.log("After adding oAuth params", params);
 
             //Convert environment values
             for (i = 0, length = params.length; i < length; i++) {
                 params[i].value = pm.envManager.convertString(params[i].value);
+            }            
+
+            for (j = 0, length = oAuthParams.length; i < length; i++) {
+                oAuthParams[i].value = pm.envManager.convertString(oAuthParams[i].value);
             }
 
             var signature = this.generateSignature();
@@ -569,7 +577,7 @@ pm.helpers = {
                 return;
             }
 
-            params.push({key: signatureKey, value: signature});
+            oAuthParams.push({key: signatureKey, value: signature});
 
             var addToHeader = $('#request-helper-oauth1-header').attr('checked') ? true : false;
 
@@ -583,17 +591,23 @@ pm.helpers = {
                 if (realm.indexOf('?') > 0) {
                     realm = realm.split("?")[0];
                 }
+
+                console.log(realm);
+
                 var headers = pm.request.headers;
                 var authHeaderKey = "Authorization";
-                
+
                 var pos = findPosition(headers, "key", authHeaderKey);
 
                 var rawString = "OAuth realm=\"" + realm + "\",";
-                var len = params.length;
+
+                var len = oAuthParams.length;
                 for (i = 0; i < len; i++) {
-                    rawString += encodeURIComponent(params[i].key) + "=\"" + encodeURIComponent(params[i].value) + "\",";
+                    rawString += encodeURIComponent(oAuthParams[i].key) + "=\"" + encodeURIComponent(oAuthParams[i].value) + "\",";
                 }
                 rawString = rawString.substring(0, rawString.length - 1);
+
+                console.log(rawString);
 
                 if (pos >= 0) {
                     headers[pos] = {
@@ -610,6 +624,8 @@ pm.helpers = {
                 $('#headers-keyvaleditor').keyvalueeditor('reset', headers);
                 pm.request.openHeaderEditor();
             } else {
+                params = params.concat(oAuthParams);
+
                 if (pm.request.method === "GET") {
                     $('#url-keyvaleditor').keyvalueeditor('reset', params);
                     pm.request.setUrlParamString(params);
