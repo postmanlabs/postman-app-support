@@ -29,7 +29,7 @@ pm.drive = {
         //Start drive authentication flow only after the user says yes
         //Do not pester every time        
         pm.drive.setupHandlers();
-        var driveSyncConnectionStatus = pm.settings.get("driveSyncConnectionStatus");
+        var driveSyncConnectionStatus = pm.settings.getSetting("driveSyncConnectionStatus");
 
         if (driveSyncConnectionStatus === "not_connected") {
             console.log("Show modal");
@@ -56,7 +56,7 @@ pm.drive = {
             }        
         }
 
-        var currentTime = new Date(pm.settings.get("lastDriveChangeTime"));    
+        var currentTime = new Date(pm.settings.getSetting("lastDriveChangeTime"));    
         var t = $.timeago(currentTime); 
         $("#sync-details-last-modified").html("Last synced " + t);
     }, 
@@ -69,7 +69,7 @@ pm.drive = {
         });
 
         $("#drive-sync-start-cancel").on("click", function() {
-            pm.settings.set("driveSyncConnectionStatus", "disabled");
+            pm.settings.setSetting("driveSyncConnectionStatus", "disabled");
             $("#modal-drive-first-time-sync").modal("hide")
         });
 
@@ -92,7 +92,7 @@ pm.drive = {
 
     initiateClientSideAuth: function() {
         console.log("Start client side auth");
-        pm.settings.set("driveSyncConnectionStatus", "connection_started");
+        pm.settings.setSetting("driveSyncConnectionStatus", "connection_started");
         $("#drive-first-time-sync-step1").css("display", "none");
         $("#drive-first-time-sync-step2").css("display", "block");
         console.log("Drive ID is ", pm.drive.CLIENT_ID);
@@ -116,13 +116,13 @@ pm.drive = {
     },
 
     isSyncEnabled: function() {
-        console.log(pm.settings.get("driveSyncConnectionStatus"));
-        if (pm.settings.get("driveSyncConnectionStatus") === "not_connected") {
-            pm.settings.set("driveSyncEnabled", false);
+        console.log(pm.settings.getSetting("driveSyncConnectionStatus"));
+        if (pm.settings.getSetting("driveSyncConnectionStatus") === "not_connected") {
+            pm.settings.setSetting("driveSyncEnabled", false);
             return false;
         }
         else {
-            pm.settings.set("driveSyncEnabled", true);
+            pm.settings.setSetting("driveSyncEnabled", true);
             return true;
         }
     },
@@ -349,7 +349,7 @@ pm.drive = {
         pm.drive.onStartSyncing();
             
         pm.drive.isSyncing = true;        
-        var startChangeId = pm.settings.get("driveStartChangeId");
+        var startChangeId = pm.settings.getSetting("driveStartChangeId");
         startChangeId = parseInt(startChangeId, 10) + 1;
         console.log(startChangeId);
 
@@ -380,7 +380,7 @@ pm.drive = {
 
     filterChangesFromDrive: function(changes) {
         console.log("Changes are ", changes);
-        var lastTime = new Date(pm.settings.get("lastDriveChangeTime"));
+        var lastTime = new Date(pm.settings.getSetting("lastDriveChangeTime"));
 
         if (!lastTime) {
             lastTime = 0;
@@ -613,10 +613,10 @@ pm.drive = {
                       'fields': 'nextPageToken,largestChangeId,items(fileId,deleted,file(id,title,fileExtension,modifiedDate,downloadUrl))'
                     });
 
-                    pm.settings.set("driveStartChangeId", resp.largestChangeId);
+                    pm.settings.setSetting("driveStartChangeId", resp.largestChangeId);
                     retrievePageOfChanges(request, result);
                 } else {
-                    pm.settings.set("driveStartChangeId", resp.largestChangeId);                    
+                    pm.settings.setSetting("driveStartChangeId", resp.largestChangeId);                    
                     callback(result);
                 }
             });
@@ -671,10 +671,10 @@ pm.drive = {
                           'fields': 'nextPageToken,largestChangeId,items(fileId,deleted,file(id,title,fileExtension,modifiedDate,downloadUrl))'
                         };
 
-                        pm.settings.set("driveStartChangeId", resp.largestChangeId);
+                        pm.settings.setSetting("driveStartChangeId", resp.largestChangeId);
                         retrievePageOfChanges(nextParams, result);
                     } else {
-                        pm.settings.set("driveStartChangeId", resp.largestChangeId);                    
+                        pm.settings.setSetting("driveStartChangeId", resp.largestChangeId);                    
                         callback(result);
                     }
                 },
@@ -730,9 +730,9 @@ pm.drive = {
     },
 
     setupUiHandlers: function() {
-        pm.settings.set("driveSyncConnectionStatus", "not_connected");                    
+        pm.settings.setSetting("driveSyncConnectionStatus", "not_connected");                    
         $("#user-status-text").on("click", function() {
-            var driveSyncConnectionStatus = pm.settings.get("driveSyncConnectionStatus");            
+            var driveSyncConnectionStatus = pm.settings.getSetting("driveSyncConnectionStatus");            
             if (driveSyncConnectionStatus === "not_connected") {                
                 $("#modal-drive-first-time-sync").modal("show");    
             }        
@@ -779,7 +779,7 @@ pm.drive = {
                 //pm.drive.loadClient(pm.drive.handleClientLoad);           
 
                 //TODO Disabled drive for now
-                //pm.settings.set("driveSyncConnectionStatus", "connected");
+                //pm.settings.setSetting("driveSyncConnectionStatus", "connected");
 
                 pm.drive.getAbout(function(about) {
                     //pm.drive.updateUserStatus(pm.drive.about);
@@ -789,19 +789,19 @@ pm.drive = {
                 $("#sync-status").css("display", "block");            
             } else {
                 console.log("Could not connect to drive");
-                pm.settings.set("driveSyncConnectionStatus", "not_connected");
+                pm.settings.setSetting("driveSyncConnectionStatus", "not_connected");
                 // No access token could be retrieved, force the authorization flow.
                 //pm.drive.initiateConnection();            
             }
         }
         else {
             if (result) {
-                pm.settings.set("driveSyncConnectionStatus", "connected");
+                pm.settings.setSetting("driveSyncConnectionStatus", "connected");
                 pm.drive.auth = result;
                 pm.drive.loadClient(pm.drive.handleClientLoad);            
                 // Access token has been successfully retrieved, requests can be sent to the API
             } else {
-                pm.settings.set("driveSyncConnectionStatus", "not_connected");
+                pm.settings.setSetting("driveSyncConnectionStatus", "not_connected");
                 // No access token could be retrieved, force the authorization flow.
                 pm.drive.initiateConnection();            
             }
@@ -1160,7 +1160,7 @@ pm.drive = {
     },
 
     updateLastChangedTime: function() {
-        var currentTime = new Date(pm.settings.get("lastDriveChangeTime"));    
+        var currentTime = new Date(pm.settings.getSetting("lastDriveChangeTime"));    
         var t = $.timeago(currentTime);        
         $("#sync-status a").attr("data-original-title", "Last synced " + t);
     }

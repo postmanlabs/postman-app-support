@@ -1,5 +1,8 @@
-pm.storage = {
-    get: function(key, callback) {
+var Storage = Backbone.Model.extend({   
+    defaults: function() {
+    },
+
+    getValue: function(key, callback) {
         if (pm.target === pm.targets.CHROME_LEGACY_APP) {
             //Implementation here
         }
@@ -12,13 +15,13 @@ pm.storage = {
         }
     },
 
-    set: function(kvpair, callback) {
+    setValue: function(kvpair, callback) {
         if (pm.target === pm.targets.CHROME_LEGACY_APP) {
             //Implementation here
         }
         else if (pm.target === pm.targets.CHROME_PACKAGED_APP) {            
-            chrome.storage.local.set(kvpair, function() {
+            chrome.storage.local.set(kvpair, function() {                
             });
         }
     }
-};
+});

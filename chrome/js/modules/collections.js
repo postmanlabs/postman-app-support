@@ -65,7 +65,7 @@ pm.collections = {
                 $('#form-edit-collection .collection-id').val(collection.id);
                 $('#form-edit-collection .collection-name').val(collection.name);
                 
-                if (pm.settings.get("driveSyncEnabled") === true) {
+                if (pm.settings.getSetting("driveSyncEnabled") === true) {
                     $('#edit-collection-drive').css("display", "block");
                     $('#edit-collection-update-drive').attr("data-collection-id", id);                
 
@@ -1256,7 +1256,7 @@ pm.collections = {
             pm.indexedDB.driveFiles.addDriveFile(newLocalDriveFile, function(e) {
                 console.log("Uploaded file", newLocalDriveFile);                            
                 var currentTime = new Date().toISOString();
-                pm.settings.set("lastDriveChangeTime", currentTime);                
+                pm.settings.setSetting("lastDriveChangeTime", currentTime);                
             });  
         }
     }

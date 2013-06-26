@@ -18,7 +18,7 @@
  */
 "use strict";
 
-//TODO: Remove these model classes
+//TODO: Remove these model classes. Being used in indexed_db.js but not needed
 function Collection() {
     this.id = "";
     this.name = "";
@@ -113,7 +113,14 @@ pm.init = function () {
     var logger = new Logger;
     logger.debug("Testing backbone");
 
+    var storage = new Storage;
+    pm.storage = storage;    
+
+    pm.settings = new Settings();
+
     pm.settings.init(function() {           
+        var settingsModal = new SettingsModal({model: pm.settings});
+
         pm.indexedDB.open(function() {
             pm.request.init();
             pm.history.init();
@@ -132,7 +139,7 @@ pm.init = function () {
             pm.headerPresets.init();
             pm.helpers.loadFromDB();
 
-            var activeSidebarSection = pm.settings.get("activeSidebarSection");
+            var activeSidebarSection = pm.settings.getSetting("activeSidebarSection");
 
             if (activeSidebarSection) {
                 pm.layout.sidebar.select(activeSidebarSection);    

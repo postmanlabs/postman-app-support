@@ -287,7 +287,7 @@ pm.headerPresets = {
             pm.indexedDB.driveFiles.addDriveFile(newLocalDriveFile, function(e) {
                 console.log("Uploaded file", newLocalDriveFile);                            
                 var currentTime = new Date().toISOString();
-                pm.settings.set("lastDriveChangeTime", currentTime);                
+                pm.settings.setSetting("lastDriveChangeTime", currentTime);                
             });  
         }
     }

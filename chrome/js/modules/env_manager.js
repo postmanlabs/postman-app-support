@@ -84,14 +84,14 @@ pm.envManager = {
                 var id = $(this).attr('data-id');
                 var selectedEnv = pm.envManager.getEnvironmentFromId(id);
                 pm.envManager.selectedEnv = selectedEnv;
-                pm.settings.set("selectedEnvironmentId", selectedEnv.id);
+                pm.settings.setSetting("selectedEnvironmentId", selectedEnv.id);
                 pm.envManager.quicklook.refreshEnvironment(selectedEnv);
                 $('#environment-selector .environment-list-item-selected').html(selectedEnv.name);
             });
 
             $('#environment-selector').on("click", ".environment-list-item-noenvironment", function () {
                 pm.envManager.selectedEnv = null;
-                pm.settings.set("selectedEnvironmentId", "");
+                pm.settings.setSetting("selectedEnvironmentId", "");
                 pm.envManager.quicklook.removeEnvironmentData();
                 $('#environment-selector .environment-list-item-selected').html("No environment");
             });
@@ -183,7 +183,7 @@ pm.envManager = {
     },
 
     containsVariable:function (string, values) {
-        var variableDelimiter = pm.settings.get("variableDelimiter");
+        var variableDelimiter = pm.settings.getSetting("variableDelimiter");
         var startDelimiter = variableDelimiter.substring(0, 2);
         var endDelimiter = variableDelimiter.substring(variableDelimiter.length - 2);
         var patString = startDelimiter + "[^\r\n]*" + endDelimiter;
@@ -212,7 +212,7 @@ pm.envManager = {
         var patString;
         var pattern;
 
-        var variableDelimiter = pm.settings.get("variableDelimiter");
+        var variableDelimiter = pm.settings.getSetting("variableDelimiter");
         var startDelimiter = variableDelimiter.substring(0, 2);
         var endDelimiter = variableDelimiter.substring(variableDelimiter.length - 2);
 
@@ -274,7 +274,7 @@ pm.envManager = {
             $('#environments-list tbody').append(Handlebars.templates.environment_list({"items":environments}));
             $('#environment-selector .dropdown-menu').append(Handlebars.templates.environment_selector_actions());
 
-            var selectedEnvId = pm.settings.get("selectedEnvironmentId");
+            var selectedEnvId = pm.settings.getSetting("selectedEnvironmentId");
             var selectedEnv = pm.envManager.getEnvironmentFromId(selectedEnvId);
             if (selectedEnv) {
                 pm.envManager.selectedEnv = selectedEnv;
@@ -290,7 +290,7 @@ pm.envManager = {
 
     initGlobals:function (callback) {        
         pm.envManager.globals = [];
-        pm.storage.get('globals', function(s) {            ;            
+        pm.storage.getValue('globals', function(s) {            ;            
             if (s) {
                 pm.envManager.globals = JSON.parse(s);    
             }
@@ -308,7 +308,7 @@ pm.envManager = {
         pm.envManager.globals = globals;
         pm.envManager.quicklook.refreshGlobals(globals);
         var o = {'globals': JSON.stringify(globals)};
-        pm.storage.set(o, function() {
+        pm.storage.setValue(o, function() {
             console.log("Set the values");    
             pm.envManager.drive.checkIfGlobalsAreOnDrive("globals", function(exists, driveFile) {
                 if (exists) {
@@ -489,7 +489,7 @@ pm.envManager = {
 
     mergeGlobals: function(globals) {
         var o = {'globals': JSON.stringify(globals)};
-        pm.storage.set(o, function() {
+        pm.storage.setValue(o, function() {
             console.log("Updated globals");
         });
     },
@@ -647,7 +647,7 @@ pm.envManager = {
             pm.indexedDB.driveFiles.addDriveFile(newLocalDriveFile, function(e) {
                 console.log("Uploaded file", newLocalDriveFile);                            
                 var currentTime = new Date().toISOString();
-                pm.settings.set("lastDriveChangeTime", currentTime);                
+                pm.settings.setSetting("lastDriveChangeTime", currentTime);                
             });  
         },
 
@@ -670,7 +670,7 @@ pm.envManager = {
             pm.indexedDB.driveFiles.addDriveFile(newLocalDriveFile, function(e) {
                 console.log("Uploaded file", newLocalDriveFile);                            
                 var currentTime = new Date().toISOString();
-                pm.settings.set("lastDriveChangeTime", currentTime);                
+                pm.settings.setSetting("lastDriveChangeTime", currentTime);                
             });  
         }
     }

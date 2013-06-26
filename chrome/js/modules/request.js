@@ -57,7 +57,7 @@ pm.request = {
             if (pm.request.body.isEditorInitialized) {
                 var data = pm.request.body.codeMirror.getValue();
 
-                if (pm.settings.get("forceWindowsLineEndings") === true) {
+                if (pm.settings.getSetting("forceWindowsLineEndings") === true) {
                     data = data.replace(/\r/g, '');
                     data = data.replace(/\n/g, "\r\n");
                 }
@@ -246,13 +246,13 @@ pm.request = {
               //pm.request.body.autoFormatEditor(pm.request.body.codeMirror.getMode().name);
             });
 
-            var type = pm.settings.get("requestBodyEditorContainerType");
+            var type = pm.settings.getSetting("requestBodyEditorContainerType");
             $('#request-body-editor-container-type a').removeClass('active');
             $('#request-body-editor-container-type a[data-container-type="' + type + '"]').addClass('active');
 
             $('#request-body-editor-container-type').on('click', 'a', function(evt) {
                 var type = $(this).attr('data-container-type');
-                pm.settings.set("requestBodyEditorContainerType", type);
+                pm.settings.setSetting("requestBodyEditorContainerType", type);
             });
         },
 
@@ -446,7 +446,7 @@ pm.request = {
             pm.request.addListeners();
         }
 
-        var lastRequest = pm.settings.get("lastRequest");
+        var lastRequest = pm.settings.getSetting("lastRequest");
         
         if (lastRequest !== "" && lastRequest !== undefined) {
             var lastRequestParsed = JSON.parse(lastRequest);
@@ -633,7 +633,7 @@ pm.request = {
     },
 
     saveCurrentRequestToLocalStorage:function () {
-        pm.settings.set("lastRequest", pm.request.getAsJson());
+        pm.settings.setSetting("lastRequest", pm.request.getAsJson());
     },
 
     openHeaderEditor:function () {
@@ -792,7 +792,7 @@ pm.request = {
 
         setMode:function (mode) {
             var text = pm.request.response.text;
-            pm.request.response.setFormat(mode, text, pm.settings.get("previewType"), true);
+            pm.request.response.setFormat(mode, text, pm.settings.getSetting("previewType"), true);
         },
 
         stripScriptTag:function (text) {
@@ -810,7 +810,7 @@ pm.request = {
             $('#response-formatting a').removeClass('active');
             $('#response-formatting a[data-type="' + pm.request.response.previewType + '"]').addClass('active');
 
-            pm.settings.set("previewType", newType);
+            pm.settings.setSetting("previewType", newType);
 
             if (newType === 'raw') {
                 $('#response-as-text').css("display", "block");
@@ -842,7 +842,7 @@ pm.request = {
         loadHeaders:function (data) {
             pm.request.response.headers = pm.request.unpackResponseHeaders(data);            
 
-            if(pm.settings.get("usePostmanProxy") === true) {
+            if(pm.settings.getSetting("usePostmanProxy") === true) {
                 var count = pm.request.response.headers.length;                
                 for(var i = 0; i < count; i++) {
                     if(pm.request.response.headers[i].key == "Postman-Location") {
@@ -924,12 +924,12 @@ pm.request = {
 
             var language = 'html';
 
-            pm.request.response.previewType = pm.settings.get("previewType");
+            pm.request.response.previewType = pm.settings.getSetting("previewType");
 
             var responsePreviewType = 'html';
 
             if (!_.isUndefined(contentType) && !_.isNull(contentType)) {
-                if (contentType.search(/json/i) !== -1 || contentType.search(/javascript/i) !== -1 || pm.settings.get("languageDetection") == 'javascript') {
+                if (contentType.search(/json/i) !== -1 || contentType.search(/javascript/i) !== -1 || pm.settings.getSetting("languageDetection") == 'javascript') {
                     language = 'javascript';
                 }
 
@@ -955,14 +955,14 @@ pm.request = {
                 } 
                 else {
                     responsePreviewType = 'html';
-                    pm.request.response.setFormat(language, response.text, pm.settings.get("previewType"), true);
+                    pm.request.response.setFormat(language, response.text, pm.settings.getSetting("previewType"), true);
                 }
             }
             else {
-                if (pm.settings.get("languageDetection") == 'javascript') {
+                if (pm.settings.getSetting("languageDetection") == 'javascript') {
                     language = 'javascript';
                 }
-                pm.request.response.setFormat(language, response.text, pm.settings.get("previewType"), true);
+                pm.request.response.setFormat(language, response.text, pm.settings.getSetting("previewType"), true);
             }
 
             pm.request.response.renderCookies(response.cookies);
@@ -1080,12 +1080,12 @@ pm.request = {
 
                 var language = 'html';
 
-                pm.request.response.previewType = pm.settings.get("previewType");
+                pm.request.response.previewType = pm.settings.getSetting("previewType");
 
                 var responsePreviewType = 'html';
 
                 if (!_.isUndefined(contentType) && !_.isNull(contentType)) {
-                    if (contentType.search(/json/i) !== -1 || contentType.search(/javascript/i) !== -1 || pm.settings.get("languageDetection") == 'javascript') {
+                    if (contentType.search(/json/i) !== -1 || contentType.search(/javascript/i) !== -1 || pm.settings.getSetting("languageDetection") == 'javascript') {
                         language = 'javascript';
                     }
 
@@ -1149,14 +1149,14 @@ pm.request = {
                     }
                     else {
                         responsePreviewType = 'html';
-                        pm.request.response.setFormat(language, pm.request.response.text, pm.settings.get("previewType"), true);
+                        pm.request.response.setFormat(language, pm.request.response.text, pm.settings.getSetting("previewType"), true);
                     }
                 }
                 else {
-                    if (pm.settings.get("languageDetection") == 'javascript') {
+                    if (pm.settings.getSetting("languageDetection") == 'javascript') {
                         language = 'javascript';
                     }
-                    pm.request.response.setFormat(language, pm.request.response.text, pm.settings.get("previewType"), true);
+                    pm.request.response.setFormat(language, pm.request.response.text, pm.settings.getSetting("previewType"), true);
                 }
 
                 var url = pm.request.url;
@@ -1282,7 +1282,7 @@ pm.request = {
             }
 
             var lineWrapping;
-            if (pm.settings.get("lineWrapping") === true) {
+            if (pm.settings.getSetting("lineWrapping") === true) {
                 $('#response-body-line-wrapping').addClass("active");
                 lineWrapping = true;
             }
@@ -1524,7 +1524,7 @@ pm.request = {
         pm.request.method = "GET";
 
         pm.request.isFromCollection = false;
-        if (pm.settings.get("retainLinkHeaders") === true) {
+        if (pm.settings.getSetting("retainLinkHeaders") === true) {
             if (headers) {
                 pm.request.headers = headers;
             }
@@ -1874,7 +1874,7 @@ pm.request = {
     getXhrHeaders: function() {
         pm.request.headers = pm.request.getHeaderEditorParams();        
         var headers = pm.request.getHeaderEditorParams();
-        if(pm.settings.get("sendNoCacheHeader") === true) {
+        if(pm.settings.getSetting("sendNoCacheHeader") === true) {
             var noCacheHeader = {
                 key: "Cache-Control",
                 name: "Cache-Control",
@@ -1884,7 +1884,7 @@ pm.request = {
             headers.push(noCacheHeader);            
         }
 
-        if(pm.settings.get("sendPostmanTokenHeader") === true) {
+        if(pm.settings.getSetting("sendPostmanTokenHeader") === true) {
             var noCacheHeader = {
                 key: "Postman-Token",
                 name: "Postman-Token",
@@ -1908,7 +1908,7 @@ pm.request = {
             }    
         }
         
-        if (pm.settings.get("usePostmanProxy") == true) {
+        if (pm.settings.getSetting("usePostmanProxy") == true) {
             headers = pm.request.prepareHeadersForProxy(headers);
         }
 
@@ -2161,7 +2161,7 @@ pm.request = {
         pm.request.xhr = xhr;
 
         //Save the request
-        if (pm.settings.get("autoSaveRequest")) {
+        if (pm.settings.getSetting("autoSaveRequest")) {
             pm.history.addRequest(originalUrl,
                 method,
                 pm.request.getPackedHeaders(),

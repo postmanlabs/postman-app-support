@@ -1,179 +1,88 @@
-pm.settings = {
-    historyCount:50,
-    lastRequest:"",
-    autoSaveRequest:true,
-    selectedEnvironmentId:"",
-    type: "chromeStorageArea",
-    items: [],
+var Settings = Backbone.Model.extend({
+    defaults: function() {        
+        return {            
+            lastRequest:"",
+            autoSaveRequest:true,
+            selectedEnvironmentId:"",
+            type: "chromeStorageArea",
+            items: {}
+        };
+    },    
 
     initValues: function(callback) {
-        pm.settings.items = {};                    
-        pm.storage.get("settings", function(settingsJson) {    
+        this.set({"items": {}});
+
+        var func = function(settingsJson) {
             if (settingsJson !== null) {
-                pm.settings.items = JSON.parse(settingsJson);    
-            }                                   
+                this.set({"items": JSON.parse(settingsJson)});    
+            }                                               
 
-            pm.settings.create("historyCount", 100);
-            pm.settings.create("autoSaveRequest", true);
-            pm.settings.create("selectedEnvironmentId", true);
-            pm.settings.create("lineWrapping", true);
-            pm.settings.create("previewType", "parsed");
-            pm.settings.create("retainLinkHeaders", false);
-            pm.settings.create("sendNoCacheHeader", true);
-            pm.settings.create("sendPostmanTokenHeader", true);
-            pm.settings.create("usePostmanProxy", false);        
-            pm.settings.create("proxyURL", "");
-            pm.settings.create("lastRequest", "");
-            pm.settings.create("launcherNotificationCount", 0);
-            pm.settings.create("variableDelimiter", "{{...}}");
-            pm.settings.create("languageDetection", "auto");
-            pm.settings.create("haveDonated", false);
+            this.create("historyCount", 100);
+            this.create("autoSaveRequest", true);
+            this.create("selectedEnvironmentId", true);
+            this.create("lineWrapping", true);
+            this.create("previewType", "parsed");
+            this.create("retainLinkHeaders", false);
+            this.create("sendNoCacheHeader", true);
+            this.create("sendPostmanTokenHeader", true);
+            this.create("usePostmanProxy", false);        
+            this.create("proxyURL", "");
+            this.create("lastRequest", "");
+            this.create("launcherNotificationCount", 0);
+            this.create("variableDelimiter", "{{...}}");
+            this.create("languageDetection", "auto");
+            this.create("haveDonated", false);
 
-            pm.settings.create("requestBodyEditorContainerType", "editor");
+            this.create("requestBodyEditorContainerType", "editor");
 
             //Google Drive related
-            pm.settings.create("driveSyncConnectionStatus", "not_connected"); //notconnected, connected, disabled        
-            pm.settings.create("driveSyncEnabled", false);
-            pm.settings.create("driveStartChangeId", 0);
-            pm.settings.create("driveAppDataFolderId", 0);
-            pm.settings.create("lastDriveChangeTime", "");
-
-            $('#history-count').val(pm.settings.get("historyCount"));
-            $('#auto-save-request').val(pm.settings.get("autoSaveRequest") + "");
-            $('#retain-link-headers').val(pm.settings.get("retainLinkHeaders") + "");
-            $('#send-no-cache-header').val(pm.settings.get("sendNoCacheHeader") + "");
-            $('#send-postman-token-header').val(pm.settings.get("sendPostmanTokenHeader") + "");
-            $('#use-postman-proxy').val(pm.settings.get("usePostmanProxy") + "");
-            $('#postman-proxy-url').val(pm.settings.get("postmanProxyUrl"));
-            $('#variable-delimiter').val(pm.settings.get("variableDelimiter"));
-            $('#language-detection').val(pm.settings.get("languageDetection"));
-            $('#have-donated').val(pm.settings.get("haveDonated") + "");
-
-            pm.settings.initListeners();
+            this.create("driveSyncConnectionStatus", "not_connected"); //notconnected, connected, disabled        
+            this.create("driveSyncEnabled", false);
+            this.create("driveStartChangeId", 0);
+            this.create("driveAppDataFolderId", 0);
+            this.create("lastDriveChangeTime", "");
 
             callback();
-        });        
+        };
+
+        func = _.bind(func, this);        
+
+        pm.storage.getValue("settings", func);        
     },
 
-    initListeners: function() {
-        $('#history-count').change(function () {
-            pm.settings.set("historyCount", $('#history-count').val());
-        });
-
-        $('#auto-save-request').change(function () {
-            var val = $('#auto-save-request').val();
-            if (val == "true") {
-                pm.settings.set("autoSaveRequest", true);
-            }
-            else {
-                pm.settings.set("autoSaveRequest", false);
-            }
-        });
-
-        $('#retain-link-headers').change(function () {
-            var val = $('#retain-link-headers').val();
-            if (val === "true") {
-                pm.settings.set("retainLinkHeaders", true);
-            }
-            else {
-                pm.settings.set("retainLinkHeaders", false);
-            }
-        });        
-
-        $('#send-no-cache-header').change(function () {
-            var val = $('#send-no-cache-header').val();
-            if (val == "true") {
-                pm.settings.set("sendNoCacheHeader", true);
-            }
-            else {
-                pm.settings.set("sendNoCacheHeader", false);
-            }
-        });
-
-        $('#send-postman-token-header').change(function () {
-            var val = $('#send-postman-token-header').val();
-            if (val == "true") {
-                pm.settings.set("sendPostmanTokenHeader", true);
-            }
-            else {
-                pm.settings.set("sendPostmanTokenHeader", false);
-            }
-        });        
-
-        $('#use-postman-proxy').change(function () {
-            var val = $('#use-postman-proxy').val();
-            if (val == "true") {
-                pm.settings.set("usePostmanProxy", true);
-                $('#postman-proxy-url-container').css("display", "block");
-            }
-            else {
-                pm.settings.set("usePostmanProxy", false);
-                $('#postman-proxy-url-container').css("display", "none");
-            }
-        });
-
-        $('#postman-proxy-url').change(function () {
-            pm.settings.set("postmanProxyUrl", $('#postman-proxy-url').val());
-        });
-
-        $('#variable-delimiter').change(function () {
-            pm.settings.set("variableDelimiter", $('#variable-delimiter').val());
-        });
-
-        $('#language-detection').change(function () {
-            pm.settings.set("languageDetection", $('#language-detection').val());
-        });
-
-        $('#have-donated').change(function () {
-            var val = $('#have-donated').val();
-            if (val == "true") {
-                pm.layout.hideDonationBar();
-                pm.settings.set("haveDonated", true);
-            }
-            else {
-                pm.settings.set("haveDonated", false);
-            }
-        });
-
-        $('#force-windows-line-endings').change(function () {
-            var val = $('#force-windows-line-endings').val();
-            if (val == "true") {
-                pm.settings.set("forceWindowsLineEndings", true);
-            }
-            else {
-                pm.settings.set("forceWindowsLineEndings", false);
-            }
-        });
-
-        if (pm.settings.get("usePostmanProxy") == true) {
-            $('#postman-proxy-url-container').css("display", "block");
-        }
-        else {
-            $('#postman-proxy-url-container').css("display", "none");
-        }
+    //This moves to the view initialize script?
+    initListeners: function() {        
     },
     
-    init:function (callback) {                
-        pm.settings.initValues(callback);        
+    test: function() {
+        console.log("Testing the function");
+    },
+
+    init:function (callback) {        
+        this.initValues(callback);
     },
 
     create:function (key, defaultVal) {
-        if (!(key in pm.settings.items)) {            
+        if (!(key in this.get("items"))) {            
             if (defaultVal !== "undefined") {
-                pm.settings.set(key, defaultVal);
+                this.setSetting(key, defaultVal);
             }
         }
     },
 
-    set:function (key, value) {
-        pm.settings.items[key] = value;
-        var o = {'settings': JSON.stringify(pm.settings.items)};
-        pm.storage.set(o, function() {
+    setSetting:function (key, value) {
+        //Need to clone otherwise Backbone will not fire the correct event
+        var newItems = _.clone(this.get("items"));
+        newItems[key] = value;
+        this.set({items: newItems});
+
+        var o = {'settings': JSON.stringify(this.get("items"))};
+        pm.storage.setValue(o, function() {
         });
     },
 
-    get:function (key) {
-        var val = pm.settings.items[key];
+    getSetting:function (key) {
+        var val = this.get("items")[key];
 
         if (val === "true") {
             return true;
@@ -187,27 +96,27 @@ pm.settings = {
     },
 
     update: function(settings) {
-        pm.settings.set("historyCount", settings.historyCount, false);
-        pm.settings.set("autoSaveRequest", settings.autoSaveRequest, false);
-        pm.settings.set("retainLinkHeaders", settings.retainLinkHeaders, false);
-        pm.settings.set("sendNoCacheHeader", settings.sendNoCacheHeader, false);        
-        pm.settings.set("variableDelimiter", settings.variableDelimiter, false);
-        pm.settings.set("languageDetection", settings.languageDetection, false);
-        pm.settings.set("haveDonated", settings.haveDonated, false);
+        this.setSetting("historyCount", settings.historyCount, false);
+        this.setSetting("autoSaveRequest", settings.autoSaveRequest, false);
+        this.setSetting("retainLinkHeaders", settings.retainLinkHeaders, false);
+        this.setSetting("sendNoCacheHeader", settings.sendNoCacheHeader, false);        
+        this.setSetting("variableDelimiter", settings.variableDelimiter, false);
+        this.setSetting("languageDetection", settings.languageDetection, false);
+        this.setSetting("haveDonated", settings.haveDonated, false);
 
-        pm.settings.initValues();
-        pm.settings.initListeners();
+        this.initValues();
+        this.initListeners();
     },
 
     getAsJson: function() {
         var settings = {
-            historyCount: pm.settings.get("historyCount"),
-            autoSaveRequest: pm.settings.get("autoSaveRequest"),
-            retainLinkHeaders: pm.settings.get("retainLinkHeaders"),
-            sendNoCacheHeader: pm.settings.get("sendNoCacheHeader"),            
-            variableDelimiter: pm.settings.get("variableDelimiter"),
-            languageDetection: pm.settings.get("languageDetection"),
-            haveDonated: pm.settings.get("haveDonated")
+            historyCount: this.getSetting("historyCount"),
+            autoSaveRequest: this.getSetting("autoSaveRequest"),
+            retainLinkHeaders: this.getSetting("retainLinkHeaders"),
+            sendNoCacheHeader: this.getSetting("sendNoCacheHeader"),            
+            variableDelimiter: this.getSetting("variableDelimiter"),
+            languageDetection: this.getSetting("languageDetection"),
+            haveDonated: this.getSetting("haveDonated")
         };
 
         return settings;
@@ -218,8 +127,8 @@ pm.settings = {
             if (pm.drive) {
                 if (!pm.drive.isSyncEnabled()) return;
 
-                pm.drive.onUpdate["postman_settings"] = pm.settings.drive.updateSettingsFromDrive;
-                pm.drive.onPost["postman_settings"] = pm.settings.drive.addSettingsFromDrive;                
+                pm.drive.onUpdate["postman_settings"] = this.drive.updateSettingsFromDrive;
+                pm.drive.onPost["postman_settings"] = this.drive.addSettingsFromDrive;                
             }
         },
 
@@ -261,12 +170,12 @@ pm.settings = {
 
         updateSettingsFromDrive: function(responseText) {
             var settings = JSON.parse(responseText);
-            pm.settings.update(settings);
+            this.update(settings);
         },
 
         addSettingsFromDrive: function(file, responseText) {
             var settings = JSON.parse(responseText);            
-            pm.settings.update(settings);
+            this.update(settings);
 
             var newLocalDriveFile = {
                 "id": "settings",
@@ -278,8 +187,131 @@ pm.settings = {
 
             pm.indexedDB.driveFiles.addDriveFile(newLocalDriveFile, function(e) {                                        
                 var currentTime = new Date().toISOString();
-                pm.settings.set("lastDriveChangeTime", currentTime);                
+                this.setSetting("lastDriveChangeTime", currentTime);                
             });  
         }
     }
-};
+});
+
+var SettingsModal = Backbone.View.extend({
+    el: $("#modal-settings"),
+
+    initialize: function() {
+        console.log(this, this.model);
+        var settings = this.model;
+        this.model.on('change:items', this.render, this);
+
+        $('#history-count').change(function () {
+            settings.setSetting("historyCount", $('#history-count').val());
+        });
+
+        $('#auto-save-request').change(function () {
+            var val = $('#auto-save-request').val();
+            if (val == "true") {
+                settings.setSetting("autoSaveRequest", true);
+            }
+            else {
+                settings.setSetting("autoSaveRequest", false);
+            }
+        });
+
+        $('#retain-link-headers').change(function () {
+            var val = $('#retain-link-headers').val();
+            if (val === "true") {
+                settings.setSetting("retainLinkHeaders", true);
+            }
+            else {
+                settings.setSetting("retainLinkHeaders", false);
+            }
+        });        
+
+        $('#send-no-cache-header').change(function () {
+            var val = $('#send-no-cache-header').val();
+            if (val == "true") {
+                settings.setSetting("sendNoCacheHeader", true);
+            }
+            else {
+                settings.setSetting("sendNoCacheHeader", false);
+            }
+        });
+
+        $('#send-postman-token-header').change(function () {
+            var val = $('#send-postman-token-header').val();
+            if (val == "true") {
+                settings.setSetting("sendPostmanTokenHeader", true);
+            }
+            else {
+                settings.setSetting("sendPostmanTokenHeader", false);
+            }
+        });        
+
+        $('#use-postman-proxy').change(function () {
+            var val = $('#use-postman-proxy').val();
+            if (val == "true") {
+                settings.setSetting("usePostmanProxy", true);
+                $('#postman-proxy-url-container').css("display", "block");
+            }
+            else {
+                settings.setSetting("usePostmanProxy", false);
+                $('#postman-proxy-url-container').css("display", "none");
+            }
+        });
+
+        $('#postman-proxy-url').change(function () {
+            settings.setSetting("postmanProxyUrl", $('#postman-proxy-url').val());
+        });
+
+        $('#variable-delimiter').change(function () {
+            settings.setSetting("variableDelimiter", $('#variable-delimiter').val());
+        });
+
+        $('#language-detection').change(function () {
+            settings.setSetting("languageDetection", $('#language-detection').val());
+        });
+
+        $('#have-donated').change(function () {
+            var val = $('#have-donated').val();
+            if (val == "true") {
+                pm.layout.hideDonationBar();
+                settings.setSetting("haveDonated", true);
+            }
+            else {
+                settings.setSetting("haveDonated", false);
+            }
+        });
+
+        $('#force-windows-line-endings').change(function () {
+            var val = $('#force-windows-line-endings').val();
+            if (val == "true") {
+                settings.setSetting("forceWindowsLineEndings", true);
+            }
+            else {
+                settings.setSetting("forceWindowsLineEndings", false);
+            }
+        });
+
+        if (this.model.getSetting("usePostmanProxy") == true) {
+            $('#postman-proxy-url-container').css("display", "block");
+        }
+        else {
+            $('#postman-proxy-url-container').css("display", "none");
+        }
+
+        this.render();
+    },
+
+    render: function() {
+        console.log("Render called");
+
+        $('#history-count').val(this.model.getSetting("historyCount"));
+        $('#auto-save-request').val(this.model.getSetting("autoSaveRequest") + "");
+        $('#retain-link-headers').val(this.model.getSetting("retainLinkHeaders") + "");
+        $('#send-no-cache-header').val(this.model.getSetting("sendNoCacheHeader") + "");
+        $('#send-postman-token-header').val(this.model.getSetting("sendPostmanTokenHeader") + "");
+        $('#use-postman-proxy').val(this.model.getSetting("usePostmanProxy") + "");
+        $('#postman-proxy-url').val(this.model.getSetting("postmanProxyUrl"));
+        $('#variable-delimiter').val(this.model.getSetting("variableDelimiter"));
+        $('#language-detection').val(this.model.getSetting("languageDetection"));
+        $('#have-donated').val(this.model.getSetting("haveDonated") + "");
+    }
+});

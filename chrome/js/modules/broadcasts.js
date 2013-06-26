@@ -2,8 +2,8 @@ pm.broadcasts = {
     items: [],
 
     init:function () {
-        pm.storage.get("broadcasts", function(broadcasts) {
-            pm.storage.get("broadcast_last_update_time", function(last_update_time) {
+        pm.storage.getValue("broadcasts", function(broadcasts) {
+            pm.storage.getValue("broadcast_last_update_time", function(last_update_time) {
                 var today = new Date();
 
                 pm.broadcasts.showBlank();
@@ -39,12 +39,12 @@ pm.broadcasts = {
     },
 
     setLastUpdateTime:function (last_update) {
-        pm.storage.set({"broadcast_last_update_time": last_update.toUTCString()});        
+        pm.storage.setValue({"broadcast_last_update_time": last_update.toUTCString()});        
     },
 
     setBroadcasts:function (broadcasts) {
         var old_broadcasts;
-        pm.storage.get("broadcasts", function(broadcastsJson) {                        
+        pm.storage.getValue("broadcasts", function(broadcastsJson) {                        
             if (broadcastsJson) {
                 old_broadcasts = JSON.parse(broadcastsJson);
             }
@@ -60,7 +60,7 @@ pm.broadcasts = {
                 }
                 count = broadcasts.length;
                 var broadcastsJson = JSON.stringify(broadcasts);
-                pm.storage.set({"broadcasts": broadcastsJson}, function() {                    
+                pm.storage.setValue({"broadcasts": broadcastsJson}, function() {                    
                 });
             }
             else {
@@ -81,7 +81,7 @@ pm.broadcasts = {
                 count = new_broadcasts.length;
                 old_broadcasts = _.union(new_broadcasts, old_broadcasts);
                 var broadcastsJson = JSON.stringify(old_broadcasts);
-                pm.storage.set({"broadcasts": broadcastsJson}, function() {
+                pm.storage.setValue({"broadcasts": broadcastsJson}, function() {
                 });
             }
 
@@ -103,7 +103,7 @@ pm.broadcasts = {
         $broadcasts_count.addClass("no-new-broadcasts");
         $broadcasts_count.html("0");
         
-        pm.storage.get("broadcasts", function(broadcastsJson) {
+        pm.storage.getValue("broadcasts", function(broadcastsJson) {
             var broadcasts;
 
             if (broadcastsJson) {
@@ -119,7 +119,7 @@ pm.broadcasts = {
             }
 
             var outBroadcastsJsons = JSON.stringify(broadcasts);            
-            pm.storage.set({"broadcasts": outBroadcastsJsons}, function() {                
+            pm.storage.setValue({"broadcasts": outBroadcastsJsons}, function() {                
             });
 
             pm.broadcasts.renderBroadcasts();
@@ -127,7 +127,7 @@ pm.broadcasts = {
     },
 
     renderBroadcasts:function () {
-        pm.storage.get("broadcasts", function(broadcastsJson) {               
+        pm.storage.getValue("broadcasts", function(broadcastsJson) {               
             var broadcasts = JSON.parse(broadcastsJson);            
             $("#broadcasts .dropdown-menu").html("");
             $("#broadcasts .dropdown-menu").append(Handlebars.templates.broadcasts({"items":broadcasts}));

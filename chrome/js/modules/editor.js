@@ -68,7 +68,7 @@ pm.editor = {
             pm.editor.codeMirror.setOption("lineWrapping", true);
         }
 
-        pm.settings.set("lineWrapping", lineWrapping);
+        pm.settings.setSetting("lineWrapping", lineWrapping);
         pm.editor.codeMirror.refresh();
     }
 };

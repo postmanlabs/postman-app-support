@@ -12,7 +12,7 @@ pm.layout = {
             return;    
         }
 
-        var launcherNotificationCount = pm.settings.get("launcherNotificationCount");        
+        var launcherNotificationCount = pm.settings.getSetting("launcherNotificationCount");        
         var maxCount = 1;
         if(launcherNotificationCount >= 1) {
             return true;
@@ -35,8 +35,8 @@ pm.layout = {
             }            
         });        
 
-        var launcherNotificationCount = parseInt(pm.settings.get("launcherNotificationCount")) + 1;        
-        pm.settings.set("launcherNotificationCount", launcherNotificationCount);       
+        var launcherNotificationCount = parseInt(pm.settings.getSetting("launcherNotificationCount")) + 1;        
+        pm.settings.setSetting("launcherNotificationCount", launcherNotificationCount);       
     },
 
     init:function () {
@@ -45,7 +45,7 @@ pm.layout = {
         pm.layout.dataDump.init();
 
 
-        if (pm.settings.get("haveDonated") == true) {            
+        if (pm.settings.getSetting("haveDonated") == true) {            
             pm.layout.hideDonationBar();
         }
 
@@ -403,7 +403,7 @@ pm.layout = {
         maximizeSidebar:function () {
             var animationDuration = pm.layout.sidebar.animationDuration;
             $('#sidebar-toggle').animate({left:"350px"}, animationDuration, function () {
-                if (pm.settings.get("haveDonated") === false) {
+                if (pm.settings.getSetting("haveDonated") === false) {
                     $('#sidebar-search-container').fadeIn();    
                 }
                 
@@ -454,7 +454,7 @@ pm.layout = {
             $("#sidebar-selectors li").removeClass("active");
             $("#sidebar-selectors-" + section).addClass("active");
 
-            pm.settings.set("activeSidebarSection", section);
+            pm.settings.setSetting("activeSidebarSection", section);
 
             if (pm.collections.areLoaded === false) {
                 pm.collections.getAllCollections();
