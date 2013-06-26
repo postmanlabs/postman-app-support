@@ -183,6 +183,8 @@ pm.collections = {
             pm.collections.importCollections(files);
             $('#collection-files-input').val("");
         });
+
+        $('.collection-request-description').wysiwyg();
     },
 
     getCollectionData:function (id, callback) {

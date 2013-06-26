@@ -1191,6 +1191,10 @@ input[type="file"] {
 #edit-collection-drive-actions {
   margin-top: 10px; }
 
+.collection-request-description {
+  overflow: scroll;
+  max-height: 200px;
+}
 /* End collections */
 /*Environments*/
 #environment-quicklook-wrapper {

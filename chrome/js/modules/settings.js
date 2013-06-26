@@ -8,8 +8,10 @@ pm.settings = {
 
     initValues: function(callback) {
         pm.settings.items = {};                    
-        pm.storage.get("settings", function(settingsJson) {                           
-            pm.settings.items = JSON.parse(settingsJson);
+        pm.storage.get("settings", function(settingsJson) {    
+            if (settingsJson !== null) {
+                pm.settings.items = JSON.parse(settingsJson);    
+            }                                   
 
             pm.settings.create("historyCount", 100);
             pm.settings.create("autoSaveRequest", true);

@@ -3,8 +3,10 @@ pm.storage = {
         if (pm.target === pm.targets.CHROME_LEGACY_APP) {
             //Implementation here
         }
-        else if (pm.target === pm.targets.CHROME_PACKAGED_APP) {            
-            chrome.storage.local.get(key, function(result) {                     
+        else if (pm.target === pm.targets.CHROME_PACKAGED_APP) {  
+            var obj = {};
+            obj[key] = null;            
+            chrome.storage.local.get(obj, function(result) {                       
                 callback(result[key]); 
             });
         }
