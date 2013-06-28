@@ -25,6 +25,7 @@ pm.request = {
         rawEditorType:"editor",
 
         init:function () {
+            $("#url").focus();
             pm.request.body.initPreview();
             pm.request.body.initFormDataEditor();
             pm.request.body.initUrlEncodedEditor();
