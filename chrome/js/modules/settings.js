@@ -131,6 +131,7 @@ pm.settings = {
                 pm.settings.set("haveDonated", true);
             }
             else {
+                pm.layout.showDonationBar();
                 pm.settings.set("haveDonated", false);
             }
         });
@@ -144,6 +145,13 @@ pm.settings = {
                 pm.settings.set("forceWindowsLineEndings", false);
             }
         });
+
+        if (pm.settings.get("haveDonated") == true) {
+            pm.layout.hideDonationBar();
+        }
+        else {
+            pm.layout.showDonationBar();
+        }
 
         if (pm.settings.get("usePostmanProxy") == true) {
             $('#postman-proxy-url-container').css("display", "block");

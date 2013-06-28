@@ -381,7 +381,11 @@ pm.layout = {
     },
 
     hideDonationBar: function () {
-        $("#sidebar-footer").css("display", "none");
+        $("#header-donate-link-container").css("display", "none");
+    },
+
+    showDonationBar: function() {
+        $("#header-donate-link-container").css("display", "block");
     },
 
     sidebar:{

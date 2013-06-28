@@ -1461,8 +1461,7 @@ input[type="file"] {
 /*Preferences*/
 .preferences {
   float: right;
-  margin-top: 12px;
-  margin-right: 20px; }
+  margin-top: 12px; }
 
 .preferences a {
   font-size: 11px;
@@ -1476,10 +1475,23 @@ input[type="file"] {
 .preferences a:hover {
   text-decoration: none; }
 
+#header-donate-link-container {
+  float: right;
+  margin-top: 12px;
+  margin-right: 5px;
+  display: none; }
+
 #header-donate-link {
+  border-radius: 3px;
   color: #999;
-  font-size: 12px;
-  font-weight: bold; }
+  font-size: 14px;
+  font-weight: bold;
+  padding: 5px;
+  text-decoration: none; }
+
+#header-donate-link:hover {
+  background: #333;
+  color: #fff; }
 
 /* Notifications */
 #notification {
