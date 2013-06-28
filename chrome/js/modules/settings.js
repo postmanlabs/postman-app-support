@@ -154,6 +154,7 @@ pm.settings = {
     },
     
     init:function (callback) {                
+        pm.settings.dataDump.init();
         pm.settings.initValues(callback);        
     },
 
@@ -280,6 +281,45 @@ pm.settings = {
                 var currentTime = new Date().toISOString();
                 pm.settings.set("lastDriveChangeTime", currentTime);                
             });  
+        }
+    },
+
+    dataDump: {
+        init: function() {
+            $("#download-all-data").on("click", function() {
+                pm.indexedDB.downloadAllData(function() {
+                    noty(
+                    {
+                        type:'success',
+                        text:'Saved the data dump',
+                        layout:'topRight',
+                        timeout:750
+                    });
+                });
+            });
+
+            $("#import-all-data-files-input").on("change", function(event) {
+                console.log("Process file and import data");
+                var files = event.target.files;                
+                pm.indexedDB.importAllData(files, function() {
+                    $("#import-all-data-files-input").val("");
+                    noty(
+                    {
+                        type:'success',
+                        text:'Imported the data dump',
+                        layout:'topRight',
+                        timeout:750
+                    });
+                });
+            });
+
+            $("#clear-local-cache").on("click", function(event) {
+                console.log("Clear local cache files");
+                //Write code to clear RAL files
+                RAL.FileSystem.removeDir('cache', function() {
+                  console.log("All clear");
+                });
+            });
         }
     }
 };

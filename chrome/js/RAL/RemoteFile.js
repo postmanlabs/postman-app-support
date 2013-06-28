@@ -76,7 +76,7 @@ RAL.RemoteFile.prototype = {
      *     any warnings from RAL.CacheParser
      */
     onRemoteFileLoaded: function(fileData, fileInfo) {
-
+      console.log("Remote file loaded", fileData, fileInfo);
       // check the ignorance status
       if(this.ignoreCacheHeaders) {
 
@@ -87,12 +87,12 @@ RAL.RemoteFile.prototype = {
       // check if the file can be cached and, if so,
       // go ahead and store it in the file system
       if(fileInfo.cacheable) {
-
+        console.log("Writing to the filesystem");
         RAL.FileSystem.set(this.src, fileData,
           this.callbacks.onFileSystemSet.bind(this, fileInfo));
 
       } else {
-
+        console.log("Local file");
         var dataURL = this.wURL.createObjectURL(fileData);
         this.callbacks.onLocalFileLoaded.call(this, dataURL);
         this.callbacks.onCacheError.call(this, fileInfo);

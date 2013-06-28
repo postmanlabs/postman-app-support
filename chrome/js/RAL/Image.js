@@ -17,7 +17,7 @@ RAL.RemoteImage = function(options) {
   this.width = this.element.width || options.width || null;
   this.height = this.element.height || options.height || null;
   this.placeholder = this.element.dataset.placeholder || null;
-  this.headers = options.headers || [];
+  this.headers = options.headers || []; //New addition
   this.priority = options.priority || 0;
 
   // attach on specific events for images

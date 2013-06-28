@@ -42,9 +42,6 @@ pm.layout = {
     init:function () {
         pm.layout.detectLauncher();
 
-        pm.layout.dataDump.init();
-
-
         if (pm.settings.get("haveDonated") == true) {            
             pm.layout.hideDonationBar();
         }
@@ -533,36 +530,5 @@ pm.layout = {
             $('#collection-' + id).remove();
             pm.layout.refreshScrollPanes();
         }
-    },
-
-    dataDump: {
-        init: function() {
-            $("#download-all-data").on("click", function() {
-                pm.indexedDB.downloadAllData(function() {
-                    noty(
-                    {
-                        type:'success',
-                        text:'Saved the data dump',
-                        layout:'topRight',
-                        timeout:750
-                    });
-                });
-            });
-
-            $("#import-all-data-files-input").on("change", function(event) {
-                console.log("Process file and import data");
-                var files = event.target.files;                
-                pm.indexedDB.importAllData(files, function() {
-                    $("#import-all-data-files-input").val("");
-                    noty(
-                    {
-                        type:'success',
-                        text:'Imported the data dump',
-                        layout:'topRight',
-                        timeout:750
-                    });
-                });
-            });
-        }
-    }
+    }    
 };

@@ -335,7 +335,7 @@ li .right {
   background: -webkit-linear-gradient(rgba(234, 238, 243, 0.2), #eaeaea), -webkit-linear-gradient(left, #eaeaea, #eaeaea 97%, #dddddd);
   z-index: 20;
   width: 340px;
-  height: 100%;
+  height: 95%;
   position: fixed;
   overflow-y: scroll;
   overflow-x: hidden;
