@@ -1,5 +1,6 @@
 function gapiIsLoaded() {    
-    pm.drive.checkAuth();
+    //TODO Enable this when experimental APIs become unavailable
+    //pm.drive.checkAuth();
 }
 
 pm.drive = {
@@ -116,7 +117,6 @@ pm.drive = {
     },
 
     isSyncEnabled: function() {
-        console.log(pm.settings.get("driveSyncConnectionStatus"));
         if (pm.settings.get("driveSyncConnectionStatus") === "not_connected") {
             pm.settings.set("driveSyncEnabled", false);
             return false;

@@ -34,7 +34,7 @@ a, a:hover {
 
 /* Gmail style scrollbar */
 ::-webkit-scrollbar {
-    width: 12px
+    width: 16px
 }
 ::-webkit-scrollbar-thumb {
     border-width: 1px 1px 1px 2px
@@ -138,6 +138,7 @@ body::-webkit-scrollbar-corner {
     border-width: 3px 0 0 3px;
     box-shadow: inset 1px 1px 0 rgba(50,50,50,.14);
 }
+/* End scrollbar modification */
 
 /* new clearfix */
 .clearfix:after {
@@ -632,11 +633,10 @@ li .right {
     z-index: 100;
     cursor: pointer;
     height: 34px;
-    width: 16px;
+    width: 12px;
     background: #ccc;
     border-top-right-radius: 5px;
     padding-top: 6px;
-    padding-left: 3px;
 }
 
 #sidebar-toggle img {
@@ -1771,7 +1771,7 @@ input[type="file"] {
 .preferences {
     float: right;
     margin-top: 12px; 
-    margin-right: 10px;
+    margin-right: 20px;
 }
 
 .preferences a {
