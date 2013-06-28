@@ -6,7 +6,7 @@ pm.collections = {
     toBeImportedCollection:{},
 
     init:function () {
-        this.addCollectionListeners();
+        pm.collections.addCollectionListeners();
         pm.collections.drive.registerHandlers();
     },
 
@@ -50,11 +50,11 @@ pm.collections = {
 
         $collection_items.on("click", ".request-actions-edit", function () {
             var id = $(this).attr('data-id');
-            $('#form-edit-collection-request .collection-request-id').val(id);
+            $('#form-edit-collection-request .collection-request-id').val(id);            
 
             pm.indexedDB.getCollectionRequest(id, function (req) {
                 $('#form-edit-collection-request .collection-request-name').val(req.name);
-                $('#form-edit-collection-request .collection-request-description').val(req.description);
+                $('#form-edit-collection-request .collection-request-description').html(req.description);                
                 $('#modal-edit-collection-request').modal('show');
             });
         });
@@ -184,6 +184,8 @@ pm.collections = {
             $('#collection-files-input').val("");
         });
 
+        //Initialize this on first time modal load
+        $('#editor-toolbar a').tooltip();
         $('.collection-request-description').wysiwyg();
     },
 
