@@ -195,8 +195,15 @@ pm.layout = {
             pm.collections.updateCollectionRequestMeta(id, name, description);
         });
 
-        $(window).on("resize", function () {            
-            pm.layout.setLayout();
+        var resizeTimeout;
+
+        $(window).on("resize", function () {
+            console.log("Resize called");
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(function() {
+                console.log("Set layout");
+                pm.layout.setLayout();
+            }, 500);            
         });
 
         $('#response-data').on("mousedown", ".cm-link", function () {
@@ -462,7 +469,7 @@ pm.layout = {
 
             this.currentSection = section;
 
-            $('#sidebar-section-' + section).fadeIn();
+            $('#sidebar-section-' + section).css("display", "block");
             $('#' + section + '-options').css("display", "block");
             pm.layout.refreshScrollPanes();
             return true;
