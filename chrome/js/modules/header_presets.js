@@ -1,10 +1,19 @@
-pm.headerPresets = {
-    presets:[],
-    presetsForAutoComplete:[],
+var HeaderPrestes = Backbone.Model.extend({
+    defaults: function() {
+        return {
+            presets:[],
+            presetsForAutoComplete:[]
+        };
+    },    
 
     init:function () {
-        pm.headerPresets.loadPresets();
-        pm.headerPresets.drive.registerHandlers();
+        this.loadPresets();
+
+        //TODO Disabling Drive for packaged apps
+        //pm.headerPresets.drive.registerHandlers();
+
+        //Save the context for callbacks
+        var headerPresets = this;
 
         var params = {
             placeHolderKey:"Key",
@@ -14,48 +23,48 @@ pm.headerPresets = {
 
         $("#header-presets-keyvaleditor").keyvalueeditor("init", params);
         $("#headers-keyvaleditor-actions-manage-presets").on("click", function () {
-            pm.headerPresets.showManager();
+            headerPresets.showManager();
         });
 
         $(".header-presets-actions-add").on("click", function () {
-            pm.headerPresets.showEditor();
+            headerPresets.showEditor();
         });
 
         $(".header-presets-actions-back").on("click", function () {
-            pm.headerPresets.showList();
+            headerPresets.showList();
         });
 
         $(".header-presets-actions-submit").on("click", function () {
             var id = $('#header-presets-editor-id').val();
             if (id === "0") {
-                pm.headerPresets.addHeaderPreset();
+                headerPresets.addHeaderPreset();
             }
             else {
                 var name = $('#header-presets-editor-name').val();
                 var headers = $("#header-presets-keyvaleditor").keyvalueeditor("getValues");
-                pm.headerPresets.editHeaderPreset(id, name, headers);
+                headerPresets.editHeaderPreset(id, name, headers);
             }
 
-            pm.headerPresets.showList();
+            headerPresets.showList();
         });
 
         $("#header-presets-list").on("click", ".header-preset-action-edit", function () {
             var id = $(this).attr("data-id");
-            var preset = pm.headerPresets.getHeaderPreset(id);
+            var preset = headerPresets.getHeaderPreset(id);
             $('#header-presets-editor-name').val(preset.name);
             $('#header-presets-editor-id').val(preset.id);
             $('#header-presets-keyvaleditor').keyvalueeditor('reset', preset.headers);
-            pm.headerPresets.showEditor();
+            headerPresets.showEditor();
         });
 
         $("#header-presets-list").on("click", ".header-preset-action-delete", function () {
             var id = $(this).attr("data-id");
-            pm.headerPresets.deleteHeaderPreset(id);
+            headerPresets.deleteHeaderPreset(id);
         });
 
         $("#headers-keyvaleditor-actions-add-preset").on("click", ".header-preset-dropdown-item", function() {
             var id = $(this).attr("data-id");
-            var preset = pm.headerPresets.getHeaderPreset(id);
+            var preset = headerPresets.getHeaderPreset(id);
 
             if("headers" in preset) {                    
                 var headers = $('#headers-keyvaleditor').keyvalueeditor('getValues');                                                           
@@ -67,9 +76,12 @@ pm.headerPresets = {
     },
 
     loadPresets:function () {
+        var headerPresets = this;
+
         pm.indexedDB.headerPresets.getAllHeaderPresets(function (items) {
-            pm.headerPresets.presets = items;
-            pm.headerPresets.refreshAutoCompleteList();
+            headerPresets.presets = items;
+            headerPresets.refreshAutoCompleteList();
+
             $('#header-presets-list tbody').html("");
             $('#header-presets-list tbody').append(Handlebars.templates.header_preset_list({"items":items}));
 
@@ -99,11 +111,11 @@ pm.headerPresets = {
     },
 
     getHeaderPreset:function (id) {
-        for (var i = 0, count = pm.headerPresets.presets.length; i < count; i++) {
-            if (pm.headerPresets.presets[i].id === id) break;
+        for (var i = 0, count = this.presets.length; i < count; i++) {
+            if (this.presets[i].id === id) break;
         }
 
-        var preset = pm.headerPresets.presets[i];
+        var preset = this.presets[i];
         return preset;
     },
 
@@ -119,15 +131,19 @@ pm.headerPresets = {
             "timestamp":new Date().getTime()
         };
 
+        var headerPresets = this;
+
         pm.indexedDB.headerPresets.addHeaderPreset(headerPreset, function () {
-            pm.headerPresets.loadPresets();
+            this.loadPresets();
 
             //TODO: Drive Sync
-            pm.headerPresets.drive.queueHeaderPresetPost(headerPreset);
+            this.drive.queueHeaderPresetPost(headerPreset);
         });
     },
 
     editHeaderPreset:function (id, name, headers) {
+        var headerPresets = this;
+
         pm.indexedDB.headerPresets.getHeaderPreset(id, function (preset) {
             var headerPreset = {
                 "id":id,
@@ -140,24 +156,26 @@ pm.headerPresets = {
                 pm.headerPresets.loadPresets();
 
                 //TODO: Drive Sync
-                pm.headerPresets.drive.queueHeaderPresetUpdate(headerPreset);
+                headerPresets.drive.queueHeaderPresetUpdate(headerPreset);
             });
         });
     },
 
     deleteHeaderPreset:function (id) {
+        var headerPresets = this;
+
         pm.indexedDB.headerPresets.deleteHeaderPreset(id, function () {
-            pm.headerPresets.loadPresets();
+            headerPresets.loadPresets();
 
             //TODO: Drive Sync
-            pm.headerPresets.drive.queueHeaderPresetDelete(id);
+            headerPresets.drive.queueHeaderPresetDelete(id);
         });
     },
 
     getPresetsForAutoComplete:function () {
         var list = [];
         for (var i = 0, count = pm.headerPresets.presets.length; i < count; i++) {
-            var preset = pm.headerPresets.presets[i];
+            var preset = this.presets[i];
             var item = {
                 "id":preset.id,
                 "type":"preset",
@@ -172,20 +190,22 @@ pm.headerPresets = {
     },
 
     refreshAutoCompleteList:function () {
-        var presets = pm.headerPresets.getPresetsForAutoComplete();
-        pm.headerPresets.presetsForAutoComplete = _.union(presets, chromeHeaders);
+        var presets = this.getPresetsForAutoComplete();
+        this.presetsForAutoComplete = _.union(presets, chromeHeaders);
     },
 
-    mergeHeaderPresets: function(headerPresets) {
-        var size = headerPresets.length;
+    mergeHeaderPresets: function(hp) {
+        var size = hp.length;
+        var headerPresets = this;
         for(var i = 0; i < size; i++) {
-            var headerPreset = headerPresets[i];
+            var headerPreset = hp[i];
             pm.indexedDB.headerPresets.updateHeaderPreset(headerPreset, function () {
-                pm.headerPresets.loadPresets();
+                headerPresets.loadPresets();
             });    
         }        
     },
 
+    //TODO Refactor drive code later
     drive: {
         registerHandlers: function() {
             if (pm.drive) {
@@ -291,4 +311,22 @@ pm.headerPresets = {
             });  
         }
     }
-};
+});
+
+var HeaderPresetsModal = Backbone.View.extend({
+    el: $("#modal-header-presets"),
+
+    initialize: function() {
+    }
+
+    render: function() {        
+    }
+});
+
+var HeaderPresetsRequestEditor = Backbone.View.extend({
+    initialize: function() {
+    }
+
+    render: function() {        
+    }
+});
