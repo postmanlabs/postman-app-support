@@ -212,12 +212,16 @@
                         <input type="file" id="import-all-data-files-input" name="files"/>
                     </div>
                 </div>
-            </div>
-            <div class="tab-pane" id="settings-add-ons">
-                <div class="add-on">
-                    <a target="_blank" href="https://chrome.google.com/webstore/detail/postman-launcher/igofndmniooofoabmmpfonmdnhgchoka/">Postman Launcher</a>
-                    <p>Quickly launch Postman using a launcher icon in the Chrome toolbar.</p>
+
+                <div style="margin-top: 20px;">
+                    <h4>Clear local file cache</h4>
+                    <p>Image files are written to the HTML5 filesystem so that they can be displayed in Postman.</p>                        
+                    <div class="control-group">
+                        <a id="clear-local-cache" class="btn">Clear files</a>
+                    </div>
                 </div>
+            </div>
+            <div class="tab-pane" id="settings-add-ons">                
                 <div class="add-on">
                     <a target="_blank" href="https://github.com/a85/POSTMan-Chrome-Extension/wiki/Postman-Proxy">Postman Proxy</a>
                     <p>Postman Proxy allows you to bypass Chrome’s XMLHttpRequest restrictions. You can send headers not allowed by Chrome as well as receive and inspect responses which have a Location header set. For setting up the proxy you would require Python and Twisted.</p>

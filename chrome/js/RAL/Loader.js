@@ -23,6 +23,7 @@ RAL.Loader = (function() {
 
       if(xhr.readyState === 4) {
         if(xhr.status === 200) {
+          console.log("Writing the file to the file system");
           callbackSuccess(fileData, fileInfo);
         } else {
           callbackError(xhrProgressEvent);

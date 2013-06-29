@@ -2,7 +2,6 @@ pm.search = {
 	term: "",
 
 	init: function() {
-		console.log("Initializing search");
 		var wait;
 		$("#sidebar-search").on("keyup", function(event) {			
 			clearTimeout(wait);

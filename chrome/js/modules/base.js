@@ -109,9 +109,6 @@ window.requestFileSystem = window.requestFileSystem || window.webkitRequestFileS
 
 pm.init = function () {
     Handlebars.partials = Handlebars.templates;
-    
-    var logger = new Logger;
-    logger.debug("Testing backbone");
 
     var storage = new Storage;
     pm.storage = storage;    

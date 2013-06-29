@@ -5,26 +5,54 @@
         <h3>Edit request</h3>
     </div>
     <div class="modal-body">
-        <form class="form-horizontal" id="form-edit-collection-request">
-            <div class="control-group">
-                <label class="control-label" for="new-collection">Request name</label>
+        <form class="form-horizontal" id="form-edit-collection-request">                            
+            <div class="input">
+                <input type="hidden" class="collection-request-id"/>
+                <input type="text" class="medium clean-input collection-request-name" data-tabindex="1"/>
+            </div>                
+            <div style="margin-top: 20px;">
+                <strong>Request description</strong>
+            </div>
+            <div class="btn-toolbar" data-role="editor-toolbar" data-target=".collection-request-description">                
+                <div class="btn-group">
+                    <a class="btn dropdown-toggle" data-toggle="dropdown" title="" data-original-title="Font Size"><i class="icon-text-height"></i>&nbsp;<b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li><a data-edit="fontSize 5"><font size="5">Huge</font></a></li>
+                        <li><a data-edit="fontSize 3"><font size="3">Normal</font></a></li>
+                        <li><a data-edit="fontSize 1"><font size="1">Small</font></a></li>
+                    </ul>
+                </div>
 
-                <div class="controls">
-                    <div class="input">
-                        <input type="hidden" class="collection-request-id"/>
-                        <input type="text" class="medium clean-input collection-request-name" data-tabindex="1"/>
+                <div class="btn-group">
+                    <a class="btn" data-edit="bold" title="" data-original-title="Bold (Ctrl/Cmd+B)"><i class="icon-bold"></i></a>
+                    <a class="btn" data-edit="italic" title="" data-original-title="Italic (Ctrl/Cmd+I)"><i class="icon-italic"></i></a>
+                    <a class="btn" data-edit="strikethrough" title="" data-original-title="Strikethrough"><i class="icon-strikethrough"></i></a>
+                    <a class="btn" data-edit="underline" title="" data-original-title="Underline (Ctrl/Cmd+U)"><i class="icon-underline"></i></a>
+                </div>
+
+                <div class="btn-group">
+                    <a class="btn" data-edit="insertunorderedlist" title="" data-original-title="Bullet list"><i class="icon-list-ul"></i></a>
+                    <a class="btn" data-edit="insertorderedlist" title="" data-original-title="Number list"><i class="icon-list-ol"></i></a>
+                    <a class="btn" data-edit="outdent" title="" data-original-title="Reduce indent (Shift+Tab)"><i class="icon-indent-left"></i></a>
+                    <a class="btn" data-edit="indent" title="" data-original-title="Indent (Tab)"><i class="icon-indent-right"></i></a>
+                </div>
+
+                <div class="btn-group">
+                    <a class="btn dropdown-toggle" data-toggle="dropdown" title="" data-original-title="Hyperlink"><i class="icon-link"></i></a>
+                    <div class="dropdown-menu input-append">
+                        <input class="span2" placeholder="URL" type="text" data-edit="createLink">
+                        <button class="btn" type="button">Add</button>
                     </div>
+                    <a class="btn" data-edit="unlink" title="" data-original-title="Remove Hyperlink"><i class="icon-cut"></i></a>
+                </div>
+
+                <div class="btn-group">
+                    <a class="btn" data-edit="undo" title="" data-original-title="Undo (Ctrl/Cmd+Z)"><i class="icon-undo"></i></a>
+                    <a class="btn" data-edit="redo" title="" data-original-title="Redo (Ctrl/Cmd+Y)"><i class="icon-repeat"></i></a>
                 </div>
             </div>
-            <div class="control-group">
-                <label class="control-label" for="new-collection">Request description</label>
-
-                <div class="controls">
-                    <div class="input">
-                        <textarea class="medium collection-request-description" data-tabindex="2"></textarea>
-                    </div>
-                </div>
-            </div>
+            <div class="medium collection-request-description" data-tabindex="2"
+            content-editable="true"></div>                    
         </form>
     </div>
     <div class="modal-footer">

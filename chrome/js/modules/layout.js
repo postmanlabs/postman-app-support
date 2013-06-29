@@ -41,11 +41,7 @@ pm.layout = {
 
     init:function () {
         pm.layout.detectLauncher();
-
-        pm.layout.dataDump.init();
-
-
-        if (pm.settings.getSetting("haveDonated") == true) {            
+        if (pm.settings.get("haveDonated") == true) {
             pm.layout.hideDonationBar();
         }
 
@@ -173,7 +169,7 @@ pm.layout = {
         $('#form-edit-collection-request').submit(function() {
             var id = $('#form-edit-collection-request .collection-request-id').val();
             var name = $('#form-edit-collection-request .collection-request-name').val();
-            var description = $('#form-edit-collection-request .collection-request-description').val();
+            var description = $('#form-edit-collection-request .collection-request-description').cleanHtml();
             pm.collections.updateCollectionRequestMeta(id, name, description);
             return false;
         });
@@ -194,12 +190,20 @@ pm.layout = {
         $('#modal-edit-collection-request .btn-primary').click(function () {
             var id = $('#form-edit-collection-request .collection-request-id').val();
             var name = $('#form-edit-collection-request .collection-request-name').val();
-            var description = $('#form-edit-collection-request .collection-request-description').val();
+            var description = $('#form-edit-collection-request .collection-request-description').cleanHtml();
+            console.log(description);
             pm.collections.updateCollectionRequestMeta(id, name, description);
         });
 
-        $(window).on("resize", function () {            
-            pm.layout.setLayout();
+        var resizeTimeout;
+
+        $(window).on("resize", function () {
+            console.log("Resize called");
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(function() {
+                console.log("Set layout");
+                pm.layout.setLayout();
+            }, 500);            
         });
 
         $('#response-data').on("mousedown", ".cm-link", function () {
@@ -377,7 +381,11 @@ pm.layout = {
     },
 
     hideDonationBar: function () {
-        $("#sidebar-footer").css("display", "none");
+        $("#header-donate-link-container").css("display", "none");
+    },
+
+    showDonationBar: function() {
+        $("#header-donate-link-container").css("display", "block");
     },
 
     sidebar:{
@@ -465,7 +473,7 @@ pm.layout = {
 
             this.currentSection = section;
 
-            $('#sidebar-section-' + section).fadeIn();
+            $('#sidebar-section-' + section).css("display", "block");
             $('#' + section + '-options').css("display", "block");
             pm.layout.refreshScrollPanes();
             return true;
@@ -533,36 +541,5 @@ pm.layout = {
             $('#collection-' + id).remove();
             pm.layout.refreshScrollPanes();
         }
-    },
-
-    dataDump: {
-        init: function() {
-            $("#download-all-data").on("click", function() {
-                pm.indexedDB.downloadAllData(function() {
-                    noty(
-                    {
-                        type:'success',
-                        text:'Saved the data dump',
-                        layout:'topRight',
-                        timeout:750
-                    });
-                });
-            });
-
-            $("#import-all-data-files-input").on("change", function(event) {
-                console.log("Process file and import data");
-                var files = event.target.files;                
-                pm.indexedDB.importAllData(files, function() {
-                    $("#import-all-data-files-input").val("");
-                    noty(
-                    {
-                        type:'success',
-                        text:'Imported the data dump',
-                        layout:'topRight',
-                        timeout:750
-                    });
-                });
-            });
-        }
-    }
+    }    
 };

@@ -46,7 +46,6 @@ var Settings = Backbone.Model.extend({
         };
 
         func = _.bind(func, this);        
-
         pm.storage.getValue("settings", func);        
     },
 
@@ -60,6 +59,7 @@ var Settings = Backbone.Model.extend({
 
     init:function (callback) {        
         this.initValues(callback);
+        pm.settings.dataDump.init();
     },
 
     create:function (key, defaultVal) {
@@ -290,12 +290,47 @@ var SettingsModal = Backbone.View.extend({
             }
         });
 
+        $("#download-all-data").on("click", function() {
+            pm.indexedDB.downloadAllData(function() {
+                noty(
+                {
+                    type:'success',
+                    text:'Saved the data dump',
+                    layout:'topRight',
+                    timeout:750
+                });
+            });
+        });
+
+        $("#import-all-data-files-input").on("change", function(event) {
+            console.log("Process file and import data");
+            var files = event.target.files;                
+            pm.indexedDB.importAllData(files, function() {
+                $("#import-all-data-files-input").val("");
+                noty(
+                {
+                    type:'success',
+                    text:'Imported the data dump',
+                    layout:'topRight',
+                    timeout:750
+                });
+            });
+        });
+
+        $("#clear-local-cache").on("click", function(event) {
+            console.log("Clear local cache files");
+            //Write code to clear RAL files
+            RAL.FileSystem.removeDir('cache', function() {
+              console.log("All clear");
+            });
+        });
+
         if (this.model.getSetting("usePostmanProxy") == true) {
             $('#postman-proxy-url-container').css("display", "block");
         }
         else {
             $('#postman-proxy-url-container').css("display", "none");
-        }
+        }        
 
         this.render();
     },

@@ -47,6 +47,10 @@ RAL.FileSystem = (function() {
          */
         onInitialised: function(fs) {
           root = fs.root;
+
+          console.log("root is ", root);
+          console.log("Add all files in the cache directory");
+
           ready = true;
 
           if(readyListeners.length) {
@@ -126,18 +130,23 @@ RAL.FileSystem = (function() {
    * @param {Function} callback Callback for file storage.
    */
   function set(filePath, fileData, callback) {
-
+    console.log("FileSystem set called");
     if(ready) {
 
       filePath = RAL.Sanitiser.cleanURL(filePath);
 
-      var dirPath = filePath.split("/");
+      var dirPath = filePath.split("/");                  
       dirPath.pop();
+
+      //Add the cache directory
+      dirPath = ["cache"].concat(dirPath);
+      consoe.log("Setting the directory path");
+      console.log("Directory path is ", dirPath);
 
       // create the directories all the way
       // down to the path
       createDir(root, dirPath, function() {
-
+        consoe.log("Created the directories");
         // now get a reference to our file, create it
         // if necessary
         root.getFile(filePath, {create: true}, function(fileEntry) {
@@ -150,7 +159,7 @@ RAL.FileSystem = (function() {
 
               // update the writeend so when we have
               // truncated the file data we call the callback
-              fileWriter.onwriteend = function(e) {
+              fileWriter.onwriteend = function(e) {                
                 callback(fileEntry.toURL());
               };
 
@@ -164,6 +173,7 @@ RAL.FileSystem = (function() {
               console.warn('Write failed: ' + e.toString());
             };
 
+            console.log("Writing the file to the filesystem");
             // start writing
             fileWriter.write(fileData);
 
