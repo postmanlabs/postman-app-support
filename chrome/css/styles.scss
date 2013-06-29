@@ -47,10 +47,6 @@ a, a:hover {
 }
 
 /* Gmail style scrollbar */
-::-webkit-scrollbar {
-    width: 16px
-}
-
 ::-webkit-scrollbar-thumb {
     border-width: 1px 1px 1px 2px
 }
@@ -63,7 +59,7 @@ a, a:hover {
 ::-webkit-scrollbar {
     height: 16px;
     overflow: visible;
-    width: 16px;
+    width: 10px;
 }
 
 ::-webkit-scrollbar-button {
@@ -97,7 +93,7 @@ a, a:hover {
     background-color: rgba(50,50,50,.2);
     background-clip: padding-box;
     border: solid transparent;
-    border-width: 1px 1px 1px 6px;
+    border-width: 1px 1px 1px 0px;
     min-height: 28px;
     padding: 100px 0 0;
     box-shadow: inset 1px 1px 0 rgba(50,50,50,.1),inset 0 -1px 0 rgba(50,50,50,.07);
@@ -126,13 +122,13 @@ a, a:hover {
     box-shadow: inset 1px 1px 0 rgba(50,50,50,.14),inset -1px -1px 0 rgba(50,50,50,.07);
 }
 ::-webkit-scrollbar-thumb {
-    border-width: 0 1px 0 6px
+    border-width: 0 1px 0 0;
 }
 ::-webkit-scrollbar-thumb:horizontal {
-    border-width: 6px 0 1px
+    border-width: 6px 0 1px;
 }
 ::-webkit-scrollbar-corner {
-    background: transparent
+    background: transparent;
 }
 body::-webkit-scrollbar-track-piece {
     background-clip: padding-box;
@@ -146,7 +142,7 @@ body::-webkit-scrollbar-track-piece:horizontal {
     box-shadow: inset 0 1px 0 rgba(50,50,50,.14),inset 0 -1px 0 rgba(50,50,50,.07);
 }
 body::-webkit-scrollbar-thumb {
-    border-width: 1px 1px 1px 5px
+    border-width: 1px 1px 1px 0;
 }
 body::-webkit-scrollbar-thumb:horizontal {
     border-width: 5px 1px 1px
