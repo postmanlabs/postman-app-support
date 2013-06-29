@@ -170,7 +170,7 @@ pm.layout = {
         $('#form-edit-collection-request').submit(function() {
             var id = $('#form-edit-collection-request .collection-request-id').val();
             var name = $('#form-edit-collection-request .collection-request-name').val();
-            var description = $('#form-edit-collection-request .collection-request-description').cleanHtml();
+            var description = $('#form-edit-collection-request .collection-request-description').val();
             pm.collections.updateCollectionRequestMeta(id, name, description);
             return false;
         });
@@ -191,8 +191,7 @@ pm.layout = {
         $('#modal-edit-collection-request .btn-primary').click(function () {
             var id = $('#form-edit-collection-request .collection-request-id').val();
             var name = $('#form-edit-collection-request .collection-request-name').val();
-            var description = $('#form-edit-collection-request .collection-request-description').cleanHtml();
-            console.log(description);
+            var description = $('#form-edit-collection-request .collection-request-description').val();            
             pm.collections.updateCollectionRequestMeta(id, name, description);
         });
 
