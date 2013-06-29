@@ -186,7 +186,6 @@ pm.collections = {
 
         //Initialize this on first time modal load
         $('#editor-toolbar a').tooltip();
-        $('.collection-request-description').wysiwyg();
     },
 
     getCollectionData:function (id, callback) {

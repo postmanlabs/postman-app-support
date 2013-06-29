@@ -500,6 +500,27 @@ li .right {
   overflow: scroll;
   outline: none; }
 
+#voiceBtn {
+  width: 20px;
+  color: transparent;
+  background-color: transparent;
+  transform: scale(2, 2);
+  -webkit-transform: scale(2, 2);
+  -moz-transform: scale(2, 2);
+  border: transparent;
+  cursor: pointer;
+  box-shadow: none;
+  -webkit-box-shadow: none; }
+
+div[data-role="editor-toolbar"] {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none; }
+
+.dropdown-menu a {
+  cursor: pointer; }
+
 #collection-items .request-actions {
   margin-left: 270px;
   opacity: 1; }
@@ -655,6 +676,13 @@ input[type="file"] {
 #request-preview {
   display: none; }
 
+#request-preview-content {
+  -moz-user-select: text;
+  -khtml-user-select: text;
+  -webkit-user-select: text;
+  -ms-user-select: text;
+  user-select: text; }
+
 #request-method-selector {
   width: 100px; }
 
@@ -798,7 +826,12 @@ input[type="file"] {
   margin-left: -20px;
   padding-left: 20px;
   border-bottom: solid thin #ccc;
-  display: none; }
+  display: none;
+  -moz-user-select: text;
+  -khtml-user-select: text;
+  -webkit-user-select: text;
+  -ms-user-select: text;
+  user-select: text; }
 
 .request-meta-actions {
   position: absolute;
