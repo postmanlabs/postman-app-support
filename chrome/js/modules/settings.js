@@ -59,7 +59,6 @@ var Settings = Backbone.Model.extend({
 
     init:function (callback) {        
         this.initValues(callback);
-        pm.settings.dataDump.init();
     },
 
     create:function (key, defaultVal) {
