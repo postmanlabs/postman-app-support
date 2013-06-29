@@ -547,7 +547,7 @@ li .right {
   opacity: 0.5;
   z-index: 100;
   cursor: pointer;
-  height: 34px;
+  height: 36px;
   width: 12px;
   background: #ccc;
   border-top-right-radius: 5px;
@@ -892,11 +892,10 @@ input[type="file"] {
   margin-top: 5px;
   margin-bottom: 10px;
   display: none; }
-
-#body-data-container input {
-  padding: 5px;
-  border: solid thin #ccc;
-  border-radius: 5px; }
+  #body-data-container input {
+    padding: 5px;
+    border: solid thin #ccc;
+    border-radius: 5px; }
 
 /* End request */
 /*Response*/
@@ -1446,16 +1445,17 @@ input[type="file"] {
 
 #header-donate-link-container {
   float: right;
-  margin-top: 12px;
+  margin-top: 13px;
   margin-right: 5px;
   display: none; }
 
 #header-donate-link {
   border-radius: 3px;
   color: #999;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: bold;
   padding: 5px;
+  padding-top: 3px;
   text-decoration: none; }
 
 #header-donate-link:hover {
