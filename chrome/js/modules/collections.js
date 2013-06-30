@@ -230,6 +230,13 @@ pm.collections = {
         pm.collections.getCollectionData(id, function (name, type, filedata) {
             var filename = name + ".postman_collection";
             pm.filesystem.saveAndOpenFile(filename, filedata, type, function () {
+                noty(
+                    {
+                        type:'success',
+                        text:'Saved collection to disk',
+                        layout:'topCenter',
+                        timeout:750
+                    });
             });
         });
     },
@@ -988,11 +995,20 @@ pm.collections = {
         pm.indexedDB.getCollection(id, function (collection) {
             collection.name = name;
             pm.indexedDB.updateCollection(collection, function (collection) {             
-                var collectionHeadHtml = '<span class="sidebar-collection-head-dt"><img src="img/dt.png"/></span>';
+                var currentClass = $("#collection-" + id + " .sidebar-collection-head-dt").attr("class");
+                console.log(currentClass);
+                var collectionHeadHtml = '<span class="sidebar-collection-head-dt"><img src="img/dt.png"/></span>';        
                 collectionHeadHtml += " " + collection.name;
 
                 $('#collection-' + collection.id + " .sidebar-collection-head-name").html(collectionHeadHtml);
                 $('#select-collection option[value="' + collection.id + '"]').html(collection.name);  
+
+                if(currentClass.indexOf("open") >= 0) {
+                    $("#collection-" + id + " .sidebar-collection-head-dt").addClass("disclosure-triangle-open");
+                }
+                else {
+                    $("#collection-" + id + " .sidebar-collection-head-dt").addClass("disclosure-triangle-close");
+                }                            
 
                 //Sync collection to drive           
                 console.log("Queue update after updating collection meta");

@@ -441,6 +441,13 @@ pm.envManager = {
         var type = "application/json";
         var filedata = JSON.stringify(env);
         pm.filesystem.saveAndOpenFile(name, filedata, type, function () {
+            noty(
+                {
+                    type:'success',
+                    text:'Saved environment to disk',
+                    layout:'topCenter',
+                    timeout:750
+                });
         });
     },
 
