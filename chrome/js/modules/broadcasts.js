@@ -20,7 +20,7 @@ pm.broadcasts = {
                     pm.broadcasts.markAllAsRead();
                 });
             });
-        });        
+        });
     },
 
     showBlank:function() {
@@ -31,20 +31,20 @@ pm.broadcasts = {
     },
 
     fetch:function () {
-        var broadcast_url = "http://www.getpostman.com/broadcasts";        
-        $.get(broadcast_url, function (data) {            
+        var broadcast_url = "http://www.getpostman.com/broadcasts";
+        $.get(broadcast_url, function (data) {
             pm.broadcasts.setBroadcasts(data["broadcasts"]);
             pm.broadcasts.renderBroadcasts();
         });
     },
 
     setLastUpdateTime:function (last_update) {
-        pm.storage.set({"broadcast_last_update_time": last_update.toUTCString()});        
+        pm.storage.set({"broadcast_last_update_time": last_update.toUTCString()});
     },
 
     setBroadcasts:function (broadcasts) {
         var old_broadcasts;
-        pm.storage.get("broadcasts", function(broadcastsJson) {                        
+        pm.storage.get("broadcasts", function(broadcastsJson) {
             if (broadcastsJson) {
                 old_broadcasts = JSON.parse(broadcastsJson);
             }
@@ -60,7 +60,7 @@ pm.broadcasts = {
                 }
                 count = broadcasts.length;
                 var broadcastsJson = JSON.stringify(broadcasts);
-                pm.storage.set({"broadcasts": broadcastsJson}, function() {                    
+                pm.storage.set({"broadcasts": broadcastsJson}, function() {
                 });
             }
             else {
@@ -93,8 +93,8 @@ pm.broadcasts = {
             }
             else {
                 $broadcasts_count.addClass("no-new-broadcasts");
-            } 
-        });        
+            }
+        });
     },
 
     markAllAsRead:function () {
@@ -102,35 +102,35 @@ pm.broadcasts = {
         $broadcasts_count.removeClass();
         $broadcasts_count.addClass("no-new-broadcasts");
         $broadcasts_count.html("0");
-        
+
         pm.storage.get("broadcasts", function(broadcastsJson) {
             var broadcasts;
 
             if (broadcastsJson) {
-                broadcasts = JSON.parse(broadcastsJson);    
+                broadcasts = JSON.parse(broadcastsJson);
             }
             else {
                 broadcasts = [];
             }
-            
+
             var c = broadcasts.length;
             for (var i = 0; i < c; i++) {
                 broadcasts[i]["status"] = "read";
             }
 
-            var outBroadcastsJsons = JSON.stringify(broadcasts);            
-            pm.storage.set({"broadcasts": outBroadcastsJsons}, function() {                
+            var outBroadcastsJsons = JSON.stringify(broadcasts);
+            pm.storage.set({"broadcasts": outBroadcastsJsons}, function() {
             });
 
             pm.broadcasts.renderBroadcasts();
-        });    
+        });
     },
 
     renderBroadcasts:function () {
-        pm.storage.get("broadcasts", function(broadcastsJson) {               
-            var broadcasts = JSON.parse(broadcastsJson);            
+        pm.storage.get("broadcasts", function(broadcastsJson) {
+            var broadcasts = JSON.parse(broadcastsJson);
             $("#broadcasts .dropdown-menu").html("");
             $("#broadcasts .dropdown-menu").append(Handlebars.templates.broadcasts({"items":broadcasts}));
-        });        
+        });
     }
 };

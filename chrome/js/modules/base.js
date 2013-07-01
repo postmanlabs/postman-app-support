@@ -54,7 +54,7 @@ var pm = {};
 
 pm.targets = {
     CHROME_LEGACY_APP: 0,
-    CHROME_PACKAGED_APP: 1    
+    CHROME_PACKAGED_APP: 1
 };
 
 pm.target = pm.targets.CHROME_PACKAGED_APP;
@@ -110,20 +110,20 @@ window.requestFileSystem = window.requestFileSystem || window.webkitRequestFileS
 pm.init = function () {
     Handlebars.partials = Handlebars.templates;
 
-    pm.settings.init(function() {           
+    pm.settings.init(function() {
         pm.indexedDB.open(function() {
             pm.request.init();
             pm.history.init();
-            pm.collections.init();        
+            pm.collections.init();
             pm.search.init();
             pm.layout.init();
             pm.editor.init();
             pm.helpers.init();
-            pm.keymap.init();            
+            pm.keymap.init();
             pm.envManager.init();
             pm.filesystem.init();
 
-            
+
             pm.history.getAllRequests();
             pm.envManager.getAllEnvironments();
             pm.headerPresets.init();
@@ -132,8 +132,8 @@ pm.init = function () {
             var activeSidebarSection = pm.settings.get("activeSidebarSection");
 
             if (activeSidebarSection) {
-                pm.layout.sidebar.select(activeSidebarSection);    
-            }        
+                pm.layout.sidebar.select(activeSidebarSection);
+            }
             else {
                 pm.layout.sidebar.select("history");
             }
@@ -141,9 +141,9 @@ pm.init = function () {
 
         pm.drive.setupUiHandlers();
         pm.broadcasts.init();
-        
+
         $(":input:first").focus();
-    });    
+    });
 };
 
 $(document).ready(function () {
