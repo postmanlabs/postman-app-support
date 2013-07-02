@@ -596,7 +596,12 @@ div[data-role="editor-toolbar"] {
   background-color: #36F; }
 
 #share-collection-link {
-  display: none; }
+  display: none;
+  -moz-user-select: text;
+  -khtml-user-select: text;
+  -webkit-user-select: text;
+  -ms-user-select: text;
+  user-select: text; }
 
 .sidebar-collection-head-dt {
   -webkit-transition: all 0.2s; }

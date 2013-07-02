@@ -721,6 +721,11 @@ div[data-role="editor-toolbar"] {
 
 #share-collection-link {
     display: none;
+    -moz-user-select: text;
+    -khtml-user-select: text;
+    -webkit-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
 }
 
 .sidebar-collection-head-dt {

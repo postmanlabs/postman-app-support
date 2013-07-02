@@ -130,6 +130,8 @@ pm.layout = {
             $('#response-sample-save-form').css("display", "none");
         });
 
+        $('a[rel="tooltip"]').tooltip();
+        
         this.sidebar.init();
 
         pm.request.response.clear();

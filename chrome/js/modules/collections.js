@@ -45,50 +45,50 @@ pm.collections = {
                 $('#modal-delete-collection-request-yes').attr('data-id', id);
                 $('#modal-delete-collection-request-name').html(req.name);
                 $('#modal-delete-collection-request').modal('show');
-            });            
-        });        
+            });
+        });
 
         $collection_items.on("click", ".request-actions-edit", function () {
             var id = $(this).attr('data-id');
-            $('#form-edit-collection-request .collection-request-id').val(id);            
+            $('#form-edit-collection-request .collection-request-id').val(id);
 
             pm.indexedDB.getCollectionRequest(id, function (req) {
                 $('#form-edit-collection-request .collection-request-name').val(req.name);
-                $('#form-edit-collection-request .collection-request-description').html(req.description);                
+                $('#form-edit-collection-request .collection-request-description').html(req.description);
                 $('#modal-edit-collection-request').modal('show');
             });
         });
 
         $collection_items.on("click", ".collection-actions-edit", function () {
             var id = $(this).attr('data-id');
-            pm.indexedDB.getCollection(id, function (collection) {                
+            pm.indexedDB.getCollection(id, function (collection) {
                 $('#form-edit-collection .collection-id').val(collection.id);
                 $('#form-edit-collection .collection-name').val(collection.name);
-                
+
                 if (pm.settings.getSetting("driveSyncEnabled") === true) {
                     $('#edit-collection-drive').css("display", "block");
-                    $('#edit-collection-update-drive').attr("data-collection-id", id);                
+                    $('#edit-collection-update-drive').attr("data-collection-id", id);
 
                     pm.collections.drive.checkIfCollectionIsOnDrive(id, function(exists, driveFile) {
                         if (exists) {
                             console.log(driveFile.file.modifiedDate);
                             var modifiedDate = new Date(driveFile.file.modifiedDate);
                             var t = jQuery.timeago(modifiedDate);
-                            $('#edit-collection-drive-status').html("Last synced " + t);                            
+                            $('#edit-collection-drive-status').html("Last synced " + t);
                             $('#edit-collection-upload-drive').css("display", "none");
                         }
                         else {
-                            $('#edit-collection-upload-drive').css("display", "inline-block");                        
+                            $('#edit-collection-upload-drive').css("display", "inline-block");
                         }
-                    });    
+                    });
                 }
                 else {
                     $('#edit-collection-drive').css("display", "none");
                 }
-                
+
 
                 $('#modal-edit-collection').modal('show');
-            });            
+            });
         });
 
         $collection_items.on("click", ".collection-actions-delete", function () {
@@ -98,14 +98,14 @@ pm.collections = {
             pm.indexedDB.getCollection(id, function (collection) {
                 $('#modal-delete-collection-yes').attr('data-id', id);
                 $('#modal-delete-collection-name').html(collection.name);
-            });            
+            });
         });
 
-        $('#modal-overwrite-collection-overwrite').on("click", function () {            
+        $('#modal-overwrite-collection-overwrite').on("click", function () {
             pm.collections.overwriteCollection(pm.collections.originalCollectionId, pm.collections.toBeImportedCollection);
-        });        
+        });
 
-        $('#modal-overwrite-collection-duplicate').on("click", function () {            
+        $('#modal-overwrite-collection-duplicate').on("click", function () {
             pm.collections.duplicateCollection(pm.collections.toBeImportedCollection);
         });
 
@@ -131,9 +131,9 @@ pm.collections = {
         });
 
         $collection_items.on("click", ".collection-actions-download", function () {
-            var id = $(this).attr('data-id');            
+            var id = $(this).attr('data-id');
 
-            $("#modal-share-collection").modal("show");            
+            $("#modal-share-collection").modal("show");
 
             $('#share-collection-get-link').attr("data-collection-id", id);
             $('#share-collection-download').attr("data-collection-id", id);
@@ -230,6 +230,13 @@ pm.collections = {
         pm.collections.getCollectionData(id, function (name, type, filedata) {
             var filename = name + ".postman_collection";
             pm.filesystem.saveAndOpenFile(filename, filedata, type, function () {
+                noty(
+                    {
+                        type:'success',
+                        text:'Saved collection to disk',
+                        layout:'topCenter',
+                        timeout:750
+                    });
             });
         });
     },
@@ -251,7 +258,7 @@ pm.collections = {
     },
 
     overwriteCollection:function(originalCollectionId, collection) {
-        pm.collections.deleteCollection(originalCollectionId, true);            
+        pm.collections.deleteCollection(originalCollectionId, true);
         pm.collections.addCollectionDataToDB(collection, true);
     },
 
@@ -260,7 +267,7 @@ pm.collections = {
     },
 
     //Being used in Google Drive
-    mergeCollection: function(collection, toSyncWithDrive) {        
+    mergeCollection: function(collection, toSyncWithDrive) {
         console.log("To merge", collection);
         //Update local collection
         var newCollection = {
@@ -297,7 +304,7 @@ pm.collections = {
 
                     if (existingRequest) {
                         updatedRequests.push(driveRequest);
-                        //Remove this request from oldCollectionRequests                        
+                        //Remove this request from oldCollectionRequests
                         //Requsts remaining in oldCollectionRequests will be deleted
                         var sizeOldRequests = oldCollectionRequests.length;
                         var loc = -1;
@@ -345,7 +352,7 @@ pm.collections = {
 
                 newCollection.requests = driveCollectionRequests;
                 pm.collections.render(newCollection);
-            }); 
+            });
         });
     },
 
@@ -360,7 +367,7 @@ pm.collections = {
                 action:"added"
             };
 
-            $('.modal-import-alerts').append(Handlebars.templates.message_collection_added(message));        
+            $('.modal-import-alerts').append(Handlebars.templates.message_collection_added(message));
             var requests = [];
 
             var ordered = false;
@@ -386,7 +393,7 @@ pm.collections = {
                     var j, count;
                     for (j = 0, count = request["responses"].length; j < count; j++) {
                         request["responses"][j].id = guid();
-                        request["responses"][j].collectionRequestId = newId;                        
+                        request["responses"][j].collectionRequestId = newId;
                     }
                 }
 
@@ -394,22 +401,22 @@ pm.collections = {
                 requests.push(request);
             }
 
-            pm.indexedDB.updateCollection(collection, function() {});            
+            pm.indexedDB.updateCollection(collection, function() {});
             collection.requests = requests;
-            
+
             pm.collections.render(collection);
 
-            //collection has all the data            
+            //collection has all the data
             console.log("Queuing update");
             if (toSyncWithDrive) {
-                pm.collections.drive.queuePostFromCollection(collection);    
+                pm.collections.drive.queuePostFromCollection(collection);
             }
-            
+
         });
     },
 
-    importCollectionData:function (collection) {                
-        var collections = pm.collections.items;        
+    importCollectionData:function (collection) {
+        var collections = pm.collections.items;
         var size = collections.length;
         var found = false;
         var originalCollection;
@@ -431,7 +438,7 @@ pm.collections = {
         }
         else {
             pm.collections.addCollectionDataToDB(collection, true);
-        }        
+        }
     },
 
     importCollections:function (files) {
@@ -482,7 +489,7 @@ pm.collections = {
     },
 
     loadResponseInEditor:function (id) {
-        var responses = pm.request.responses;        
+        var responses = pm.request.responses;
         var responseIndex = find(responses, function (item, i, responses) {
             return item.id === id;
         });
@@ -516,8 +523,8 @@ pm.collections = {
         $("#collection-" + id + " .sidebar-collection-head-dt").removeClass("disclosure-triangle-close");
         $("#collection-" + id + " .sidebar-collection-head-dt").addClass("disclosure-triangle-open");
 
-        if ($(target).css("display") === "none") {            
-            $(target).slideDown(100, function () {                
+        if ($(target).css("display") === "none") {
+            $(target).slideDown(100, function () {
                 pm.layout.refreshScrollPanes();
             });
         }
@@ -526,7 +533,7 @@ pm.collections = {
     toggleRequestList:function (id) {
         var target = "#collection-requests-" + id;
         var label = "#collection-" + id + " .collection-head-actions .label";
-        if ($(target).css("display") === "none") {            
+        if ($(target).css("display") === "none") {
             $("#collection-" + id + " .sidebar-collection-head-dt").removeClass("disclosure-triangle-close");
             $("#collection-" + id + " .sidebar-collection-head-dt").addClass("disclosure-triangle-open");
 
@@ -536,7 +543,7 @@ pm.collections = {
         }
         else {
             $("#collection-" + id + " .sidebar-collection-head-dt").removeClass("disclosure-triangle-open");
-            $("#collection-" + id + " .sidebar-collection-head-dt").addClass("disclosure-triangle-close");            
+            $("#collection-" + id + " .sidebar-collection-head-dt").addClass("disclosure-triangle-close");
             $(target).slideUp(100, function () {
                 pm.layout.refreshScrollPanes();
             });
@@ -556,7 +563,7 @@ pm.collections = {
             pm.indexedDB.addCollection(collection, function (collection) {
                 pm.collections.items.push(collection);
                 pm.collections.items.sort(sortAlphabetical);
-                
+
                 pm.collections.render(collection);
                 pm.collections.drive.queuePostFromCollection(collection);
             });
@@ -706,7 +713,7 @@ pm.collections = {
                 $('#update-request-in-collection').css("display", "inline-block");
                 pm.collections.openCollection(collectionRequest.collectionId);
 
-                //Update collection's order element    
+                //Update collection's order element
                 console.log("Updating collection");
                 pm.indexedDB.getCollection(collection.id, function(collection) {
                     if("order" in collection) {
@@ -723,7 +730,7 @@ pm.collections = {
                     }
                 });
             });
-        }        
+        }
 
         pm.layout.sidebar.select("collections");
 
@@ -738,7 +745,7 @@ pm.collections = {
     getAllCollections:function () {
         $('#collection-items').html("");
         $('#select-collection').html("<option>Select</option>");
-        pm.indexedDB.getCollections(function (items) {            
+        pm.indexedDB.getCollections(function (items) {
             pm.collections.items = items;
             pm.collections.items.sort(sortAlphabetical);
 
@@ -766,17 +773,17 @@ pm.collections = {
     handleRequestDropOnCollection: function(event, ui) {
         var id = ui.draggable.context.id;
         var requestId = $('#' + id + ' .request').attr("data-id");
-        var targetCollectionId = $($(event.target).find('.sidebar-collection-head-name')[0]).attr('data-id');      
-        pm.indexedDB.getCollection(targetCollectionId, function(collection) {            
+        var targetCollectionId = $($(event.target).find('.sidebar-collection-head-name')[0]).attr('data-id');
+        pm.indexedDB.getCollection(targetCollectionId, function(collection) {
             pm.indexedDB.getCollectionRequest(requestId, function(collectionRequest) {
                 if(targetCollectionId == collectionRequest.collectionId) return;
 
                 pm.collections.deleteCollectionRequest(requestId);
 
                 collectionRequest.id = guid();
-                collectionRequest.collectionId = targetCollectionId;            
+                collectionRequest.collectionId = targetCollectionId;
 
-                pm.indexedDB.addCollectionRequest(collectionRequest, function (req) {                        
+                pm.indexedDB.addCollectionRequest(collectionRequest, function (req) {
                     var targetElement = "#collection-requests-" + req.collectionId;
                     pm.urlCache.addUrl(req.url);
 
@@ -798,13 +805,13 @@ pm.collections = {
                         drop: pm.collections.handleRequestDropOnCollection
                     });
 
-                    //Update collection's order element    
-                    pm.indexedDB.getCollection(collection.id, function(collection) {                        
+                    //Update collection's order element
+                    pm.indexedDB.getCollection(collection.id, function(collection) {
                         console.log("Updating collection order");
-                        if("order" in collection) {                                                
-                            collection["order"].push(collectionRequest.id);                                                        
-                            pm.indexedDB.updateCollection(collection, function() {    
-                                console.log("Updating collection from drop");                            
+                        if("order" in collection) {
+                            collection["order"].push(collectionRequest.id);
+                            pm.indexedDB.updateCollection(collection, function() {
+                                console.log("Updating collection from drop");
                                 pm.collections.drive.queueUpdateFromId(collection.id);
                             });
                         }
@@ -827,7 +834,7 @@ pm.collections = {
 
         //Does this exist already?
         if (currentEl.length) {
-            //Find current element list position                                    
+            //Find current element list position
             if (collectionSidebarListPosition == 0) {
                 insertionType = "before";
                 insertTarget = $('#collection-' + collections[collectionSidebarListPosition + 1].id);
@@ -842,40 +849,40 @@ pm.collections = {
             currentEl.remove();
             //Remove from select too
             $('#select-collection option[value="' + collection.id + '"]').remove();
-        }        
+        }
         else {
             //New element
             if (collectionSidebarListPosition === collections.length - 1) {
                 insertionType = "append";
             }
-            else {                
+            else {
                 var nextCollectionId = collections[collectionSidebarListPosition + 1].id;
-                insertTarget = $("#collection-" + nextCollectionId);                
+                insertTarget = $("#collection-" + nextCollectionId);
 
                 if (insertTarget.length > 0) {
-                    insertionType = "before";    
+                    insertionType = "before";
                 }
                 else {
                     insertionType = "append";
-                }                            
+                }
             }
         }
 
         $('#select-collection').append(Handlebars.templates.item_collection_selector_list(collection));
-        
+
         if (insertionType) {
             if (insertionType === "after") {
                 $(insertTarget).after(Handlebars.templates.item_collection_sidebar_head(collection));
             }
             else if (insertionType === "before") {
                 $(insertTarget).before(Handlebars.templates.item_collection_sidebar_head(collection));
-            }    
+            }
             else {
-                $("#collection-items").append(Handlebars.templates.item_collection_sidebar_head(collection));    
+                $("#collection-items").append(Handlebars.templates.item_collection_sidebar_head(collection));
             }
         } else {
             $("#collection-items").append(Handlebars.templates.item_collection_sidebar_head(collection));
-        }        
+        }
 
         $('a[rel="tooltip"]').tooltip();
 
@@ -900,9 +907,9 @@ pm.collections = {
                     }
                     requests[i].name = limitStringLineWidth(requests[i].name, 40);
 
-                    
+
                     //Make requests draggable for moving to a different collection
-                    requestTargetElement = "#sidebar-request-" + requests[i].id;                    
+                    requestTargetElement = "#sidebar-request-" + requests[i].id;
                     $(requestTargetElement).draggable({});
                 }
 
@@ -912,7 +919,7 @@ pm.collections = {
                 }
                 else {
                     if(collection["order"].length == requests.length) {
-                        var orderedRequests = [];                    
+                        var orderedRequests = [];
                         for (var j = 0, len = collection["order"].length; j < len; j++) {
                             var element = _.find(requests, function (request) {
                                 return request.id == collection["order"][j]
@@ -929,10 +936,10 @@ pm.collections = {
 
                 $(targetElement).sortable({
                     update:function (event, ui) {
-                        var target_parent = $(event.target).parents(".sidebar-collection-requests");                        
-                        var target_parent_collection = $(event.target).parents(".sidebar-collection");                        
+                        var target_parent = $(event.target).parents(".sidebar-collection-requests");
+                        var target_parent_collection = $(event.target).parents(".sidebar-collection");
                         var collection_id = $(target_parent_collection).attr("data-id");
-                        var ul_id = $(target_parent.context).attr("id");                        
+                        var ul_id = $(target_parent.context).attr("id");
                         var collection_requests = $(target_parent.context).children("li");
                         var count = collection_requests.length;
                         var order = [];
@@ -943,7 +950,7 @@ pm.collections = {
                             order.push(request_id);
                         }
 
-                        pm.indexedDB.getCollection(collection_id, function (collection) {                            
+                        pm.indexedDB.getCollection(collection_id, function (collection) {
                             collection["order"] = order;
                             pm.indexedDB.updateCollection(collection, function (collection) {
                                 //Sync with Google Drive
@@ -965,7 +972,7 @@ pm.collections = {
             pm.indexedDB.deleteCollectionRequest(id, function () {
                 pm.layout.sidebar.removeRequestFromHistory(id);
                 //Update order
-                pm.indexedDB.getCollection(request.collectionId, function (collection) {                            
+                pm.indexedDB.getCollection(request.collectionId, function (collection) {
                     //If the collection still exists
                     if (collection) {
                         if ("order" in collection) {
@@ -973,32 +980,41 @@ pm.collections = {
                             var index = order.indexOf(id);
                             order.splice(index, 1);
                             collection["order"] = order;
-                            pm.indexedDB.updateCollection(collection, function (collection) {      
-                                console.log("Updated collection order, queue update for drive");            
+                            pm.indexedDB.updateCollection(collection, function (collection) {
+                                console.log("Updated collection order, queue update for drive");
                                 pm.collections.drive.queueUpdateFromId(collection.id);
-                            });    
-                        }                        
-                    }                    
+                            });
+                        }
+                    }
                 });
             });
-        });        
+        });
     },
 
     updateCollectionMeta: function(id, name) {
         pm.indexedDB.getCollection(id, function (collection) {
             collection.name = name;
-            pm.indexedDB.updateCollection(collection, function (collection) {             
+            pm.indexedDB.updateCollection(collection, function (collection) {
+                var currentClass = $("#collection-" + id + " .sidebar-collection-head-dt").attr("class");
+                console.log(currentClass);
                 var collectionHeadHtml = '<span class="sidebar-collection-head-dt"><img src="img/dt.png"/></span>';
                 collectionHeadHtml += " " + collection.name;
 
                 $('#collection-' + collection.id + " .sidebar-collection-head-name").html(collectionHeadHtml);
-                $('#select-collection option[value="' + collection.id + '"]').html(collection.name);  
+                $('#select-collection option[value="' + collection.id + '"]').html(collection.name);
 
-                //Sync collection to drive           
+                if(currentClass.indexOf("open") >= 0) {
+                    $("#collection-" + id + " .sidebar-collection-head-dt").addClass("disclosure-triangle-open");
+                }
+                else {
+                    $("#collection-" + id + " .sidebar-collection-head-dt").addClass("disclosure-triangle-close");
+                }
+
+                //Sync collection to drive
                 console.log("Queue update after updating collection meta");
                 pm.collections.drive.queueUpdateFromId(collection.id);
             });
-        });        
+        });
     },
 
     updateCollectionRequestMeta: function(id, name, description) {
@@ -1031,7 +1047,7 @@ pm.collections = {
     deleteCollection:function (id, toSyncWithDrive, callback) {
         var collections = pm.collections.items;
         var size = collections.length;
-        
+
         for (var i = 0; i < size; i++) {
             if (collections[i].id === id) {
                 pm.collections.items.splice(i, 1);
@@ -1046,8 +1062,8 @@ pm.collections = {
 
             //Sync collection to drive
             if(toSyncWithDrive) {
-                pm.collections.drive.queueDelete(id);    
-            }            
+                pm.collections.drive.queueDelete(id);
+            }
         });
     },
 
@@ -1087,7 +1103,7 @@ pm.collections = {
                 id: collections[i].id,
                 name: collections[i].name,
                 requests: [],
-                toShow: false,                
+                toShow: false,
             };
 
             var name = collections[i].name.toLowerCase();
@@ -1120,7 +1136,7 @@ pm.collections = {
                         r.toShow = false;
                     }
                 }
-            }            
+            }
 
             filteredCollections.push(c);
         }
@@ -1149,7 +1165,7 @@ pm.collections = {
                     console.log("Collection not found");
                     callback(false);
                 }
-                
+
             });
         },
 
@@ -1159,10 +1175,10 @@ pm.collections = {
             var id = collection.id;
             var name = collection.name + ".postman_collection";
             var filedata = JSON.stringify(collection);
-            
+
             pm.drive.queuePost(id, "collection", name, filedata, function() {
-                console.log("Uploaded new collection", name);                
-            });            
+                console.log("Uploaded new collection", name);
+            });
         },
 
         queuePost: function(id) {
@@ -1171,7 +1187,7 @@ pm.collections = {
             pm.collections.getCollectionData(id, function(name, type, filedata) {
                 console.log(filedata);
                 pm.drive.queuePost(id, "collection", name + ".postman_collection", filedata, function() {
-                    console.log("Uploaded new collection", name);                
+                    console.log("Uploaded new collection", name);
                 });
             });
         },
@@ -1185,7 +1201,7 @@ pm.collections = {
 
             pm.indexedDB.driveFiles.getDriveFile(id, function(driveFile) {
                 pm.drive.queueUpdate(id, "collection", name, driveFile.file, filedata, function() {
-                    console.log("Updated collection", collection.id);                
+                    console.log("Updated collection", collection.id);
                 });
             });
         },
@@ -1193,12 +1209,12 @@ pm.collections = {
         queueUpdateFromId: function(id) {
             if (!pm.drive.isSyncEnabled()) return;
 
-            pm.collections.getCollectionDataForDrive(id, function(name, type, filedata) {                
+            pm.collections.getCollectionDataForDrive(id, function(name, type, filedata) {
                 pm.indexedDB.driveFiles.getDriveFile(id, function(driveFile) {
                     pm.drive.queueUpdate(id, "collection", name, driveFile.file, filedata, function() {
-                        console.log("Updated collection from id", id);                
+                        console.log("Updated collection from id", id);
                     });
-                });                
+                });
             });
         },
 
@@ -1206,24 +1222,24 @@ pm.collections = {
             if (!pm.drive.isSyncEnabled()) return;
 
             pm.collections.drive.checkIfCollectionIsOnDrive(id, function(exists, driveFile) {
-                if (exists) {                
-                    pm.drive.queueTrash(id, "collection", driveFile.file, function() {                    
-                        console.log("Deleted collection", id);                    
+                if (exists) {
+                    pm.drive.queueTrash(id, "collection", driveFile.file, function() {
+                        console.log("Deleted collection", id);
                     });
                 }
-            });            
+            });
         },
 
         queueDelete: function(id) {
             if (!pm.drive.isSyncEnabled()) return;
 
             pm.collections.drive.checkIfCollectionIsOnDrive(id, function(exists, driveFile) {
-                if (exists) {                
-                    pm.drive.queueDelete(id, "collection", driveFile.file, function() {                    
-                        console.log("Deleted collection", id);                    
+                if (exists) {
+                    pm.drive.queueDelete(id, "collection", driveFile.file, function() {
+                        console.log("Deleted collection", id);
                     });
                 }
-            });            
+            });
         },
 
         updateLocalFromDrive: function(responseText) {
@@ -1237,7 +1253,7 @@ pm.collections = {
         deleteLocalFromDrive: function(id) {
             console.log("Trying to delete", id);
             pm.collections.deleteCollection(id, false);
-            pm.indexedDB.driveFiles.deleteDriveFile(id, function() {                        
+            pm.indexedDB.driveFiles.deleteDriveFile(id, function() {
             });
         },
 
@@ -1255,10 +1271,10 @@ pm.collections = {
             };
 
             pm.indexedDB.driveFiles.addDriveFile(newLocalDriveFile, function(e) {
-                console.log("Uploaded file", newLocalDriveFile);                            
+                console.log("Uploaded file", newLocalDriveFile);
                 var currentTime = new Date().toISOString();
-                pm.settings.setSetting("lastDriveChangeTime", currentTime);                
-            });  
+                pm.settings.setSetting("lastDriveChangeTime", currentTime);
+            });
         }
     }
 };
