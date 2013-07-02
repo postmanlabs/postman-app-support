@@ -296,11 +296,13 @@ pm.collections = {
                 var i = 0;
                 var size = driveCollectionRequests.length;
 
+                function existingRequestFinder(r) {
+                    return driveRequest.id === r.id;
+                }
+
                 for (i = 0; i < size; i++) {
                     var driveRequest = driveCollectionRequests[i];
-                    var existingRequest = _.find(oldCollectionRequests, function(r) {
-                        return driveRequest.id === r.id;
-                    });
+                    var existingRequest = _.find(oldCollectionRequests, existingRequestFinder);
 
                     if (existingRequest) {
                         updatedRequests.push(driveRequest);
@@ -328,26 +330,32 @@ pm.collections = {
 
                 //Update requests
                 var sizeUpdatedRequests = updatedRequests.length;
+                function onUpdateCollectionRequest(r) {
+                    console.log("Updated the request");
+                }
+
                 for(i = 0; i < sizeUpdatedRequests; i++) {
-                    pm.indexedDB.updateCollectionRequest(updatedRequests[i], function(r) {
-                        console.log("Updated the request");
-                    });
+                    pm.indexedDB.updateCollectionRequest(updatedRequests[i], onUpdateCollectionRequest);
                 }
 
                 //Add requests
+                function onAddCollectionRequest(r) {
+                    console.log("Added the request");
+                }
+
                 var sizeNewRequests = newRequests.length;
                 for(i = 0; i < sizeNewRequests; i++) {
-                    pm.indexedDB.addCollectionRequest(newRequests[i], function(r) {
-                        console.log("Added the request");
-                    });
+                    pm.indexedDB.addCollectionRequest(newRequests[i], onAddCollectionRequest);
                 }
 
                 //Delete requests
+                function onDeleteCollectionRequest(id) {
+                    console.log("Deleted the request");
+                }
+
                 var sizeDeletedRequests = deletedRequests.length;
                 for(i = 0; i < sizeDeletedRequests; i++) {
-                    pm.indexedDB.deleteCollectionRequest(deletedRequests[i].id, function(id) {
-                        console.log("Deleted the request");
-                    });
+                    pm.indexedDB.deleteCollectionRequest(deletedRequests[i].id, onDeleteCollectionRequest);
                 }
 
                 newCollection.requests = driveCollectionRequests;
@@ -375,6 +383,10 @@ pm.collections = {
                 ordered = true;
             }
 
+            function onAddCollectionRequest(req) {
+                console.log(req);
+            }
+
             for (var i = 0; i < collection.requests.length; i++) {
                 var request = collection.requests[i];
                 request.collectionId = collection.id;
@@ -397,7 +409,7 @@ pm.collections = {
                     }
                 }
 
-                pm.indexedDB.addCollectionRequest(request, function (req) {});
+                pm.indexedDB.addCollectionRequest(request, onAddCollectionRequest);
                 requests.push(request);
             }
 
@@ -751,19 +763,20 @@ pm.collections = {
 
             var itemsLength = items.length;
 
+            function onGetAllRequestsInCollection(collection, requests) {
+                collection.requests = requests;
+                pm.collections.render(collection);
+            }
+
             if (itemsLength === 0) {
                 $('#sidebar-section-collections').append(Handlebars.templates.message_no_collection({}));
             }
             else {
                 for (var i = 0; i < itemsLength; i++) {
                     var collection = items[i];
-                    pm.indexedDB.getAllRequestsInCollection(collection, function (collection, requests) {
-                        collection.requests = requests;
-                        pm.collections.render(collection);
-                    });
+                    pm.indexedDB.getAllRequestsInCollection(collection, onGetAllRequestsInCollection);
                 }
             }
-
 
             pm.collections.areLoaded = true;
             pm.layout.refreshScrollPanes();
@@ -776,7 +789,9 @@ pm.collections = {
         var targetCollectionId = $($(event.target).find('.sidebar-collection-head-name')[0]).attr('data-id');
         pm.indexedDB.getCollection(targetCollectionId, function(collection) {
             pm.indexedDB.getCollectionRequest(requestId, function(collectionRequest) {
-                if(targetCollectionId === collectionRequest.collectionId) return;
+                if(targetCollectionId === collectionRequest.collectionId) {
+                    return;
+                }
 
                 pm.collections.deleteCollectionRequest(requestId);
 
@@ -822,6 +837,10 @@ pm.collections = {
     },
 
     render:function (collection) {
+        function requestFinder(request) {
+            return request.id === collection["order"][j]
+        }
+
         $('#sidebar-section-collections .empty-message').css("display", "none");
 
         var currentEl = $('#collection-' + collection.id);
@@ -830,12 +849,12 @@ pm.collections = {
         var insertionType;
         var insertTarget;
         var collections = pm.collections.items;
-        var collectionSidebarListPosition = arrayObjectIndexOf(collections, collection.id, "id");
+        collectionSidebarListPosition = arrayObjectIndexOf(collections, collection.id, "id");
 
         //Does this exist already?
         if (currentEl.length) {
             //Find current element list position
-            if (collectionSidebarListPosition == 0) {
+            if (collectionSidebarListPosition === 0) {
                 insertionType = "before";
                 insertTarget = $('#collection-' + collections[collectionSidebarListPosition + 1].id);
                 console.log(insertTarget);
@@ -902,11 +921,12 @@ pm.collections = {
             if (count > 0) {
                 for (var i = 0; i < count; i++) {
                     pm.urlCache.addUrl(requests[i].url);
+
                     if (typeof requests[i].name === "undefined") {
                         requests[i].name = requests[i].url;
                     }
-                    requests[i].name = limitStringLineWidth(requests[i].name, 40);
 
+                    requests[i].name = limitStringLineWidth(requests[i].name, 40);
 
                     //Make requests draggable for moving to a different collection
                     requestTargetElement = "#sidebar-request-" + requests[i].id;
@@ -918,12 +938,10 @@ pm.collections = {
                     requests.sort(sortAlphabetical);
                 }
                 else {
-                    if(collection["order"].length == requests.length) {
+                    if(collection["order"].length === requests.length) {
                         var orderedRequests = [];
                         for (var j = 0, len = collection["order"].length; j < len; j++) {
-                            var element = _.find(requests, function (request) {
-                                return request.id == collection["order"][j]
-                            });
+                            var element = _.find(requests, requestFinder);
                             orderedRequests.push(element);
                         }
                         requests = orderedRequests;
@@ -1023,7 +1041,7 @@ pm.collections = {
             req.description = description;
             pm.indexedDB.updateCollectionRequest(req, function (newRequest) {
                 var requestName;
-                if (req.name != undefined) {
+                if (req.name !== undefined) {
                     requestName = limitStringLineWidth(req.name, 43);
                 }
                 else {
@@ -1098,6 +1116,8 @@ pm.collections = {
         var collections = pm.collections.items;
         var collectionCount = collections.length;
         var filteredCollections = [];
+        var name;
+
         for(var i = 0; i < collectionCount; i++) {
             var c = {
                 id: collections[i].id,
@@ -1106,7 +1126,7 @@ pm.collections = {
                 toShow: false,
             };
 
-            var name = collections[i].name.toLowerCase();
+            name = collections[i].name.toLowerCase();
 
             if (name.indexOf(term) >= 0) {
                 c.toShow = true;
@@ -1126,7 +1146,7 @@ pm.collections = {
 
                     c.requests.push(r);
 
-                    var name = requests[j].name.toLowerCase();
+                    name = requests[j].name.toLowerCase();
 
                     if (name.indexOf(term) >= 0) {
                         r.toShow = true;
@@ -1172,7 +1192,9 @@ pm.collections = {
         },
 
         queuePostFromCollection: function(collection) {
-            if (!pm.drive.isSyncEnabled()) return;
+            if (!pm.drive.isSyncEnabled()) {
+                return;
+            }
 
             var id = collection.id;
             var name = collection.name + ".postman_collection";
@@ -1184,7 +1206,9 @@ pm.collections = {
         },
 
         queuePost: function(id) {
-            if (!pm.drive.isSyncEnabled()) return;
+            if (!pm.drive.isSyncEnabled()) {
+                return;
+            }
 
             pm.collections.getCollectionData(id, function(name, type, filedata) {
                 console.log(filedata);
@@ -1195,7 +1219,9 @@ pm.collections = {
         },
 
         queueUpdateFromCollection: function(collection) {
-            if (!pm.drive.isSyncEnabled()) return;
+            if (!pm.drive.isSyncEnabled()) {
+                return;
+            }
 
             var id = collection.id;
             var name = collection.name + ".postman_collection";
@@ -1209,7 +1235,9 @@ pm.collections = {
         },
 
         queueUpdateFromId: function(id) {
-            if (!pm.drive.isSyncEnabled()) return;
+            if (!pm.drive.isSyncEnabled()) {
+                return;
+            }
 
             pm.collections.getCollectionDataForDrive(id, function(name, type, filedata) {
                 pm.indexedDB.driveFiles.getDriveFile(id, function(driveFile) {
@@ -1221,7 +1249,9 @@ pm.collections = {
         },
 
         queueTrash: function(id) {
-            if (!pm.drive.isSyncEnabled()) return;
+            if (!pm.drive.isSyncEnabled()) {
+                return;
+            }
 
             pm.collections.drive.checkIfCollectionIsOnDrive(id, function(exists, driveFile) {
                 if (exists) {
@@ -1233,7 +1263,9 @@ pm.collections = {
         },
 
         queueDelete: function(id) {
-            if (!pm.drive.isSyncEnabled()) return;
+            if (!pm.drive.isSyncEnabled()) {
+                return;
+            }
 
             pm.collections.drive.checkIfCollectionIsOnDrive(id, function(exists, driveFile) {
                 if (exists) {

@@ -47,10 +47,10 @@ pm.request = {
             pm.request.body.rawEditorType = type;
 
             if (type === "editor") {
-
+                console.log("Editor");
             }
             else if (type === "textarea") {
-
+                console.log("Textarea");
             }
         },
 
@@ -118,9 +118,9 @@ pm.request = {
                 }
 
                 if (mode === "text") {
-                  $('#body-editor-mode-selector-format').addClass('disabled');
+                    $('#body-editor-mode-selector-format').addClass('disabled');
                 } else {
-                  $('#body-editor-mode-selector-format').removeClass('disabled');
+                    $('#body-editor-mode-selector-format').removeClass('disabled');
                 }
 
                 //Add proper content-type header
@@ -157,40 +157,39 @@ pm.request = {
         },
 
         autoFormatEditor:function (mode) {
-          var content = pm.request.body.codeMirror.getValue(),
-              validated = null, result = null;
+            var content = pm.request.body.codeMirror.getValue(),
+            validated = null, result = null;
 
-          $('#body-editor-mode-selector-format-result').empty().hide();
+            $('#body-editor-mode-selector-format-result').empty().hide();
 
-          if (pm.request.body.isEditorInitialized) {
+            if (pm.request.body.isEditorInitialized) {
+                // In case its a JSON then just properly stringify it.
+                // CodeMirror does not work well with pure JSON format.
+                if (mode === 'javascript') {
 
-            // In case its a JSON then just properly stringify it.
-            // CodeMirror does not work well with pure JSON format.
-            if (mode === 'javascript') {
+                    // Validate code first.
+                    try {
+                        validated = pm.jsonlint.instance.parse(content);
+                        if (validated) {
+                            content = JSON.parse(pm.request.body.codeMirror.getValue());
+                            pm.request.body.codeMirror.setValue(JSON.stringify(content, null, 4));
+                        }
+                    } catch(e) {
+                        result = e.message;
+                        // Show jslint result.
+                        // We could also highlight the line with error here.
+                        $('#body-editor-mode-selector-format-result').html(result).show();
+                    }
+                } else { // Otherwise use internal CodeMirror.autoFormatRage method for a specific mode.
+                    var totalLines = pm.request.body.codeMirror.lineCount(),
+                    totalChars = pm.request.body.codeMirror.getValue().length;
 
-              // Validate code first.
-              try {
-                validated = pm.jsonlint.instance.parse(content);
-                if (validated) {
-                  content = JSON.parse(pm.request.body.codeMirror.getValue());
-                  pm.request.body.codeMirror.setValue(JSON.stringify(content, null, 4));
+                    pm.request.body.codeMirror.autoFormatRange(
+                        {line: 0, ch: 0},
+                        {line: totalLines - 1, ch: pm.request.body.codeMirror.getLine(totalLines - 1).length}
+                    );
                 }
-              } catch(e) {
-                result = e.message;
-                // Show jslint result.
-                // We could also highlight the line with error here.
-                $('#body-editor-mode-selector-format-result').html(result).show();
-              }
-            } else { // Otherwise use internal CodeMirror.autoFormatRage method for a specific mode.
-              var totalLines = pm.request.body.codeMirror.lineCount(),
-                  totalChars = pm.request.body.codeMirror.getValue().length;
-
-              pm.request.body.codeMirror.autoFormatRange(
-                {line: 0, ch: 0},
-                {line: totalLines - 1, ch: pm.request.body.codeMirror.getLine(totalLines - 1).length}
-              );
             }
-          }
         },
 
         initFormDataEditor:function () {
@@ -238,13 +237,13 @@ pm.request = {
 
             // 'Format code' button listener.
             $('#body-editor-mode-selector-format').on('click.postman', function(evt) {
-              var editorMode = $(event.target).attr("data-editor-mode");
+                var editorMode = $(event.target).attr("data-editor-mode");
 
-              if ($(evt.currentTarget).hasClass('disabled')) {
-                return;
-              }
+                if ($(evt.currentTarget).hasClass('disabled')) {
+                    return;
+                }
 
-              //pm.request.body.autoFormatEditor(pm.request.body.codeMirror.getMode().name);
+                //pm.request.body.autoFormatEditor(pm.request.body.codeMirror.getMode().name);
             });
 
             var type = pm.settings.getSetting("requestBodyEditorContainerType");
@@ -522,7 +521,7 @@ pm.request = {
     },
 
     onHeaderAutoCompleteItemSelect:function(item) {
-        if(item.type == "preset") {
+        if(item.type === "preset") {
             var preset = pm.headerPresets.getHeaderPreset(item.id);
             if("headers" in preset) {
                 var headers = $('#headers-keyvaleditor').keyvalueeditor('getValues');
@@ -846,7 +845,7 @@ pm.request = {
             if(pm.settings.getSetting("usePostmanProxy") === true) {
                 var count = pm.request.response.headers.length;
                 for(var i = 0; i < count; i++) {
-                    if(pm.request.response.headers[i].key == "Postman-Location") {
+                    if(pm.request.response.headers[i].key === "Postman-Location") {
                         pm.request.response.headers[i].key = "Location";
                         pm.request.response.headers[i].name = "Location";
                         break;
@@ -930,7 +929,7 @@ pm.request = {
             var responsePreviewType = 'html';
 
             if (!_.isUndefined(contentType) && !_.isNull(contentType)) {
-                if (contentType.search(/json/i) !== -1 || contentType.search(/javascript/i) !== -1 || pm.settings.getSetting("languageDetection") == 'javascript') {
+                if (contentType.search(/json/i) !== -1 || contentType.search(/javascript/i) !== -1 || pm.settings.getSetting("languageDetection") === 'javascript') {
                     language = 'javascript';
                 }
 
@@ -960,7 +959,7 @@ pm.request = {
                 }
             }
             else {
-                if (pm.settings.getSetting("languageDetection") == 'javascript') {
+                if (pm.settings.getSetting("languageDetection") === 'javascript') {
                     language = 'javascript';
                 }
                 pm.request.response.setFormat(language, response.text, pm.settings.getSetting("previewType"), true);
@@ -1002,9 +1001,9 @@ pm.request = {
 
         load:function (response) {
             $("#response-sample-status").css("display", "none");
-            if (response.readyState == 4) {
+            if (response.readyState === 4) {
                 //Something went wrong
-                if (response.status == 0) {
+                if (response.status === 0) {
                     var errorUrl = pm.envManager.getCurrentValue(pm.request.url);
                     $('#connection-error-url').html("<a href='" + errorUrl + "' target='_blank'>" + errorUrl + "</a>");
                     pm.request.response.showScreen("failed");
@@ -1044,7 +1043,7 @@ pm.request = {
                 };
 
                 var responseData;
-                if (response.responseRawDataType == "arraybuffer") {
+                if (response.responseRawDataType === "arraybuffer") {
                     responseData = response.response;
                 }
                 else {
@@ -1086,7 +1085,7 @@ pm.request = {
                 var responsePreviewType = 'html';
 
                 if (!_.isUndefined(contentType) && !_.isNull(contentType)) {
-                    if (contentType.search(/json/i) !== -1 || contentType.search(/javascript/i) !== -1 || pm.settings.getSetting("languageDetection") == 'javascript') {
+                    if (contentType.search(/json/i) !== -1 || contentType.search(/javascript/i) !== -1 || pm.settings.getSetting("languageDetection") === 'javascript') {
                         language = 'javascript';
                     }
 
@@ -1124,7 +1123,7 @@ pm.request = {
                         RAL.Queue.setMaxConnections(4);
                         RAL.Queue.start();
                     }
-                    else if (contentType.search(/pdf/i) >= 0 && response.responseRawDataType == "arraybuffer") {
+                    else if (contentType.search(/pdf/i) >= 0 && response.responseRawDataType === "arraybuffer") {
                         responsePreviewType = 'pdf';
 
                         // Hide everything else
@@ -1144,7 +1143,7 @@ pm.request = {
                         });
 
                     }
-                    else if (contentType.search(/pdf/i) >= 0 && response.responseRawDataType == "text") {
+                    else if (contentType.search(/pdf/i) >= 0 && response.responseRawDataType === "text") {
                         pm.request.send("arraybuffer");
                         return;
                     }
@@ -1154,7 +1153,7 @@ pm.request = {
                     }
                 }
                 else {
-                    if (pm.settings.getSetting("languageDetection") == 'javascript') {
+                    if (pm.settings.getSetting("languageDetection") === 'javascript') {
                         language = 'javascript';
                     }
                     pm.request.response.setFormat(language, pm.request.response.text, pm.settings.getSetting("previewType"), true);
@@ -1260,8 +1259,10 @@ pm.request = {
             //Use prettyprint here instead of stringify
             if (language === 'javascript') {
                 try {
-                    if ('string' ===  typeof response && response.match(/^[\)\]\}]/))
+                    if ('string' ===  typeof response && response.match(/^[\)\]\}]/)) {
                         response = response.substring(response.indexOf('\n'));
+                    }
+
                     response = vkbeautify.json(response);
                     mode = 'javascript';
                     foldFunc = CodeMirror.newFoldFunction(CodeMirror.braceRangeFinder);
@@ -1726,7 +1727,7 @@ pm.request = {
             $('#data').css("display", "block");
 
             if("version" in request) {
-                if(request.version == 2) {
+                if(request.version === 2) {
                     pm.request.body.loadData(request.dataMode, request.data, true);
                 }
                 else {
@@ -1862,7 +1863,7 @@ pm.request = {
         // Set state as if change event of input handlers was called
         pm.request.setUrlParamString(pm.request.getUrlEditorParams());
 
-        if (pm.helpers.activeHelper == "oauth1" && pm.helpers.oAuth1.isAutoEnabled) {
+        if (pm.helpers.activeHelper === "oauth1" && pm.helpers.oAuth1.isAutoEnabled) {
             pm.helpers.oAuth1.generateHelper();
             pm.helpers.oAuth1.process();
         }
@@ -1886,13 +1887,13 @@ pm.request = {
         }
 
         if(pm.settings.getSetting("sendPostmanTokenHeader") === true) {
-            var noCacheHeader = {
+            var postmanTokenHeader = {
                 key: "Postman-Token",
                 name: "Postman-Token",
                 value: guid()
             };
 
-            headers.push(noCacheHeader);
+            headers.push(postmanTokenHeader);
         }
 
         console.log(pm.request.dataMode);
@@ -1909,7 +1910,7 @@ pm.request = {
             }
         }
 
-        if (pm.settings.getSetting("usePostmanProxy") == true) {
+        if (pm.settings.getSetting("usePostmanProxy") === true) {
             headers = pm.request.prepareHeadersForProxy(headers);
         }
 
@@ -2196,7 +2197,7 @@ pm.request = {
         var hasParams = quesLocation >= 0 ? true : false;
 
         if (hasParams) {
-            var parts = getUrlVars(path);
+            parts = getUrlVars(path);
             var count = parts.length;
             var encodedPath = path.substr(0, quesLocation + 1);
             for (var j = 0; j < count; j++) {
@@ -2234,7 +2235,7 @@ pm.request = {
     },
 
     handlePreviewClick:function() {
-        if(pm.request.editorMode == 1) {
+        if(pm.request.editorMode === 1) {
             pm.request.showRequestBuilder();
         }
         else {

@@ -9,24 +9,24 @@ pm.filesystem = {
         var msg = '';
 
         switch (e.code) {
-            case FileError.QUOTA_EXCEEDED_ERR:
-                msg = 'QUOTA_EXCEEDED_ERR';
-                break;
-            case FileError.NOT_FOUND_ERR:
-                msg = 'NOT_FOUND_ERR';
-                break;
-            case FileError.SECURITY_ERR:
-                msg = 'SECURITY_ERR';
-                break;
-            case FileError.INVALID_MODIFICATION_ERR:
-                msg = 'INVALID_MODIFICATION_ERR';
-                break;
-            case FileError.INVALID_STATE_ERR:
-                msg = 'INVALID_STATE_ERR';
-                break;
-            default:
-                msg = 'Unknown Error';
-                break;
+        case FileError.QUOTA_EXCEEDED_ERR:
+            msg = 'QUOTA_EXCEEDED_ERR';
+            break;
+        case FileError.NOT_FOUND_ERR:
+            msg = 'NOT_FOUND_ERR';
+            break;
+        case FileError.SECURITY_ERR:
+            msg = 'SECURITY_ERR';
+            break;
+        case FileError.INVALID_MODIFICATION_ERR:
+            msg = 'INVALID_MODIFICATION_ERR';
+            break;
+        case FileError.INVALID_STATE_ERR:
+            msg = 'INVALID_STATE_ERR';
+            break;
+        default:
+            msg = 'Unknown Error';
+            break;
         }
 
         console.log('Error: ' + msg);
@@ -71,7 +71,7 @@ pm.filesystem = {
                         };
 
                         var blob;
-                        if (type == "pdf") {
+                        if (type === "pdf") {
                             blob = new Blob([data], {type:'application/pdf'});
                         }
                         else {
@@ -91,25 +91,24 @@ pm.filesystem = {
     saveAndOpenFile:function (name, data, type, callback) {
         chrome.fileSystem.chooseEntry({type: 'saveFile', suggestedName: name}, function(writableFileEntry) {
             writableFileEntry.createWriter(function(writer) {
-            writer.onerror = function (e) {
-                callback();
-            };;
+                writer.onerror = function (e) {
+                    callback();
+                };
 
-            writer.onwriteend = function(e) {
-                console.log('write complete');
-                callback();
-            };
+                writer.onwriteend = function(e) {
+                    console.log('write complete');
+                    callback();
+                };
 
-            var blob;
-            if (type == "pdf") {
-                blob = new Blob([data], {type:'application/pdf'});
-            }
-            else {
-                blob = new Blob([data], {type:'text/plain'});
-            }
+                var blob;
+                if (type === "pdf") {
+                    blob = new Blob([data], {type:'application/pdf'});
+                }
+                else {
+                    blob = new Blob([data], {type:'text/plain'});
+                }
 
-            writer.write(blob);
-
+                writer.write(blob);
             }, pm.filesystem.errorHandler);
         });
 

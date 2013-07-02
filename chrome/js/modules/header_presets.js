@@ -112,7 +112,9 @@ var HeaderPrestes = Backbone.Model.extend({
 
     getHeaderPreset:function (id) {
         for (var i = 0, count = this.presets.length; i < count; i++) {
-            if (this.presets[i].id === id) break;
+            if (this.presets[i].id === id) {
+                break;
+            }
         }
 
         var preset = this.presets[i];
@@ -197,11 +199,14 @@ var HeaderPrestes = Backbone.Model.extend({
     mergeHeaderPresets: function(hp) {
         var size = hp.length;
         var headerPresets = this;
+
+        function onUpdateHeaderPreset() {
+            headerPresets.loadPresets();
+        }
+
         for(var i = 0; i < size; i++) {
             var headerPreset = hp[i];
-            pm.indexedDB.headerPresets.updateHeaderPreset(headerPreset, function () {
-                headerPresets.loadPresets();
-            });
+            pm.indexedDB.headerPresets.updateHeaderPreset(headerPreset, onUpdateHeaderPreset);
         }
     },
 
@@ -209,7 +214,9 @@ var HeaderPrestes = Backbone.Model.extend({
     drive: {
         registerHandlers: function() {
             if (pm.drive) {
-                if (!pm.drive.isSyncEnabled()) return;
+                if (!pm.drive.isSyncEnabled()) {
+                    return;
+                }
 
                 pm.drive.onUpdate["postman_header_preset"] = pm.headerPresets.drive.updateHeaderPresetFromDrive;
                 pm.drive.onPost["postman_header_preset"] = pm.headerPresets.drive.addHeaderPresetFromDrive;
@@ -232,7 +239,9 @@ var HeaderPrestes = Backbone.Model.extend({
         },
 
         queueHeaderPresetPost: function(headerPreset) {
-            if (!pm.drive.isSyncEnabled()) return;
+            if (!pm.drive.isSyncEnabled()) {
+                return;
+            }
 
             var id = headerPreset.id;
             var name = headerPreset.name + ".postman_header_preset";
@@ -244,7 +253,9 @@ var HeaderPrestes = Backbone.Model.extend({
         },
 
         queueHeaderPresetUpdate: function(headerPreset) {
-            if (!pm.drive.isSyncEnabled()) return;
+            if (!pm.drive.isSyncEnabled()) {
+                return;
+            }
 
             var id = headerPreset.id;
             var name = headerPreset.name + ".postman_header_preset";
@@ -258,7 +269,9 @@ var HeaderPrestes = Backbone.Model.extend({
         },
 
         queueHeaderPresetDelete: function(id) {
-            if (!pm.drive.isSyncEnabled()) return;
+            if (!pm.drive.isSyncEnabled()) {
+                return;
+            }
 
             pm.headerPresets.drive.checkIfHeaderPresetIsOnDrive(id, function(exists, driveFile) {
                 if (exists) {
@@ -317,7 +330,7 @@ var HeaderPresetsModal = Backbone.View.extend({
     el: $("#modal-header-presets"),
 
     initialize: function() {
-    }
+    },
 
     render: function() {
     }
@@ -325,7 +338,7 @@ var HeaderPresetsModal = Backbone.View.extend({
 
 var HeaderPresetsRequestEditor = Backbone.View.extend({
     initialize: function() {
-    }
+    },
 
     render: function() {
     }

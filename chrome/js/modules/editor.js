@@ -31,7 +31,7 @@ pm.editor = {
                         }
 
                         var match = matches[0];
-                        if (match != state.link) {
+                        if (match !==state.link) {
                             state.link = matches[0];
                             for (var i = 0; i < state.link.length; i++) {
                                 stream.next();

@@ -58,28 +58,28 @@ pm.indexedDB = {
                     }
 
                     if (!db.objectStoreNames.contains("header_presets")) {
-                        var requestStore = db.createObjectStore("header_presets", {keyPath:"id"});
-                        requestStore.createIndex("timestamp", "timestamp", { unique:false});
+                        var headerPresetsStore = db.createObjectStore("header_presets", {keyPath:"id"});
+                        headerPresetsStore.createIndex("timestamp", "timestamp", { unique:false});
                     }
 
                     if (!db.objectStoreNames.contains(pm.indexedDB.TABLE_HELPERS)) {
-                        var requestStore = db.createObjectStore(pm.indexedDB.TABLE_HELPERS, {keyPath:"id"});
-                        requestStore.createIndex("timestamp", "timestamp", { unique:false});
+                        var helpersStore = db.createObjectStore(pm.indexedDB.TABLE_HELPERS, {keyPath:"id"});
+                        helpersStore.createIndex("timestamp", "timestamp", { unique:false});
                     }
 
                     if (!db.objectStoreNames.contains(pm.indexedDB.TABLE_DRIVE_FILES)) {
-                        var requestStore = db.createObjectStore(pm.indexedDB.TABLE_DRIVE_FILES, {keyPath:"id"});
-                        requestStore.createIndex("timestamp", "timestamp", { unique:false});
-                        requestStore.createIndex("fileId", "fileId", { unique:false});
+                        var driveFilesStore = db.createObjectStore(pm.indexedDB.TABLE_DRIVE_FILES, {keyPath:"id"});
+                        driveFilesStore.createIndex("timestamp", "timestamp", { unique:false});
+                        driveFilesStore.createIndex("fileId", "fileId", { unique:false});
                     }
                     else {
-                        var requestStore = request.transaction.objectStore(pm.indexedDB.TABLE_DRIVE_FILES);
-                        requestStore.createIndex("fileId", "fileId", { unique:false});
+                        var driveFilesStoreForIndex = request.transaction.objectStore(pm.indexedDB.TABLE_DRIVE_FILES);
+                        driveFilesStoreForIndex.createIndex("fileId", "fileId", { unique:false});
                     }
 
                     if (!db.objectStoreNames.contains(pm.indexedDB.TABLE_DRIVE_CHANGES)) {
-                        var requestStore = db.createObjectStore(pm.indexedDB.TABLE_DRIVE_CHANGES, {keyPath:"id"});
-                        requestStore.createIndex("timestamp", "timestamp", { unique:false});
+                        var driveChangesStore = db.createObjectStore(pm.indexedDB.TABLE_DRIVE_CHANGES, {keyPath:"id"});
+                        driveChangesStore.createIndex("timestamp", "timestamp", { unique:false});
                     }
 
                     var transaction = event.target.result;
@@ -134,28 +134,28 @@ pm.indexedDB = {
             }
 
             if (!db.objectStoreNames.contains("header_presets")) {
-                var requestStore = db.createObjectStore("header_presets", {keyPath:"id"});
-                requestStore.createIndex("timestamp", "timestamp", { unique:false});
+                var headerPresetsStore = db.createObjectStore("header_presets", {keyPath:"id"});
+                headerPresetsStore.createIndex("timestamp", "timestamp", { unique:false});
             }
 
             if (!db.objectStoreNames.contains(pm.indexedDB.TABLE_HELPERS)) {
-                var requestStore = db.createObjectStore(pm.indexedDB.TABLE_HELPERS, {keyPath:"id"});
-                requestStore.createIndex("timestamp", "timestamp", { unique:false});
+                var helpersStore = db.createObjectStore(pm.indexedDB.TABLE_HELPERS, {keyPath:"id"});
+                helpersStore.createIndex("timestamp", "timestamp", { unique:false});
             }
 
             if (!db.objectStoreNames.contains(pm.indexedDB.TABLE_DRIVE_FILES)) {
-                var requestStore = db.createObjectStore(pm.indexedDB.TABLE_DRIVE_FILES, {keyPath:"id"});
-                requestStore.createIndex("timestamp", "timestamp", { unique:false});
-                requestStore.createIndex("fileId", "fileId", { unique:false});
+                var driveFilesStore = db.createObjectStore(pm.indexedDB.TABLE_DRIVE_FILES, {keyPath:"id"});
+                driveFilesStore.createIndex("timestamp", "timestamp", { unique:false});
+                driveFilesStore.createIndex("fileId", "fileId", { unique:false});
             }
             else {
-                var requestStore = request.transaction.objectStore(pm.indexedDB.TABLE_DRIVE_FILES);
-                requestStore.createIndex("fileId", "fileId", { unique:false});
+                var driveFilesStoreForIndex = request.transaction.objectStore(pm.indexedDB.TABLE_DRIVE_FILES);
+                driveFilesStoreForIndex.createIndex("fileId", "fileId", { unique:false});
             }
 
             if (!db.objectStoreNames.contains(pm.indexedDB.TABLE_DRIVE_CHANGES)) {
-                var requestStore = db.createObjectStore(pm.indexedDB.TABLE_DRIVE_CHANGES, {keyPath:"id"});
-                requestStore.createIndex("timestamp", "timestamp", { unique:false});
+                var driveChangesStore = db.createObjectStore(pm.indexedDB.TABLE_DRIVE_CHANGES, {keyPath:"id"});
+                driveChangesStore.createIndex("timestamp", "timestamp", { unique:false});
             }
         };
 
@@ -299,7 +299,7 @@ pm.indexedDB = {
     getCollections:function (callback) {
         var db = pm.indexedDB.db;
 
-        if (db == null) {
+        if (db === null) {
             return;
         }
 
@@ -418,7 +418,7 @@ pm.indexedDB = {
 
     getAllRequestItems:function (callback) {
         var db = pm.indexedDB.db;
-        if (db == null) {
+        if (db === null) {
             return;
         }
 
@@ -588,7 +588,7 @@ pm.indexedDB = {
 
         getAllEnvironments:function (callback) {
             var db = pm.indexedDB.db;
-            if (db == null) {
+            if (db === null) {
                 return;
             }
 
@@ -719,7 +719,7 @@ pm.indexedDB = {
 
         getAllHeaderPresets:function (callback) {
             var db = pm.indexedDB.db;
-            if (db == null) {
+            if (db === null) {
                 console.log("Db is null");
                 return;
             }
@@ -847,7 +847,7 @@ pm.indexedDB = {
 
         getAllDriveFiles:function (callback) {
             var db = pm.indexedDB.db;
-            if (db == null) {
+            if (db === null) {
                 console.log("Db is null");
                 return;
             }
@@ -947,7 +947,7 @@ pm.indexedDB = {
 
         getAllDriveChanges:function (callback) {
             var db = pm.indexedDB.db;
-            if (db == null) {
+            if (db === null) {
                 console.log("Db is null");
                 return;
             }
@@ -1014,7 +1014,7 @@ pm.indexedDB = {
 
             currentCount++;
 
-            if (currentCount == totalCount) {
+            if (currentCount === totalCount) {
                 onFinishExportingCollections(collections);
             }
         }
@@ -1061,14 +1061,15 @@ pm.indexedDB = {
             pm.collections.items = items;
             var itemsLength = items.length;
 
+            function onGetAllRequestsInCollection(collection, requests) {
+                collection.requests = requests;
+                onFinishGettingCollectionRequests(collection);
+            }
+
             if (itemsLength !== 0) {
                 for (var i = 0; i < itemsLength; i++) {
                     var collection = items[i];
-                    pm.indexedDB.getAllRequestsInCollection(collection, function (collection, requests) {
-                        collection.requests = requests;
-
-                        onFinishGettingCollectionRequests(collection);
-                    });
+                    pm.indexedDB.getAllRequestsInCollection(collection, onGetAllRequestsInCollection);
                 }
             }
         });
@@ -1076,7 +1077,9 @@ pm.indexedDB = {
 
     importAllData: function(files, callback) {
         console.log(files, callback);
-        if (files.length != 1) return;
+        if (files.length !== 1) {
+            return;
+        }
 
         var f = files[0];
         var reader = new FileReader();

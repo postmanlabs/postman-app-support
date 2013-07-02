@@ -464,7 +464,7 @@ pm.helpers = {
 
             //all the fields defined by oauth
             $('input.signatureParam').each(function () {
-                if ($(this).val() != '') {
+                if ($(this).val() !=='') {
                     var val = $(this).val();
                     val = pm.envManager.convertString(val);
                     message.parameters.push([$(this).attr('key'), val]);
@@ -476,10 +476,10 @@ pm.helpers = {
             var bodyParams = [];
 
             if (pm.request.isMethodWithBody(pm.request.method)) {
-                if (pm.request.body.mode == "params") {
+                if (pm.request.body.mode === "params") {
                     bodyParams = $('#formdata-keyvaleditor').keyvalueeditor('getValues');
                 }
-                else if (pm.request.body.mode == "urlencoded") {
+                else if (pm.request.body.mode === "urlencoded") {
                     bodyParams = $('#urlencoded-keyvaleditor').keyvalueeditor('getValues');
                 }
             }
@@ -496,11 +496,11 @@ pm.helpers = {
             }
 
             var accessor = {};
-            if ($('input[key="oauth_consumer_secret"]').val() != '') {
+            if ($('input[key="oauth_consumer_secret"]').val() !=='') {
                 accessor.consumerSecret = $('input[key="oauth_consumer_secret"]').val();
                 accessor.consumerSecret = pm.envManager.convertString(accessor.consumerSecret);
             }
-            if ($('input[key="oauth_token_secret"]').val() != '') {
+            if ($('input[key="oauth_token_secret"]').val() !=='') {
                 accessor.tokenSecret = $('input[key="oauth_token_secret"]').val();
                 accessor.tokenSecret = pm.envManager.convertString(accessor.tokenSecret);
             }
@@ -554,7 +554,7 @@ pm.helpers = {
             var oAuthParams = [];
 
             $('input.signatureParam').each(function () {
-                if ($(this).val() != '') {
+                if ($(this).val() !=='') {
                     var val = $(this).val();
                     oAuthParams.push({key: $(this).attr('key'), value: val});
                 }
@@ -573,7 +573,7 @@ pm.helpers = {
 
             var signature = this.generateSignature();
 
-            if (signature == null) {
+            if (signature === null) {
                 return;
             }
 

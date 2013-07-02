@@ -291,7 +291,9 @@ pm.drive = {
     //Executes all changes one by one
     runChangeQueue: function() {
         console.log("Run change queue called");
-        if (pm.drive.isQueueRunning === true) return;
+        if (pm.drive.isQueueRunning === true) {
+            return;
+        }
 
         var changes = pm.drive.changes;
 
@@ -316,7 +318,7 @@ pm.drive = {
     },
 
     getAbout: function(callback) {
-        if (pm.target = pm.targets.CHROME_PACKAGED_APP) {
+        if (pm.target === pm.targets.CHROME_PACKAGED_APP) {
             //jQuery call here with callback
             var url = "https://www.googleapis.com/oauth2/v1/userinfo?alt=json";
 
@@ -439,6 +441,16 @@ pm.drive = {
             var change;
             var filteredLocalDriveChanges = [];
 
+            function existingDriveChangeFinder(c) {
+                if (c.fileId === fileId) {
+                    return true;
+                }
+            }
+
+            function onDeleteLocalDriveChange(localDriveChangeId) {
+                console.log("Deleted local drive change");
+            }
+
             if (localDriveChanges.length > 0) {
                 var localDriveChangesSize = localDriveChanges.length;
                 for (var k = 0; k < localDriveChangesSize; k++) {
@@ -446,9 +458,7 @@ pm.drive = {
 
                     if (localDriveChange.method === "UPDATE") {
                         var fileId = localDriveChange.fileId;
-                        var existingDriveChange = _.find(uniqueChanges, function(c) {
-                            if (c.fileId === fileId) return true;
-                        });
+                        var existingDriveChange = _.find(uniqueChanges, existingDriveChangeFinder);
 
                         if (existingDriveChange) {
                             var existingDriveModifiedDate = new Date(existingDriveChange.file.modifiedDate);
@@ -465,9 +475,7 @@ pm.drive = {
                                 //The drive state will be preferred
                                 //Do not push
                                 //Delete local change
-                                pm.indexedDB.driveChanges.deleteDriveChange(localDriveChange.id, function(localDriveChangeId) {
-                                    console.log("Deleted local drive change");
-                                });
+                                pm.indexedDB.driveChanges.deleteDriveChange(localDriveChange.id, onDeleteLocalDriveChange);
                             }
                         }
                         else {
@@ -585,7 +593,7 @@ pm.drive = {
      * @param {Function} callback Function to call when the client is loaded.
      */
     loadClient: function(callback) {
-        if (pm.target = pm.targets.CHROME_LEGACY_APP) {
+        if (pm.target === pm.targets.CHROME_LEGACY_APP) {
             gapi.client.load('drive', 'v2', pm.drive.handleClientLoad);
         }
     },
@@ -643,6 +651,8 @@ pm.drive = {
     */
 
     getAllChanges: function(callback, startChangeId) {
+        var initialParams;
+        var nextParams;
         var retrievePageOfChanges = function(requestParams, result) {
             var url = pm.drive.DRIVE_API_URL + "changes";
 
@@ -666,9 +676,9 @@ pm.drive = {
 
                     if (nextPageToken) {
                         nextParams = {
-                          'pageToken': nextPageToken,
-                          'includeDeleted' : true,
-                          'fields': 'nextPageToken,largestChangeId,items(fileId,deleted,file(id,title,fileExtension,modifiedDate,downloadUrl))'
+                            'pageToken': nextPageToken,
+                            'includeDeleted' : true,
+                            'fields': 'nextPageToken,largestChangeId,items(fileId,deleted,file(id,title,fileExtension,modifiedDate,downloadUrl))'
                         };
 
                         pm.settings.setSetting("driveStartChangeId", resp.largestChangeId);
@@ -838,8 +848,10 @@ pm.drive = {
         var size = changes.length;
         var found = false;
         var changeId;
+        var change;
+
         for (var i = 0; i < size; i++) {
-            var change = changes[i];
+            change = changes[i];
 
             if (change.method === "UPDATE" && change.targetId === targetId) {
                 console.log("Duplicate found");
@@ -951,7 +963,8 @@ pm.drive = {
                 'headers': {
                     'Content-Type': 'multipart/mixed; boundary="' + boundary + '"'
                 },
-                'body': multipartRequestBody});
+                'body': multipartRequestBody
+            });
 
             request.execute(function(e) {
                 if (callback) {
@@ -1017,7 +1030,8 @@ pm.drive = {
                 'headers': {
                     'Content-Type': 'multipart/mixed; boundary="' + boundary + '"'
                 },
-                'body': multipartRequestBody});
+                'body': multipartRequestBody
+            });
 
             request.execute(function(resp) {
                 if (callback) {
@@ -1094,7 +1108,7 @@ pm.drive = {
         });
 
         if (pm.target === pm.targets.CHROME_LEGACY_APP) {
-            var request = gapi.client.drive.files.delete({
+            request = gapi.client.drive.files.delete({
                 'fileId': fileId
             });
             request.execute(function(resp) {
@@ -1128,16 +1142,19 @@ pm.drive = {
             var xhr = new XMLHttpRequest();
             xhr.open('GET', file.downloadUrl);
             xhr.setRequestHeader('Authorization', 'Bearer ' + accessToken);
+
             xhr.onload = function() {
-              callback(xhr.responseText);
+                callback(xhr.responseText);
             };
+
             xhr.onerror = function() {
-              callback(null);
+                callback(null);
             };
+
             xhr.send();
         } else {
             callback(null);
-      }
+        }
     },
 
     getAuthHeader: function() {

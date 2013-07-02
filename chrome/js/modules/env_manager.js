@@ -41,7 +41,7 @@ pm.envManager = {
         toggleDisplay:function () {
             var display = $('#environment-quicklook-content').css("display");
 
-            if (display == "none") {
+            if (display === "none") {
                 $('#environment-quicklook-content').css("display", "block");
             }
             else {
@@ -290,7 +290,7 @@ pm.envManager = {
 
     initGlobals:function (callback) {
         pm.envManager.globals = [];
-        pm.storage.getValue('globals', function(s) {            ;
+        pm.storage.getValue('globals', function(s) {
             if (s) {
                 pm.envManager.globals = JSON.parse(s);
             }
@@ -486,11 +486,13 @@ pm.envManager = {
 
     mergeEnvironments: function(environments) {
         var size = environments.length;
+        function onUpdateEnvironment() {
+            pm.envManager.getAllEnvironments();
+        }
+
         for(var i = 0; i < size; i++) {
             var environment = environments[i];
-            pm.indexedDB.environments.updateEnvironment(environment, function () {
-                pm.envManager.getAllEnvironments();
-            });
+            pm.indexedDB.environments.updateEnvironment(environment, onUpdateEnvironment);
         }
     },
 
@@ -504,7 +506,9 @@ pm.envManager = {
     drive: {
         registerHandlers: function() {
             if (pm.drive) {
-                if (!pm.drive.isSyncEnabled()) return;
+                if (!pm.drive.isSyncEnabled()) {
+                    return;
+                }
 
                 pm.drive.onUpdate["postman_environment"] = pm.envManager.drive.updateEnvironmentFromDrive;
                 pm.drive.onPost["postman_environment"] = pm.envManager.drive.addEnvironmentFromDrive;
@@ -544,7 +548,9 @@ pm.envManager = {
         },
 
         queueEnvironmentPost: function(environment) {
-            if (!pm.drive.isSyncEnabled()) return;
+            if (!pm.drive.isSyncEnabled()) {
+                return;
+            }
 
             var id = environment.id;
             var name = environment.name + ".postman_environment";
@@ -556,7 +562,9 @@ pm.envManager = {
         },
 
         queueEnvironmentUpdate: function(environment) {
-            if (!pm.drive.isSyncEnabled()) return;
+            if (!pm.drive.isSyncEnabled()) {
+                return;
+            }
 
             var id = environment.id;
             var name = environment.name + ".postman_environment";
@@ -570,7 +578,9 @@ pm.envManager = {
         },
 
         queueEnvironmentDelete: function(id) {
-            if (!pm.drive.isSyncEnabled()) return;
+            if (!pm.drive.isSyncEnabled()) {
+                return;
+            }
 
             pm.envManager.drive.checkIfEnvironmentIsOnDrive(id, function(exists, driveFile) {
                 if (exists) {
@@ -582,7 +592,9 @@ pm.envManager = {
         },
 
         queueGlobalsPost: function(globals) {
-            if (!pm.drive.isSyncEnabled()) return;
+            if (!pm.drive.isSyncEnabled()) {
+                return;
+            }
 
             var id = "globals";
             var name = "globals" + ".postman_globals";
@@ -594,7 +606,9 @@ pm.envManager = {
         },
 
         queueGlobalsUpdate: function(globals) {
-            if (!pm.drive.isSyncEnabled()) return;
+            if (!pm.drive.isSyncEnabled()) {
+                return;
+            }
 
             var id = "globals";
             var name = "globals" + ".postman_globals";

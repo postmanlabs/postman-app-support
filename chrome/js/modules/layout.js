@@ -35,13 +35,13 @@ pm.layout = {
             }
         });
 
-        var launcherNotificationCount = parseInt(pm.settings.getSetting("launcherNotificationCount")) + 1;
+        launcherNotificationCount = parseInt(pm.settings.getSetting("launcherNotificationCount")) + 1;
         pm.settings.setSetting("launcherNotificationCount", launcherNotificationCount);
     },
 
     init:function () {
         pm.layout.detectLauncher();
-        if (pm.settings.get("haveDonated") == true) {
+        if (pm.settings.get("haveDonated") === true) {
             pm.layout.hideDonationBar();
         }
 

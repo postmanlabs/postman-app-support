@@ -124,7 +124,9 @@ var Settings = Backbone.Model.extend({
     drive: {
         registerHandlers: function() {
             if (pm.drive) {
-                if (!pm.drive.isSyncEnabled()) return;
+                if (!pm.drive.isSyncEnabled()) {
+                    return;
+                }
 
                 pm.drive.onUpdate["postman_settings"] = this.drive.updateSettingsFromDrive;
                 pm.drive.onPost["postman_settings"] = this.drive.addSettingsFromDrive;
@@ -144,7 +146,9 @@ var Settings = Backbone.Model.extend({
         },
 
         queueSettingsPost: function(settings) {
-            if (!pm.drive.isSyncEnabled()) return;
+            if (!pm.drive.isSyncEnabled()) {
+                return;
+            }
 
             var id = "settings";
             var name = "settings" + ".postman_settings";
@@ -155,7 +159,9 @@ var Settings = Backbone.Model.extend({
         },
 
         queueSettingsUpdate: function(settings) {
-            if (!pm.drive.isSyncEnabled()) return;
+            if (!pm.drive.isSyncEnabled()) {
+                return;
+            }
 
             var id = "settings";
             var name = "settings" + ".postman_settings";
@@ -206,7 +212,7 @@ var SettingsModal = Backbone.View.extend({
 
         $('#auto-save-request').change(function () {
             var val = $('#auto-save-request').val();
-            if (val == "true") {
+            if (val === "true") {
                 settings.setSetting("autoSaveRequest", true);
             }
             else {
@@ -226,7 +232,7 @@ var SettingsModal = Backbone.View.extend({
 
         $('#send-no-cache-header').change(function () {
             var val = $('#send-no-cache-header').val();
-            if (val == "true") {
+            if (val === "true") {
                 settings.setSetting("sendNoCacheHeader", true);
             }
             else {
@@ -236,7 +242,7 @@ var SettingsModal = Backbone.View.extend({
 
         $('#send-postman-token-header').change(function () {
             var val = $('#send-postman-token-header').val();
-            if (val == "true") {
+            if (val === "true") {
                 settings.setSetting("sendPostmanTokenHeader", true);
             }
             else {
@@ -246,7 +252,7 @@ var SettingsModal = Backbone.View.extend({
 
         $('#use-postman-proxy').change(function () {
             var val = $('#use-postman-proxy').val();
-            if (val == "true") {
+            if (val === "true") {
                 settings.setSetting("usePostmanProxy", true);
                 $('#postman-proxy-url-container').css("display", "block");
             }
@@ -270,7 +276,7 @@ var SettingsModal = Backbone.View.extend({
 
         $('#have-donated').change(function () {
             var val = $('#have-donated').val();
-            if (val == "true") {
+            if (val === "true") {
                 pm.layout.hideDonationBar();
                 settings.setSetting("haveDonated", true);
             }
@@ -281,7 +287,7 @@ var SettingsModal = Backbone.View.extend({
 
         $('#force-windows-line-endings').change(function () {
             var val = $('#force-windows-line-endings').val();
-            if (val == "true") {
+            if (val === "true") {
                 settings.setSetting("forceWindowsLineEndings", true);
             }
             else {
@@ -320,11 +326,11 @@ var SettingsModal = Backbone.View.extend({
             console.log("Clear local cache files");
             //Write code to clear RAL files
             RAL.FileSystem.removeDir('cache', function() {
-              console.log("All clear");
+                console.log("All clear");
             });
         });
 
-        if (this.model.getSetting("usePostmanProxy") == true) {
+        if (this.model.getSetting("usePostmanProxy") === true) {
             $('#postman-proxy-url-container').css("display", "block");
         }
         else {
