@@ -1,6 +1,6 @@
 {
     "name":"Postman - v0.9",
-    "version":"0.9.0.14",
+    "version":"0.9.0.15",
     "minimum_chrome_version": "28",
     "icons":{
         "16":"icon_16.png",
@@ -8,7 +8,7 @@
         "48":"icon_48.png",
         "128":"icon_128.png"
     },
-    
+
     "app":{
         "background": {
             "scripts": ["background.js"]
@@ -33,13 +33,13 @@
 
     "default_locale":"en",
     "permissions":[
-        "http://*/*", 
-        "https://*/*", 
-        "unlimitedStorage", 
+        "http://*/*",
+        "https://*/*",
+        "unlimitedStorage",
         "storage",
-        "fileSystem", 
+        "fileSystem",
         "fileSystem.write"
-        ],    
+        ],
     "manifest_version": 2,
     "offline_enabled":true
 }
