@@ -12,8 +12,8 @@ pm.editor = {
                     return { "link":"" }
                 },
 
-                token:function (stream, state) {                    
-                    if (stream.eatSpace()) {                        
+                token:function (stream, state) {
+                    if (stream.eatSpace()) {
                         return null;
                     }
 
@@ -21,10 +21,10 @@ pm.editor = {
                     var targetString = stream.string.substr(stream.start);
 
                     if (matches = targetString.match(/https?:\/\/[^\\'"\n\t\s]*(?=[<"'\n\t\s])/, false)) {
-                        //Eat all characters before http link                        
+                        //Eat all characters before http link
                         var m = targetString.match(/.*(?=https?:)/, true);
                         if (m) {
-                            if (m[0].length > 0) {                                
+                            if (m[0].length > 0) {
                                 stream.next();
                                 return null;
                             }

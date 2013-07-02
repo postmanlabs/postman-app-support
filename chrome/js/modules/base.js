@@ -109,7 +109,7 @@ window.requestFileSystem = window.requestFileSystem || window.webkitRequestFileS
 
 pm.init = function () {
     Handlebars.partials = Handlebars.templates;
-    var storage = new Storage;
+    var storage = new Storage();
     pm.storage = storage;
 
     pm.settings = new Settings();

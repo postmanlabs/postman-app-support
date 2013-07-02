@@ -1,4 +1,4 @@
-var Storage = Backbone.Model.extend({   
+var Storage = Backbone.Model.extend({
     defaults: function() {
     },
 
@@ -6,11 +6,11 @@ var Storage = Backbone.Model.extend({
         if (pm.target === pm.targets.CHROME_LEGACY_APP) {
             //Implementation here
         }
-        else if (pm.target === pm.targets.CHROME_PACKAGED_APP) {  
+        else if (pm.target === pm.targets.CHROME_PACKAGED_APP) {
             var obj = {};
-            obj[key] = null;            
-            chrome.storage.local.get(obj, function(result) {                       
-                callback(result[key]); 
+            obj[key] = null;
+            chrome.storage.local.get(obj, function(result) {
+                callback(result[key]);
             });
         }
     },
@@ -19,8 +19,8 @@ var Storage = Backbone.Model.extend({
         if (pm.target === pm.targets.CHROME_LEGACY_APP) {
             //Implementation here
         }
-        else if (pm.target === pm.targets.CHROME_PACKAGED_APP) {            
-            chrome.storage.local.set(kvpair, function() {                
+        else if (pm.target === pm.targets.CHROME_PACKAGED_APP) {
+            chrome.storage.local.set(kvpair, function() {
             });
         }
     }

@@ -51,7 +51,7 @@ pm.envManager = {
     },
 
     init:function () {
-        pm.envManager.initGlobals(function() {            
+        pm.envManager.initGlobals(function() {
             pm.envManager.drive.registerHandlers();
             $('#environment-list').append(Handlebars.templates.environment_list({"items":pm.envManager.environments}));
 
@@ -166,7 +166,7 @@ pm.envManager = {
             $('#globals-keyvaleditor').keyvalueeditor('init', params);
             $('#globals-keyvaleditor').keyvalueeditor('reset', pm.envManager.globals);
             pm.envManager.quicklook.init();
-        });        
+        });
     },
 
     getEnvironmentFromId:function (id) {
@@ -263,8 +263,8 @@ pm.envManager = {
 
     getAllEnvironments:function () {
         pm.indexedDB.environments.getAllEnvironments(function (environments) {
-            environments.sort(sortAlphabetical);            
-            
+            environments.sort(sortAlphabetical);
+
             $('#environment-selector .dropdown-menu').html("");
             $('#environments-list tbody').html("");
             pm.envManager.environments = environments;
@@ -288,15 +288,15 @@ pm.envManager = {
         })
     },
 
-    initGlobals:function (callback) {        
+    initGlobals:function (callback) {
         pm.envManager.globals = [];
-        pm.storage.getValue('globals', function(s) {            ;            
+        pm.storage.getValue('globals', function(s) {            ;
             if (s) {
-                pm.envManager.globals = JSON.parse(s);    
+                pm.envManager.globals = JSON.parse(s);
             }
             else {
                 pm.envManager.globals = [];
-            }            
+            }
 
             callback();
         });
@@ -309,7 +309,7 @@ pm.envManager = {
         pm.envManager.quicklook.refreshGlobals(globals);
         var o = {'globals': JSON.stringify(globals)};
         pm.storage.setValue(o, function() {
-            console.log("Set the values");    
+            console.log("Set the values");
             pm.envManager.drive.checkIfGlobalsAreOnDrive("globals", function(exists, driveFile) {
                 if (exists) {
                     pm.envManager.drive.queueGlobalsUpdate(globals);
@@ -414,10 +414,10 @@ pm.envManager = {
 
     duplicateEnvironment:function (id) {
         var env = pm.envManager.getEnvironmentFromId(id);
-        
+
         //get a new name for this duplicated environment
         env.name = env.name + " " + "copy";
-        
+
         //change the env guid
         env.id = guid();
 
@@ -432,7 +432,7 @@ pm.envManager = {
 
             //TODO: Drive syncing here
             pm.envManager.drive.queueEnvironmentPost(env);
-        });        
+        });
     },
 
     downloadEnvironment:function (id) {
@@ -489,9 +489,9 @@ pm.envManager = {
         for(var i = 0; i < size; i++) {
             var environment = environments[i];
             pm.indexedDB.environments.updateEnvironment(environment, function () {
-                pm.envManager.getAllEnvironments();                
-            });    
-        }        
+                pm.envManager.getAllEnvironments();
+            });
+        }
     },
 
     mergeGlobals: function(globals) {
@@ -525,7 +525,7 @@ pm.envManager = {
                     console.log("Environment not found");
                     callback(false);
                 }
-                
+
             });
         },
 
@@ -539,20 +539,20 @@ pm.envManager = {
                     console.log("Globals not found");
                     callback(false);
                 }
-                
+
             });
         },
 
-        queueEnvironmentPost: function(environment) {            
+        queueEnvironmentPost: function(environment) {
             if (!pm.drive.isSyncEnabled()) return;
 
             var id = environment.id;
             var name = environment.name + ".postman_environment";
             var filedata = JSON.stringify(environment);
-            
+
             pm.drive.queuePost(id, "environment", name, filedata, function() {
-                console.log("Uploaded new environment", name);                
-            });            
+                console.log("Uploaded new environment", name);
+            });
         },
 
         queueEnvironmentUpdate: function(environment) {
@@ -564,7 +564,7 @@ pm.envManager = {
 
             pm.indexedDB.driveFiles.getDriveFile(id, function(driveFile) {
                 pm.drive.queueUpdate(id, "environment", name, driveFile.file, filedata, function() {
-                    console.log("Updated environment", environment.id);                
+                    console.log("Updated environment", environment.id);
                 });
             });
         },
@@ -573,12 +573,12 @@ pm.envManager = {
             if (!pm.drive.isSyncEnabled()) return;
 
             pm.envManager.drive.checkIfEnvironmentIsOnDrive(id, function(exists, driveFile) {
-                if (exists) {                
-                    pm.drive.queueDelete(id, "environment", driveFile.file, function() {                    
-                        console.log("Deleted environment", id);                    
+                if (exists) {
+                    pm.drive.queueDelete(id, "environment", driveFile.file, function() {
+                        console.log("Deleted environment", id);
                     });
                 }
-            });            
+            });
         },
 
         queueGlobalsPost: function(globals) {
@@ -587,10 +587,10 @@ pm.envManager = {
             var id = "globals";
             var name = "globals" + ".postman_globals";
             var filedata = JSON.stringify(globals);
-            
+
             pm.drive.queuePost(id, "globals", name, filedata, function() {
-                console.log("Uploaded globals", name);                
-            });            
+                console.log("Uploaded globals", name);
+            });
         },
 
         queueGlobalsUpdate: function(globals) {
@@ -602,7 +602,7 @@ pm.envManager = {
 
             pm.indexedDB.driveFiles.getDriveFile(id, function(driveFile) {
                 pm.drive.queueUpdate(id, "globals", name, driveFile.file, filedata, function() {
-                    console.log("Updated globals", name);                
+                    console.log("Updated globals", name);
                 });
             });
         },
@@ -621,7 +621,7 @@ pm.envManager = {
             var environment = JSON.parse(responseText);
             console.log(environment, responseText);
             pm.indexedDB.environments.updateEnvironment(environment, function () {
-                pm.envManager.getAllEnvironments();                
+                pm.envManager.getAllEnvironments();
             });
         },
 
@@ -629,10 +629,10 @@ pm.envManager = {
         deleteEnvironmentFromDrive: function(id) {
             console.log("Trying to delete environment", id);
             pm.indexedDB.environments.deleteEnvironment(id, function () {
-                pm.envManager.getAllEnvironments();                
+                pm.envManager.getAllEnvironments();
             });
 
-            pm.indexedDB.driveFiles.deleteDriveFile(id, function() {                        
+            pm.indexedDB.driveFiles.deleteDriveFile(id, function() {
             });
         },
 
@@ -640,7 +640,7 @@ pm.envManager = {
             var environment = JSON.parse(responseText);
             console.log("Add to DB");
             pm.indexedDB.environments.addEnvironment(environment, function () {
-                pm.envManager.getAllEnvironments();                
+                pm.envManager.getAllEnvironments();
             });
 
             var newLocalDriveFile = {
@@ -652,10 +652,10 @@ pm.envManager = {
             };
 
             pm.indexedDB.driveFiles.addDriveFile(newLocalDriveFile, function(e) {
-                console.log("Uploaded file", newLocalDriveFile);                            
+                console.log("Uploaded file", newLocalDriveFile);
                 var currentTime = new Date().toISOString();
-                pm.settings.setSetting("lastDriveChangeTime", currentTime);                
-            });  
+                pm.settings.setSetting("lastDriveChangeTime", currentTime);
+            });
         },
 
         addGlobalsFromDrive: function(file, responseText) {
@@ -675,10 +675,10 @@ pm.envManager = {
             };
 
             pm.indexedDB.driveFiles.addDriveFile(newLocalDriveFile, function(e) {
-                console.log("Uploaded file", newLocalDriveFile);                            
+                console.log("Uploaded file", newLocalDriveFile);
                 var currentTime = new Date().toISOString();
-                pm.settings.setSetting("lastDriveChangeTime", currentTime);                
-            });  
+                pm.settings.setSetting("lastDriveChangeTime", currentTime);
+            });
         }
     }
 

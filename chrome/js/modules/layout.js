@@ -4,23 +4,23 @@ pm.layout = {
 
     socialButtons:{
         "facebook":'<iframe src="http://www.facebook.com/plugins/like.php?href=https%3A%2F%2Fchrome.google.com%2Fwebstore%2Fdetail%2Ffdmmgilgnpjigdojojpjoooidkmcomcm&amp;send=false&amp;layout=button_count&amp;width=250&amp;show_faces=true&amp;action=like&amp;colorscheme=light&amp;font&amp;height=21&amp;appId=26438002524" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:250px; height:21px;" allowTransparency="true"></iframe>',
-        "twitter":'<a href="https://twitter.com/share" class="twitter-share-button" data-url="https://chrome.google.com/webstore/detail/fdmmgilgnpjigdojojpjoooidkmcomcm" data-text="I am using Postman to super-charge REST API testing and development!" data-count="horizontal" data-via="postmanclient">Tweet</a><script type="text/javascript" src="https://platform.twitter.com/widgets.js"></script>'        
+        "twitter":'<a href="https://twitter.com/share" class="twitter-share-button" data-url="https://chrome.google.com/webstore/detail/fdmmgilgnpjigdojojpjoooidkmcomcm" data-text="I am using Postman to super-charge REST API testing and development!" data-count="horizontal" data-via="postmanclient">Tweet</a><script type="text/javascript" src="https://platform.twitter.com/widgets.js"></script>'
     },
 
     detectLauncher: function() {
         if(pm.debug) {
-            return;    
+            return;
         }
 
-        var launcherNotificationCount = pm.settings.getSetting("launcherNotificationCount");        
+        var launcherNotificationCount = pm.settings.getSetting("launcherNotificationCount");
         var maxCount = 1;
         if(launcherNotificationCount >= 1) {
             return true;
-        }        
+        }
 
         var extension_id = "igofndmniooofoabmmpfonmdnhgchoka";
-        var extension_url = "https://chrome.google.com/webstore/detail/" + extension_id;        
-        
+        var extension_url = "https://chrome.google.com/webstore/detail/" + extension_id;
+
         noty(
         {
             type:'information',
@@ -32,11 +32,11 @@ pm.layout = {
                     window.open(url, '_blank');
                     window.focus();
                 }
-            }            
-        });        
+            }
+        });
 
-        var launcherNotificationCount = parseInt(pm.settings.getSetting("launcherNotificationCount")) + 1;        
-        pm.settings.setSetting("launcherNotificationCount", launcherNotificationCount);       
+        var launcherNotificationCount = parseInt(pm.settings.getSetting("launcherNotificationCount")) + 1;
+        pm.settings.setSetting("launcherNotificationCount", launcherNotificationCount);
     },
 
     init:function () {
@@ -131,7 +131,7 @@ pm.layout = {
         });
 
         $('a[rel="tooltip"]').tooltip();
-        
+
         this.sidebar.init();
 
         pm.request.response.clear();
@@ -183,7 +183,7 @@ pm.layout = {
 
         $('#modal-edit-collection .btn-primary').click(function () {
             var id = $('#form-edit-collection .collection-id').val();
-            var name = $('#form-edit-collection .collection-name').val();            
+            var name = $('#form-edit-collection .collection-name').val();
 
             pm.collections.updateCollectionMeta(id, name);
             $('#modal-edit-collection').modal('hide');
@@ -192,7 +192,7 @@ pm.layout = {
         $('#modal-edit-collection-request .btn-primary').click(function () {
             var id = $('#form-edit-collection-request .collection-request-id').val();
             var name = $('#form-edit-collection-request .collection-request-name').val();
-            var description = $('#form-edit-collection-request .collection-request-description').val();            
+            var description = $('#form-edit-collection-request .collection-request-description').val();
             pm.collections.updateCollectionRequestMeta(id, name, description);
         });
 
@@ -204,12 +204,12 @@ pm.layout = {
             resizeTimeout = setTimeout(function() {
                 console.log("Set layout");
                 pm.layout.setLayout();
-            }, 500);            
+            }, 500);
         });
 
         $('#response-data').on("mousedown", ".cm-link", function () {
             var link = $(this).html();
-            var headers = $('#headers-keyvaleditor').keyvalueeditor('getValues');                    
+            var headers = $('#headers-keyvaleditor').keyvalueeditor('getValues');
             pm.request.loadRequestFromLink(link, headers);
         });
 
@@ -239,7 +239,7 @@ pm.layout = {
     },
 
     onModalOpen:function (activeModal) {
-        pm.layout.activeModal = activeModal;        
+        pm.layout.activeModal = activeModal;
         pm.layout.isModalOpen = true;
     },
 
@@ -258,7 +258,7 @@ pm.layout = {
             pm.layout.onModalClose();
         });
 
-        $("#modal-edit-collection").on("shown", function () {            
+        $("#modal-edit-collection").on("shown", function () {
             $("#modal-edit-collection .collection-name").focus();
             pm.layout.onModalOpen("#modal-edit-collection");
         });
@@ -371,7 +371,7 @@ pm.layout = {
     },
 
     setLayout:function () {
-        pm.layout.refreshScrollPanes();        
+        pm.layout.refreshScrollPanes();
     },
 
     refreshScrollPanes:function () {
@@ -402,7 +402,7 @@ pm.layout = {
             var animationDuration = pm.layout.sidebar.animationDuration;
             $('#sidebar-toggle').animate({left:"0"}, animationDuration);
             $('#sidebar').animate({width:"0px", marginLeft: "-10px"}, animationDuration);
-            $('#sidebar-search-container').css("display", "none");            
+            $('#sidebar-search-container').css("display", "none");
             $('#sidebar div').animate({opacity:0}, animationDuration);
             var newMainWidth = $(document).width();
             $('#main').animate({width:newMainWidth + "px", "margin-left":"5px"}, animationDuration);
@@ -413,13 +413,13 @@ pm.layout = {
             var animationDuration = pm.layout.sidebar.animationDuration;
             $('#sidebar-toggle').animate({left:"350px"}, animationDuration, function () {
                 if (pm.settings.getSetting("haveDonated") === false) {
-                    $('#sidebar-search-container').fadeIn();    
+                    $('#sidebar-search-container').fadeIn();
                 }
-                
+
             });
 
             $('#sidebar').animate({width:pm.layout.sidebar.width + "px", marginLeft: "0px"}, animationDuration);
-            $('#sidebar div').animate({opacity:1}, animationDuration);            
+            $('#sidebar div').animate({opacity:1}, animationDuration);
             $('#sidebar-toggle img').attr('src', 'img/tri_arrow_left.png');
             var newMainWidth = $(document).width() - pm.layout.sidebar.width - 10;
             var marginLeft = pm.layout.sidebar.width + 10;
@@ -542,5 +542,5 @@ pm.layout = {
             $('#collection-' + id).remove();
             pm.layout.refreshScrollPanes();
         }
-    }    
+    }
 };

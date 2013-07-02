@@ -1,4 +1,4 @@
-var Logger = Backbone.Model.extend({	
+var Logger = Backbone.Model.extend({
 	defaults: function() {
 		return {
 			toShow: true
@@ -7,7 +7,7 @@ var Logger = Backbone.Model.extend({
 
 	//For debug messages
 	debug: function() {
-		console.log(arguments);			
+		console.log(arguments);
 	},
 
 	//For stuff that is ok to be logged in production code. For ex. error messages

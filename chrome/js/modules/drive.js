@@ -1,4 +1,4 @@
-function gapiIsLoaded() {    
+function gapiIsLoaded() {
     //TODO Enable this when experimental APIs become unavailable
     //pm.drive.checkAuth();
 }
@@ -28,21 +28,21 @@ pm.drive = {
     initiateConnection: function() {
         //Show drive dialog for the first time user
         //Start drive authentication flow only after the user says yes
-        //Do not pester every time        
+        //Do not pester every time
         pm.drive.setupHandlers();
         var driveSyncConnectionStatus = pm.settings.getSetting("driveSyncConnectionStatus");
 
         if (driveSyncConnectionStatus === "not_connected") {
             console.log("Show modal");
-            $("#modal-drive-first-time-sync").modal("show");    
+            $("#modal-drive-first-time-sync").modal("show");
         }
         else if (driveSyncConnectionStatus === "connection_started") {
-            $("#modal-drive-first-time-sync").modal("show");    
+            $("#modal-drive-first-time-sync").modal("show");
             $('#drive-first-time-sync-step1 .connection-error').css("display", "block");
             $("#drive-first-time-sync-step1").css("display", "block");
             $("#drive-first-time-sync-step2").css("display", "none");
         }
-        
+
     },
 
     showConnectedStatusModal: function() {
@@ -53,14 +53,14 @@ pm.drive = {
         if (about.user) {
             if (about.user.picture) {
                 var pictureUrl = about.user.picture.url;
-                $("#user-details-image").html("<img src='" + pictureUrl + "'/>");            
-            }        
+                $("#user-details-image").html("<img src='" + pictureUrl + "'/>");
+            }
         }
 
-        var currentTime = new Date(pm.settings.getSetting("lastDriveChangeTime"));    
-        var t = $.timeago(currentTime); 
+        var currentTime = new Date(pm.settings.getSetting("lastDriveChangeTime"));
+        var t = $.timeago(currentTime);
         $("#sync-details-last-modified").html("Last synced " + t);
-    }, 
+    },
 
     setupHandlers: function() {
         console.log("Initiated drive handlers");
@@ -77,11 +77,11 @@ pm.drive = {
         $('#drive-sync-start-refresh-auth').on("click", function() {
             $("#modal-drive-first-time-sync").modal("hide")
             pm.drive.checkAuth();
-        }); 
+        });
     },
 
     initiateServerSideAuth: function() {
-        var redirect_uri = 'http://www.getpostman.com/oauth2callback';      
+        var redirect_uri = 'http://www.getpostman.com/oauth2callback';
         var url = 'https://accounts.google.com/o/oauth2/auth?';
         url += 'scope=' + encodeURIComponent(pm.drive.SCOPES.join(' ')) + '&'; //add scopes
         url += 'redirect_uri=' + encodeURIComponent(redirect_uri) + '&';
@@ -109,11 +109,11 @@ pm.drive = {
                 {
                     'client_id': pm.drive.CLIENT_ID,
                     'scope': pm.drive.SCOPES,
-                    'immediate': false 
+                    'immediate': false
                 },
                 pm.drive.handleAuthResult)
             ;
-        }        
+        }
     },
 
     isSyncEnabled: function() {
@@ -141,7 +141,7 @@ pm.drive = {
     removeChange: function(changeId) {
         pm.indexedDB.driveChanges.deleteDriveChange(changeId, function(e) {
             console.log("Removed drive change");
-            
+
             var size = pm.drive.changes.length;
 
             for(var i = 0; i < size; i++) {
@@ -155,7 +155,7 @@ pm.drive = {
             pm.drive.changes.splice(i, 1);
 
             pm.drive.isQueueRunning = false;
-            pm.drive.runChangeQueue();                        
+            pm.drive.runChangeQueue();
         });
     },
 
@@ -165,7 +165,7 @@ pm.drive = {
         var changeId = change.id;
         var changeTargetId = change.targetId;
         var changeTargetType = change.targetType;
-        var method = change.method;    
+        var method = change.method;
         var type = "application/json";
 
         var fileId;
@@ -174,7 +174,7 @@ pm.drive = {
         var name;
 
         if ("fileId" in change) {
-            fileId = change.fileId;            
+            fileId = change.fileId;
         }
 
         if ("file" in change) {
@@ -187,7 +187,7 @@ pm.drive = {
 
         if ("name" in change) {
             name = change.name;
-        }                            
+        }
 
         pm.drive.isSyncing = true;
 
@@ -195,16 +195,16 @@ pm.drive = {
 
 
         //TODO Do not delete a driveChange if the request was not succesful
-        if (method === "POST") {            
-            pm.drive.postFile(name, type, fileData, function(file) {                
+        if (method === "POST") {
+            pm.drive.postFile(name, type, fileData, function(file) {
                 pm.drive.isSyncing = false;
                 pm.drive.onFinishSyncing();
 
                 if (file.error) {
                     if (file.error.code === 401) {
-                        pm.drive.checkAuth();    
+                        pm.drive.checkAuth();
                     }
-                    
+
                     console.log("Something went wrong", file);
                 }
                 else {
@@ -221,11 +221,11 @@ pm.drive = {
                     pm.indexedDB.driveFiles.addDriveFile(localDriveFile, function(e) {
                         console.log("Uploaded file", localDriveFile);
                         //Remove the change inside driveChange
-                        pm.drive.removeChange(changeId);    
+                        pm.drive.removeChange(changeId);
 
                         pm.drive.updateLastChangedTime();
-                    });                
-                }                                
+                    });
+                }
             });
         }
         else if (method === "DELETE") {
@@ -235,7 +235,7 @@ pm.drive = {
 
                 if (response.error) {
                     if (response.error.code === 401) {
-                        pm.drive.checkAuth();    
+                        pm.drive.checkAuth();
                     }
                     else if (response.error.code === 404) {
                         pm.drive.removeChange(changeId);
@@ -248,12 +248,12 @@ pm.drive = {
                         console.log("Deleted local file");
                         pm.drive.removeChange(changeId);
                         pm.drive.updateLastChangedTime();
-                    });    
+                    });
                 }
-                
+
             });
         }
-        else if (method === "UPDATE") {            
+        else if (method === "UPDATE") {
             pm.drive.updateFile(name, file, fileData, function(updatedFile) {
                 console.log("Executing update", updatedFile);
 
@@ -262,11 +262,11 @@ pm.drive = {
 
                 if (updatedFile.error) {
                     if (updatedFile.error.code === 401) {
-                        pm.drive.checkAuth();    
+                        pm.drive.checkAuth();
                     }
                     console.log("Something went wrong", updatedFile);
                 }
-                else {                    
+                else {
                     var updatedLocalDriveFile = {
                         "id": changeTargetId,
                         "type": changeTargetType,
@@ -279,12 +279,12 @@ pm.drive = {
 
                     pm.indexedDB.driveFiles.updateDriveFile(updatedLocalDriveFile, function() {
                         //Remove the change inside driveChange
-                        pm.drive.removeChange(changeId);    
+                        pm.drive.removeChange(changeId);
                         pm.drive.updateLastChangedTime();
                     });
                 }
-                                
-            });            
+
+            });
         }
     },
 
@@ -293,33 +293,33 @@ pm.drive = {
         console.log("Run change queue called");
         if (pm.drive.isQueueRunning === true) return;
 
-        var changes = pm.drive.changes;        
+        var changes = pm.drive.changes;
 
         if (changes.length > 0) {
-            pm.drive.executeChange(changes[0]);    
+            pm.drive.executeChange(changes[0]);
         }
         else {
             pm.drive.isQueueRunning = false;
-        }                
+        }
     },
 
     /**
      * Called when the client library is loaded.
      */
     handleClientLoad: function() {
-        console.log("Client has loaded");        
+        console.log("Client has loaded");
         pm.drive.getAbout(function(about) {
-            pm.drive.about = about;     
+            pm.drive.about = about;
             pm.drive.updateUserStatus(about);
-            pm.drive.fetchChanges();              
-        });        
+            pm.drive.fetchChanges();
+        });
     },
 
     getAbout: function(callback) {
         if (pm.target = pm.targets.CHROME_PACKAGED_APP) {
             //jQuery call here with callback
             var url = "https://www.googleapis.com/oauth2/v1/userinfo?alt=json";
-            
+
             $.ajax(url, {
                 headers: {
                     "Authorization": pm.drive.getAuthHeader()
@@ -332,23 +332,23 @@ pm.drive = {
                 },
 
                 error: function(jqXHR, textStatus, errorThrown) {
-                    console.log(errorThrown, textStatus, jqXHR);                
+                    console.log(errorThrown, textStatus, jqXHR);
                 }
             });
         }
         else {
             var request = gapi.client.drive.about.get();
             request.execute(function(resp) {
-                pm.drive.about = resp;            
-                callback(resp);            
+                pm.drive.about = resp;
+                callback(resp);
             });
-        }            
+        }
     },
 
     fetchChanges: function() {
         pm.drive.onStartSyncing();
-            
-        pm.drive.isSyncing = true;        
+
+        pm.drive.isSyncing = true;
         var startChangeId = pm.settings.getSetting("driveStartChangeId");
         startChangeId = parseInt(startChangeId, 10) + 1;
         console.log(startChangeId);
@@ -359,18 +359,18 @@ pm.drive = {
             pm.drive.isSyncing = false;
 
             pm.drive.onFinishSyncing();
-            pm.drive.filterChangesFromDrive(changes);                               
+            pm.drive.filterChangesFromDrive(changes);
         }, startChangeId);
     },
 
-    updateUserStatus: function(about) {        
+    updateUserStatus: function(about) {
         $("#user-status-text").html(about.name);
         var pictureUrl = about.picture;
-        $("#user-img").html("<img src='" + pictureUrl + "' width='20px' height='20px'/>");        
+        $("#user-img").html("<img src='" + pictureUrl + "' width='20px' height='20px'/>");
     },
 
     onStartSyncing: function() {
-        pm.drive.startSyncStatusAnimation();        
+        pm.drive.startSyncStatusAnimation();
         //$("#user-img").html("<img src='img/ajax-loader.gif' width='20px' height='20px'/>");
     },
 
@@ -390,7 +390,7 @@ pm.drive = {
         For the initial filteredChanges:
         List all fileIds and if a duplicate is found then remove the last one
         */
-        
+
         var size = changes.length;
         var change;
 
@@ -401,12 +401,12 @@ pm.drive = {
             var fileId = change.fileId;
             var deleted = change.deleted;
 
-            
+
             var index = arrayObjectIndexOf(uniqueChanges, "fileId", fileId);
 
             if (index === -1) {
                 uniqueChanges.push(change);
-            }            
+            }
             else {
                 console.log("Removing duplicate change");
                 //Remove the existing change
@@ -422,13 +422,13 @@ pm.drive = {
         3. If the timestamp of the drive change is greater then keep the change
         4. last change time would be stored as the last time uploaded on the server
         5. Implement filteredChanges
-        6. If any local changes are still remaining, then push them on the server by calling runQueue           
+        6. If any local changes are still remaining, then push them on the server by calling runQueue
         7. For same fileIds only one change will remain
         8. How to compare local drive change and drive API change without reading the contents of the file? Use fileIds
         9. Only have to be concerned with updates and deletes
         10. POSTs will be created anyway
-        11. DELETEing a non-exist 
-        */        
+        11. DELETEing a non-exist
+        */
 
         pm.indexedDB.driveChanges.getAllDriveChanges(function(localDriveChanges) {
             pm.drive.changes = localDriveChanges;
@@ -436,21 +436,21 @@ pm.drive = {
             console.log("Local drive changes are", localDriveChanges);
 
             var filteredChanges = []; //Only the latest ones
-            var change;            
+            var change;
             var filteredLocalDriveChanges = [];
 
-            if (localDriveChanges.length > 0) {                
+            if (localDriveChanges.length > 0) {
                 var localDriveChangesSize = localDriveChanges.length;
                 for (var k = 0; k < localDriveChangesSize; k++) {
                     var localDriveChange = localDriveChanges[k];
 
                     if (localDriveChange.method === "UPDATE") {
-                        var fileId = localDriveChange.fileId;                        
+                        var fileId = localDriveChange.fileId;
                         var existingDriveChange = _.find(uniqueChanges, function(c) {
                             if (c.fileId === fileId) return true;
                         });
 
-                        if (existingDriveChange) {                            
+                        if (existingDriveChange) {
                             var existingDriveModifiedDate = new Date(existingDriveChange.file.modifiedDate);
                             var localModifiedDate = new Date(localDriveChange.timestamp);
 
@@ -471,7 +471,7 @@ pm.drive = {
                             }
                         }
                         else {
-                            filteredLocalDriveChanges.push(localDriveChange);    
+                            filteredLocalDriveChanges.push(localDriveChange);
                         }
                     }
                     else {
@@ -479,7 +479,7 @@ pm.drive = {
                     }
                 }
             }
-            
+
             var size = uniqueChanges.length;
             for(var i = 0; i < size; i++) {
                 change = uniqueChanges[i];
@@ -497,11 +497,11 @@ pm.drive = {
                     if (lastTime.getTime()) {
                         if (t.getTime() > lastTime.getTime()) {
                             filteredChanges.push(change);
-                        }    
+                        }
                     }
                     else {
                         filteredChanges.push(change);
-                    }                
+                    }
                 }
                 else {
                     filteredChanges.push(change);
@@ -511,7 +511,7 @@ pm.drive = {
             pm.drive.implementFilteredChanges(filteredChanges, filteredLocalDriveChanges);
         });
 
-        
+
     },
 
     implementFilteredChanges: function(changes, localDriveChanges) {
@@ -533,25 +533,25 @@ pm.drive = {
 
         if (localDriveChanges.length > 0) {
             console.log("Local changes remaining");
-            pm.drive.changes = localDriveChanges;    
+            pm.drive.changes = localDriveChanges;
             pm.drive.runChangeQueue();
-        }        
-    },    
+        }
+    },
 
     deleteDriveFile: function(fileId) {
-        pm.indexedDB.driveFiles.getDriveFileByFileId(fileId, function(file) {            
+        pm.indexedDB.driveFiles.getDriveFileByFileId(fileId, function(file) {
             if (file) {
                 var type = file.type;
                 var id = file.id;
                 console.log("Delete", pm.drive.onDelete[type]);
                 pm.drive.onDelete[type](id);
             }
-            
+
         });
     },
 
     createOrUpdateFile: function(fileId, file) {
-        pm.indexedDB.driveFiles.getDriveFileByFileId(fileId, function(localDriveFile) {                        
+        pm.indexedDB.driveFiles.getDriveFileByFileId(fileId, function(localDriveFile) {
             if (localDriveFile) {
                 //Local drive file exists
                 console.log("Update file");
@@ -562,7 +562,7 @@ pm.drive = {
                     localDriveFile.file = file;
                     localDriveFile.timestamp = new Date().getTime();
 
-                    pm.indexedDB.driveFiles.updateDriveFile(localDriveFile, function() {                        
+                    pm.indexedDB.driveFiles.updateDriveFile(localDriveFile, function() {
                         console.log("Updated local drive file");
                     });
 
@@ -573,7 +573,7 @@ pm.drive = {
                 //Local drive file does not exist
                 console.log("Add new");
                 pm.drive.getFile(file, function(responseText) {
-                    console.log("Obtained file from drive", file.fileExtension, pm.drive.onPost);                    
+                    console.log("Obtained file from drive", file.fileExtension, pm.drive.onPost);
                     pm.drive.onPost[file.fileExtension](file, responseText);
                 });
             }
@@ -586,8 +586,8 @@ pm.drive = {
      */
     loadClient: function(callback) {
         if (pm.target = pm.targets.CHROME_LEGACY_APP) {
-            gapi.client.load('drive', 'v2', pm.drive.handleClientLoad);    
-        }        
+            gapi.client.load('drive', 'v2', pm.drive.handleClientLoad);
+        }
     },
 
     refreshAuth: function(callback) {
@@ -595,16 +595,16 @@ pm.drive = {
 
     /*
     https://developers.google.com/drive/v2/reference/changes/list
-        
+
     getAllChanges: function(callback, startChangeId) {
         var url = pm.drive.DRIVE_API_URL + "/changes";
 
         var retrievePageOfChanges = function(request, result) {
             request.execute(function(resp) {
                 if ("items" in resp) {
-                    result = result.concat(resp.items);      
-                } 
-              
+                    result = result.concat(resp.items);
+                }
+
                 var nextPageToken = resp.nextPageToken;
                 if (nextPageToken) {
                     request = gapi.client.drive.changes.list({
@@ -616,7 +616,7 @@ pm.drive = {
                     pm.settings.setSetting("driveStartChangeId", resp.largestChangeId);
                     retrievePageOfChanges(request, result);
                 } else {
-                    pm.settings.setSetting("driveStartChangeId", resp.largestChangeId);                    
+                    pm.settings.setSetting("driveStartChangeId", resp.largestChangeId);
                     callback(result);
                 }
             });
@@ -630,11 +630,11 @@ pm.drive = {
                 'includeDeleted' : true,
                 'fields': 'nextPageToken,largestChangeId,items(fileId,deleted,file(id,title,fileExtension,modifiedDate,downloadUrl))'
             });
-        } 
+        }
         else {
             initialRequest = gapi.client.drive.changes.list({
                 'includeDeleted' : true,
-                'fields': 'nextPageToken,largestChangeId,items(fileId,deleted,file(id,title,fileExtension,modifiedDate,downloadUrl))' 
+                'fields': 'nextPageToken,largestChangeId,items(fileId,deleted,file(id,title,fileExtension,modifiedDate,downloadUrl))'
             });
         }
 
@@ -645,7 +645,7 @@ pm.drive = {
     getAllChanges: function(callback, startChangeId) {
         var retrievePageOfChanges = function(requestParams, result) {
             var url = pm.drive.DRIVE_API_URL + "changes";
-            
+
             $.ajax(url, {
                 type: "GET",
 
@@ -659,9 +659,9 @@ pm.drive = {
                     console.log("Received changes", resp, textStatus, jqXHR);
 
                     if ("items" in resp) {
-                        result = result.concat(resp.items);      
+                        result = result.concat(resp.items);
                     }
-                    
+
                     var nextPageToken = resp.nextPageToken;
 
                     if (nextPageToken) {
@@ -674,14 +674,14 @@ pm.drive = {
                         pm.settings.setSetting("driveStartChangeId", resp.largestChangeId);
                         retrievePageOfChanges(nextParams, result);
                     } else {
-                        pm.settings.setSetting("driveStartChangeId", resp.largestChangeId);                    
+                        pm.settings.setSetting("driveStartChangeId", resp.largestChangeId);
                         callback(result);
                     }
                 },
 
                 error: function(jqXHR, textStatus, errorThrown) {
                     console.log(errorThrown, textStatus, jqXHR);
-                    callback(false);                
+                    callback(false);
                 }
             });
         }
@@ -694,11 +694,11 @@ pm.drive = {
                 'includeDeleted' : true,
                 'fields': 'nextPageToken,largestChangeId,items(fileId,deleted,file(id,title,fileExtension,modifiedDate,downloadUrl))'
             };
-        } 
+        }
         else {
             initialParams = {
                 'includeDeleted' : true,
-                'fields': 'nextPageToken,largestChangeId,items(fileId,deleted,file(id,title,fileExtension,modifiedDate,downloadUrl))' 
+                'fields': 'nextPageToken,largestChangeId,items(fileId,deleted,file(id,title,fileExtension,modifiedDate,downloadUrl))'
             };
         }
 
@@ -707,7 +707,7 @@ pm.drive = {
 
     getChangeList: function(params, callback) {
         var url = pm.drive.DRIVE_API_URL + "changes";
-        
+
         $.ajax(url, {
             type: "GET",
 
@@ -718,30 +718,30 @@ pm.drive = {
             data: params,
 
             success: function(data, textStatus, jqXHR) {
-                console.log("Received changes", data);                
+                console.log("Received changes", data);
                 callback(data);
             },
 
             error: function(jqXHR, textStatus, errorThrown) {
                 console.log(errorThrown, textStatus, jqXHR);
-                callback(false);                
+                callback(false);
             }
         });
     },
 
     setupUiHandlers: function() {
-        pm.settings.setSetting("driveSyncConnectionStatus", "not_connected");                    
+        pm.settings.setSetting("driveSyncConnectionStatus", "not_connected");
         $("#user-status-text").on("click", function() {
-            var driveSyncConnectionStatus = pm.settings.getSetting("driveSyncConnectionStatus");            
-            if (driveSyncConnectionStatus === "not_connected") {                
-                $("#modal-drive-first-time-sync").modal("show");    
-            }        
+            var driveSyncConnectionStatus = pm.settings.getSetting("driveSyncConnectionStatus");
+            if (driveSyncConnectionStatus === "not_connected") {
+                $("#modal-drive-first-time-sync").modal("show");
+            }
             else if (driveSyncConnectionStatus === "connected") {
-                pm.drive.showConnectedStatusModal();                
+                pm.drive.showConnectedStatusModal();
             }
         });
 
-        $("#sync-status").on("click", function() {            
+        $("#sync-status").on("click", function() {
             pm.drive.fetchChanges();
         });
     },
@@ -749,7 +749,7 @@ pm.drive = {
     /**
      * Check if the current user has authorized the application.
      */
-    checkAuth: function() {        
+    checkAuth: function() {
         if (pm.target === pm.targets.CHROME_PACKAGED_APP) {
             chrome.experimental.identity.getAuthToken({ 'interactive': true }, pm.drive.handleAuthResult);
         }
@@ -762,7 +762,7 @@ pm.drive = {
             },
 
             pm.drive.handleAuthResult);
-        }        
+        }
     },
 
     /**
@@ -770,13 +770,13 @@ pm.drive = {
      *
      * @param {Object} authResult Authorization result.
      */
-    handleAuthResult: function(result) {        
+    handleAuthResult: function(result) {
         console.log("Auth result", result);
         if (pm.target === pm.targets.CHROME_PACKAGED_APP) {
             if (result) {
                 pm.drive.authToken = result;
                 // Access token has been successfully retrieved, requests can be sent to the API
-                //pm.drive.loadClient(pm.drive.handleClientLoad);           
+                //pm.drive.loadClient(pm.drive.handleClientLoad);
 
                 //TODO Disabled drive for now
                 //pm.settings.setSetting("driveSyncConnectionStatus", "connected");
@@ -786,27 +786,27 @@ pm.drive = {
                     //pm.drive.fetchChanges();
                 });
 
-                $("#sync-status").css("display", "block");            
+                $("#sync-status").css("display", "block");
             } else {
                 console.log("Could not connect to drive");
                 pm.settings.setSetting("driveSyncConnectionStatus", "not_connected");
                 // No access token could be retrieved, force the authorization flow.
-                //pm.drive.initiateConnection();            
+                //pm.drive.initiateConnection();
             }
         }
         else {
             if (result) {
                 pm.settings.setSetting("driveSyncConnectionStatus", "connected");
                 pm.drive.auth = result;
-                pm.drive.loadClient(pm.drive.handleClientLoad);            
+                pm.drive.loadClient(pm.drive.handleClientLoad);
                 // Access token has been successfully retrieved, requests can be sent to the API
             } else {
                 pm.settings.setSetting("driveSyncConnectionStatus", "not_connected");
                 // No access token could be retrieved, force the authorization flow.
-                pm.drive.initiateConnection();            
+                pm.drive.initiateConnection();
             }
         }
-        
+
     },
 
     createFolder: function(folderName, callback) {
@@ -816,7 +816,7 @@ pm.drive = {
     queuePost: function(targetId, targetType, name, fileData, callback) {
         //TODO: Insert parentId here
         var change = {
-            id: guid(),            
+            id: guid(),
             fileData: fileData,
             method: "POST",
             name: name,
@@ -825,7 +825,7 @@ pm.drive = {
             timestamp: new Date().getTime()
         };
 
-        pm.indexedDB.driveChanges.addDriveChange(change, function(change) {            
+        pm.indexedDB.driveChanges.addDriveChange(change, function(change) {
             console.log("Post change added");
             pm.drive.changes.push(change);
             pm.drive.runChangeQueue();
@@ -845,7 +845,7 @@ pm.drive = {
                 console.log("Duplicate found");
                 console.log(pm.drive.changes);
                 changeId = change.id;
-                found = true;                
+                found = true;
                 break;
             }
         }
@@ -855,15 +855,15 @@ pm.drive = {
             console.log(pm.drive.changes);
             pm.indexedDB.driveChanges.deleteDriveChange(change.id, function(e) {
                 console.log("Deleted existing drive change");
-            });    
+            });
         }
-        
-        return found;        
+
+        return found;
     },
 
     queueUpdate: function(targetId, targetType, name, file, fileData, callback) {
         var change = {
-            id: guid(),            
+            id: guid(),
             fileData: fileData,
             file: file,
             fileId: file.id,
@@ -874,7 +874,7 @@ pm.drive = {
             timestamp: new Date().getTime()
         };
 
-        pm.drive.removeExistingUpdateIfPresent(targetId);                    
+        pm.drive.removeExistingUpdateIfPresent(targetId);
         pm.indexedDB.driveChanges.addDriveChange(change, function(change) {
             console.log("Update change added");
             pm.drive.changes.push(change);
@@ -885,9 +885,9 @@ pm.drive = {
 
     queueTrash: function(targetId, targetType, file, callback) {
         var change = {
-            id: guid(),            
+            id: guid(),
             fileId: file.id,
-            method: "TRASH",            
+            method: "TRASH",
             targetId: targetId,
             targetType: targetType,
             timestamp: new Date().getTime()
@@ -903,9 +903,9 @@ pm.drive = {
 
     queueDelete: function(targetId, targetType, file, callback) {
         var change = {
-            id: guid(),            
+            id: guid(),
             fileId: file.id,
-            method: "DELETE",            
+            method: "DELETE",
             targetId: targetId,
             targetType: targetType,
             timestamp: new Date().getTime()
@@ -922,7 +922,7 @@ pm.drive = {
     /* https://developers.google.com/drive/v2/reference/files/insert */
     postFile: function(name, type, fileData, callback) {
         var url = pm.drive.DRIVE_API_URL + "/files";
-        var method = 'POST';        
+        var method = 'POST';
 
         var boundary = '-------314159265358979323846';
         var delimiter = "\r\n--" + boundary + "\r\n";
@@ -953,10 +953,10 @@ pm.drive = {
                 },
                 'body': multipartRequestBody});
 
-            request.execute(function(e) {            
+            request.execute(function(e) {
                 if (callback) {
-                    callback(e);    
-                }            
+                    callback(e);
+                }
             });
         }
         else {
@@ -974,20 +974,20 @@ pm.drive = {
 
                 success: function(data, textStatus, jqXHR) {
                     if (callback) {
-                        callback(data);    
+                        callback(data);
                     }
                 },
 
                 error: function(jqXHR, textStatus, errorThrown) {
-                    console.log(errorThrown, textStatus, jqXHR);                
+                    console.log(errorThrown, textStatus, jqXHR);
                 }
             });
-        }                
+        }
     },
 
     updateFile: function(name, file, fileData, callback) {
         var url = pm.drive.DRIVE_API_URL + "/files/" + file.id;
-        var method = 'PUT';        
+        var method = 'PUT';
 
         var boundary = '-------314159265358979323846';
         var delimiter = "\r\n--" + boundary + "\r\n";
@@ -1019,10 +1019,10 @@ pm.drive = {
                 },
                 'body': multipartRequestBody});
 
-            request.execute(function(resp) {            
+            request.execute(function(resp) {
                 if (callback) {
                     console.log(resp);
-                    callback(resp);    
+                    callback(resp);
                 }
             });
         }
@@ -1041,18 +1041,18 @@ pm.drive = {
 
                 success: function(data, textStatus, jqXHR) {
                     if (callback) {
-                        callback(data);    
+                        callback(data);
                     }
                 },
 
                 error: function(jqXHR, textStatus, errorThrown) {
-                    console.log(errorThrown, textStatus, jqXHR);                
+                    console.log(errorThrown, textStatus, jqXHR);
                 }
             });
-        }        
+        }
     },
 
-    trashFile: function(fileId, callback) {        
+    trashFile: function(fileId, callback) {
         var url = pm.drive.DRIVE_API_URL + "/files/" + fileId + "/trash";
         var method = "POST";
 
@@ -1074,20 +1074,20 @@ pm.drive = {
 
                 success: function(data, textStatus, jqXHR) {
                     if (callback) {
-                        callback();    
+                        callback();
                     }
                 },
 
                 error: function(jqXHR, textStatus, errorThrown) {
-                    console.log(errorThrown, textStatus, jqXHR);                
+                    console.log(errorThrown, textStatus, jqXHR);
                 }
             });
-        }        
+        }
     },
 
-    deleteFile: function(fileId, callback) {        
+    deleteFile: function(fileId, callback) {
         var url = pm.drive.DRIVE_API_URL + "/files/" + fileId; //Set URL here
-        var method = "DELETE";        
+        var method = "DELETE";
 
         var request = gapi.client.drive.files.delete({
             'fileId': fileId
@@ -1111,15 +1111,15 @@ pm.drive = {
 
                 success: function(data, textStatus, jqXHR) {
                     if (callback) {
-                        callback(data);    
+                        callback(data);
                     }
                 },
 
                 error: function(jqXHR, textStatus, errorThrown) {
-                    console.log(errorThrown, textStatus, jqXHR);                
+                    console.log(errorThrown, textStatus, jqXHR);
                 }
             });
-        }        
+        }
     },
 
     getFile: function(file, callback) {
@@ -1153,15 +1153,15 @@ pm.drive = {
         $("#sync-status img").addClass("sync-spin");
     },
 
-    stopSyncStatusAnimation: function() {        
+    stopSyncStatusAnimation: function() {
         $("#sync-status img").removeClass("sync-spin");
         $("#sync-status img").addClass("sync-normal");
         pm.drive.updateLastChangedTime();
     },
 
     updateLastChangedTime: function() {
-        var currentTime = new Date(pm.settings.getSetting("lastDriveChangeTime"));    
-        var t = $.timeago(currentTime);        
+        var currentTime = new Date(pm.settings.getSetting("lastDriveChangeTime"));
+        var t = $.timeago(currentTime);
         $("#sync-status a").attr("data-original-title", "Last synced " + t);
     }
 

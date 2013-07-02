@@ -88,13 +88,13 @@ pm.filesystem = {
         });
     },
 
-    saveAndOpenFile:function (name, data, type, callback) {            
+    saveAndOpenFile:function (name, data, type, callback) {
         chrome.fileSystem.chooseEntry({type: 'saveFile', suggestedName: name}, function(writableFileEntry) {
             writableFileEntry.createWriter(function(writer) {
             writer.onerror = function (e) {
                 callback();
             };;
-            
+
             writer.onwriteend = function(e) {
                 console.log('write complete');
                 callback();

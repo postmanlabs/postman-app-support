@@ -100,7 +100,7 @@ pm.history = {
         });
     },
 
-    addRequest:function (url, method, headers, data, dataMode) {        
+    addRequest:function (url, method, headers, data, dataMode) {
         var id = guid();
         var maxHistoryCount = pm.settings.getSetting("historyCount");
         var requests = this.requests;
@@ -111,8 +111,8 @@ pm.history = {
                 //Delete the last request
                 var lastRequest = requests[0];
                 this.deleteRequest(lastRequest.id);
-            }    
-        }        
+            }
+        }
 
         var historyRequest = {
             "id":id,
@@ -170,7 +170,7 @@ pm.history = {
         var requests = pm.history.requests;
         var count = requests.length;
         var filteredItems = [];
-        for (var i = 0; i < count; i++) {            
+        for (var i = 0; i < count; i++) {
             var id = requests[i].id;
             var url = requests[i].url;
 

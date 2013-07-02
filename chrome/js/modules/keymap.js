@@ -33,7 +33,7 @@ pm.keymap = {
             return true;
         });
 
-        $('body').on('keydown', 'textarea', function (event) {            
+        $('body').on('keydown', 'textarea', function (event) {
             if(pm.layout.isModalOpen) return;
 
             if (event.keyCode === 27) {
@@ -50,12 +50,12 @@ pm.keymap = {
         $(document).bind('keydown', 'alt+c', clearHistoryHandler);
         $(document).bind('keydown', 'backspace', urlFocusHandler);
         $(document).bind('keydown', 'alt+n', newRequestHandler);
-        
+
         $(document).bind('keydown', 'alt+p', function() {
             pm.request.handlePreviewClick();
         });
 
-        $(document).bind('keydown', 'q', function () {            
+        $(document).bind('keydown', 'q', function () {
             pm.envManager.quicklook.toggleDisplay();
             return false;
         });
@@ -78,7 +78,7 @@ pm.keymap = {
             return false;
         });
 
-        $(document).bind('keydown', 'return', function () {            
+        $(document).bind('keydown', 'return', function () {
             if(pm.layout.isModalOpen) return;
 
             pm.request.send("text");
@@ -122,7 +122,7 @@ pm.keymap = {
 
         $(document).bind('keydown', 'a', function () {
             if(pm.layout.isModalOpen) return;
-            
+
             if (pm.collections.areLoaded === false) {
                 pm.collections.getAllCollections();
             }

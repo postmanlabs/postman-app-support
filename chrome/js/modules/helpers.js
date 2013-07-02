@@ -83,7 +83,7 @@ pm.helpers = {
             var helper = {
                 id: "basic",
                 username: "",
-                password: "", 
+                password: "",
                 timestamp: new Date().getTime()
             };
 
@@ -96,8 +96,8 @@ pm.helpers = {
             pm.indexedDB.helpers.getHelper("basic", function(helper) {
                 if (helper) {
                     $('#request-helper-basicAuth-username').val(helper.username);
-                    $('#request-helper-basicAuth-password').val(helper.password);    
-                }                
+                    $('#request-helper-basicAuth-password').val(helper.password);
+                }
             });
         },
 
@@ -108,7 +108,7 @@ pm.helpers = {
             var helper = {
                 id: "basic",
                 username: username,
-                password: password, 
+                password: password,
                 timestamp: new Date().getTime()
             };
 
@@ -173,7 +173,7 @@ pm.helpers = {
                 nonceCount: "",
                 clientNonce: "",
                 opaque: "",
-                qop: "" 
+                qop: ""
             };
 
             pm.indexedDB.helpers.addHelper(helper, function(helper) {
@@ -193,7 +193,7 @@ pm.helpers = {
                 nonceCount: $("#request-helper-digestAuth-nonceCount").val(),
                 clientNonce: $("#request-helper-digestAuth-clientNonce").val(),
                 opaque: $("#request-helper-digestAuth-opaque").val(),
-                qop: $("#request-helper-digestAuth-qop").val()   
+                qop: $("#request-helper-digestAuth-qop").val()
             };
 
             pm.indexedDB.helpers.addHelper(helper, function(helper) {
@@ -207,13 +207,13 @@ pm.helpers = {
                     $("#request-helper-digestAuth-realm").val(helper.realm);
                     $("#request-helper-digestAuth-username").val(helper.username);
                     $("#request-helper-digestAuth-algorithm").val(helper.algorithm);
-                    $("#request-helper-digestAuth-password").val(helper.password);                    
+                    $("#request-helper-digestAuth-password").val(helper.password);
                     $("#request-helper-digestAuth-nonce").val(helper.nonce);
                     $("#request-helper-digestAuth-nonceCount").val(helper.nonceCount);
                     $("#request-helper-digestAuth-clientNonce").val(helper.clientNonce);
                     $("#request-helper-digestAuth-opaque").val(helper.opaque);
                     $("#request-helper-digestAuth-qop").val(helper.qop);
-                }                
+                }
             });
         },
 
@@ -242,8 +242,8 @@ pm.helpers = {
                 var a0 = CryptoJS.MD5(username + ":" + realm + ":" + password);
                 a1 = a0 + ":" + nonce + ":" + clientNonce;
             }
-            else {                
-                a1 = username + ":" + realm + ":" + password;                
+            else {
+                a1 = username + ":" + realm + ":" + password;
             }
 
             var a2;
@@ -251,8 +251,8 @@ pm.helpers = {
             if(qop === "auth-int") {
                 a2 = method + ":" + digestUri + ":" + body;
             }
-            else {                
-                a2 = method + ":" + digestUri;                
+            else {
+                a2 = method + ":" + digestUri;
             }
 
 
@@ -290,7 +290,7 @@ pm.helpers = {
 
             headerVal += "response=\"" + response + "\", ";
             headerVal += "opaque=\"" + opaque + "\"";
-            
+
             return headerVal;
         },
 
@@ -334,7 +334,7 @@ pm.helpers = {
             $("#request-helper-oauth1-consumerSecret").val("");
             $("#request-helper-oauth1-token").val("");
             $("#request-helper-oauth1-tokenSecret").val("");
-            $("#request-helper-oauth1-signatureMethod").val("");            
+            $("#request-helper-oauth1-signatureMethod").val("");
             $("#request-helper-oauth1-timestamp").val("");
             $("#request-helper-oauth1-nonce").val("");
             $("#request-helper-oauth1-version").val("");
@@ -355,7 +355,7 @@ pm.helpers = {
                 version: "",
                 realm: "",
                 header: false,
-                auto: false 
+                auto: false
             };
 
             pm.indexedDB.helpers.addHelper(helper, function(helper) {
@@ -392,7 +392,7 @@ pm.helpers = {
                     $("#request-helper-oauth1-consumerSecret").val(helper.consumerSecret);
                     $("#request-helper-oauth1-token").val(helper.token);
                     $("#request-helper-oauth1-tokenSecret").val(helper.tokenSecret);
-                    $("#request-helper-oauth1-signatureMethod").val(helper.signatureMethod);            
+                    $("#request-helper-oauth1-signatureMethod").val(helper.signatureMethod);
                     $("#request-helper-oauth1-timestamp").val(helper.timestamp);
                     $("#request-helper-oauth1-nonce").val(helper.nonce);
                     $("#request-helper-oauth1-version").val(helper.version);
@@ -407,7 +407,7 @@ pm.helpers = {
                     else {
                         $('#request-helper-oAuth1 .request-helper-submit').css("display", "inline-block");
                     }
-                }                
+                }
             });
         },
 
@@ -565,7 +565,7 @@ pm.helpers = {
             //Convert environment values
             for (i = 0, length = params.length; i < length; i++) {
                 params[i].value = pm.envManager.convertString(params[i].value);
-            }            
+            }
 
             for (j = 0, length = oAuthParams.length; i < length; i++) {
                 oAuthParams[i].value = pm.envManager.convertString(oAuthParams[i].value);

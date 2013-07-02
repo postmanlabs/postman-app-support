@@ -4,9 +4,9 @@ pm.indexedDB = {
     TABLE_DRIVE_FILES: "drive_files",
     TABLE_DRIVE_CHANGES: "drive_changes",
 
-    onTransactionComplete: function(callback) {               
+    onTransactionComplete: function(callback) {
         callback();
-    },    
+    },
 
     onerror:function (event, callback) {
         console.log("error");
@@ -69,17 +69,17 @@ pm.indexedDB = {
 
                     if (!db.objectStoreNames.contains(pm.indexedDB.TABLE_DRIVE_FILES)) {
                         var requestStore = db.createObjectStore(pm.indexedDB.TABLE_DRIVE_FILES, {keyPath:"id"});
-                        requestStore.createIndex("timestamp", "timestamp", { unique:false}); 
-                        requestStore.createIndex("fileId", "fileId", { unique:false});                                               
+                        requestStore.createIndex("timestamp", "timestamp", { unique:false});
+                        requestStore.createIndex("fileId", "fileId", { unique:false});
                     }
                     else {
                         var requestStore = request.transaction.objectStore(pm.indexedDB.TABLE_DRIVE_FILES);
-                        requestStore.createIndex("fileId", "fileId", { unique:false});                        
+                        requestStore.createIndex("fileId", "fileId", { unique:false});
                     }
 
                     if (!db.objectStoreNames.contains(pm.indexedDB.TABLE_DRIVE_CHANGES)) {
                         var requestStore = db.createObjectStore(pm.indexedDB.TABLE_DRIVE_CHANGES, {keyPath:"id"});
-                        requestStore.createIndex("timestamp", "timestamp", { unique:false});                        
+                        requestStore.createIndex("timestamp", "timestamp", { unique:false});
                     }
 
                     var transaction = event.target.result;
@@ -102,7 +102,7 @@ pm.indexedDB = {
 
     open_latest:function (callback) {
         var v = 20;
-        var request = indexedDB.open("postman", v);                        
+        var request = indexedDB.open("postman", v);
         request.onupgradeneeded = function (e) {
             console.log("Upgrade DB");
             var db = e.target.result;
@@ -143,14 +143,14 @@ pm.indexedDB = {
                 requestStore.createIndex("timestamp", "timestamp", { unique:false});
             }
 
-            if (!db.objectStoreNames.contains(pm.indexedDB.TABLE_DRIVE_FILES)) {                
+            if (!db.objectStoreNames.contains(pm.indexedDB.TABLE_DRIVE_FILES)) {
                 var requestStore = db.createObjectStore(pm.indexedDB.TABLE_DRIVE_FILES, {keyPath:"id"});
-                requestStore.createIndex("timestamp", "timestamp", { unique:false});       
-                requestStore.createIndex("fileId", "fileId", { unique:false});                                 
+                requestStore.createIndex("timestamp", "timestamp", { unique:false});
+                requestStore.createIndex("fileId", "fileId", { unique:false});
             }
             else {
                 var requestStore = request.transaction.objectStore(pm.indexedDB.TABLE_DRIVE_FILES);
-                requestStore.createIndex("fileId", "fileId", { unique:false});                        
+                requestStore.createIndex("fileId", "fileId", { unique:false});
             }
 
             if (!db.objectStoreNames.contains(pm.indexedDB.TABLE_DRIVE_CHANGES)) {
@@ -198,16 +198,16 @@ pm.indexedDB = {
                 "timestamp":new Date().getTime()
             });
         }
-        
+
 
         request.onsuccess = function () {
-            callback(collection);            
+            callback(collection);
         };
 
         request.onerror = function (e) {
             console.log(e.value);
         };
-    },    
+    },
 
     updateCollection:function (collection, callback) {
         var db = pm.indexedDB.db;
@@ -239,7 +239,7 @@ pm.indexedDB = {
         else {
             version = 1;
         }
-        
+
         var collectionRequest = store.put({
             "collectionId":req.collectionId,
             "id":req.id,
@@ -458,7 +458,7 @@ pm.indexedDB = {
             var request = store['delete'](id);
 
             request.onsuccess = function () {
-                callback(id);                
+                callback(id);
             };
 
             request.onerror = function (e) {
@@ -488,13 +488,13 @@ pm.indexedDB = {
             var request = store['delete'](id);
 
             request.onsuccess = function (e) {
-                callback(id);    
+                callback(id);
             };
 
             request.onerror = function (e) {
                 console.log(e);
             };
-        });        
+        });
     },
 
     deleteAllCollectionRequests:function (id) {
@@ -650,7 +650,7 @@ pm.indexedDB = {
 
             request.onerror = function (e) {
                 console.log(e);
-            };    
+            };
         },
 
         getHelper:function (id, callback) {
@@ -665,7 +665,7 @@ pm.indexedDB = {
                 var result = e.target.result;
                 callback(result);
             };
-            
+
             cursorRequest.onerror = pm.indexedDB.onerror;
         }
     },
@@ -813,15 +813,15 @@ pm.indexedDB = {
             var cursorRequest = index.openCursor(keyRange);
 
             cursorRequest.onsuccess = function (e) {
-                var result = e.target.result;          
+                var result = e.target.result;
                 console.log(result);
                 if(result) {
-                    callback(result.value);    
-                }   
+                    callback(result.value);
+                }
                 else {
                     callback(null);
-                }   
-                
+                }
+
             };
 
             cursorRequest.onerror = function(e) {
@@ -996,12 +996,12 @@ pm.indexedDB = {
             request.onerror = function (e) {
                 console.log(e.value);
             };
-        }        
+        }
     },
 
 
     downloadAllData: function(callback) {
-        //Get globals        
+        //Get globals
         var totalCount = 0;
         var currentCount = 0;
         var collections = [];
@@ -1019,15 +1019,15 @@ pm.indexedDB = {
             }
         }
 
-        var onFinishExportingCollections = function(c) {            
-            globals = pm.envManager.globals;            
+        var onFinishExportingCollections = function(c) {
+            globals = pm.envManager.globals;
 
             //Get environments
             pm.indexedDB.environments.getAllEnvironments(function (e) {
                 environments = e;
                 pm.indexedDB.headerPresets.getAllHeaderPresets(function (hp) {
-                    headerPresets = hp;           
-                    onFinishExporttingAllData(callback);         
+                    headerPresets = hp;
+                    onFinishExporttingAllData(callback);
                 });
             });
         }
@@ -1043,31 +1043,31 @@ pm.indexedDB = {
                 collections: collections,
                 environments: environments,
                 headerPresets: headerPresets,
-                globals: globals                
+                globals: globals
             };
 
             var name = "Backup.postman_dump";
             var filedata = JSON.stringify(dump);
             var type = "application/json";
-            pm.filesystem.saveAndOpenFile(name, filedata, type, function () {                
+            pm.filesystem.saveAndOpenFile(name, filedata, type, function () {
                 callback();
             });
         }
-        
+
         //Get collections
         //Get header presets
-        pm.indexedDB.getCollections(function (items) {    
-            totalCount = items.length;        
+        pm.indexedDB.getCollections(function (items) {
+            totalCount = items.length;
             pm.collections.items = items;
             var itemsLength = items.length;
 
-            if (itemsLength !== 0) {                
+            if (itemsLength !== 0) {
                 for (var i = 0; i < itemsLength; i++) {
                     var collection = items[i];
                     pm.indexedDB.getAllRequestsInCollection(collection, function (collection, requests) {
-                        collection.requests = requests;       
+                        collection.requests = requests;
 
-                        onFinishGettingCollectionRequests(collection);                 
+                        onFinishGettingCollectionRequests(collection);
                     });
                 }
             }
@@ -1088,8 +1088,8 @@ pm.indexedDB = {
                 var data = e.currentTarget.result;
                 var j = JSON.parse(data);
                 var version = j.version;
-                pm.indexedDB.importDataForVersion(version, j, callback);                                
-            };            
+                pm.indexedDB.importDataForVersion(version, j, callback);
+            };
         })(files[0]);
 
         // Read in the image file as a data URL.

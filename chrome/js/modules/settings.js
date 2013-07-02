@@ -1,21 +1,21 @@
 var Settings = Backbone.Model.extend({
-    defaults: function() {        
-        return {            
+    defaults: function() {
+        return {
             lastRequest:"",
             autoSaveRequest:true,
             selectedEnvironmentId:"",
             type: "chromeStorageArea",
             items: {}
         };
-    },    
+    },
 
     initValues: function(callback) {
         this.set({"items": {}});
 
         var func = function(settingsJson) {
             if (settingsJson !== null) {
-                this.set({"items": JSON.parse(settingsJson)});    
-            }                                               
+                this.set({"items": JSON.parse(settingsJson)});
+            }
 
             this.create("historyCount", 100);
             this.create("autoSaveRequest", true);
@@ -25,7 +25,7 @@ var Settings = Backbone.Model.extend({
             this.create("retainLinkHeaders", false);
             this.create("sendNoCacheHeader", true);
             this.create("sendPostmanTokenHeader", true);
-            this.create("usePostmanProxy", false);        
+            this.create("usePostmanProxy", false);
             this.create("proxyURL", "");
             this.create("lastRequest", "");
             this.create("launcherNotificationCount", 0);
@@ -36,7 +36,7 @@ var Settings = Backbone.Model.extend({
             this.create("requestBodyEditorContainerType", "editor");
 
             //Google Drive related
-            this.create("driveSyncConnectionStatus", "not_connected"); //notconnected, connected, disabled        
+            this.create("driveSyncConnectionStatus", "not_connected"); //notconnected, connected, disabled
             this.create("driveSyncEnabled", false);
             this.create("driveStartChangeId", 0);
             this.create("driveAppDataFolderId", 0);
@@ -45,24 +45,24 @@ var Settings = Backbone.Model.extend({
             callback();
         };
 
-        func = _.bind(func, this);        
-        pm.storage.getValue("settings", func);        
+        func = _.bind(func, this);
+        pm.storage.getValue("settings", func);
     },
 
     //This moves to the view initialize script?
-    initListeners: function() {        
+    initListeners: function() {
     },
-    
+
     test: function() {
         console.log("Testing the function");
     },
 
-    init:function (callback) {        
+    init:function (callback) {
         this.initValues(callback);
     },
 
     create:function (key, defaultVal) {
-        if (!(key in this.get("items"))) {            
+        if (!(key in this.get("items"))) {
             if (defaultVal !== "undefined") {
                 this.setSetting(key, defaultVal);
             }
@@ -98,7 +98,7 @@ var Settings = Backbone.Model.extend({
         this.setSetting("historyCount", settings.historyCount, false);
         this.setSetting("autoSaveRequest", settings.autoSaveRequest, false);
         this.setSetting("retainLinkHeaders", settings.retainLinkHeaders, false);
-        this.setSetting("sendNoCacheHeader", settings.sendNoCacheHeader, false);        
+        this.setSetting("sendNoCacheHeader", settings.sendNoCacheHeader, false);
         this.setSetting("variableDelimiter", settings.variableDelimiter, false);
         this.setSetting("languageDetection", settings.languageDetection, false);
         this.setSetting("haveDonated", settings.haveDonated, false);
@@ -112,7 +112,7 @@ var Settings = Backbone.Model.extend({
             historyCount: this.getSetting("historyCount"),
             autoSaveRequest: this.getSetting("autoSaveRequest"),
             retainLinkHeaders: this.getSetting("retainLinkHeaders"),
-            sendNoCacheHeader: this.getSetting("sendNoCacheHeader"),            
+            sendNoCacheHeader: this.getSetting("sendNoCacheHeader"),
             variableDelimiter: this.getSetting("variableDelimiter"),
             languageDetection: this.getSetting("languageDetection"),
             haveDonated: this.getSetting("haveDonated")
@@ -127,7 +127,7 @@ var Settings = Backbone.Model.extend({
                 if (!pm.drive.isSyncEnabled()) return;
 
                 pm.drive.onUpdate["postman_settings"] = this.drive.updateSettingsFromDrive;
-                pm.drive.onPost["postman_settings"] = this.drive.addSettingsFromDrive;                
+                pm.drive.onPost["postman_settings"] = this.drive.addSettingsFromDrive;
             }
         },
 
@@ -139,7 +139,7 @@ var Settings = Backbone.Model.extend({
                 else {
                     callback(false);
                 }
-                
+
             });
         },
 
@@ -149,9 +149,9 @@ var Settings = Backbone.Model.extend({
             var id = "settings";
             var name = "settings" + ".postman_settings";
             var filedata = JSON.stringify(settings);
-            
-            pm.drive.queuePost(id, "settings", name, filedata, function() {                
-            });            
+
+            pm.drive.queuePost(id, "settings", name, filedata, function() {
+            });
         },
 
         queueSettingsUpdate: function(settings) {
@@ -162,7 +162,7 @@ var Settings = Backbone.Model.extend({
             var filedata = JSON.stringify(settings);
 
             pm.indexedDB.driveFiles.getDriveFile(id, function(driveFile) {
-                pm.drive.queueUpdate(id, "settings", name, driveFile.file, filedata, function() {                    
+                pm.drive.queueUpdate(id, "settings", name, driveFile.file, filedata, function() {
                 });
             });
         },
@@ -173,7 +173,7 @@ var Settings = Backbone.Model.extend({
         },
 
         addSettingsFromDrive: function(file, responseText) {
-            var settings = JSON.parse(responseText);            
+            var settings = JSON.parse(responseText);
             this.update(settings);
 
             var newLocalDriveFile = {
@@ -184,10 +184,10 @@ var Settings = Backbone.Model.extend({
                 "file": file
             };
 
-            pm.indexedDB.driveFiles.addDriveFile(newLocalDriveFile, function(e) {                                        
+            pm.indexedDB.driveFiles.addDriveFile(newLocalDriveFile, function(e) {
                 var currentTime = new Date().toISOString();
-                this.setSetting("lastDriveChangeTime", currentTime);                
-            });  
+                this.setSetting("lastDriveChangeTime", currentTime);
+            });
         }
     }
 });
@@ -222,7 +222,7 @@ var SettingsModal = Backbone.View.extend({
             else {
                 settings.setSetting("retainLinkHeaders", false);
             }
-        });        
+        });
 
         $('#send-no-cache-header').change(function () {
             var val = $('#send-no-cache-header').val();
@@ -242,7 +242,7 @@ var SettingsModal = Backbone.View.extend({
             else {
                 settings.setSetting("sendPostmanTokenHeader", false);
             }
-        });        
+        });
 
         $('#use-postman-proxy').change(function () {
             var val = $('#use-postman-proxy').val();
@@ -303,7 +303,7 @@ var SettingsModal = Backbone.View.extend({
 
         $("#import-all-data-files-input").on("change", function(event) {
             console.log("Process file and import data");
-            var files = event.target.files;                
+            var files = event.target.files;
             pm.indexedDB.importAllData(files, function() {
                 $("#import-all-data-files-input").val("");
                 noty(
@@ -329,7 +329,7 @@ var SettingsModal = Backbone.View.extend({
         }
         else {
             $('#postman-proxy-url-container').css("display", "none");
-        }        
+        }
 
         this.render();
     },

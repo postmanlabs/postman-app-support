@@ -4,7 +4,7 @@ var HeaderPrestes = Backbone.Model.extend({
             presets:[],
             presetsForAutoComplete:[]
         };
-    },    
+    },
 
     init:function () {
         this.loadPresets();
@@ -66,11 +66,11 @@ var HeaderPrestes = Backbone.Model.extend({
             var id = $(this).attr("data-id");
             var preset = headerPresets.getHeaderPreset(id);
 
-            if("headers" in preset) {                    
-                var headers = $('#headers-keyvaleditor').keyvalueeditor('getValues');                                                           
-                
-                var newHeaders = _.union(headers, preset.headers);                
-                $('#headers-keyvaleditor').keyvalueeditor('reset', newHeaders);                
+            if("headers" in preset) {
+                var headers = $('#headers-keyvaleditor').keyvalueeditor('getValues');
+
+                var newHeaders = _.union(headers, preset.headers);
+                $('#headers-keyvaleditor').keyvalueeditor('reset', newHeaders);
             }
         });
     },
@@ -87,7 +87,7 @@ var HeaderPrestes = Backbone.Model.extend({
 
             //TODO Add to the Add preset dropdown
             $('#headers-keyvaleditor-actions-add-preset ul').html("");
-            $('#headers-keyvaleditor-actions-add-preset ul').append(Handlebars.templates.header_preset_dropdown({"items":items}));            
+            $('#headers-keyvaleditor-actions-add-preset ul').append(Handlebars.templates.header_preset_dropdown({"items":items}));
         });
     },
 
@@ -201,8 +201,8 @@ var HeaderPrestes = Backbone.Model.extend({
             var headerPreset = hp[i];
             pm.indexedDB.headerPresets.updateHeaderPreset(headerPreset, function () {
                 headerPresets.loadPresets();
-            });    
-        }        
+            });
+        }
     },
 
     //TODO Refactor drive code later
@@ -227,7 +227,7 @@ var HeaderPrestes = Backbone.Model.extend({
                     console.log("HeaderPreset not found");
                     callback(false);
                 }
-                
+
             });
         },
 
@@ -237,10 +237,10 @@ var HeaderPrestes = Backbone.Model.extend({
             var id = headerPreset.id;
             var name = headerPreset.name + ".postman_header_preset";
             var filedata = JSON.stringify(headerPreset);
-            
+
             pm.drive.queuePost(id, "header_preset", name, filedata, function() {
-                console.log("Uploaded new headerPreset", name);                
-            });            
+                console.log("Uploaded new headerPreset", name);
+            });
         },
 
         queueHeaderPresetUpdate: function(headerPreset) {
@@ -252,7 +252,7 @@ var HeaderPrestes = Backbone.Model.extend({
 
             pm.indexedDB.driveFiles.getDriveFile(id, function(driveFile) {
                 pm.drive.queueUpdate(id, "header_preset", name, driveFile.file, filedata, function() {
-                    console.log("Updated headerPreset", headerPreset.id);                
+                    console.log("Updated headerPreset", headerPreset.id);
                 });
             });
         },
@@ -261,12 +261,12 @@ var HeaderPrestes = Backbone.Model.extend({
             if (!pm.drive.isSyncEnabled()) return;
 
             pm.headerPresets.drive.checkIfHeaderPresetIsOnDrive(id, function(exists, driveFile) {
-                if (exists) {                
-                    pm.drive.queueDelete(id, "header_preset", driveFile.file, function() {                    
-                        console.log("Deleted headerPreset", id);                    
+                if (exists) {
+                    pm.drive.queueDelete(id, "header_preset", driveFile.file, function() {
+                        console.log("Deleted headerPreset", id);
                     });
                 }
-            });            
+            });
         },
 
         updateHeaderPresetFromDrive: function(responseText) {
@@ -285,7 +285,7 @@ var HeaderPrestes = Backbone.Model.extend({
                 pm.headerPresets.loadPresets();
             });
 
-            pm.indexedDB.driveFiles.deleteDriveFile(id, function() {                        
+            pm.indexedDB.driveFiles.deleteDriveFile(id, function() {
             });
         },
 
@@ -305,10 +305,10 @@ var HeaderPrestes = Backbone.Model.extend({
             };
 
             pm.indexedDB.driveFiles.addDriveFile(newLocalDriveFile, function(e) {
-                console.log("Uploaded file", newLocalDriveFile);                            
+                console.log("Uploaded file", newLocalDriveFile);
                 var currentTime = new Date().toISOString();
-                pm.settings.setSetting("lastDriveChangeTime", currentTime);                
-            });  
+                pm.settings.setSetting("lastDriveChangeTime", currentTime);
+            });
         }
     }
 });
@@ -319,7 +319,7 @@ var HeaderPresetsModal = Backbone.View.extend({
     initialize: function() {
     }
 
-    render: function() {        
+    render: function() {
     }
 });
 
@@ -327,6 +327,6 @@ var HeaderPresetsRequestEditor = Backbone.View.extend({
     initialize: function() {
     }
 
-    render: function() {        
+    render: function() {
     }
 });

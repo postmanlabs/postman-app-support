@@ -44,6 +44,7 @@ pm.broadcasts = {
 
     setBroadcasts:function (broadcasts) {
         var old_broadcasts;
+        var broadcastsJson;
         pm.storage.getValue("broadcasts", function(broadcastsJson) {
             if (broadcastsJson) {
                 old_broadcasts = JSON.parse(broadcastsJson);
@@ -53,13 +54,13 @@ pm.broadcasts = {
             }
 
             var i, c, count;
-            if (old_broadcasts.length == 0) {
+            if (old_broadcasts.length === 0) {
                 c = broadcasts.length;
                 for (i = 0; i < c; i++) {
                     broadcasts[i]["status"] = "unread";
                 }
                 count = broadcasts.length;
-                var broadcastsJson = JSON.stringify(broadcasts);
+                broadcastsJson = JSON.stringify(broadcasts);
                 pm.storage.setValue({"broadcasts": broadcastsJson}, function() {
                 });
             }
@@ -80,7 +81,7 @@ pm.broadcasts = {
 
                 count = new_broadcasts.length;
                 old_broadcasts = _.union(new_broadcasts, old_broadcasts);
-                var broadcastsJson = JSON.stringify(old_broadcasts);
+                broadcastsJson = JSON.stringify(old_broadcasts);
                 pm.storage.setValue({"broadcasts": broadcastsJson}, function() {
                 });
             }

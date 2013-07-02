@@ -594,7 +594,7 @@ pm.collections = {
 
             pm.indexedDB.updateCollectionRequest(collectionRequest, function (request) {
                 var requestName;
-                if (request.name == undefined) {
+                if (request.name === undefined) {
                     request.name = request.url;
                 }
 
@@ -776,7 +776,7 @@ pm.collections = {
         var targetCollectionId = $($(event.target).find('.sidebar-collection-head-name')[0]).attr('data-id');
         pm.indexedDB.getCollection(targetCollectionId, function(collection) {
             pm.indexedDB.getCollectionRequest(requestId, function(collectionRequest) {
-                if(targetCollectionId == collectionRequest.collectionId) return;
+                if(targetCollectionId === collectionRequest.collectionId) return;
 
                 pm.collections.deleteCollectionRequest(requestId);
 
@@ -1147,7 +1147,9 @@ pm.collections = {
     drive: {
         registerHandlers: function() {
             if (pm.drive) {
-                if (!pm.drive.isSyncEnabled()) return;
+                if (!pm.drive.isSyncEnabled()) {
+                    return;
+                }
 
                 pm.drive.onUpdate["postman_collection"] = pm.collections.drive.updateLocalFromDrive;
                 pm.drive.onPost["postman_collection"] = pm.collections.drive.addLocalFromDrive;
