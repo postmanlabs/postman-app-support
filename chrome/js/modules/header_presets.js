@@ -8,78 +8,15 @@ var HeaderPresets = Backbone.Model.extend({
 
     init:function () {
         this.loadPresets();
-
         //TODO Disabling Drive for packaged apps
         //pm.headerPresets.drive.registerHandlers();
-
-        //Save the context for callbacks
-        var headerPresets = this;
-
-        var params = {
-            placeHolderKey:"Key",
-            placeHolderValue:"Value",
-            deleteButton:'<img class="deleteButton" src="img/delete.png">'
-        };
-
-        $("#header-presets-keyvaleditor").keyvalueeditor("init", params);
-        $("#headers-keyvaleditor-actions-manage-presets").on("click", function () {
-            headerPresets.showManager();
-        });
-
-        $(".header-presets-actions-add").on("click", function () {
-            headerPresets.showEditor();
-        });
-
-        $(".header-presets-actions-back").on("click", function () {
-            headerPresets.showList();
-        });
-
-        $(".header-presets-actions-submit").on("click", function () {
-            var id = $('#header-presets-editor-id').val();
-            if (id === "0") {
-                _.bind(headerPresets.addHeaderPreset, headerPresets)();
-            }
-            else {
-                var name = $('#header-presets-editor-name').val();
-                var headers = $("#header-presets-keyvaleditor").keyvalueeditor("getValues");
-                _.bind(headerPresets.editHeaderPreset, headerPresets)(id, name, headers);
-            }
-
-            headerPresets.showList();
-        });
-
-        $("#header-presets-list").on("click", ".header-preset-action-edit", function () {
-            var id = $(this).attr("data-id");
-            var preset = headerPresets.getHeaderPreset(id);
-            $('#header-presets-editor-name').val(preset.name);
-            $('#header-presets-editor-id').val(preset.id);
-            $('#header-presets-keyvaleditor').keyvalueeditor('reset', preset.headers);
-            headerPresets.showEditor();
-        });
-
-        $("#header-presets-list").on("click", ".header-preset-action-delete", function () {
-            var id = $(this).attr("data-id");
-            headerPresets.deleteHeaderPreset(id);
-        });
-
-        $("#headers-keyvaleditor-actions-add-preset").on("click", ".header-preset-dropdown-item", function() {
-            var id = $(this).attr("data-id");
-            var preset = headerPresets.getHeaderPreset(id);
-
-            if("headers" in preset) {
-                var headers = $('#headers-keyvaleditor').keyvalueeditor('getValues');
-
-                var newHeaders = _.union(headers, preset.headers);
-                $('#headers-keyvaleditor').keyvalueeditor('reset', newHeaders);
-            }
-        });
     },
 
     loadPresets:function () {
         var headerPresets = this;
 
         pm.indexedDB.headerPresets.getAllHeaderPresets(function (items) {
-            headerPresets.presets = items;
+            headerPresets.set({"presets": items});
             headerPresets.refreshAutoCompleteList();
 
             $('#header-presets-list tbody').html("");
@@ -330,6 +267,43 @@ var HeaderPresetsModal = Backbone.View.extend({
     el: $("#modal-header-presets"),
 
     initialize: function() {
+        this.model.on('change:presets', this.render, this);
+
+        $(".header-presets-actions-add").on("click", function () {
+            headerPresets.showEditor();
+        });
+
+        $(".header-presets-actions-back").on("click", function () {
+            headerPresets.showList();
+        });
+
+        $(".header-presets-actions-submit").on("click", function () {
+            var id = $('#header-presets-editor-id').val();
+            if (id === "0") {
+                _.bind(headerPresets.addHeaderPreset, headerPresets)();
+            }
+            else {
+                var name = $('#header-presets-editor-name').val();
+                var headers = $("#header-presets-keyvaleditor").keyvalueeditor("getValues");
+                _.bind(headerPresets.editHeaderPreset, headerPresets)(id, name, headers);
+            }
+
+            headerPresets.showList();
+        });
+
+        $("#header-presets-list").on("click", ".header-preset-action-edit", function () {
+            var id = $(this).attr("data-id");
+            var preset = headerPresets.getHeaderPreset(id);
+            $('#header-presets-editor-name').val(preset.name);
+            $('#header-presets-editor-id').val(preset.id);
+            $('#header-presets-keyvaleditor').keyvalueeditor('reset', preset.headers);
+            headerPresets.showEditor();
+        });
+
+        $("#header-presets-list").on("click", ".header-preset-action-delete", function () {
+            var id = $(this).attr("data-id");
+            headerPresets.deleteHeaderPreset(id);
+        });
     },
 
     render: function() {
@@ -338,6 +312,33 @@ var HeaderPresetsModal = Backbone.View.extend({
 
 var HeaderPresetsRequestEditor = Backbone.View.extend({
     initialize: function() {
+        this.model.on('change:presets', this.render, this);
+
+        var model = this.model;
+
+        var params = {
+            placeHolderKey:"Key",
+            placeHolderValue:"Value",
+            deleteButton:'<img class="deleteButton" src="img/delete.png">'
+        };
+
+        $("#header-presets-keyvaleditor").keyvalueeditor("init", params);
+
+        $("#headers-keyvaleditor-actions-manage-presets").on("click", function () {
+            model.showManager();
+        });
+
+        $("#headers-keyvaleditor-actions-add-preset").on("click", ".header-preset-dropdown-item", function() {
+            var id = $(this).attr("data-id");
+            var preset = model.getHeaderPreset(id);
+
+            if("headers" in preset) {
+                var headers = $('#headers-keyvaleditor').keyvalueeditor('getValues');
+
+                var newHeaders = _.union(headers, preset.headers);
+                $('#headers-keyvaleditor').keyvalueeditor('reset', newHeaders);
+            }
+        });
     },
 
     render: function() {
