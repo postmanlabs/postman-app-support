@@ -1,7 +1,7 @@
 /*global module:false*/
 module.exports = function(grunt) {
   // Project configuration.
-  grunt.initConfig({    
+  grunt.initConfig({
     concat: {
       dist: {
         src: ['chrome/js/modules/*.js'],
@@ -9,13 +9,24 @@ module.exports = function(grunt) {
       },
       html: {
         src: [
-          'chrome/html/requester/header.html', 
-          'chrome/html/requester/sidebar.html',
-          'chrome/html/requester/main.html',
-          'chrome/html/requester/modals/*.html', 
-          'chrome/html/requester/footer.html'
-          ],
+        'chrome/html/requester/header.html',
+        'chrome/html/requester/sidebar.html',
+        'chrome/html/requester/main.html',
+        'chrome/html/requester/modals/*.html',
+        'chrome/html/requester/footer.html'
+        ],
         dest: 'chrome/requester.html'
+      },
+      requester_tester: {
+        src: [
+        'chrome/html/requester/header.html',
+        'chrome/html/requester/sidebar.html',
+        'chrome/html/requester/main.html',
+        'chrome/html/requester/modals/*.html',
+        'chrome/html/requester/footer.html',
+        'chrome/html/requester/tester.html'
+        ],
+        dest: 'chrome/tester.html'
       }
     },
 
@@ -40,6 +51,11 @@ module.exports = function(grunt) {
       requester_html: {
         files: ['chrome/html/requester/*', 'chrome/html/requester/modals/*'],
         tasks: ['concat:html']
+      },
+
+      requester_tester: {
+        files: ['chrome/html/requester/*', 'chrome/html/requester/modals/*'],
+        tasks: ['concat:requester_tester']
       },
 
       requester_css: {
@@ -88,17 +104,17 @@ module.exports = function(grunt) {
       }
     },
     sass: {
-        dist: {
-          files: {
-            'chrome/css/styles.css': 'chrome/css/styles.scss'
-          }
+      dist: {
+        files: {
+          'chrome/css/styles.css': 'chrome/css/styles.scss'
         }
       }
+    }
   });
 
   // These plugins provide necessary tasks.
   grunt.loadNpmTasks('grunt-contrib-handlebars');
-  grunt.loadNpmTasks('grunt-contrib-concat');      
+  grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-mindirect');
   grunt.loadNpmTasks('grunt-contrib-watch');

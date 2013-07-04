@@ -1,4 +1,4 @@
-var HeaderPrestes = Backbone.Model.extend({
+var HeaderPresets = Backbone.Model.extend({
     defaults: function() {
         return {
             presets:[],
@@ -37,12 +37,12 @@ var HeaderPrestes = Backbone.Model.extend({
         $(".header-presets-actions-submit").on("click", function () {
             var id = $('#header-presets-editor-id').val();
             if (id === "0") {
-                headerPresets.addHeaderPreset();
+                _.bind(headerPresets.addHeaderPreset, headerPresets)();
             }
             else {
                 var name = $('#header-presets-editor-name').val();
                 var headers = $("#header-presets-keyvaleditor").keyvalueeditor("getValues");
-                headerPresets.editHeaderPreset(id, name, headers);
+                _.bind(headerPresets.editHeaderPreset, headerPresets)(id, name, headers);
             }
 
             headerPresets.showList();
@@ -136,10 +136,10 @@ var HeaderPrestes = Backbone.Model.extend({
         var headerPresets = this;
 
         pm.indexedDB.headerPresets.addHeaderPreset(headerPreset, function () {
-            this.loadPresets();
+            headerPresets.loadPresets();
 
             //TODO: Drive Sync
-            this.drive.queueHeaderPresetPost(headerPreset);
+            headerPresets.drive.queueHeaderPresetPost(headerPreset);
         });
     },
 
@@ -155,7 +155,7 @@ var HeaderPrestes = Backbone.Model.extend({
             };
 
             pm.indexedDB.headerPresets.updateHeaderPreset(headerPreset, function () {
-                pm.headerPresets.loadPresets();
+                headerPresets.loadPresets();
 
                 //TODO: Drive Sync
                 headerPresets.drive.queueHeaderPresetUpdate(headerPreset);
@@ -176,7 +176,7 @@ var HeaderPrestes = Backbone.Model.extend({
 
     getPresetsForAutoComplete:function () {
         var list = [];
-        for (var i = 0, count = pm.headerPresets.presets.length; i < count; i++) {
+        for (var i = 0, count = this.presets.length; i < count; i++) {
             var preset = this.presets[i];
             var item = {
                 "id":preset.id,

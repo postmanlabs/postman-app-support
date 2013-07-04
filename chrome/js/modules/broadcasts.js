@@ -45,10 +45,12 @@ pm.broadcasts = {
     setBroadcasts:function (broadcasts) {
         var old_broadcasts;
         var broadcastsJson;
+        var b;
 
         function oldBroadCastsFinder(br) {
             return br.id === b.id;
         }
+
         pm.storage.getValue("broadcasts", function(broadcastsJson) {
             if (broadcastsJson) {
                 old_broadcasts = JSON.parse(broadcastsJson);
@@ -72,7 +74,7 @@ pm.broadcasts = {
                 c = broadcasts.length;
                 var new_broadcasts = [];
                 for (i = 0; i < c; i++) {
-                    var b = broadcasts[i];
+                    b = broadcasts[i];
 
                     var existing = _.find(old_broadcasts, oldBroadCastsFinder);
 

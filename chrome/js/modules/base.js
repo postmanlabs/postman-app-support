@@ -116,7 +116,6 @@ pm.init = function () {
 
     pm.settings.init(function() {
         var settingsModal = new SettingsModal({model: pm.settings});
-
         pm.indexedDB.open(function() {
             pm.request.init();
             pm.history.init();
@@ -132,7 +131,10 @@ pm.init = function () {
 
             pm.history.getAllRequests();
             pm.envManager.getAllEnvironments();
+
+            pm.headerPresets = new HeaderPresets();
             pm.headerPresets.init();
+
             pm.helpers.loadFromDB();
 
             var activeSidebarSection = pm.settings.getSetting("activeSidebarSection");
