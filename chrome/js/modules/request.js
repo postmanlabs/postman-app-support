@@ -560,7 +560,7 @@ pm.request = {
 
             onAddedParam:function () {
                 $("#headers-keyvaleditor .keyvalueeditor-key").catcomplete({
-                    source:pm.headerPresets.presetsForAutoComplete,
+                    source:pm.headerPresets.getPresetsForAutoComplete(),
                     delay:50,
                     select:function (event, item) {
                         pm.request.onHeaderAutoCompleteItemSelect(item.item);
@@ -575,7 +575,7 @@ pm.request = {
 
             onFocusElement:function () {
                 $("#headers-keyvaleditor .keyvalueeditor-key").catcomplete({
-                    source:pm.headerPresets.presetsForAutoComplete,
+                    source:pm.headerPresets.getPresetsForAutoComplete(),
                     delay:50,
                     select:function (event, item) {
                         pm.request.onHeaderAutoCompleteItemSelect(item.item);
@@ -585,7 +585,7 @@ pm.request = {
 
             onBlurElement:function () {
                 $("#headers-keyvaleditor .keyvalueeditor-key").catcomplete({
-                    source:pm.headerPresets.presetsForAutoComplete,
+                    source:pm.headerPresets.getPresetsForAutoComplete(),
                     delay:50,
                     select:function (event, item) {
                         pm.request.onHeaderAutoCompleteItemSelect(item.item);

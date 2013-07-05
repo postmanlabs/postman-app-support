@@ -99,8 +99,6 @@ var HeaderPresets = Backbone.Model.extend({
             list.push(item);
         }
 
-        console.log(list);
-
         return list;
     },
 
