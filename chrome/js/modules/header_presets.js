@@ -8,6 +8,7 @@ var HeaderPresets = Backbone.Model.extend({
 
     init:function () {
         this.loadPresets();
+
         //TODO Disabling Drive for packaged apps
         //pm.headerPresets.drive.registerHandlers();
     },
@@ -18,49 +19,22 @@ var HeaderPresets = Backbone.Model.extend({
         pm.indexedDB.headerPresets.getAllHeaderPresets(function (items) {
             headerPresets.set({"presets": items});
             headerPresets.refreshAutoCompleteList();
-
-            $('#header-presets-list tbody').html("");
-            $('#header-presets-list tbody').append(Handlebars.templates.header_preset_list({"items":items}));
-
-            //TODO Add to the Add preset dropdown
-            $('#headers-keyvaleditor-actions-add-preset ul').html("");
-            $('#headers-keyvaleditor-actions-add-preset ul').append(Handlebars.templates.header_preset_dropdown({"items":items}));
         });
     },
 
-    showManager:function () {
-        $("#modal-header-presets").modal("show");
-    },
-
-    showList:function () {
-        $("#header-presets-list-wrapper").css("display", "block");
-        $("#header-presets-editor").css("display", "none");
-        $("#header-presets-editor-name").attr("value", "");
-        $("#header-presets-editor-id").attr("value", 0);
-        $('#header-presets-keyvaleditor').keyvalueeditor('reset', []);
-        $("#modal-header-presets .modal-footer").css("display", "none");
-    },
-
-    showEditor:function () {
-        $("#modal-header-presets .modal-footer").css("display", "block");
-        $("#header-presets-list-wrapper").css("display", "none");
-        $("#header-presets-editor").css("display", "block");
-    },
-
     getHeaderPreset:function (id) {
-        for (var i = 0, count = this.presets.length; i < count; i++) {
-            if (this.presets[i].id === id) {
+        var presets = this.get("presets");
+        for (var i = 0, count = presets.length; i < count; i++) {
+            if (presets[i].id === id) {
                 break;
             }
         }
 
-        var preset = this.presets[i];
+        var preset = presets[i];
         return preset;
     },
 
-    addHeaderPreset:function () {
-        var name = $("#header-presets-editor-name").val();
-        var headers = $("#header-presets-keyvaleditor").keyvalueeditor("getValues");
+    addHeaderPreset:function (name, headers) {
         var id = guid();
 
         var headerPreset = {
@@ -73,7 +47,7 @@ var HeaderPresets = Backbone.Model.extend({
         var headerPresets = this;
 
         pm.indexedDB.headerPresets.addHeaderPreset(headerPreset, function () {
-            headerPresets.loadPresets();
+            _.bind(headerPresets.loadPresets, headerPresets)();
 
             //TODO: Drive Sync
             headerPresets.drive.queueHeaderPresetPost(headerPreset);
@@ -92,7 +66,7 @@ var HeaderPresets = Backbone.Model.extend({
             };
 
             pm.indexedDB.headerPresets.updateHeaderPreset(headerPreset, function () {
-                headerPresets.loadPresets();
+                _.bind(headerPresets.loadPresets, headerPresets)();
 
                 //TODO: Drive Sync
                 headerPresets.drive.queueHeaderPresetUpdate(headerPreset);
@@ -104,8 +78,7 @@ var HeaderPresets = Backbone.Model.extend({
         var headerPresets = this;
 
         pm.indexedDB.headerPresets.deleteHeaderPreset(id, function () {
-            headerPresets.loadPresets();
-
+            _.bind(headerPresets.loadPresets, headerPresets)();
             //TODO: Drive Sync
             headerPresets.drive.queueHeaderPresetDelete(id);
         });
@@ -113,8 +86,9 @@ var HeaderPresets = Backbone.Model.extend({
 
     getPresetsForAutoComplete:function () {
         var list = [];
-        for (var i = 0, count = this.presets.length; i < count; i++) {
-            var preset = this.presets[i];
+        var presets = this.get("presets");
+        for (var i = 0, count = presets.length; i < count; i++) {
+            var preset = presets[i];
             var item = {
                 "id":preset.id,
                 "type":"preset",
@@ -125,12 +99,14 @@ var HeaderPresets = Backbone.Model.extend({
             list.push(item);
         }
 
+        console.log(list);
+
         return list;
     },
 
     refreshAutoCompleteList:function () {
         var presets = this.getPresetsForAutoComplete();
-        this.presetsForAutoComplete = _.union(presets, chromeHeaders);
+        this.set({"presetsForAutoComplete": _.union(presets, chromeHeaders)});
     },
 
     mergeHeaderPresets: function(hp) {
@@ -269,44 +245,67 @@ var HeaderPresetsModal = Backbone.View.extend({
     initialize: function() {
         this.model.on('change:presets', this.render, this);
 
+        var headerPresets = this.model;
+        var view = this;
+
         $(".header-presets-actions-add").on("click", function () {
-            headerPresets.showEditor();
+            view.showEditor();
         });
 
         $(".header-presets-actions-back").on("click", function () {
-            headerPresets.showList();
+            view.showList();
         });
 
         $(".header-presets-actions-submit").on("click", function () {
             var id = $('#header-presets-editor-id').val();
+            var name = $("#header-presets-editor-name").val();
+            var headers = $("#header-presets-keyvaleditor").keyvalueeditor("getValues");
+
             if (id === "0") {
-                _.bind(headerPresets.addHeaderPreset, headerPresets)();
+                _.bind(headerPresets.addHeaderPreset, headerPresets)(name, headers);
             }
             else {
-                var name = $('#header-presets-editor-name').val();
-                var headers = $("#header-presets-keyvaleditor").keyvalueeditor("getValues");
                 _.bind(headerPresets.editHeaderPreset, headerPresets)(id, name, headers);
             }
 
-            headerPresets.showList();
+            view.showList();
         });
 
-        $("#header-presets-list").on("click", ".header-preset-action-edit", function () {
-            var id = $(this).attr("data-id");
-            var preset = headerPresets.getHeaderPreset(id);
+        $("#header-presets-list").on("click", ".header-preset-action-edit", function (event) {
+            var id = $(event.currentTarget).attr("data-id");
+            var preset = _.bind(headerPresets.getHeaderPreset, headerPresets)(id);
             $('#header-presets-editor-name').val(preset.name);
             $('#header-presets-editor-id').val(preset.id);
             $('#header-presets-keyvaleditor').keyvalueeditor('reset', preset.headers);
-            headerPresets.showEditor();
+            view.showEditor();
         });
 
-        $("#header-presets-list").on("click", ".header-preset-action-delete", function () {
-            var id = $(this).attr("data-id");
+        $("#header-presets-list").on("click", ".header-preset-action-delete", function (event) {
+            console.log(event.currentTarget);
+            var id = $(event.currentTarget).attr("data-id");
             headerPresets.deleteHeaderPreset(id);
         });
     },
 
+
+    showList:function () {
+        $("#header-presets-list-wrapper").css("display", "block");
+        $("#header-presets-editor").css("display", "none");
+        $("#header-presets-editor-name").attr("value", "");
+        $("#header-presets-editor-id").attr("value", 0);
+        $('#header-presets-keyvaleditor').keyvalueeditor('reset', []);
+        $("#modal-header-presets .modal-footer").css("display", "none");
+    },
+
+    showEditor:function () {
+        $("#modal-header-presets .modal-footer").css("display", "block");
+        $("#header-presets-list-wrapper").css("display", "none");
+        $("#header-presets-editor").css("display", "block");
+    },
+
     render: function() {
+        $('#header-presets-list tbody').html("");
+        $('#header-presets-list tbody').append(Handlebars.templates.header_preset_list({"items":this.model.get("presets")}));
     }
 });
 
@@ -325,7 +324,7 @@ var HeaderPresetsRequestEditor = Backbone.View.extend({
         $("#header-presets-keyvaleditor").keyvalueeditor("init", params);
 
         $("#headers-keyvaleditor-actions-manage-presets").on("click", function () {
-            model.showManager();
+            $("#modal-header-presets").modal("show");
         });
 
         $("#headers-keyvaleditor-actions-add-preset").on("click", ".header-preset-dropdown-item", function() {
@@ -342,5 +341,7 @@ var HeaderPresetsRequestEditor = Backbone.View.extend({
     },
 
     render: function() {
+        $('#headers-keyvaleditor-actions-add-preset ul').html("");
+        $('#headers-keyvaleditor-actions-add-preset ul').append(Handlebars.templates.header_preset_dropdown({"items":this.model.get("presets")}));
     }
 });

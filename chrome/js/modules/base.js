@@ -135,6 +135,9 @@ pm.init = function () {
             pm.headerPresets = new HeaderPresets();
             pm.headerPresets.init();
 
+            var headerPresetsModal = new HeaderPresetsModal({model: pm.headerPresets});
+            var headerPresetsRequestEditor = new HeaderPresetsRequestEditor({model: pm.headerPresets});
+
             pm.helpers.loadFromDB();
 
             var activeSidebarSection = pm.settings.getSetting("activeSidebarSection");
