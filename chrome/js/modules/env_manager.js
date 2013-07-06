@@ -65,14 +65,16 @@ var EnvironmentSelector = Backbone.View.extend({
         this.environments.on('change', this.render, this);
         this.environments.on('reset', this.render, this);
         this.environments.on('add', this.render, this);
-        this.variableProcessor.on('change', this.render, this);
+        this.environments.on('remove', this.render, this);
+
+        this.variableProcessor.on('change:selectedEnv', this.render, this);
 
         var environments = this.environments;
         var variableProcessor = this.variableProcessor;
 
         $('#environment-selector').on("click", ".environment-list-item", function () {
             var id = $(this).attr('data-id');
-            var selectedEnv = environments.get(id).toJSON();
+            var selectedEnv = environments.get(id);
 
             console.log("Selected env is", selectedEnv);
 
@@ -91,6 +93,8 @@ var EnvironmentSelector = Backbone.View.extend({
     },
 
     render: function() {
+        console.log("Render environment selector");
+
         $('#environment-selector .dropdown-menu').html("");
         $('#environment-selector .dropdown-menu').append(Handlebars.templates.environment_selector({"items":this.environments.toJSON()}));
         $('#environment-selector .dropdown-menu').append(Handlebars.templates.environment_selector_actions());
@@ -98,7 +102,7 @@ var EnvironmentSelector = Backbone.View.extend({
         var selectedEnv = this.variableProcessor.get("selectedEnv");
 
         if (selectedEnv) {
-            $('#environment-selector .environment-list-item-selected').html(selectedEnv.name);
+            $('#environment-selector .environment-list-item-selected').html(selectedEnv.toJSON().name);
         }
         else {
             $('#environment-selector .environment-list-item-selected').html("No environment");
@@ -117,6 +121,7 @@ var EnvironmentManagerModal = Backbone.View.extend({
         this.environments.on('change', this.render, this);
         this.environments.on('reset', this.render, this);
         this.environments.on('add', this.render, this);
+        this.environments.on('remove', this.render, this);
         this.globals.on('change', this.render, this);
 
         var environments = this.environments;
@@ -172,8 +177,6 @@ var EnvironmentManagerModal = Backbone.View.extend({
             var name = $('#environment-editor-name').val();
             var values = $('#environment-keyvaleditor').keyvalueeditor('getValues');
 
-            console.log("Add environment", id, name, values);
-
             if (id === "0") {
                 environments.addEnvironment(name, values);
             }
@@ -184,6 +187,7 @@ var EnvironmentManagerModal = Backbone.View.extend({
             $('#environment-editor-name').val("");
             $('#environment-keyvaleditor').keyvalueeditor('reset', []);
 
+            view.showSelector();
         });
 
         $('.environments-actions-add-back').on("click", function () {
@@ -221,7 +225,7 @@ var EnvironmentManagerModal = Backbone.View.extend({
 
     showEditor:function (id) {
         if (id) {
-            var environment = this.environments.get(id);
+            var environment = this.environments.get(id).toJSON();
             $('#environment-editor-name').val(environment.name);
             $('#environment-editor-id').val(id);
             $('#environment-keyvaleditor').keyvalueeditor('reset', environment.values);
@@ -278,7 +282,7 @@ var QuickLookPopOver = Backbone.View.extend({
         this.globals = this.options.globals;
 
         this.environments.on('change', this.render, this);
-        this.variableProcessor.on('change', this.render, this);
+        this.variableProcessor.on('change:selectedEnv', this.render, this);
         this.globals.on('change', this.render, this);
 
         $('#environment-quicklook').on("mouseenter", function () {
@@ -389,7 +393,7 @@ var Environments = Backbone.Collection.extend({
 
         pm.indexedDB.environments.updateEnvironment(environment, function () {
             var envModel = new Environment(environment);
-            collection.set(envModel);
+            collection.add(envModel, {merge: true});
 
             //TODO: Drive syncing here
             // pm.envManager.drive.queueEnvironmentUpdate(environment);
@@ -425,7 +429,7 @@ var Environments = Backbone.Collection.extend({
     },
 
     duplicateEnvironment:function (id) {
-        var env = this.get(id);
+        var env = this.get(id).toJSON();
         env.name = env.name + " " + "copy";
         env.id = guid();
 
@@ -688,9 +692,18 @@ var VariableProcessor = Backbone.Model.extend({
     },
 
     initialize: function() {
-        //TODO Set these as model settings
-        var selectedEnvId = pm.settings.getSetting("selectedEnvironmentId");
-        var selectedEnv = this.get("environments").get(selectedEnvId);
+        this.get("environments").on("reset", this.setCurrentEnvironment, this);
+        this.get("environments").on("change", this.setCurrentEnvironment, this);
+        this.get("environments").on("add", this.setCurrentEnvironment, this);
+        this.get("environments").on("remove", this.setCurrentEnvironment, this);
+
+        this.set("selectedEnvironmentId", pm.settings.getSetting("selectedEnvironmentId"));
+        this.set("selectedEnv", this.get("environments").get("selectedEnvironmentId"));
+    },
+
+    setCurrentEnvironment: function() {
+        this.set("selectedEnvironmentId", pm.settings.getSetting("selectedEnvironmentId"));
+        this.set("selectedEnv", this.get("environments").get(pm.settings.getSetting("selectedEnvironmentId")));
     },
 
     containsVariable:function (string, values) {
