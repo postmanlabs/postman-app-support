@@ -5,17 +5,20 @@ var Globals = Backbone.Model.extend({
         };
     },
 
-    initGlobals:function (callback) {
+    initialize:function () {
         this.set({"globals": []});
+
+        var model = this;
+
         pm.storage.getValue('globals', function(s) {
             if (s) {
-                this.set({"globals": JSON.parse(s)});
+                model.set({"globals": JSON.parse(s)});
             }
             else {
-                this.set({"globals": []});
+                model.set({"globals": []});
             }
 
-            callback();
+            console.log("Loaded globals", model.get("globals"));
         });
     },
 
@@ -52,15 +55,27 @@ var Globals = Backbone.Model.extend({
 });
 
 var EnvironmentSelector = Backbone.View.extend({
+    environments: null,
+    variableProcessor: null,
+
     initialize: function() {
+        this.environments = this.options.environments;
+        this.variableProcessor = this.options.variableProcessor;
+
         this.environments.on('change', this.render, this);
+        this.environments.on('reset', this.render, this);
+        this.environments.on('add', this.render, this);
+        this.variableProcessor.on('change', this.render, this);
 
         var environments = this.environments;
         var variableProcessor = this.variableProcessor;
 
         $('#environment-selector').on("click", ".environment-list-item", function () {
             var id = $(this).attr('data-id');
-            var selectedEnv = environments.get(id);
+            var selectedEnv = environments.get(id).toJSON();
+
+            console.log("Selected env is", selectedEnv);
+
             variableProcessor.set({"selectedEnv": selectedEnv});
             pm.settings.setSetting("selectedEnvironmentId", selectedEnv.id);
             $('#environment-selector .environment-list-item-selected').html(selectedEnv.name);
@@ -71,14 +86,13 @@ var EnvironmentSelector = Backbone.View.extend({
             pm.settings.setSetting("selectedEnvironmentId", "");
             $('#environment-selector .environment-list-item-selected').html("No environment");
         });
+
+        this.render();
     },
 
     render: function() {
         $('#environment-selector .dropdown-menu').html("");
-        $('#environments-list tbody').html("");
-
-        $('#environment-selector .dropdown-menu').append(Handlebars.templates.environment_selector({"items":this.environments.models}));
-        $('#environments-list tbody').append(Handlebars.templates.environment_list({"items":this.environments.models}));
+        $('#environment-selector .dropdown-menu').append(Handlebars.templates.environment_selector({"items":this.environments.toJSON()}));
         $('#environment-selector .dropdown-menu').append(Handlebars.templates.environment_selector_actions());
 
         var selectedEnv = this.variableProcessor.get("selectedEnv");
@@ -93,15 +107,21 @@ var EnvironmentSelector = Backbone.View.extend({
 });
 
 var EnvironmentManagerModal = Backbone.View.extend({
+    environments: null,
+    globals: null,
+
     initialize: function() {
+        this.environments = this.options.environments;
+        this.globals = this.options.globals;
+
         this.environments.on('change', this.render, this);
+        this.environments.on('reset', this.render, this);
+        this.environments.on('add', this.render, this);
         this.globals.on('change', this.render, this);
 
         var environments = this.environments;
         var globals = this.globals;
         var view = this;
-
-        $('#environment-list').append(Handlebars.templates.environment_list({"items": this.environments.get("environments")}));
 
         $('#environments-list').on("click", ".environment-action-delete", function () {
             var id = $(this).attr('data-id');
@@ -152,6 +172,8 @@ var EnvironmentManagerModal = Backbone.View.extend({
             var name = $('#environment-editor-name').val();
             var values = $('#environment-keyvaleditor').keyvalueeditor('getValues');
 
+            console.log("Add environment", id, name, values);
+
             if (id === "0") {
                 environments.addEnvironment(name, values);
             }
@@ -189,14 +211,17 @@ var EnvironmentManagerModal = Backbone.View.extend({
             deleteButton:'<img class="deleteButton" src="img/delete.png">'
         };
 
+        console.log(this.globals.get("globals"));
+
         $('#environment-keyvaleditor').keyvalueeditor('init', params);
         $('#globals-keyvaleditor').keyvalueeditor('init', params);
-        $('#globals-keyvaleditor').keyvalueeditor('reset', this.globals.get("globals"));
+
+        this.render();
     },
 
     showEditor:function (id) {
         if (id) {
-            var environment = environments.getEnvironmentFromId(id);
+            var environment = this.environments.get(id);
             $('#environment-editor-name').val(environment.name);
             $('#environment-editor-id').val(id);
             $('#environment-keyvaleditor').keyvalueeditor('reset', environment.values);
@@ -236,11 +261,22 @@ var EnvironmentManagerModal = Backbone.View.extend({
         $('#environment-importer').css("display", "none");
         $('.environments-actions-add-submit').css("display", "none");
         $('#modal-environments .modal-footer').css("display", "block");
+    },
+
+    render: function() {
+        console.log(this.environments.toJSON());
+        $('#environments-list tbody').html("");
+        $('#environments-list tbody').append(Handlebars.templates.environment_list({"items":this.environments.toJSON()}));
+        $('#globals-keyvaleditor').keyvalueeditor('reset', this.globals.get("globals"));
     }
 });
 
 var QuickLookPopOver = Backbone.View.extend({
     initialize: function() {
+        this.environments = this.options.environments;
+        this.variableProcessor = this.options.variableProcessor;
+        this.globals = this.options.globals;
+
         this.environments.on('change', this.render, this);
         this.variableProcessor.on('change', this.render, this);
         this.globals.on('change', this.render, this);
@@ -252,10 +288,12 @@ var QuickLookPopOver = Backbone.View.extend({
         $('#environment-quicklook').on("mouseleave", function () {
             $('#environment-quicklook-content').css("display", "none");
         });
+
+        this.render();
     },
 
     render: function() {
-        var environment = this.environment.get(this.variableProcessor.get("selectedEnv"));
+        var environment = this.environments.get(this.variableProcessor.get("selectedEnv"));
 
         if (!environment) {
             $('#environment-quicklook-environments h6').html("No environment");
@@ -265,9 +303,11 @@ var QuickLookPopOver = Backbone.View.extend({
             $('#environment-quicklook-environments h6').html(environment.name);
             $('#environment-quicklook-environments ul').html("");
             $('#environment-quicklook-environments ul').append(Handlebars.templates.environment_quicklook({
-                "items":environment.values
+                "items":environment.toJSON().values
             }));
         }
+
+        console.log("Rendering globals", this.globals.get("globals"));
 
         if (!this.globals) {
             return;
@@ -275,7 +315,7 @@ var QuickLookPopOver = Backbone.View.extend({
 
         $('#environment-quicklook-globals ul').html("");
         $('#environment-quicklook-globals ul').append(Handlebars.templates.environment_quicklook({
-            "items":this.globals
+            "items":this.globals.get("globals")
         }));
     },
 
@@ -299,10 +339,25 @@ var Environment = Backbone.Model.extend({
             "values": [],
             "timestamp": 0
         };
+    }
+});
+
+var Environments = Backbone.Collection.extend({
+    model: Environment,
+
+    initialize:function () {
+        var collection = this;
+
+        pm.indexedDB.environments.getAllEnvironments(function (environments) {
+            console.log("IndexedDB environments are ", environments);
+            environments.sort(sortAlphabetical);
+            collection.add(environments, {merge: true});
+            console.log("Collection models are ", collection.models);
+        })
     },
 
     addEnvironment:function (name, values) {
-        var model = this;
+        var collection = this;
 
         var environment = {
             id:guid(),
@@ -312,15 +367,18 @@ var Environment = Backbone.Model.extend({
         };
 
         pm.indexedDB.environments.addEnvironment(environment, function () {
-            model.set(environment);
+            console.log("Added environment to collection", environment);
+            var envModel = new Environment(environment);
+            collection.add(envModel);
+            console.log("Collection models are ", collection.models);
 
             //TODO: Drive syncing here
             //pm.envManager.drive.queueEnvironmentPost(environment);
         });
     },
 
-    updateEnvironment:function () {
-        var model = this;
+    updateEnvironment:function (id, name, values) {
+        var collection = this;
 
         var environment = {
             id:id,
@@ -330,7 +388,8 @@ var Environment = Backbone.Model.extend({
         };
 
         pm.indexedDB.environments.updateEnvironment(environment, function () {
-            model.set(environment);
+            var envModel = new Environment(environment);
+            collection.set(envModel);
 
             //TODO: Drive syncing here
             // pm.envManager.drive.queueEnvironmentUpdate(environment);
@@ -338,10 +397,10 @@ var Environment = Backbone.Model.extend({
     },
 
     deleteEnvironment:function (id) {
-        var model = this;
+        var collection = this;
 
         pm.indexedDB.environments.deleteEnvironment(id, function () {
-            model.destroy();
+            collection.remove(id);
 
             //TODO: Drive syncing here
             // pm.envManager.drive.queueEnvironmentDelete(id);
@@ -349,9 +408,11 @@ var Environment = Backbone.Model.extend({
     },
 
     downloadEnvironment:function (id) {
-        var name = this.get("name") + ".postman_environment";
+        var environment = this.get(id);
+
+        var name = environment.get("name") + ".postman_environment";
         var type = "application/json";
-        var filedata = this.toJSON();
+        var filedata = environment.toJSON();
         pm.filesystem.saveAndOpenFile(name, filedata, type, function () {
             noty(
                 {
@@ -361,24 +422,6 @@ var Environment = Backbone.Model.extend({
                     timeout:750
                 });
         });
-    }
-});
-
-var Environments = Backbone.Collection.extend({
-    model: Environment,
-
-    getAllEnvironments:function () {
-        var environments = this;
-
-        pm.indexedDB.environments.getAllEnvironments(function (environments) {
-            environments.sort(sortAlphabetical);
-
-            this.add(environments, {merge: true});
-
-            //TODO Set these as model settings
-            var selectedEnvId = pm.settings.getSetting("selectedEnvironmentId");
-            var selectedEnv = environments.get(selectedEnvId);
-        })
     },
 
     duplicateEnvironment:function (id) {
@@ -426,11 +469,11 @@ var Environments = Backbone.Collection.extend({
 
     mergeEnvironments: function(environments) {
         var size = environments.length;
-        var environments = this;
+        var collection = this;
 
         function onUpdateEnvironment(environment) {
             var envModel = new Environment(environment);
-            environments.set(envModel);
+            collection.set(envModel);
         }
 
         for(var i = 0; i < size; i++) {
@@ -632,7 +675,7 @@ var Environments = Backbone.Collection.extend({
             });
         }
     }
-};
+});
 
 var VariableProcessor = Backbone.Model.extend({
     defaults: function() {
@@ -642,6 +685,12 @@ var VariableProcessor = Backbone.Model.extend({
             selectedEnv:null,
             selectedEnvironmentId:""
         };
+    },
+
+    initialize: function() {
+        //TODO Set these as model settings
+        var selectedEnvId = pm.settings.getSetting("selectedEnvironmentId");
+        var selectedEnv = this.get("environments").get(selectedEnvId);
     },
 
     containsVariable:function (string, values) {

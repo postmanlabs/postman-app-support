@@ -131,8 +131,12 @@ pm.init = function () {
             pm.history.getAllRequests();
 
             var globals = new Globals();
-            var variableProcessor = new VariableProcessor();
             var environments = new Environments();
+
+            var variableProcessor = new VariableProcessor({
+                "environments": environments,
+                "globals": globals
+            });
 
             var environmentSelector = new EnvironmentSelector({
                 "environments": environments,
