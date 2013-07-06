@@ -1,315 +1,35 @@
-pm.envManager = {
-    environments:[],
-
-    globals:{},
-    selectedEnv:null,
-    selectedEnvironmentId:"",
-
-    quicklook:{
-        init:function () {
-            pm.envManager.quicklook.refreshEnvironment(pm.envManager.selectedEnv);
-            pm.envManager.quicklook.refreshGlobals(pm.envManager.globals);
-        },
-
-        removeEnvironmentData:function () {
-            $('#environment-quicklook-environments h6').html("No environment");
-            $('#environment-quicklook-environments ul').html("");
-        },
-
-        refreshEnvironment:function (environment) {
-            if (!environment) {
-                return;
-            }
-            $('#environment-quicklook-environments h6').html(environment.name);
-            $('#environment-quicklook-environments ul').html("");
-            $('#environment-quicklook-environments ul').append(Handlebars.templates.environment_quicklook({
-                "items":environment.values
-            }));
-        },
-
-        refreshGlobals:function (globals) {
-            if (!globals) {
-                return;
-            }
-
-            $('#environment-quicklook-globals ul').html("");
-            $('#environment-quicklook-globals ul').append(Handlebars.templates.environment_quicklook({
-                "items":globals
-            }));
-        },
-
-        toggleDisplay:function () {
-            var display = $('#environment-quicklook-content').css("display");
-
-            if (display === "none") {
-                $('#environment-quicklook-content').css("display", "block");
-            }
-            else {
-                $('#environment-quicklook-content').css("display", "none");
-            }
-        }
-    },
-
-    init:function () {
-        pm.envManager.initGlobals(function() {
-            pm.envManager.drive.registerHandlers();
-            $('#environment-list').append(Handlebars.templates.environment_list({"items":pm.envManager.environments}));
-
-            $('#environments-list').on("click", ".environment-action-delete", function () {
-                var id = $(this).attr('data-id');
-                $('a[rel="tooltip"]').tooltip('hide');
-                pm.envManager.deleteEnvironment(id);
-            });
-
-            $('#environments-list').on("click", ".environment-action-edit", function () {
-                var id = $(this).attr('data-id');
-                pm.envManager.showEditor(id);
-            });
-
-            $('#environments-list').on("click", ".environment-action-duplicate", function () {
-                var id = $(this).attr('data-id');
-                pm.envManager.duplicateEnvironment(id);
-            });
-
-            $('#environments-list').on("click", ".environment-action-download", function () {
-                var id = $(this).attr('data-id');
-                pm.envManager.downloadEnvironment(id);
-            });
-
-            $('.environment-action-back').on("click", function () {
-                pm.envManager.showSelector();
-            });
-
-            $('#environment-selector').on("click", ".environment-list-item", function () {
-                var id = $(this).attr('data-id');
-                var selectedEnv = pm.envManager.getEnvironmentFromId(id);
-                pm.envManager.selectedEnv = selectedEnv;
-                pm.settings.setSetting("selectedEnvironmentId", selectedEnv.id);
-                pm.envManager.quicklook.refreshEnvironment(selectedEnv);
-                $('#environment-selector .environment-list-item-selected').html(selectedEnv.name);
-            });
-
-            $('#environment-selector').on("click", ".environment-list-item-noenvironment", function () {
-                pm.envManager.selectedEnv = null;
-                pm.settings.setSetting("selectedEnvironmentId", "");
-                pm.envManager.quicklook.removeEnvironmentData();
-                $('#environment-selector .environment-list-item-selected').html("No environment");
-            });
-
-            $('#environment-quicklook').on("mouseenter", function () {
-                $('#environment-quicklook-content').css("display", "block");
-            });
-
-            $('#environment-quicklook').on("mouseleave", function () {
-                $('#environment-quicklook-content').css("display", "none");
-            });
-
-            $('#environment-files-input').on('change', function (event) {
-                var files = event.target.files;
-                pm.envManager.importEnvironments(files);
-                $('#environment-files-input').val("");
-            });
-
-
-            $('.environments-actions-add').on("click", function () {
-                pm.envManager.showEditor();
-            });
-
-            $('.environments-actions-import').on('click', function () {
-                pm.envManager.showImporter();
-            });
-
-            $('.environments-actions-manage-globals').on('click', function () {
-                pm.envManager.showGlobals();
-            });
-
-            $('.environments-actions-add-submit').on("click", function () {
-                var id = $('#environment-editor-id').val();
-                if (id === "0") {
-                    pm.envManager.addEnvironment();
-                }
-                else {
-                    pm.envManager.updateEnvironment();
-                }
-
-                $('#environment-editor-name').val("");
-                $('#environment-keyvaleditor').keyvalueeditor('reset', []);
-
-            });
-
-            $('.environments-actions-add-back').on("click", function () {
-                pm.envManager.saveGlobals();
-                pm.envManager.showSelector();
-                $('#environment-editor-name').val("");
-                $('#environment-keyvaleditor').keyvalueeditor('reset', []);
-            });
-
-            $('#environments-list-help-toggle').on("click", function () {
-                var d = $('#environments-list-help-detail').css("display");
-                if (d === "none") {
-                    $('#environments-list-help-detail').css("display", "inline");
-                    $(this).html("Hide");
-                }
-                else {
-                    $('#environments-list-help-detail').css("display", "none");
-                    $(this).html("Tell me more");
-                }
-            });
-
-            var params = {
-                placeHolderKey:"Key",
-                placeHolderValue:"Value",
-                deleteButton:'<img class="deleteButton" src="img/delete.png">'
-            };
-
-            $('#environment-keyvaleditor').keyvalueeditor('init', params);
-            $('#globals-keyvaleditor').keyvalueeditor('init', params);
-            $('#globals-keyvaleditor').keyvalueeditor('reset', pm.envManager.globals);
-            pm.envManager.quicklook.init();
-        });
-    },
-
-    getEnvironmentFromId:function (id) {
-        var environments = pm.envManager.environments;
-        var count = environments.length;
-        for (var i = 0; i < count; i++) {
-            var env = environments[i];
-            if (id === env.id) {
-                return env;
-            }
-        }
-
-        return false;
-    },
-
-    containsVariable:function (string, values) {
-        var variableDelimiter = pm.settings.getSetting("variableDelimiter");
-        var startDelimiter = variableDelimiter.substring(0, 2);
-        var endDelimiter = variableDelimiter.substring(variableDelimiter.length - 2);
-        var patString = startDelimiter + "[^\r\n]*" + endDelimiter;
-        var pattern = new RegExp(patString, 'g');
-        var matches = string.match(pattern);
-        var count = values.length;
-        var variable;
-
-        if(matches === null) {
-            return false;
-        }
-
-        for(var i = 0; i < count; i++) {
-            variable = startDelimiter + values[i].key + endDelimiter;
-            if(_.indexOf(matches, variable) >= 0) {
-                return true;
-            }
-        }
-
-        return false;
-    },
-
-    processString:function (string, values) {
-        var count = values.length;
-        var finalString = string;
-        var patString;
-        var pattern;
-
-        var variableDelimiter = pm.settings.getSetting("variableDelimiter");
-        var startDelimiter = variableDelimiter.substring(0, 2);
-        var endDelimiter = variableDelimiter.substring(variableDelimiter.length - 2);
-
-        for (var i = 0; i < count; i++) {
-            patString = startDelimiter + values[i].key + endDelimiter;
-            pattern = new RegExp(patString, 'g');
-            finalString = finalString.replace(patString, values[i].value);
-        }
-
-        var globals = pm.envManager.globals;
-        count = globals.length;
-        for (i = 0; i < count; i++) {
-            patString = startDelimiter + globals[i].key + endDelimiter;
-            pattern = new RegExp(patString, 'g');
-            finalString = finalString.replace(patString, globals[i].value);
-        }
-
-        if (pm.envManager.containsVariable(finalString, values)) {
-            finalString = pm.envManager.processString(finalString, values);
-            return finalString;
-        }
-        else {
-            return finalString;
-        }
-    },
-
-    convertString:function (string) {
-        var environment = pm.envManager.selectedEnv;
-        var envValues = [];
-
-        if (environment !== null) {
-            envValues = environment.values;
-        }
-
-        return pm.envManager.processString(string, envValues);
-    },
-
-    getCurrentValue: function(string) {
-        var environment = pm.envManager.selectedEnv;
-        var envValues = [];
-
-        if (environment !== null) {
-            envValues = environment.values;
-        }
-
-        return pm.envManager.processString(string, envValues);
-    },
-
-    getAllEnvironments:function () {
-        pm.indexedDB.environments.getAllEnvironments(function (environments) {
-            environments.sort(sortAlphabetical);
-
-            $('#environment-selector .dropdown-menu').html("");
-            $('#environments-list tbody').html("");
-            pm.envManager.environments = environments;
-
-
-            $('#environment-selector .dropdown-menu').append(Handlebars.templates.environment_selector({"items":environments}));
-            $('#environments-list tbody').append(Handlebars.templates.environment_list({"items":environments}));
-            $('#environment-selector .dropdown-menu').append(Handlebars.templates.environment_selector_actions());
-
-            var selectedEnvId = pm.settings.getSetting("selectedEnvironmentId");
-            var selectedEnv = pm.envManager.getEnvironmentFromId(selectedEnvId);
-            if (selectedEnv) {
-                pm.envManager.selectedEnv = selectedEnv;
-                pm.envManager.quicklook.refreshEnvironment(selectedEnv);
-                $('#environment-selector .environment-list-item-selected').html(selectedEnv.name);
-            }
-            else {
-                pm.envManager.selectedEnv = null;
-                $('#environment-selector .environment-list-item-selected').html("No environment");
-            }
-        })
+var Globals = Backbone.Model.extend({
+    defaults: function() {
+        return {
+            "globals": []
+        };
     },
 
     initGlobals:function (callback) {
-        pm.envManager.globals = [];
+        this.set({"globals": []});
         pm.storage.getValue('globals', function(s) {
             if (s) {
-                pm.envManager.globals = JSON.parse(s);
+                this.set({"globals": JSON.parse(s)});
             }
             else {
-                pm.envManager.globals = [];
+                this.set({"globals": []});
             }
 
             callback();
         });
-
     },
 
     saveGlobals:function () {
         var globals = $('#globals-keyvaleditor').keyvalueeditor('getValues');
-        pm.envManager.globals = globals;
-        pm.envManager.quicklook.refreshGlobals(globals);
+        this.set({"globals": globals});
+
         var o = {'globals': JSON.stringify(globals)};
+
         pm.storage.setValue(o, function() {
             console.log("Set the values");
+
+            //TODO Handle drive code later
+            /*
             pm.envManager.drive.checkIfGlobalsAreOnDrive("globals", function(exists, driveFile) {
                 if (exists) {
                     pm.envManager.drive.queueGlobalsUpdate(globals);
@@ -318,21 +38,165 @@ pm.envManager = {
                     pm.envManager.drive.queueGlobalsPost(globals);
                 }
             });
+            */
         });
     },
 
-    showSelector:function () {
-        $('#environments-list-wrapper').css("display", "block");
-        $('#environment-editor').css("display", "none");
-        $('#environment-importer').css("display", "none");
-        $('#globals-editor').css("display", "none");
-        $('.environments-actions-add-submit').css("display", "inline");
-        $('#modal-environments .modal-footer').css("display", "none");
+    mergeGlobals: function(globals) {
+        this.set({"globals": globals});
+        var o = {'globals': JSON.stringify(globals)};
+        pm.storage.setValue(o, function() {
+            console.log("Updated globals");
+        });
+    }
+});
+
+var EnvironmentSelector = Backbone.View.extend({
+    initialize: function() {
+        this.environments.on('change', this.render, this);
+
+        var environments = this.environments;
+        var variableProcessor = this.variableProcessor;
+
+        $('#environment-selector').on("click", ".environment-list-item", function () {
+            var id = $(this).attr('data-id');
+            var selectedEnv = environments.get(id);
+            variableProcessor.set({"selectedEnv": selectedEnv});
+            pm.settings.setSetting("selectedEnvironmentId", selectedEnv.id);
+            $('#environment-selector .environment-list-item-selected').html(selectedEnv.name);
+        });
+
+        $('#environment-selector').on("click", ".environment-list-item-noenvironment", function () {
+            variableProcessor.set({"selectedEnv": null});
+            pm.settings.setSetting("selectedEnvironmentId", "");
+            $('#environment-selector .environment-list-item-selected').html("No environment");
+        });
+    },
+
+    render: function() {
+        $('#environment-selector .dropdown-menu').html("");
+        $('#environments-list tbody').html("");
+
+        $('#environment-selector .dropdown-menu').append(Handlebars.templates.environment_selector({"items":this.environments.models}));
+        $('#environments-list tbody').append(Handlebars.templates.environment_list({"items":this.environments.models}));
+        $('#environment-selector .dropdown-menu').append(Handlebars.templates.environment_selector_actions());
+
+        var selectedEnv = this.variableProcessor.get("selectedEnv");
+
+        if (selectedEnv) {
+            $('#environment-selector .environment-list-item-selected').html(selectedEnv.name);
+        }
+        else {
+            $('#environment-selector .environment-list-item-selected').html("No environment");
+        }
+    }
+});
+
+var EnvironmentManagerModal = Backbone.View.extend({
+    initialize: function() {
+        this.environments.on('change', this.render, this);
+        this.globals.on('change', this.render, this);
+
+        var environments = this.environments;
+        var globals = this.globals;
+        var view = this;
+
+        $('#environment-list').append(Handlebars.templates.environment_list({"items": this.environments.get("environments")}));
+
+        $('#environments-list').on("click", ".environment-action-delete", function () {
+            var id = $(this).attr('data-id');
+            $('a[rel="tooltip"]').tooltip('hide');
+            environments.deleteEnvironment(id);
+        });
+
+        $('#environments-list').on("click", ".environment-action-edit", function () {
+            var id = $(this).attr('data-id');
+            view.showEditor(id);
+        });
+
+        $('#environments-list').on("click", ".environment-action-duplicate", function () {
+            var id = $(this).attr('data-id');
+            environments.duplicateEnvironment(id);
+        });
+
+        $('#environments-list').on("click", ".environment-action-download", function () {
+            var id = $(this).attr('data-id');
+            environments.downloadEnvironment(id);
+        });
+
+        $('.environment-action-back').on("click", function () {
+            view.showSelector();
+        });
+
+        $('#environment-files-input').on('change', function (event) {
+            var files = event.target.files;
+            environments.importEnvironments(files);
+            $('#environment-files-input').val("");
+        });
+
+
+        $('.environments-actions-add').on("click", function () {
+            view.showEditor();
+        });
+
+        $('.environments-actions-import').on('click', function () {
+            view.showImporter();
+        });
+
+        $('.environments-actions-manage-globals').on('click', function () {
+            view.showGlobals();
+        });
+
+        $('.environments-actions-add-submit').on("click", function () {
+            var id = $('#environment-editor-id').val();
+            var name = $('#environment-editor-name').val();
+            var values = $('#environment-keyvaleditor').keyvalueeditor('getValues');
+
+            if (id === "0") {
+                environments.addEnvironment(name, values);
+            }
+            else {
+                environments.updateEnvironment(id, name, values);
+            }
+
+            $('#environment-editor-name').val("");
+            $('#environment-keyvaleditor').keyvalueeditor('reset', []);
+
+        });
+
+        $('.environments-actions-add-back').on("click", function () {
+            globals.saveGlobals();
+            view.showSelector();
+            $('#environment-editor-name').val("");
+            $('#environment-keyvaleditor').keyvalueeditor('reset', []);
+        });
+
+        $('#environments-list-help-toggle').on("click", function (event) {
+            var d = $('#environments-list-help-detail').css("display");
+            if (d === "none") {
+                $('#environments-list-help-detail').css("display", "inline");
+                $(event.currentTarget).html("Hide");
+            }
+            else {
+                $('#environments-list-help-detail').css("display", "none");
+                $(event.currentTarget).html("Tell me more");
+            }
+        });
+
+        var params = {
+            placeHolderKey:"Key",
+            placeHolderValue:"Value",
+            deleteButton:'<img class="deleteButton" src="img/delete.png">'
+        };
+
+        $('#environment-keyvaleditor').keyvalueeditor('init', params);
+        $('#globals-keyvaleditor').keyvalueeditor('init', params);
+        $('#globals-keyvaleditor').keyvalueeditor('reset', this.globals.get("globals"));
     },
 
     showEditor:function (id) {
         if (id) {
-            var environment = pm.envManager.getEnvironmentFromId(id);
+            var environment = environments.getEnvironmentFromId(id);
             $('#environment-editor-name').val(environment.name);
             $('#environment-editor-id').val(id);
             $('#environment-keyvaleditor').keyvalueeditor('reset', environment.values);
@@ -345,6 +209,15 @@ pm.envManager = {
         $('#environment-editor').css("display", "block");
         $('#globals-editor').css("display", "none");
         $('#modal-environments .modal-footer').css("display", "block");
+    },
+
+    showSelector:function () {
+        $('#environments-list-wrapper').css("display", "block");
+        $('#environment-editor').css("display", "none");
+        $('#environment-importer').css("display", "none");
+        $('#globals-editor').css("display", "none");
+        $('.environments-actions-add-submit').css("display", "inline");
+        $('#modal-environments .modal-footer').css("display", "none");
     },
 
     showImporter:function () {
@@ -363,11 +236,74 @@ pm.envManager = {
         $('#environment-importer').css("display", "none");
         $('.environments-actions-add-submit').css("display", "none");
         $('#modal-environments .modal-footer').css("display", "block");
+    }
+});
+
+var QuickLookPopOver = Backbone.View.extend({
+    initialize: function() {
+        this.environments.on('change', this.render, this);
+        this.variableProcessor.on('change', this.render, this);
+        this.globals.on('change', this.render, this);
+
+        $('#environment-quicklook').on("mouseenter", function () {
+            $('#environment-quicklook-content').css("display", "block");
+        });
+
+        $('#environment-quicklook').on("mouseleave", function () {
+            $('#environment-quicklook-content').css("display", "none");
+        });
     },
 
-    addEnvironment:function () {
-        var name = $('#environment-editor-name').val();
-        var values = $('#environment-keyvaleditor').keyvalueeditor('getValues');
+    render: function() {
+        var environment = this.environment.get(this.variableProcessor.get("selectedEnv"));
+
+        if (!environment) {
+            $('#environment-quicklook-environments h6').html("No environment");
+            $('#environment-quicklook-environments ul').html("");
+        }
+        else {
+            $('#environment-quicklook-environments h6').html(environment.name);
+            $('#environment-quicklook-environments ul').html("");
+            $('#environment-quicklook-environments ul').append(Handlebars.templates.environment_quicklook({
+                "items":environment.values
+            }));
+        }
+
+        if (!this.globals) {
+            return;
+        }
+
+        $('#environment-quicklook-globals ul').html("");
+        $('#environment-quicklook-globals ul').append(Handlebars.templates.environment_quicklook({
+            "items":this.globals
+        }));
+    },
+
+    toggleDisplay:function () {
+        var display = $('#environment-quicklook-content').css("display");
+
+        if (display === "none") {
+            $('#environment-quicklook-content').css("display", "block");
+        }
+        else {
+            $('#environment-quicklook-content').css("display", "none");
+        }
+    }
+});
+
+var Environment = Backbone.Model.extend({
+    defaults: function() {
+        return {
+            "id": "",
+            "name": "",
+            "values": [],
+            "timestamp": 0
+        };
+    },
+
+    addEnvironment:function (name, values) {
+        var model = this;
+
         var environment = {
             id:guid(),
             name:name,
@@ -376,18 +312,16 @@ pm.envManager = {
         };
 
         pm.indexedDB.environments.addEnvironment(environment, function () {
-            pm.envManager.getAllEnvironments();
-            pm.envManager.showSelector();
+            model.set(environment);
 
             //TODO: Drive syncing here
-            pm.envManager.drive.queueEnvironmentPost(environment);
+            //pm.envManager.drive.queueEnvironmentPost(environment);
         });
     },
 
     updateEnvironment:function () {
-        var id = $('#environment-editor-id').val();
-        var name = $('#environment-editor-name').val();
-        var values = $('#environment-keyvaleditor').keyvalueeditor('getValues');
+        var model = this;
+
         var environment = {
             id:id,
             name:name,
@@ -396,50 +330,28 @@ pm.envManager = {
         };
 
         pm.indexedDB.environments.updateEnvironment(environment, function () {
-            pm.envManager.getAllEnvironments();
-            pm.envManager.showSelector();
+            model.set(environment);
 
-            pm.envManager.drive.queueEnvironmentUpdate(environment);
+            //TODO: Drive syncing here
+            // pm.envManager.drive.queueEnvironmentUpdate(environment);
         });
     },
 
     deleteEnvironment:function (id) {
+        var model = this;
+
         pm.indexedDB.environments.deleteEnvironment(id, function () {
-            pm.envManager.getAllEnvironments();
-            pm.envManager.showSelector();
-
-            pm.envManager.drive.queueEnvironmentDelete(id);
-        });
-    },
-
-    duplicateEnvironment:function (id) {
-        var env = pm.envManager.getEnvironmentFromId(id);
-
-        //get a new name for this duplicated environment
-        env.name = env.name + " " + "copy";
-
-        //change the env guid
-        env.id = guid();
-
-        pm.indexedDB.environments.addEnvironment(env, function () {
-            //Add confirmation
-            var o = {
-                name:env.name,
-                action:'added'
-            };
-
-            pm.envManager.getAllEnvironments();
+            model.destroy();
 
             //TODO: Drive syncing here
-            pm.envManager.drive.queueEnvironmentPost(env);
+            // pm.envManager.drive.queueEnvironmentDelete(id);
         });
     },
 
     downloadEnvironment:function (id) {
-        var env = pm.envManager.getEnvironmentFromId(id);
-        var name = env.name + ".postman_environment";
+        var name = this.get("name") + ".postman_environment";
         var type = "application/json";
-        var filedata = JSON.stringify(env);
+        var filedata = this.toJSON();
         pm.filesystem.saveAndOpenFile(name, filedata, type, function () {
             noty(
                 {
@@ -448,6 +360,43 @@ pm.envManager = {
                     layout:'topCenter',
                     timeout:750
                 });
+        });
+    }
+});
+
+var Environments = Backbone.Collection.extend({
+    model: Environment,
+
+    getAllEnvironments:function () {
+        var environments = this;
+
+        pm.indexedDB.environments.getAllEnvironments(function (environments) {
+            environments.sort(sortAlphabetical);
+
+            this.add(environments, {merge: true});
+
+            //TODO Set these as model settings
+            var selectedEnvId = pm.settings.getSetting("selectedEnvironmentId");
+            var selectedEnv = environments.get(selectedEnvId);
+        })
+    },
+
+    duplicateEnvironment:function (id) {
+        var env = this.get(id);
+        env.name = env.name + " " + "copy";
+        env.id = guid();
+
+        var environments = this;
+
+        pm.indexedDB.environments.addEnvironment(env, function () {
+            //New Environment Model here
+            var envModel = new Environment(env);
+
+            //Add confirmation
+            environments.add(envModel);
+
+            //TODO: Drive syncing here
+            // pm.envManager.drive.queueEnvironmentPost(env);
         });
     },
 
@@ -464,17 +413,8 @@ pm.envManager = {
                     var environment = JSON.parse(data);
 
                     pm.indexedDB.environments.addEnvironment(environment, function () {
-                        //Add confirmation
-                        var o = {
-                            name:environment.name,
-                            action:'added'
-                        };
-
-                        $('#environment-importer-confirmations').append(Handlebars.templates.message_environment_added(o));
-                        pm.envManager.getAllEnvironments();
-
                         //TODO: Drive syncing here
-                        pm.envManager.drive.queueEnvironmentPost(environment);
+                        // pm.envManager.drive.queueEnvironmentPost(environment);
                     });
                 };
             })(f);
@@ -486,8 +426,11 @@ pm.envManager = {
 
     mergeEnvironments: function(environments) {
         var size = environments.length;
-        function onUpdateEnvironment() {
-            pm.envManager.getAllEnvironments();
+        var environments = this;
+
+        function onUpdateEnvironment(environment) {
+            var envModel = new Environment(environment);
+            environments.set(envModel);
         }
 
         for(var i = 0; i < size; i++) {
@@ -496,13 +439,7 @@ pm.envManager = {
         }
     },
 
-    mergeGlobals: function(globals) {
-        var o = {'globals': JSON.stringify(globals)};
-        pm.storage.setValue(o, function() {
-            console.log("Updated globals");
-        });
-    },
-
+    //TODO Fix drive code later
     drive: {
         registerHandlers: function() {
             if (pm.drive) {
@@ -695,5 +632,94 @@ pm.envManager = {
             });
         }
     }
-
 };
+
+var VariableProcessor = Backbone.Model.extend({
+    defaults: function() {
+        return {
+            environments: null,
+            globals: null,
+            selectedEnv:null,
+            selectedEnvironmentId:""
+        };
+    },
+
+    containsVariable:function (string, values) {
+        var variableDelimiter = pm.settings.getSetting("variableDelimiter");
+        var startDelimiter = variableDelimiter.substring(0, 2);
+        var endDelimiter = variableDelimiter.substring(variableDelimiter.length - 2);
+        var patString = startDelimiter + "[^\r\n]*" + endDelimiter;
+        var pattern = new RegExp(patString, 'g');
+        var matches = string.match(pattern);
+        var count = values.length;
+        var variable;
+
+        if(matches === null) {
+            return false;
+        }
+
+        for(var i = 0; i < count; i++) {
+            variable = startDelimiter + values[i].key + endDelimiter;
+            if(_.indexOf(matches, variable) >= 0) {
+                return true;
+            }
+        }
+
+        return false;
+    },
+
+    processString:function (string, values) {
+        var count = values.length;
+        var finalString = string;
+        var patString;
+        var pattern;
+
+        var variableDelimiter = pm.settings.getSetting("variableDelimiter");
+        var startDelimiter = variableDelimiter.substring(0, 2);
+        var endDelimiter = variableDelimiter.substring(variableDelimiter.length - 2);
+
+        for (var i = 0; i < count; i++) {
+            patString = startDelimiter + values[i].key + endDelimiter;
+            pattern = new RegExp(patString, 'g');
+            finalString = finalString.replace(patString, values[i].value);
+        }
+
+        var globals = this.get("globals");
+        count = globals.length;
+        for (i = 0; i < count; i++) {
+            patString = startDelimiter + globals[i].key + endDelimiter;
+            pattern = new RegExp(patString, 'g');
+            finalString = finalString.replace(patString, globals[i].value);
+        }
+
+        if (this.containsVariable(finalString, values)) {
+            finalString = this.processString(finalString, values);
+            return finalString;
+        }
+        else {
+            return finalString;
+        }
+    },
+
+    convertString:function (string) {
+        var environment = this.get("selectedEnv");
+        var envValues = [];
+
+        if (environment !== null) {
+            envValues = environment.values;
+        }
+
+        return this.processString(string, envValues);
+    },
+
+    getCurrentValue: function(string) {
+        var environment = this.selectedEnv;
+        var envValues = [];
+
+        if (environment !== null) {
+            envValues = environment.values;
+        }
+
+        return this.processString(string, envValues);
+    },
+});

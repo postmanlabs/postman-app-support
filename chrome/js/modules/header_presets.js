@@ -279,7 +279,6 @@ var HeaderPresetsModal = Backbone.View.extend({
         });
 
         $("#header-presets-list").on("click", ".header-preset-action-delete", function (event) {
-            console.log(event.currentTarget);
             var id = $(event.currentTarget).attr("data-id");
             headerPresets.deleteHeaderPreset(id);
         });

@@ -125,12 +125,32 @@ pm.init = function () {
             pm.editor.init();
             pm.helpers.init();
             pm.keymap.init();
-            pm.envManager.init();
             pm.filesystem.init();
 
 
             pm.history.getAllRequests();
-            pm.envManager.getAllEnvironments();
+
+            var globals = new Globals();
+            var variableProcessor = new VariableProcessor();
+            var environments = new Environments();
+
+            var environmentSelector = new EnvironmentSelector({
+                "environments": environments,
+                "variableProcessor": variableProcessor
+            });
+
+            var environmentManagerModal = new EnvironmentManagerModal({
+                "environments": environments,
+                "globals": globals
+            });
+
+            var quicklookPopOver = new QuickLookPopOver({
+                "environments": environments,
+                "globals": globals,
+                "variableProcessor": variableProcessor
+            });
+
+            pm.envManager = variableProcessor;
 
             pm.headerPresets = new HeaderPresets();
             pm.headerPresets.init();
