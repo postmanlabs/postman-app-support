@@ -23,6 +23,7 @@
     "predef"        : [  // Custom globals.
         "Handlebars",
         "_",
+        "pm",
         "noty",
         "sortAlphabetical",
         "guid",

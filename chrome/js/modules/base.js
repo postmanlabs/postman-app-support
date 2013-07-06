@@ -117,13 +117,31 @@ pm.init = function () {
     pm.settings.init(function() {
         var settingsModal = new SettingsModal({model: pm.settings});
         pm.indexedDB.open(function() {
+            var basicAuthProcessor = new BasicAuthProcessor();
+            var digestAuthProcessor = new DigestAuthProcessor();
+            var oAuth1Processor = new OAuth1Processor();
+
+            var basicAuthForm = new BasicAuthForm({model: basicAuthProcessor});
+            var digestAuthForm = new DigestAuthForm({model: digestAuthProcessor});
+            var oAuth1Form = new OAuth1Form({model: oAuth1Processor});
+
+            var helpers = new Helpers({
+                "basicAuth": basicAuthProcessor,
+                "digestAuth": digestAuthProcessor,
+                "oAuth1": oAuth1Processor
+            });
+
+            var helperManager = new HelperManager({model: helpers});
+
+            pm.helpers = helperManager;
+
             pm.request.init();
             pm.history.init();
             pm.collections.init();
             pm.search.init();
             pm.layout.init();
             pm.editor.init();
-            pm.helpers.init();
+
             pm.keymap.init();
             pm.filesystem.init();
 
@@ -161,8 +179,6 @@ pm.init = function () {
 
             var headerPresetsModal = new HeaderPresetsModal({model: pm.headerPresets});
             var headerPresetsRequestEditor = new HeaderPresetsRequestEditor({model: pm.headerPresets});
-
-            pm.helpers.loadFromDB();
 
             var activeSidebarSection = pm.settings.getSetting("activeSidebarSection");
 
