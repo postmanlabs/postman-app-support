@@ -17,8 +17,6 @@ var Globals = Backbone.Model.extend({
             else {
                 model.set({"globals": []});
             }
-
-            console.log("Loaded globals", model.get("globals"));
         });
     },
 
@@ -29,8 +27,6 @@ var Globals = Backbone.Model.extend({
         var o = {'globals': JSON.stringify(globals)};
 
         pm.storage.setValue(o, function() {
-            console.log("Set the values");
-
             //TODO Handle drive code later
             /*
             pm.envManager.drive.checkIfGlobalsAreOnDrive("globals", function(exists, driveFile) {
@@ -49,7 +45,6 @@ var Globals = Backbone.Model.extend({
         this.set({"globals": globals});
         var o = {'globals': JSON.stringify(globals)};
         pm.storage.setValue(o, function() {
-            console.log("Updated globals");
         });
     }
 });
@@ -76,8 +71,6 @@ var EnvironmentSelector = Backbone.View.extend({
             var id = $(this).attr('data-id');
             var selectedEnv = environments.get(id);
 
-            console.log("Selected env is", selectedEnv);
-
             variableProcessor.set({"selectedEnv": selectedEnv});
             pm.settings.setSetting("selectedEnvironmentId", selectedEnv.id);
             $('#environment-selector .environment-list-item-selected').html(selectedEnv.name);
@@ -93,8 +86,6 @@ var EnvironmentSelector = Backbone.View.extend({
     },
 
     render: function() {
-        console.log("Render environment selector");
-
         $('#environment-selector .dropdown-menu').html("");
         $('#environment-selector .dropdown-menu').append(Handlebars.templates.environment_selector({"items":this.environments.toJSON()}));
         $('#environment-selector .dropdown-menu').append(Handlebars.templates.environment_selector_actions());
@@ -215,8 +206,6 @@ var EnvironmentManagerModal = Backbone.View.extend({
             deleteButton:'<img class="deleteButton" src="img/delete.png">'
         };
 
-        console.log(this.globals.get("globals"));
-
         $('#environment-keyvaleditor').keyvalueeditor('init', params);
         $('#globals-keyvaleditor').keyvalueeditor('init', params);
 
@@ -268,7 +257,6 @@ var EnvironmentManagerModal = Backbone.View.extend({
     },
 
     render: function() {
-        console.log(this.environments.toJSON());
         $('#environments-list tbody').html("");
         $('#environments-list tbody').append(Handlebars.templates.environment_list({"items":this.environments.toJSON()}));
         $('#globals-keyvaleditor').keyvalueeditor('reset', this.globals.get("globals"));
@@ -311,8 +299,6 @@ var QuickLookPopOver = Backbone.View.extend({
             }));
         }
 
-        console.log("Rendering globals", this.globals.get("globals"));
-
         if (!this.globals) {
             return;
         }
@@ -353,10 +339,8 @@ var Environments = Backbone.Collection.extend({
         var collection = this;
 
         pm.indexedDB.environments.getAllEnvironments(function (environments) {
-            console.log("IndexedDB environments are ", environments);
             environments.sort(sortAlphabetical);
             collection.add(environments, {merge: true});
-            console.log("Collection models are ", collection.models);
         })
     },
 
@@ -371,10 +355,8 @@ var Environments = Backbone.Collection.extend({
         };
 
         pm.indexedDB.environments.addEnvironment(environment, function () {
-            console.log("Added environment to collection", environment);
             var envModel = new Environment(environment);
             collection.add(envModel);
-            console.log("Collection models are ", collection.models);
 
             //TODO: Drive syncing here
             //pm.envManager.drive.queueEnvironmentPost(environment);
