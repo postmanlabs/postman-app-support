@@ -1863,9 +1863,9 @@ pm.request = {
         // Set state as if change event of input handlers was called
         pm.request.setUrlParamString(pm.request.getUrlEditorParams());
 
-        if (pm.helpers.activeHelper === "oauth1" && pm.helpers.oAuth1.isAutoEnabled) {
-            pm.helpers.oAuth1.generateHelper();
-            pm.helpers.oAuth1.process();
+        if (pm.helpers.get("activeHelper") === "oauth1" && pm.helpers.get("oAuth1").get("auto")) {
+            pm.helpers.get("oAuth1").generateHelper();
+            pm.helpers.get("oAuth1").process();
         }
 
         $('#headers-keyvaleditor-actions-open .headers-count').html(pm.request.headers.length);
