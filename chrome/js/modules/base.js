@@ -19,24 +19,6 @@
 "use strict";
 
 //TODO: Remove these model classes. Being used in indexed_db.js but not needed
-function Collection() {
-    this.id = "";
-    this.name = "";
-    this.requests = {};
-}
-
-function CollectionRequest() {
-    this.collectionId = "";
-    this.id = "";
-    this.name = "";
-    this.description = "";
-    this.url = "";
-    this.method = "";
-    this.headers = "";
-    this.data = "";
-    this.dataMode = "params";
-    this.timestamp = 0;
-}
 
 function Request() {
     this.id = "";
@@ -132,11 +114,15 @@ pm.init = function () {
             });
 
             var helperManager = new HelperManager({model: helpers});
-
             pm.helpers = helperManager;
 
             pm.request.init();
-            pm.history.init();
+
+            var history = new History();
+            var historySidebar = new HistorySidebar({model: history});
+            pm.history = history;
+            pm.historySidebar = historySidebar;
+
             pm.collections.init();
             pm.search.init();
             pm.layout.init();
@@ -144,9 +130,6 @@ pm.init = function () {
 
             pm.keymap.init();
             pm.filesystem.init();
-
-
-            pm.history.getAllRequests();
 
             var globals = new Globals();
             var environments = new Environments();

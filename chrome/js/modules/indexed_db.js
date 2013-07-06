@@ -89,12 +89,6 @@ pm.indexedDB = {
                 setVrequest.onupgradeneeded = function (evt) {
                 };
             }
-            else {
-                pm.history.getAllRequests();
-                pm.envManager.getAllEnvironments();
-                pm.headerPresets.init();
-            }
-
         };
 
         request.onfailure = pm.indexedDB.onerror;

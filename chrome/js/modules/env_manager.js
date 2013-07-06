@@ -119,6 +119,15 @@ var EnvironmentManagerModal = Backbone.View.extend({
         var globals = this.globals;
         var view = this;
 
+        $("#modal-environments").on("shown", function () {
+            $('.environments-actions-add').focus();
+            pm.layout.onModalOpen("#modal-environments");
+        });
+
+        $("#modal-environments").on("hidden", function () {
+            pm.layout.onModalClose();
+        });
+
         $('#environments-list').on("click", ".environment-action-delete", function () {
             var id = $(this).attr('data-id');
             $('a[rel="tooltip"]').tooltip('hide');

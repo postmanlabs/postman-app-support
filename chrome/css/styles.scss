@@ -39,7 +39,7 @@ html, body {
     height: 100%;
     width: 100%;
     padding: 0;
-    margin: 0;    
+    margin: 0;
 }
 
 a, a:hover {
@@ -254,7 +254,7 @@ li {
     }
 
     li.active {
-        color: black;    
+        color: black;
         height: 15px;
     }
 
@@ -303,7 +303,7 @@ li {
 
     li {
         border-left: solid thin #ccc;
-        border-bottom: solid thin #ccc;    
+        border-bottom: solid thin #ccc;
         padding: 0;
         height: 36px;
         float: left;
@@ -316,7 +316,7 @@ li {
 
     li.active {
         background-color: #eaeaea;
-        border-bottom: solid thin #eaeaea;    
+        border-bottom: solid thin #eaeaea;
         height: 36px;
     }
 
@@ -378,6 +378,7 @@ li {
 
 .empty-message {
     margin-top: 5px;
+    padding: 0 10px 0 10px;
 }
 
 
@@ -578,7 +579,7 @@ li {
     opacity: 0.2;
     position: absolute;
     top: 10px;
-    right: 15px; 
+    right: 15px;
 }
 
 #sidebar-search-cancel:hover {
@@ -589,11 +590,11 @@ li {
     max-height: 250px;
     height: 250px;
     background-color: white;
-    border-collapse: separate; 
-    border: 1px solid rgb(204, 204, 204); 
-    padding: 4px; 
-    box-sizing: content-box; 
-    -webkit-box-shadow: rgba(0, 0, 0, 0.0745098) 0px 1px 1px 0px inset; 
+    border-collapse: separate;
+    border: 1px solid rgb(204, 204, 204);
+    padding: 4px;
+    box-sizing: content-box;
+    -webkit-box-shadow: rgba(0, 0, 0, 0.0745098) 0px 1px 1px 0px inset;
     box-shadow: rgba(0, 0, 0, 0.0745098) 0px 1px 1px 0px inset;
     border-top-right-radius: 3px; border-bottom-right-radius: 3px;
     border-bottom-left-radius: 3px; border-top-left-radius: 3px;
@@ -869,11 +870,11 @@ input[type="file"] {
 
 #request {
     padding: 0 0 20px 20px;
-    border-bottom: solid thin $input_border_color;    
+    border-bottom: solid thin $input_border_color;
 }
 
 #request-description {
-    max-width: 800px;    
+    max-width: 800px;
 }
 
 #request-samples {
@@ -1078,7 +1079,7 @@ input[type="file"] {
 
 .request-preview-header-title {
     padding-left: 20px;
-    font-size: 16px; 
+    font-size: 16px;
     font-weight: bold;
     margin-right: 20px;
     padding-top: 20px;
@@ -1263,7 +1264,7 @@ input[type="file"] {
 }
 
 #response {
-    padding: 0 0 20px 20px;    
+    padding: 0 0 20px 20px;
 }
 
 #response {
@@ -1410,7 +1411,7 @@ input[type="file"] {
 }
 
 #response-copy-button.zeroclipboard-is-hover { background-color:#eee; }
-#response-copy-button.zeroclipboard-is-active { background-color:#aaa; } 
+#response-copy-button.zeroclipboard-is-active { background-color:#aaa; }
 
 #response-collection-request-actions {
     float: left;
@@ -1656,7 +1657,7 @@ input[type="file"] {
         li {
             margin-bottom: 5px;
         }
-    }    
+    }
 }
 
 #broadcasts-count {
@@ -1695,7 +1696,7 @@ input[type="file"] {
     cursor: pointer;
     display: none;
     float: left;
-    margin-right: 10px;        
+    margin-right: 10px;
 
     img {
         width: 20px;
@@ -1712,7 +1713,7 @@ input[type="file"] {
     -webkit-animation-duration: 4000ms;
     -webkit-animation-iteration-count: infinite;
     -webkit-animation-timing-function: linear;
-    
+
     animation-name: spin;
     animation-duration: 4000ms;
     animation-iteration-count: infinite;
@@ -1745,7 +1746,7 @@ input[type="file"] {
 
 #sync-details {
     color: #999;
-    font-size: 11px;  
+    font-size: 11px;
     margin-top: 2px;
 }
 
@@ -1761,7 +1762,7 @@ input[type="file"] {
 #user-details-name {
     font-size: 16px;
     font-weight: bold;
-    margin-top: 3px;    
+    margin-top: 3px;
 }
 
 #drive-user-enable {
@@ -1841,11 +1842,11 @@ input[type="file"] {
         font-size: 11px;
         font-weight: bold;
         text-decoration: none;
-        margin-right: 9px; 
+        margin-right: 9px;
     }
 
     img {
-        height: 20px; 
+        height: 20px;
     }
 
     a:hover {
@@ -1863,10 +1864,10 @@ input[type="file"] {
 #header-donate-link {
     border-radius: 3px;
     color: #999;
-    font-size: 13px; 
-    font-weight: bold;   
+    font-size: 13px;
+    font-weight: bold;
     padding: 5px;
-    padding-top: 3px;        
+    padding-top: 3px;
     text-decoration: none;
 }
 

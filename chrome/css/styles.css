@@ -318,7 +318,8 @@ li .right {
   margin-top: 10px; }
 
 .empty-message {
-  margin-top: 5px; }
+  margin-top: 5px;
+  padding: 0 10px 0 10px; }
 
 #sidebar {
   -webkit-user-select: none;

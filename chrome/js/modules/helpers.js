@@ -758,6 +758,14 @@ var HelperManager = Backbone.View.extend({
         });
     },
 
+    getActiveHelperType: function() {
+        return this.model.get("activeHelper");
+    },
+
+    getHelper: function(type) {
+        return this.model.get(type);
+    },
+
     showRequestHelper: function (type) {
         this.model.set("activeHelper", type);
         return false;

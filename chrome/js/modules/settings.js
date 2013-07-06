@@ -206,6 +206,15 @@ var SettingsModal = Backbone.View.extend({
         var settings = this.model;
         this.model.on('change:items', this.render, this);
 
+        $("#modal-settings").on("shown", function () {
+            $("#history-count").focus();
+            pm.layout.onModalOpen("#modal-settings");
+        });
+
+        $("#modal-settings").on("hidden", function () {
+            pm.layout.onModalClose();
+        });
+
         $('#history-count').change(function () {
             settings.setSetting("historyCount", $('#history-count').val());
         });

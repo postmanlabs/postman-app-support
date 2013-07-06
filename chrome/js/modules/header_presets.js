@@ -246,6 +246,15 @@ var HeaderPresetsModal = Backbone.View.extend({
         var headerPresets = this.model;
         var view = this;
 
+        $("#modal-header-presets").on("shown", function () {
+            $(".header-presets-actions-add").focus();
+            pm.layout.onModalOpen("#modal-header-presets");
+        });
+
+        $("#modal-header-presets").on("hidden", function () {
+            pm.layout.onModalClose();
+        });
+
         $(".header-presets-actions-add").on("click", function () {
             view.showEditor();
         });

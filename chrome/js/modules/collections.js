@@ -1,16 +1,293 @@
-pm.collections = {
-    areLoaded:false,
-    items:[],
+var PmCollectionRequest = Backbone.Model.extend({
+    defaults: function() {
+        return {
+        };
+    }
+});
 
-    originalCollectionId: "",
-    toBeImportedCollection:{},
+var PmCollection = Backbone.Model.extend({
+    defaults: function() {
+        return {
+        };
+    }
+});
 
-    init:function () {
-        pm.collections.addCollectionListeners();
-        pm.collections.drive.registerHandlers();
+var AddCollectionModal = Backbone.View.extend({
+    initialize: function() {
+        $('#form-new-collection').submit(function () {
+            pm.collections.addCollection();
+            return false;
+        });
+
+        $('#modal-new-collection .btn-primary').click(function () {
+            pm.collections.addCollection();
+            return false;
+        });
+
+        $("#modal-new-collection").on("shown", function () {
+            $("#new-collection-blank").focus();
+            pm.layout.onModalOpen("#modal-new-collection");
+        });
+
+        $("#modal-new-collection").on("hidden", function () {
+            pm.layout.onModalClose();
+        });
     },
 
-    addCollectionListeners:function () {
+    render: function() {
+
+    }
+});
+
+var EditCollectionModal = Backbone.View.extend({
+    initialize: function() {
+        $('#edit-collection-update-drive').on("click", function() {
+            var id = $(this).attr('data-collection-id');
+            console.log("Run change queue");
+            pm.drive.fetchChanges();
+        });
+
+        $('#form-edit-collection').submit(function() {
+            var id = $('#form-edit-collection .collection-id').val();
+            var name = $('#form-edit-collection .collection-name').val();
+            pm.collections.updateCollection(id, name);
+            $('#modal-edit-collection').modal('hide');
+            return false;
+        });
+
+        $('#modal-edit-collection .btn-primary').click(function () {
+            var id = $('#form-edit-collection .collection-id').val();
+            var name = $('#form-edit-collection .collection-name').val();
+
+            pm.collections.updateCollectionMeta(id, name);
+            $('#modal-edit-collection').modal('hide');
+        });
+
+        $("#modal-edit-collection").on("shown", function () {
+            $("#modal-edit-collection .collection-name").focus();
+            pm.layout.onModalOpen("#modal-edit-collection");
+        });
+
+        $("#modal-edit-collection").on("hidden", function () {
+            pm.layout.onModalClose();
+        });
+    },
+
+    render: function() {
+
+    }
+});
+
+var AddCollectionRequestModal = Backbone.View.extend({
+    initialize: function() {
+        this.model.on("add", this.render, this);
+        this.model.on("remove", this.render, this);
+
+        $('#form-add-to-collection').submit(function () {
+            pm.collections.addRequestToCollection();
+            $('#modal-add-to-collection').modal('hide');
+            return false;
+        });
+
+        $('#modal-add-to-collection .btn-primary').click(function () {
+            pm.collections.addRequestToCollection();
+            $('#modal-add-to-collection').modal('hide');
+        });
+
+        $("#modal-add-to-collection").on("shown", function () {
+            $("#select-collection").focus();
+            pm.layout.onModalOpen("#modal-add-to-collection");
+        });
+
+        $("#modal-add-to-collection").on("hidden", function () {
+            pm.layout.onModalClose();
+        });
+
+        //Initialize select-collection options
+        $('#select-collection').html("<option>Select</option>");
+    },
+
+    render: function() {
+        //Change select item here
+    }
+});
+
+var EditCollectionRequestModal = Backbone.View.extend({
+    initialize: function() {
+        $('#form-edit-collection-request').submit(function() {
+            var id = $('#form-edit-collection-request .collection-request-id').val();
+            var name = $('#form-edit-collection-request .collection-request-name').val();
+            var description = $('#form-edit-collection-request .collection-request-description').val();
+            pm.collections.updateCollectionRequestMeta(id, name, description);
+            return false;
+        });
+
+        $('#modal-edit-collection-request .btn-primary').click(function () {
+            var id = $('#form-edit-collection-request .collection-request-id').val();
+            var name = $('#form-edit-collection-request .collection-request-name').val();
+            var description = $('#form-edit-collection-request .collection-request-description').val();
+            pm.collections.updateCollectionRequestMeta(id, name, description);
+        });
+
+        $("#modal-edit-collection-request").on("shown", function () {
+            $("#modal-edit-collection-request .collection-request-name").focus();
+            pm.layout.onModalOpen("#modal-edit-collection-request");
+        });
+
+        $("#modal-edit-collection-request").on("hidden", function () {
+            pm.layout.onModalClose();
+        });
+    },
+
+    render: function() {
+
+    }
+});
+
+var DeleteCollectionModal = Backbone.View.extend({
+    initialize: function() {
+        $('#modal-delete-collection-yes').on("click", function () {
+            var id = $(this).attr('data-id');
+            pm.collections.deleteCollection(id, true);
+        });
+
+        $("#modal-delete-collection").on("shown", function () {
+            pm.layout.onModalOpen("#modal-delete-collection");
+        });
+
+        $("#modal-delete-collection").on("hidden", function () {
+            pm.layout.onModalClose();
+        });
+    },
+
+    render: function() {
+
+    }
+});
+
+var DeleteCollectionRequestModal = Backbone.View.extend({
+    initialize: function() {
+        $('#modal-delete-collection-request-yes').on("click", function () {
+            var id = $(this).attr('data-id');
+            pm.collections.deleteCollectionRequest(id);
+        });
+    },
+
+    render: function() {
+
+    }
+});
+
+var ImportCollectionModal = Backbone.View.extend({
+    initialize: function() {
+        $('#import-collection-url-submit').on("click", function () {
+            var url = $('#import-collection-url-input').val();
+            pm.collections.importCollectionFromUrl(url);
+        });
+
+        var dropZone = document.getElementById('import-collection-dropzone');
+        dropZone.addEventListener('dragover', function (evt) {
+            evt.stopPropagation();
+            evt.preventDefault();
+            evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
+        }, false);
+
+        dropZone.addEventListener('drop', function (evt) {
+            evt.stopPropagation();
+            evt.preventDefault();
+            var files = evt.dataTransfer.files; // FileList object.
+
+            pm.collections.importCollections(files);
+        }, false);
+
+        $('#collection-files-input').on('change', function (event) {
+            var files = event.target.files;
+            pm.collections.importCollections(files);
+            $('#collection-files-input').val("");
+        });
+
+        $("#modal-import-collection").on("shown", function () {
+            pm.layout.onModalOpen("#modal-import-collection");
+        });
+
+        $("#modal-import-collection").on("hidden", function () {
+            pm.layout.onModalClose();
+        });
+    },
+
+    render: function() {
+
+    }
+});
+
+var ShareCollectionModal = Backbone.View.extend({
+    initialize: function() {
+        $('#share-collection-get-link').on("click", function () {
+            var id = $(this).attr('data-collection-id');
+            pm.collections.uploadCollection(id, function (link) {
+                $('#share-collection-link').css("display", "block");
+                $('#share-collection-link').html(link);
+            });
+        });
+
+        $('#share-collection-download').on("click", function () {
+            var id = $(this).attr('data-collection-id');
+            pm.collections.saveCollection(id);
+        });
+
+        $("#modal-share-collection").on("shown", function () {
+            pm.layout.onModalOpen("#modal-share-collection");
+        });
+
+        $("#modal-share-collection").on("hidden", function () {
+            pm.layout.onModalClose();
+        });
+    },
+
+    render: function() {
+
+    }
+});
+
+var OverwriteCollectionModal = Backbone.View.extend({
+    initialize: function() {
+        $('#modal-overwrite-collection-overwrite').on("click", function () {
+            pm.collections.overwriteCollection(pm.collections.originalCollectionId, pm.collections.toBeImportedCollection);
+        });
+
+        $('#modal-overwrite-collection-duplicate').on("click", function () {
+            pm.collections.duplicateCollection(pm.collections.toBeImportedCollection);
+        });
+    },
+
+    render: function() {
+
+    }
+});
+
+var CollectionRequestDetailsView = Backbone.View.extend({
+    initialize: function() {
+        $('#request-samples').on("click", ".sample-response-name", function () {
+            var id = $(this).attr("data-id");
+            pm.collections.loadResponseInEditor(id);
+        });
+
+        $('#request-samples').on("click", ".sample-response-delete", function () {
+            var id = $(this).attr("data-id");
+            pm.collections.removeSampleResponse(id);
+        });
+    },
+
+    render: function() {
+
+    }
+});
+
+var CollectionSidebar = Backbone.View.extend({
+    initialize: function() {
+        $('#collection-items').html("");
+        $('#sidebar-section-collections').append(Handlebars.templates.message_no_collection({}));
+
         var $collection_items = $('#collection-items');
         $collection_items.on("mouseenter", ".sidebar-collection .sidebar-collection-head", function () {
             var actionsEl = jQuery('.collection-head-actions', this);
@@ -69,6 +346,7 @@ pm.collections = {
                     $('#edit-collection-drive').css("display", "block");
                     $('#edit-collection-update-drive').attr("data-collection-id", id);
 
+                    //TODO: Drive syncing will be done later
                     pm.collections.drive.checkIfCollectionIsOnDrive(id, function(exists, driveFile) {
                         if (exists) {
                             console.log(driveFile.file.modifiedDate);
@@ -101,35 +379,6 @@ pm.collections = {
             });
         });
 
-        $('#modal-overwrite-collection-overwrite').on("click", function () {
-            pm.collections.overwriteCollection(pm.collections.originalCollectionId, pm.collections.toBeImportedCollection);
-        });
-
-        $('#modal-overwrite-collection-duplicate').on("click", function () {
-            pm.collections.duplicateCollection(pm.collections.toBeImportedCollection);
-        });
-
-        $('#modal-delete-collection-yes').on("click", function () {
-            var id = $(this).attr('data-id');
-            pm.collections.deleteCollection(id, true);
-        });
-
-        $('#modal-delete-collection-request-yes').on("click", function () {
-            var id = $(this).attr('data-id');
-            pm.collections.deleteCollectionRequest(id);
-        });
-
-        $('#import-collection-url-submit').on("click", function () {
-            var url = $('#import-collection-url-input').val();
-            pm.collections.importCollectionFromUrl(url);
-        });
-
-        $('#edit-collection-update-drive').on("click", function() {
-            var id = $(this).attr('data-collection-id');
-            console.log("Run change queue");
-            pm.drive.fetchChanges();
-        });
-
         $collection_items.on("click", ".collection-actions-download", function () {
             var id = $(this).attr('data-id');
 
@@ -139,704 +388,30 @@ pm.collections = {
             $('#share-collection-download').attr("data-collection-id", id);
             $('#share-collection-link').css("display", "none");
         });
-
-        $('#share-collection-get-link').on("click", function () {
-            var id = $(this).attr('data-collection-id');
-            pm.collections.uploadCollection(id, function (link) {
-                $('#share-collection-link').css("display", "block");
-                $('#share-collection-link').html(link);
-            });
-        });
-
-        $('#share-collection-download').on("click", function () {
-            var id = $(this).attr('data-collection-id');
-            pm.collections.saveCollection(id);
-        });
-
-        $('#request-samples').on("click", ".sample-response-name", function () {
-            var id = $(this).attr("data-id");
-            pm.collections.loadResponseInEditor(id);
-        });
-
-        $('#request-samples').on("click", ".sample-response-delete", function () {
-            var id = $(this).attr("data-id");
-            pm.collections.removeSampleResponse(id);
-        });
-
-        var dropZone = document.getElementById('import-collection-dropzone');
-        dropZone.addEventListener('dragover', function (evt) {
-            evt.stopPropagation();
-            evt.preventDefault();
-            evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
-        }, false);
-
-        dropZone.addEventListener('drop', function (evt) {
-            evt.stopPropagation();
-            evt.preventDefault();
-            var files = evt.dataTransfer.files; // FileList object.
-
-            pm.collections.importCollections(files);
-        }, false);
-
-        $('#collection-files-input').on('change', function (event) {
-            var files = event.target.files;
-            pm.collections.importCollections(files);
-            $('#collection-files-input').val("");
-        });
-
-        //Initialize this on first time modal load
-        $('#editor-toolbar a').tooltip();
     },
 
-    getCollectionData:function (id, callback) {
-        pm.indexedDB.getCollection(id, function (data) {
-            var collection = data;
-            pm.indexedDB.getAllRequestsInCollection(collection, function (collection, data) {
-                var ids = [];
-                for (var i = 0, count = data.length; i < count; i++) {
-                    ids.push(data[i].id);
-                }
+    addRequestListeners:function () {
+        $('#sidebar-sections').on("mouseenter", ".sidebar-request", function () {
+            var actionsEl = jQuery('.request-actions', this);
+            actionsEl.css('display', 'block');
+        });
 
-                //Get all collection requests with one call
-                collection['requests'] = data;
-                var name = collection['name'] + ".json";
-                var type = "application/json";
-                var filedata = JSON.stringify(collection);
-                callback(name, type, filedata);
-            });
+        $('#sidebar-sections').on("mouseleave", ".sidebar-request", function () {
+            var actionsEl = jQuery('.request-actions', this);
+            actionsEl.css('display', 'none');
         });
     },
 
-    getCollectionDataForDrive:function (id, callback) {
-        pm.indexedDB.getCollection(id, function (data) {
-            var collection = data;
-            pm.indexedDB.getAllRequestsInCollection(collection, function (collection, data) {
-                var ids = [];
-                for (var i = 0, count = data.length; i < count; i++) {
-                    ids.push(data[i].id);
-                }
-
-                //Get all collection requests with one call
-                collection['requests'] = data;
-                var name = collection['name'] + ".postman_collection";
-                var type = "application/json";
-                var filedata = JSON.stringify(collection);
-                callback(name, type, filedata);
-            });
-        });
+    emptyCollectionInSidebar:function (id) {
+        $('#collection-requests-' + id).html("");
     },
 
-    saveCollection:function (id) {
-        pm.collections.getCollectionData(id, function (name, type, filedata) {
-            var filename = name + ".postman_collection";
-            pm.filesystem.saveAndOpenFile(filename, filedata, type, function () {
-                noty(
-                    {
-                        type:'success',
-                        text:'Saved collection to disk',
-                        layout:'topCenter',
-                        timeout:750
-                    });
-            });
-        });
+    removeCollection:function (id) {
+        $('#collection-' + id).remove();
+        pm.layout.refreshScrollPanes();
     },
 
-    uploadCollection:function (id, callback) {
-        pm.collections.getCollectionData(id, function (name, type, filedata) {
-            var uploadUrl = pm.webUrl + '/collections';
-            $.ajax({
-                type:'POST',
-                url:uploadUrl,
-                data:filedata,
-                success:function (data) {
-                    var link = data.link;
-                    callback(link);
-                }
-            });
-
-        });
-    },
-
-    overwriteCollection:function(originalCollectionId, collection) {
-        pm.collections.deleteCollection(originalCollectionId, true);
-        pm.collections.addCollectionDataToDB(collection, true);
-    },
-
-    duplicateCollection:function(collection) {
-        pm.collections.addCollectionDataToDB(collection, true);
-    },
-
-    //Being used in Google Drive
-    mergeCollection: function(collection, toSyncWithDrive) {
-        console.log("To merge", collection);
-        //Update local collection
-        var newCollection = {
-            id: collection.id,
-            name: collection.name,
-            timestamp: collection.timestamp
-        };
-
-        if ("order" in collection) {
-            newCollection.order = collection.order;
-        }
-
-        console.log("Merging collection", newCollection);
-
-        pm.indexedDB.updateCollection(newCollection, function(c) {
-            console.log("Collection updated", newCollection);
-
-            var driveCollectionRequests = collection.requests;
-
-            pm.indexedDB.getAllRequestsInCollection(collection, function(collection, oldCollectionRequests) {
-                console.log("Old collection requests", oldCollectionRequests);
-                var updatedRequests = [];
-                var deletedRequests = [];
-                var newRequests = [];
-                var finalRequests = [];
-                var i = 0;
-                var size = driveCollectionRequests.length;
-
-                function existingRequestFinder(r) {
-                    return driveRequest.id === r.id;
-                }
-
-                for (i = 0; i < size; i++) {
-                    var driveRequest = driveCollectionRequests[i];
-                    var existingRequest = _.find(oldCollectionRequests, existingRequestFinder);
-
-                    if (existingRequest) {
-                        updatedRequests.push(driveRequest);
-                        //Remove this request from oldCollectionRequests
-                        //Requsts remaining in oldCollectionRequests will be deleted
-                        var sizeOldRequests = oldCollectionRequests.length;
-                        var loc = -1;
-                        for (var j = 0; j < sizeOldRequests; j++) {
-                            if (oldCollectionRequests[j].id === existingRequest.id) {
-                                loc = j;
-                                break;
-                            }
-                        }
-
-                        if (loc >= 0) {
-                            oldCollectionRequests.splice(loc, 1);
-                        }
-                    }
-                    else {
-                        newRequests.push(driveRequest);
-                    }
-                }
-
-                deletedRequests = oldCollectionRequests;
-
-                //Update requests
-                var sizeUpdatedRequests = updatedRequests.length;
-                function onUpdateCollectionRequest(r) {
-                    console.log("Updated the request");
-                }
-
-                for(i = 0; i < sizeUpdatedRequests; i++) {
-                    pm.indexedDB.updateCollectionRequest(updatedRequests[i], onUpdateCollectionRequest);
-                }
-
-                //Add requests
-                function onAddCollectionRequest(r) {
-                    console.log("Added the request");
-                }
-
-                var sizeNewRequests = newRequests.length;
-                for(i = 0; i < sizeNewRequests; i++) {
-                    pm.indexedDB.addCollectionRequest(newRequests[i], onAddCollectionRequest);
-                }
-
-                //Delete requests
-                function onDeleteCollectionRequest(id) {
-                    console.log("Deleted the request");
-                }
-
-                var sizeDeletedRequests = deletedRequests.length;
-                for(i = 0; i < sizeDeletedRequests; i++) {
-                    pm.indexedDB.deleteCollectionRequest(deletedRequests[i].id, onDeleteCollectionRequest);
-                }
-
-                newCollection.requests = driveCollectionRequests;
-                pm.collections.render(newCollection);
-            });
-        });
-    },
-
-    addCollectionDataToDB:function(collection, toSyncWithDrive) {
-        console.log("Adding elements to pm.collections.items");
-        pm.collections.items.push(collection);
-        pm.collections.items.sort(sortAlphabetical);
-
-        pm.indexedDB.addCollection(collection, function (c) {
-            var message = {
-                name:collection.name,
-                action:"added"
-            };
-
-            $('.modal-import-alerts').append(Handlebars.templates.message_collection_added(message));
-            var requests = [];
-
-            var ordered = false;
-            if ("order" in collection) {
-                ordered = true;
-            }
-
-            function onAddCollectionRequest(req) {
-                console.log(req);
-            }
-
-            for (var i = 0; i < collection.requests.length; i++) {
-                var request = collection.requests[i];
-                request.collectionId = collection.id;
-
-                var newId = guid();
-
-                if (ordered) {
-                    var currentId = request.id;
-                    var loc = _.indexOf(collection["order"], currentId);
-                    collection["order"][loc] = newId;
-                }
-
-                request.id = newId;
-
-                if ("responses" in request) {
-                    var j, count;
-                    for (j = 0, count = request["responses"].length; j < count; j++) {
-                        request["responses"][j].id = guid();
-                        request["responses"][j].collectionRequestId = newId;
-                    }
-                }
-
-                pm.indexedDB.addCollectionRequest(request, onAddCollectionRequest);
-                requests.push(request);
-            }
-
-            pm.indexedDB.updateCollection(collection, function() {});
-            collection.requests = requests;
-
-            pm.collections.render(collection);
-
-            //collection has all the data
-            console.log("Queuing update");
-            if (toSyncWithDrive) {
-                pm.collections.drive.queuePostFromCollection(collection);
-            }
-
-        });
-    },
-
-    importCollectionData:function (collection) {
-        var collections = pm.collections.items;
-        var size = collections.length;
-        var found = false;
-        var originalCollection;
-        for (var i = 0; i < size; i++) {
-            if (collections[i].name === collection.name) {
-                originalCollection = collections[i];
-                found = true;
-                break;
-            }
-        }
-
-        if (found) {
-            pm.collections.originalCollectionId = originalCollection.id;
-            pm.collections.toBeImportedCollection = collection;
-            $("#modal-overwrite-collection-name").html(collection.name);
-            $("#modal-overwrite-collection-overwrite").attr("data-collection-id", collection.id);
-            $("#modal-overwrite-collection-duplicate").attr("data-collection-id", collection.id);
-            $("#modal-overwrite-collection").modal("show");
-        }
-        else {
-            pm.collections.addCollectionDataToDB(collection, true);
-        }
-    },
-
-    importCollections:function (files) {
-        // Loop through the FileList
-        for (var i = 0, f; f = files[i]; i++) {
-            var reader = new FileReader();
-
-            // Closure to capture the file information.
-            reader.onload = (function (theFile) {
-                return function (e) {
-                    // Render thumbnail.
-                    var data = e.currentTarget.result;
-                    var collection = JSON.parse(data);
-                    collection.id = guid();
-                    pm.collections.importCollectionData(collection);
-                };
-            })(f);
-
-            // Read in the image file as a data URL.
-            reader.readAsText(f);
-        }
-    },
-
-    importCollectionFromUrl:function (url) {
-        $.get(url, function (data) {
-            var collection = data;
-            collection.id = guid();
-            pm.collections.importCollectionData(collection);
-        });
-    },
-
-    mergeCollections: function (collections) {
-        var size = collections.length;
-        for(var i = 0; i < size; i++) {
-            var collection = collections[i];
-            pm.collections.mergeCollection(collection, true);
-        }
-    },
-
-    getCollectionRequest:function (id) {
-        $('.sidebar-collection-request').removeClass('sidebar-collection-request-active');
-        $('#sidebar-request-' + id).addClass('sidebar-collection-request-active');
-        pm.indexedDB.getCollectionRequest(id, function (request) {
-            pm.request.isFromCollection = true;
-            pm.request.collectionRequestId = id;
-            pm.request.loadRequestInEditor(request, true);
-        });
-    },
-
-    loadResponseInEditor:function (id) {
-        var responses = pm.request.responses;
-        var responseIndex = find(responses, function (item, i, responses) {
-            return item.id === id;
-        });
-
-        var response = responses[responseIndex];
-        pm.request.loadRequestInEditor(response.request, false, true);
-        pm.request.response.render(response);
-    },
-
-    //Feature not active yet
-    removeSampleResponse:function (id) {
-        var responses = pm.request.responses;
-        var responseIndex = find(responses, function (item, i, responses) {
-            return item.id === id;
-        });
-
-        var response = responses[responseIndex];
-        responses.splice(responseIndex, 1);
-
-        pm.indexedDB.getCollectionRequest(response.collectionRequestId, function (request) {
-            request["responses"] = responses;
-            pm.indexedDB.updateCollectionRequest(request, function () {
-                $('#request-samples table tr[data-id="' + response.id + '"]').remove();
-            });
-
-        });
-    },
-
-    openCollection:function (id) {
-        var target = "#collection-requests-" + id;
-        $("#collection-" + id + " .sidebar-collection-head-dt").removeClass("disclosure-triangle-close");
-        $("#collection-" + id + " .sidebar-collection-head-dt").addClass("disclosure-triangle-open");
-
-        if ($(target).css("display") === "none") {
-            $(target).slideDown(100, function () {
-                pm.layout.refreshScrollPanes();
-            });
-        }
-    },
-
-    toggleRequestList:function (id) {
-        var target = "#collection-requests-" + id;
-        var label = "#collection-" + id + " .collection-head-actions .label";
-        if ($(target).css("display") === "none") {
-            $("#collection-" + id + " .sidebar-collection-head-dt").removeClass("disclosure-triangle-close");
-            $("#collection-" + id + " .sidebar-collection-head-dt").addClass("disclosure-triangle-open");
-
-            $(target).slideDown(100, function () {
-                pm.layout.refreshScrollPanes();
-            });
-        }
-        else {
-            $("#collection-" + id + " .sidebar-collection-head-dt").removeClass("disclosure-triangle-open");
-            $("#collection-" + id + " .sidebar-collection-head-dt").addClass("disclosure-triangle-close");
-            $(target).slideUp(100, function () {
-                pm.layout.refreshScrollPanes();
-            });
-        }
-    },
-
-    addCollection:function () {
-        var newCollection = $('#new-collection-blank').val();
-
-        var collection = new Collection();
-
-        if (newCollection) {
-            //Add the new collection and get guid
-            collection.id = guid();
-            collection.name = newCollection;
-            collection.order = [];
-            pm.indexedDB.addCollection(collection, function (collection) {
-                pm.collections.items.push(collection);
-                pm.collections.items.sort(sortAlphabetical);
-
-                pm.collections.render(collection);
-                pm.collections.drive.queuePostFromCollection(collection);
-            });
-
-            $('#new-collection-blank').val("");
-        }
-
-        $('#modal-new-collection').modal('hide');
-    },
-
-    updateCollectionFromCurrentRequest:function () {
-        var url = $('#url').val();
-        var collectionRequest = new CollectionRequest();
-        collectionRequest.id = pm.request.collectionRequestId;
-        collectionRequest.headers = pm.request.getPackedHeaders();
-        collectionRequest.url = url;
-        collectionRequest.method = pm.request.method;
-        collectionRequest.data = pm.request.body.getData(true);
-        collectionRequest.dataMode = pm.request.dataMode;
-        collectionRequest.version = 2;
-        collectionRequest.time = new Date().getTime();
-
-        pm.indexedDB.getCollectionRequest(collectionRequest.id, function (req) {
-            collectionRequest.name = req.name;
-            collectionRequest.description = req.description;
-            collectionRequest.collectionId = req.collectionId;
-            $('#sidebar-request-' + req.id + " .request .label").removeClass('label-method-' + req.method);
-
-            pm.indexedDB.updateCollectionRequest(collectionRequest, function (request) {
-                var requestName;
-                if (request.name === undefined) {
-                    request.name = request.url;
-                }
-
-                requestName = limitStringLineWidth(request.name, 43);
-
-                $('#sidebar-request-' + request.id + " .request .request-name").html(requestName);
-                $('#sidebar-request-' + request.id + " .request .label").html(request.method);
-                $('#sidebar-request-' + request.id + " .request .label").addClass('label-method-' + request.method);
-                noty(
-                    {
-                        type:'success',
-                        text:'Saved request',
-                        layout:'topCenter',
-                        timeout:750
-                    });
-
-                //Sync collection to drive
-                pm.collections.drive.queueUpdateFromId(collectionRequest.collectionId);
-            });
-        });
-
-    },
-
-    addRequestToCollection:function () {
-        $('.sidebar-collection-request').removeClass('sidebar-collection-request-active');
-
-        var existingCollectionId = $('#select-collection').val();
-        var newCollection = $("#new-collection").val();
-        var newRequestName = $('#new-request-name').val();
-        var newRequestDescription = $('#new-request-description').val();
-
-        var url = $('#url').val();
-        if (newRequestName === "") {
-            newRequestName = url;
-        }
-
-        var collection = new Collection();
-
-        var collectionRequest = new CollectionRequest();
-        collectionRequest.id = guid();
-        collectionRequest.headers = pm.request.getPackedHeaders();
-        collectionRequest.url = url;
-        collectionRequest.method = pm.request.method;
-        collectionRequest.data = pm.request.body.getData(true);
-        collectionRequest.dataMode = pm.request.dataMode;
-        collectionRequest.name = newRequestName;
-        collectionRequest.description = newRequestDescription;
-        collectionRequest.time = new Date().getTime();
-        collectionRequest.version = 2;
-        collectionRequest.responses = pm.request.responses;
-
-        if (newCollection) {
-            //Add the new collection and get guid
-            collection.id = guid();
-            collection.name = newCollection;
-            collection.order = [collectionRequest.id];
-
-            pm.indexedDB.addCollection(collection, function (collection) {
-                $('#sidebar-section-collections .empty-message').css("display", "none");
-                $('#new-collection').val("");
-                collectionRequest.collectionId = collection.id;
-
-                $('#select-collection').append(Handlebars.templates.item_collection_selector_list(collection));
-                $('#collection-items').append(Handlebars.templates.item_collection_sidebar_head(collection));
-
-                $('a[rel="tooltip"]').tooltip();
-                pm.layout.refreshScrollPanes();
-                pm.indexedDB.addCollectionRequest(collectionRequest, function (req) {
-                    var targetElement = "#collection-requests-" + req.collectionId;
-                    $('#sidebar-request-' + req.id).addClass('sidebar-collection-request-active');
-                    pm.urlCache.addUrl(req.url);
-
-                    if (typeof req.name === "undefined") {
-                        req.name = req.url;
-                    }
-                    req.name = limitStringLineWidth(req.name, 43);
-
-                    $(targetElement).append(Handlebars.templates.item_collection_sidebar_request(req));
-
-                    pm.layout.refreshScrollPanes();
-
-                    pm.request.isFromCollection = true;
-                    pm.request.collectionRequestId = collectionRequest.id;
-                    $('#update-request-in-collection').css("display", "inline-block");
-                    pm.collections.openCollection(collectionRequest.collectionId);
-
-                    //Sync collection to drive
-                    console.log("Send queue request after adding request for new collection");
-                    pm.collections.drive.queuePost(collectionRequest.collectionId);
-                });
-            });
-        }
-        else {
-            //Get guid of existing collection
-            collection.id = existingCollectionId;
-            collectionRequest.collectionId = collection.id;
-            console.log("Adding request to existing collection");
-            pm.indexedDB.addCollectionRequest(collectionRequest, function (req) {
-                console.log("Added request to existing collection");
-                var targetElement = "#collection-requests-" + req.collectionId;
-                pm.urlCache.addUrl(req.url);
-
-                if (typeof req.name === "undefined") {
-                    req.name = req.url;
-                }
-
-                req.name = limitStringLineWidth(req.name, 43);
-
-                $(targetElement).append(Handlebars.templates.item_collection_sidebar_request(req));
-                $('#sidebar-request-' + req.id).addClass('sidebar-collection-request-active');
-
-                pm.layout.refreshScrollPanes();
-
-                pm.request.isFromCollection = true;
-                pm.request.collectionRequestId = collectionRequest.id;
-                $('#update-request-in-collection').css("display", "inline-block");
-                pm.collections.openCollection(collectionRequest.collectionId);
-
-                //Update collection's order element
-                console.log("Updating collection");
-                pm.indexedDB.getCollection(collection.id, function(collection) {
-                    if("order" in collection) {
-                        console.log("Order found in collection");
-                        collection["order"].push(collectionRequest.id);
-                        pm.indexedDB.updateCollection(collection, function() {});
-
-                        //Sync collection to drive
-                        console.log("Send queue request after adding request");
-                        pm.collections.drive.queueUpdateFromId(collection.id);
-                    }
-                    else {
-                        console.log("Order not found in collection");
-                    }
-                });
-            });
-        }
-
-        pm.layout.sidebar.select("collections");
-
-        $('#request-meta').css("display", "block");
-        $('#request-name').css("display", "block");
-        $('#request-description').css("display", "block");
-        $('#request-name').html(newRequestName);
-        $('#request-description').html(newRequestDescription);
-        $('#sidebar-selectors a[data-id="collections"]').tab('show');
-    },
-
-    getAllCollections:function () {
-        $('#collection-items').html("");
-        $('#select-collection').html("<option>Select</option>");
-        pm.indexedDB.getCollections(function (items) {
-            pm.collections.items = items;
-            pm.collections.items.sort(sortAlphabetical);
-
-            var itemsLength = items.length;
-
-            function onGetAllRequestsInCollection(collection, requests) {
-                collection.requests = requests;
-                pm.collections.render(collection);
-            }
-
-            if (itemsLength === 0) {
-                $('#sidebar-section-collections').append(Handlebars.templates.message_no_collection({}));
-            }
-            else {
-                for (var i = 0; i < itemsLength; i++) {
-                    var collection = items[i];
-                    pm.indexedDB.getAllRequestsInCollection(collection, onGetAllRequestsInCollection);
-                }
-            }
-
-            pm.collections.areLoaded = true;
-            pm.layout.refreshScrollPanes();
-        });
-    },
-
-    handleRequestDropOnCollection: function(event, ui) {
-        var id = ui.draggable.context.id;
-        var requestId = $('#' + id + ' .request').attr("data-id");
-        var targetCollectionId = $($(event.target).find('.sidebar-collection-head-name')[0]).attr('data-id');
-        pm.indexedDB.getCollection(targetCollectionId, function(collection) {
-            pm.indexedDB.getCollectionRequest(requestId, function(collectionRequest) {
-                if(targetCollectionId === collectionRequest.collectionId) {
-                    return;
-                }
-
-                pm.collections.deleteCollectionRequest(requestId);
-
-                collectionRequest.id = guid();
-                collectionRequest.collectionId = targetCollectionId;
-
-                pm.indexedDB.addCollectionRequest(collectionRequest, function (req) {
-                    var targetElement = "#collection-requests-" + req.collectionId;
-                    pm.urlCache.addUrl(req.url);
-
-                    if (typeof req.name === "undefined") {
-                        req.name = req.url;
-                    }
-                    req.name = limitStringLineWidth(req.name, 43);
-
-                    $(targetElement).append(Handlebars.templates.item_collection_sidebar_request(req));
-                    pm.layout.refreshScrollPanes();
-
-                    $('#update-request-in-collection').css("display", "inline-block");
-                    pm.collections.openCollection(collectionRequest.collectionId);
-
-                    //Add the drag event listener
-                    $('#collection-' + collectionRequest.collectionId + " .sidebar-collection-head").droppable({
-                        accept: ".sidebar-collection-request",
-                        hoverClass: "ui-state-hover",
-                        drop: pm.collections.handleRequestDropOnCollection
-                    });
-
-                    //Update collection's order element
-                    pm.indexedDB.getCollection(collection.id, function(collection) {
-                        console.log("Updating collection order");
-                        if("order" in collection) {
-                            collection["order"].push(collectionRequest.id);
-                            pm.indexedDB.updateCollection(collection, function() {
-                                console.log("Updating collection from drop");
-                                pm.collections.drive.queueUpdateFromId(collection.id);
-                            });
-                        }
-                    });
-                });
-            });
-        });
-    },
-
-    render:function (collection) {
+    renderOneCollection:function (collection) {
         function requestFinder(request) {
             return request.id === collection["order"][j]
         }
@@ -971,7 +546,7 @@ pm.collections = {
                         pm.indexedDB.getCollection(collection_id, function (collection) {
                             collection["order"] = order;
                             pm.indexedDB.updateCollection(collection, function (collection) {
-                                //Sync with Google Drive
+                                //TODO: Drive syncing will be done later
                                 pm.collections.drive.queueUpdateFromId(collection.id);
                             });
                         });
@@ -982,6 +557,698 @@ pm.collections = {
         }
 
         pm.layout.refreshScrollPanes();
+    },
+
+    openCollection:function (id) {
+        var target = "#collection-requests-" + id;
+        $("#collection-" + id + " .sidebar-collection-head-dt").removeClass("disclosure-triangle-close");
+        $("#collection-" + id + " .sidebar-collection-head-dt").addClass("disclosure-triangle-open");
+
+        if ($(target).css("display") === "none") {
+            $(target).slideDown(100, function () {
+            });
+        }
+    },
+
+    toggleRequestList:function (id) {
+        var target = "#collection-requests-" + id;
+        var label = "#collection-" + id + " .collection-head-actions .label";
+        if ($(target).css("display") === "none") {
+            $("#collection-" + id + " .sidebar-collection-head-dt").removeClass("disclosure-triangle-close");
+            $("#collection-" + id + " .sidebar-collection-head-dt").addClass("disclosure-triangle-open");
+
+            $(target).slideDown(100, function () {
+            });
+        }
+        else {
+            $("#collection-" + id + " .sidebar-collection-head-dt").removeClass("disclosure-triangle-open");
+            $("#collection-" + id + " .sidebar-collection-head-dt").addClass("disclosure-triangle-close");
+            $(target).slideUp(100, function () {
+            });
+        }
+    }
+});
+
+//Almost same as pm.collections except that items is not present
+var PmCollections = Backbone.Collection.extend({
+    areLoaded: false,
+
+    originalCollectionId: "",
+    toBeImportedCollection:{},
+
+    model: PmCollection,
+
+    initialize: function() {
+        //TODO: Drive syncing will be done later
+        //pm.collections.drive.registerHandlers();
+        this.getAllCollections();
+    },
+
+    getAllCollections:function () {
+        var pmCollection = this;
+
+        pm.indexedDB.getCollections(function (items) {
+            items.sort(sortAlphabetical);
+            this.add(items, {merge: true});
+
+            var itemsLength = items.length;
+
+            function onGetAllRequestsInCollection(collection, requests) {
+                collection.requests = requests;
+                pmCollection.add([collection], {merge: true});
+
+                //TODO This will be called by the view automatically
+                //pm.collections.render(collection);
+            }
+
+            for (var i = 0; i < itemsLength; i++) {
+                var collection = items[i];
+                pm.indexedDB.getAllRequestsInCollection(collection, onGetAllRequestsInCollection);
+            }
+
+            pmCollection.areLoaded = true;
+        });
+    },
+
+    getCollectionData:function (id, callback) {
+        pm.indexedDB.getCollection(id, function (data) {
+            var collection = data;
+            pm.indexedDB.getAllRequestsInCollection(collection, function (collection, data) {
+                var ids = [];
+                for (var i = 0, count = data.length; i < count; i++) {
+                    ids.push(data[i].id);
+                }
+
+                //Get all collection requests with one call
+                collection['requests'] = data;
+                var name = collection['name'] + ".json";
+                var type = "application/json";
+                var filedata = JSON.stringify(collection);
+                callback(name, type, filedata);
+            });
+        });
+    },
+
+    getCollectionDataForDrive:function (id, callback) {
+        pm.indexedDB.getCollection(id, function (data) {
+            var collection = data;
+            pm.indexedDB.getAllRequestsInCollection(collection, function (collection, data) {
+                var ids = [];
+                for (var i = 0, count = data.length; i < count; i++) {
+                    ids.push(data[i].id);
+                }
+
+                //Get all collection requests with one call
+                collection['requests'] = data;
+                var name = collection['name'] + ".postman_collection";
+                var type = "application/json";
+                var filedata = JSON.stringify(collection);
+                callback(name, type, filedata);
+            });
+        });
+    },
+
+    saveCollection:function (id) {
+        this.getCollectionData(id, function (name, type, filedata) {
+            var filename = name + ".postman_collection";
+            pm.filesystem.saveAndOpenFile(filename, filedata, type, function () {
+                noty(
+                    {
+                        type:'success',
+                        text:'Saved collection to disk',
+                        layout:'topCenter',
+                        timeout:750
+                    });
+            });
+        });
+    },
+
+    uploadCollection:function (id, callback) {
+        this.getCollectionData(id, function (name, type, filedata) {
+            var uploadUrl = pm.webUrl + '/collections';
+            $.ajax({
+                type:'POST',
+                url:uploadUrl,
+                data:filedata,
+                success:function (data) {
+                    var link = data.link;
+                    callback(link);
+                }
+            });
+
+        });
+    },
+
+    overwriteCollection:function(originalCollectionId, collection) {
+        this.deleteCollection(originalCollectionId, true);
+        this.addCollectionDataToDB(collection, true);
+    },
+
+    duplicateCollection:function(collection) {
+        this.addCollectionDataToDB(collection, true);
+    },
+
+    //Being used in Google Drive
+    mergeCollection: function(collection, toSyncWithDrive) {
+        console.log("To merge", collection);
+        //Update local collection
+        var newCollection = {
+            id: collection.id,
+            name: collection.name,
+            timestamp: collection.timestamp
+        };
+
+        if ("order" in collection) {
+            newCollection.order = collection.order;
+        }
+
+        console.log("Merging collection", newCollection);
+
+        pm.indexedDB.updateCollection(newCollection, function(c) {
+            console.log("Collection updated", newCollection);
+
+            var driveCollectionRequests = collection.requests;
+
+            pm.indexedDB.getAllRequestsInCollection(collection, function(collection, oldCollectionRequests) {
+                console.log("Old collection requests", oldCollectionRequests);
+                var updatedRequests = [];
+                var deletedRequests = [];
+                var newRequests = [];
+                var finalRequests = [];
+                var i = 0;
+                var size = driveCollectionRequests.length;
+
+                function existingRequestFinder(r) {
+                    return driveRequest.id === r.id;
+                }
+
+                for (i = 0; i < size; i++) {
+                    var driveRequest = driveCollectionRequests[i];
+                    var existingRequest = _.find(oldCollectionRequests, existingRequestFinder);
+
+                    if (existingRequest) {
+                        updatedRequests.push(driveRequest);
+                        //Remove this request from oldCollectionRequests
+                        //Requsts remaining in oldCollectionRequests will be deleted
+                        var sizeOldRequests = oldCollectionRequests.length;
+                        var loc = -1;
+                        for (var j = 0; j < sizeOldRequests; j++) {
+                            if (oldCollectionRequests[j].id === existingRequest.id) {
+                                loc = j;
+                                break;
+                            }
+                        }
+
+                        if (loc >= 0) {
+                            oldCollectionRequests.splice(loc, 1);
+                        }
+                    }
+                    else {
+                        newRequests.push(driveRequest);
+                    }
+                }
+
+                deletedRequests = oldCollectionRequests;
+
+                //Update requests
+                var sizeUpdatedRequests = updatedRequests.length;
+                function onUpdateCollectionRequest(r) {
+                    console.log("Updated the request");
+                }
+
+                for(i = 0; i < sizeUpdatedRequests; i++) {
+                    pm.indexedDB.updateCollectionRequest(updatedRequests[i], onUpdateCollectionRequest);
+                }
+
+                //Add requests
+                function onAddCollectionRequest(r) {
+                    console.log("Added the request");
+                }
+
+                var sizeNewRequests = newRequests.length;
+                for(i = 0; i < sizeNewRequests; i++) {
+                    pm.indexedDB.addCollectionRequest(newRequests[i], onAddCollectionRequest);
+                }
+
+                //Delete requests
+                function onDeleteCollectionRequest(id) {
+                    console.log("Deleted the request");
+                }
+
+                var sizeDeletedRequests = deletedRequests.length;
+                for(i = 0; i < sizeDeletedRequests; i++) {
+                    pm.indexedDB.deleteCollectionRequest(deletedRequests[i].id, onDeleteCollectionRequest);
+                }
+
+                newCollection.requests = driveCollectionRequests;
+
+                //TODO This should be called by CollectionSidebar automatically
+                //pm.collections.render(newCollection);
+            });
+        });
+    },
+
+    addCollectionDataToDB:function(collection, toSyncWithDrive) {
+        console.log("Adding elements to pm.collections.items");
+
+        //TODO Add this to this.models
+        pm.collections.items.push(collection);
+
+        //TODO This can be called automatically by using a comparator
+        pm.collections.items.sort(sortAlphabetical);
+
+        pm.indexedDB.addCollection(collection, function (c) {
+            var message = {
+                name:collection.name,
+                action:"added"
+            };
+
+            $('.modal-import-alerts').append(Handlebars.templates.message_collection_added(message));
+            var requests = [];
+
+            var ordered = false;
+            if ("order" in collection) {
+                ordered = true;
+            }
+
+            function onAddCollectionRequest(req) {
+                console.log(req);
+            }
+
+            for (var i = 0; i < collection.requests.length; i++) {
+                var request = collection.requests[i];
+                request.collectionId = collection.id;
+
+                var newId = guid();
+
+                if (ordered) {
+                    var currentId = request.id;
+                    var loc = _.indexOf(collection["order"], currentId);
+                    collection["order"][loc] = newId;
+                }
+
+                request.id = newId;
+
+                if ("responses" in request) {
+                    var j, count;
+                    for (j = 0, count = request["responses"].length; j < count; j++) {
+                        request["responses"][j].id = guid();
+                        request["responses"][j].collectionRequestId = newId;
+                    }
+                }
+
+                pm.indexedDB.addCollectionRequest(request, onAddCollectionRequest);
+                requests.push(request);
+            }
+
+            pm.indexedDB.updateCollection(collection, function() {});
+            collection.requests = requests;
+
+            //TODO This can be called automatically by CollectionSidebar
+            pm.collections.render(collection);
+
+            //collection has all the data
+            console.log("Queuing update");
+            if (toSyncWithDrive) {
+                //TODO: Drive syncing will be done later
+                pm.collections.drive.queuePostFromCollection(collection);
+            }
+
+        });
+    },
+
+    importCollectionData:function (collection) {
+        var collections = pm.collections.items;
+        var size = collections.length;
+        var found = false;
+        var originalCollection;
+        for (var i = 0; i < size; i++) {
+            if (collections[i].name === collection.name) {
+                originalCollection = collections[i];
+                found = true;
+                break;
+            }
+        }
+
+        if (found) {
+            this.originalCollectionId = originalCollection.id;
+            this.toBeImportedCollection = collection;
+            $("#modal-overwrite-collection-name").html(collection.name);
+            $("#modal-overwrite-collection-overwrite").attr("data-collection-id", collection.id);
+            $("#modal-overwrite-collection-duplicate").attr("data-collection-id", collection.id);
+            $("#modal-overwrite-collection").modal("show");
+        }
+        else {
+            this.addCollectionDataToDB(collection, true);
+        }
+    },
+
+    importCollections:function (files) {
+        var pmCollection = this;
+
+        // Loop through the FileList
+        for (var i = 0, f; f = files[i]; i++) {
+            var reader = new FileReader();
+
+            // Closure to capture the file information.
+            reader.onload = (function (theFile) {
+                return function (e) {
+                    // Render thumbnail.
+                    var data = e.currentTarget.result;
+                    var collection = JSON.parse(data);
+                    collection.id = guid();
+                    pmCollection.importCollectionData(collection);
+                };
+            })(f);
+
+            // Read in the image file as a data URL.
+            reader.readAsText(f);
+        }
+    },
+
+    importCollectionFromUrl:function (url) {
+        var pmCollection = this;
+
+        $.get(url, function (data) {
+            var collection = data;
+            collection.id = guid();
+            pmCollection.importCollectionData(collection);
+        });
+    },
+
+    mergeCollections: function (collections) {
+        var pmCollection = this;
+
+        var size = collections.length;
+        for(var i = 0; i < size; i++) {
+            var collection = collections[i];
+            pmCollection.mergeCollection(collection, true);
+        }
+    },
+
+    getCollectionRequest:function (id) {
+        $('.sidebar-collection-request').removeClass('sidebar-collection-request-active');
+        $('#sidebar-request-' + id).addClass('sidebar-collection-request-active');
+        pm.indexedDB.getCollectionRequest(id, function (request) {
+            //TODO Need to refactor request.js
+
+            pm.request.isFromCollection = true;
+            pm.request.collectionRequestId = id;
+            pm.request.loadRequestInEditor(request, true);
+        });
+    },
+
+    loadResponseInEditor:function (id) {
+        //TODO Need to refactor request.js
+        var responses = pm.request.responses;
+        var responseIndex = find(responses, function (item, i, responses) {
+            return item.id === id;
+        });
+
+        var response = responses[responseIndex];
+        pm.request.loadRequestInEditor(response.request, false, true);
+        pm.request.response.render(response);
+    },
+
+    //Feature not active yet
+    removeSampleResponse:function (id) {
+        var responses = pm.request.responses;
+        var responseIndex = find(responses, function (item, i, responses) {
+            return item.id === id;
+        });
+
+        var response = responses[responseIndex];
+        responses.splice(responseIndex, 1);
+
+        pm.indexedDB.getCollectionRequest(response.collectionRequestId, function (request) {
+            request["responses"] = responses;
+            pm.indexedDB.updateCollectionRequest(request, function () {
+                $('#request-samples table tr[data-id="' + response.id + '"]').remove();
+            });
+
+        });
+    },
+
+    addCollection:function () {
+        var newCollection = $('#new-collection-blank').val();
+
+        var collection = new Collection();
+
+        if (newCollection) {
+            //Add the new collection and get guid
+            collection.id = guid();
+            collection.name = newCollection;
+            collection.order = [];
+            pm.indexedDB.addCollection(collection, function (collection) {
+                //TODO Use this.models
+                pm.collections.items.push(collection);
+
+                //TODO This will be done by comparator
+                pm.collections.items.sort(sortAlphabetical);
+
+                //TODO This will be handled by CollectionSidebar
+                pm.collections.render(collection);
+
+                //TODO: Drive syncing will be done later
+                pm.collections.drive.queuePostFromCollection(collection);
+            });
+
+            $('#new-collection-blank').val("");
+        }
+
+        $('#modal-new-collection').modal('hide');
+    },
+
+    updateCollectionFromCurrentRequest:function () {
+        var url = $('#url').val();
+
+        //TODO Use a simple object for this
+        var collectionRequest = new CollectionRequest();
+        collectionRequest.id = pm.request.collectionRequestId;
+        collectionRequest.headers = pm.request.getPackedHeaders();
+        collectionRequest.url = url;
+        collectionRequest.method = pm.request.method;
+        collectionRequest.data = pm.request.body.getData(true);
+        collectionRequest.dataMode = pm.request.dataMode;
+        collectionRequest.version = 2;
+        collectionRequest.time = new Date().getTime();
+
+        pm.indexedDB.getCollectionRequest(collectionRequest.id, function (req) {
+            collectionRequest.name = req.name;
+            collectionRequest.description = req.description;
+            collectionRequest.collectionId = req.collectionId;
+
+            //TODO Use CollectionSidebar for this
+            $('#sidebar-request-' + req.id + " .request .label").removeClass('label-method-' + req.method);
+
+            pm.indexedDB.updateCollectionRequest(collectionRequest, function (request) {
+                var requestName;
+                if (request.name === undefined) {
+                    request.name = request.url;
+                }
+
+                requestName = limitStringLineWidth(request.name, 43);
+
+                //TODO Use CollectionSidebar for this
+                $('#sidebar-request-' + request.id + " .request .request-name").html(requestName);
+                $('#sidebar-request-' + request.id + " .request .label").html(request.method);
+                $('#sidebar-request-' + request.id + " .request .label").addClass('label-method-' + request.method);
+
+                //TODO Trigger an event for this
+                noty(
+                    {
+                        type:'success',
+                        text:'Saved request',
+                        layout:'topCenter',
+                        timeout:750
+                    });
+
+                //TODO: Drive syncing will be done later
+                pm.collections.drive.queueUpdateFromId(collectionRequest.collectionId);
+            });
+        });
+
+    },
+
+    addRequestToCollection:function () {
+        //TODO Use CollectionSidebar for this
+        $('.sidebar-collection-request').removeClass('sidebar-collection-request-active');
+
+        //TODO These will be sent to this function by the modal view
+        var existingCollectionId = $('#select-collection').val();
+        var newCollection = $("#new-collection").val();
+        var newRequestName = $('#new-request-name').val();
+        var newRequestDescription = $('#new-request-description').val();
+
+        var url = $('#url').val();
+        if (newRequestName === "") {
+            newRequestName = url;
+        }
+
+        var collection = new Collection();
+
+        var collectionRequest = new CollectionRequest();
+        collectionRequest.id = guid();
+        collectionRequest.headers = pm.request.getPackedHeaders();
+        collectionRequest.url = url;
+        collectionRequest.method = pm.request.method;
+        collectionRequest.data = pm.request.body.getData(true);
+        collectionRequest.dataMode = pm.request.dataMode;
+        collectionRequest.name = newRequestName;
+        collectionRequest.description = newRequestDescription;
+        collectionRequest.time = new Date().getTime();
+        collectionRequest.version = 2;
+        collectionRequest.responses = pm.request.responses;
+
+        if (newCollection) {
+            //Add the new collection and get guid
+            collection.id = guid();
+            collection.name = newCollection;
+            collection.order = [collectionRequest.id];
+
+            pm.indexedDB.addCollection(collection, function (collection) {
+                $('#sidebar-section-collections .empty-message').css("display", "none");
+                $('#new-collection').val("");
+                collectionRequest.collectionId = collection.id;
+
+                $('#select-collection').append(Handlebars.templates.item_collection_selector_list(collection));
+                $('#collection-items').append(Handlebars.templates.item_collection_sidebar_head(collection));
+
+                $('a[rel="tooltip"]').tooltip();
+                pm.layout.refreshScrollPanes();
+                pm.indexedDB.addCollectionRequest(collectionRequest, function (req) {
+                    var targetElement = "#collection-requests-" + req.collectionId;
+                    $('#sidebar-request-' + req.id).addClass('sidebar-collection-request-active');
+                    pm.urlCache.addUrl(req.url);
+
+                    if (typeof req.name === "undefined") {
+                        req.name = req.url;
+                    }
+                    req.name = limitStringLineWidth(req.name, 43);
+
+                    $(targetElement).append(Handlebars.templates.item_collection_sidebar_request(req));
+
+                    pm.layout.refreshScrollPanes();
+
+                    pm.request.isFromCollection = true;
+                    pm.request.collectionRequestId = collectionRequest.id;
+                    $('#update-request-in-collection').css("display", "inline-block");
+                    pm.collections.openCollection(collectionRequest.collectionId);
+
+                    //TODO: Drive syncing will be done later
+                    console.log("Send queue request after adding request for new collection");
+                    pm.collections.drive.queuePost(collectionRequest.collectionId);
+                });
+            });
+        }
+        else {
+            //Get guid of existing collection
+            collection.id = existingCollectionId;
+            collectionRequest.collectionId = collection.id;
+            console.log("Adding request to existing collection");
+            pm.indexedDB.addCollectionRequest(collectionRequest, function (req) {
+                console.log("Added request to existing collection");
+                var targetElement = "#collection-requests-" + req.collectionId;
+                pm.urlCache.addUrl(req.url);
+
+                if (typeof req.name === "undefined") {
+                    req.name = req.url;
+                }
+
+                req.name = limitStringLineWidth(req.name, 43);
+
+                $(targetElement).append(Handlebars.templates.item_collection_sidebar_request(req));
+                $('#sidebar-request-' + req.id).addClass('sidebar-collection-request-active');
+
+                pm.layout.refreshScrollPanes();
+
+                pm.request.isFromCollection = true;
+                pm.request.collectionRequestId = collectionRequest.id;
+                $('#update-request-in-collection').css("display", "inline-block");
+                pm.collections.openCollection(collectionRequest.collectionId);
+
+                //Update collection's order element
+                console.log("Updating collection");
+                pm.indexedDB.getCollection(collection.id, function(collection) {
+                    if("order" in collection) {
+                        console.log("Order found in collection");
+                        collection["order"].push(collectionRequest.id);
+                        pm.indexedDB.updateCollection(collection, function() {});
+
+                        //TODO: Drive syncing will be done later
+                        console.log("Send queue request after adding request");
+                        pm.collections.drive.queueUpdateFromId(collection.id);
+                    }
+                    else {
+                        console.log("Order not found in collection");
+                    }
+                });
+            });
+        }
+
+        pm.layout.sidebar.select("collections");
+
+        $('#request-meta').css("display", "block");
+        $('#request-name').css("display", "block");
+        $('#request-description').css("display", "block");
+        $('#request-name').html(newRequestName);
+        $('#request-description').html(newRequestDescription);
+        $('#sidebar-selectors a[data-id="collections"]').tab('show');
+    },
+
+    handleRequestDropOnCollection: function(event, ui) {
+        var id = ui.draggable.context.id;
+        var requestId = $('#' + id + ' .request').attr("data-id");
+        var targetCollectionId = $($(event.target).find('.sidebar-collection-head-name')[0]).attr('data-id');
+        pm.indexedDB.getCollection(targetCollectionId, function(collection) {
+            pm.indexedDB.getCollectionRequest(requestId, function(collectionRequest) {
+                if(targetCollectionId === collectionRequest.collectionId) {
+                    return;
+                }
+
+                pm.collections.deleteCollectionRequest(requestId);
+
+                collectionRequest.id = guid();
+                collectionRequest.collectionId = targetCollectionId;
+
+                pm.indexedDB.addCollectionRequest(collectionRequest, function (req) {
+                    var targetElement = "#collection-requests-" + req.collectionId;
+                    pm.urlCache.addUrl(req.url);
+
+                    if (typeof req.name === "undefined") {
+                        req.name = req.url;
+                    }
+                    req.name = limitStringLineWidth(req.name, 43);
+
+                    $(targetElement).append(Handlebars.templates.item_collection_sidebar_request(req));
+                    pm.layout.refreshScrollPanes();
+
+                    $('#update-request-in-collection').css("display", "inline-block");
+                    pm.collections.openCollection(collectionRequest.collectionId);
+
+                    //Add the drag event listener
+                    $('#collection-' + collectionRequest.collectionId + " .sidebar-collection-head").droppable({
+                        accept: ".sidebar-collection-request",
+                        hoverClass: "ui-state-hover",
+                        drop: pm.collections.handleRequestDropOnCollection
+                    });
+
+                    //Update collection's order element
+                    pm.indexedDB.getCollection(collection.id, function(collection) {
+                        console.log("Updating collection order");
+                        if("order" in collection) {
+                            collection["order"].push(collectionRequest.id);
+                            pm.indexedDB.updateCollection(collection, function() {
+                                console.log("Updating collection from drop");
+
+                                //TODO: Drive syncing will be done later
+                                pm.collections.drive.queueUpdateFromId(collection.id);
+                            });
+                        }
+                    });
+                });
+            });
+        });
     },
 
     deleteCollectionRequest:function (id) {
@@ -1000,6 +1267,8 @@ pm.collections = {
                             collection["order"] = order;
                             pm.indexedDB.updateCollection(collection, function (collection) {
                                 console.log("Updated collection order, queue update for drive");
+
+                                //TODO: Drive syncing will be done later
                                 pm.collections.drive.queueUpdateFromId(collection.id);
                             });
                         }
@@ -1028,7 +1297,7 @@ pm.collections = {
                     $("#collection-" + id + " .sidebar-collection-head-dt").addClass("disclosure-triangle-close");
                 }
 
-                //Sync collection to drive
+                //TODO: Drive syncing will be done later
                 console.log("Queue update after updating collection meta");
                 pm.collections.drive.queueUpdateFromId(collection.id);
             });
@@ -1055,7 +1324,7 @@ pm.collections = {
                 }
                 $('#modal-edit-collection-request').modal('hide');
 
-                //Sync collection to drive
+                //TODO: Drive syncing will be done later
                 console.log("Queue update after updating collection request meta");
                 pm.collections.drive.queueUpdateFromId(req.collectionId);
             });
@@ -1078,7 +1347,7 @@ pm.collections = {
             var target = '#select-collection option[value="' + id + '"]';
             $(target).remove();
 
-            //Sync collection to drive
+            //TODO: Drive syncing will be done later
             if(toSyncWithDrive) {
                 pm.collections.drive.queueDelete(id);
             }
@@ -1311,4 +1580,4 @@ pm.collections = {
             });
         }
     }
-};
+});
