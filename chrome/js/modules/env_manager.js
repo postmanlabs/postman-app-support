@@ -746,7 +746,7 @@ var VariableProcessor = Backbone.Model.extend({
     },
 
     convertString:function (string) {
-        var environment = this.get("selectedEnv");
+        var environment = this.get("selectedEnv").toJSON();
         var envValues = [];
 
         if (environment !== null) {
@@ -757,7 +757,7 @@ var VariableProcessor = Backbone.Model.extend({
     },
 
     getCurrentValue: function(string) {
-        var environment = this.selectedEnv;
+        var environment = this.get("selectedEnv").toJSON();
         var envValues = [];
 
         if (environment !== null) {
