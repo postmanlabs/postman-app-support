@@ -12,7 +12,7 @@ var CollectionSidebar = Backbone.View.extend({
         model.on("updateCollectionRequest", this.updateCollectionRequest, this);
 
         $('#collection-items').html("");
-        $('#sidebar-section-collections').append(Handlebars.templates.message_no_collection({}));
+        $('#collection-items').append(Handlebars.templates.message_no_collection({}));
 
         var $collection_items = $('#collection-items');
         $collection_items.on("mouseenter", ".sidebar-collection .sidebar-collection-head", function () {
@@ -117,6 +117,10 @@ var CollectionSidebar = Backbone.View.extend({
     removeOneCollection:function (model, pmCollection) {
         var collection = model.toJSON();
         $('#collection-' + collection.id).remove();
+
+        if(pmCollection.length === 0) {
+            $('#sidebar-section-collections .empty-message').css("display", "block");
+        }
     },
 
     renderOneCollection:function (model, pmCollection) {

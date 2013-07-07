@@ -710,33 +710,22 @@ var PmCollections = Backbone.Collection.extend({
     },
 
     dropRequestOnCollection: function(requestId, targetCollectionId) {
-        console.log("dropRequestOnCollection", requestId, targetCollectionId);
-
         var pmCollection = this;
 
         pm.indexedDB.getCollection(targetCollectionId, function(collection) {
-            console.log("Got target collection", collection, requestId);
 
             pm.indexedDB.getCollectionRequest(requestId, function(collectionRequest) {
-                console.log("Got target request", collectionRequest);
 
                 if(targetCollectionId === collectionRequest.collectionId) {
-                    console.log("Dropped on the same collection");
                     return;
                 }
-                else {
-                    console.log("Continue merging");
-                }
 
-                console.log("Delete existing collection request");
                 _.bind(pmCollection.deleteCollectionRequest, pmCollection)(requestId);
 
                 collectionRequest.id = guid();
                 collectionRequest.collectionId = targetCollectionId;
 
                 pm.indexedDB.addCollectionRequest(collectionRequest, function (req) {
-                    console.log("Add new collection request", req);
-
                     if("order" in collection) {
                         collection["order"].push(req.id);
                     }
@@ -745,12 +734,9 @@ var PmCollections = Backbone.Collection.extend({
                     }
 
                     pm.indexedDB.updateCollection(collection, function() {
-                        console.log("Updating collection order", collection);
                         var c = pmCollection.get(collection.id);
                         c.get("requests").push(req);
                         pmCollection.add(c, {merge: true});
-
-                        console.log("Updating collection from drop", c);
                         pmCollection.trigger("addCollectionRequest", req);
 
                         //TODO: Drive syncing will be done later

@@ -77,28 +77,6 @@ var EditCollectionModal = Backbone.View.extend({
         $('#form-edit-collection .collection-id').val(collection.id);
         $('#form-edit-collection .collection-name').val(collection.name);
 
-        // TODO: Drive syncing will be done later
-        // if (pm.settings.getSetting("driveSyncEnabled") === true) {
-        //     $('#edit-collection-drive').css("display", "block");
-        //     $('#edit-collection-update-drive').attr("data-collection-id", id);
-
-        //     pm.collections.drive.checkIfCollectionIsOnDrive(id, function(exists, driveFile) {
-        //         if (exists) {
-        //             console.log(driveFile.file.modifiedDate);
-        //             var modifiedDate = new Date(driveFile.file.modifiedDate);
-        //             var t = jQuery.timeago(modifiedDate);
-        //             $('#edit-collection-drive-status').html("Last synced " + t);
-        //             $('#edit-collection-upload-drive').css("display", "none");
-        //         }
-        //         else {
-        //             $('#edit-collection-upload-drive').css("display", "inline-block");
-        //         }
-        //     });
-        // }
-        // else {
-        //     $('#edit-collection-drive').css("display", "none");
-        // }
-
         $('#modal-edit-collection').modal('show');
     }
 });
