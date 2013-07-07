@@ -6,6 +6,8 @@ var CollectionSidebar = Backbone.View.extend({
         model.on("add", this.renderOneCollection, this);
         model.on("remove", this.removeOneCollection, this);
         model.on("updateCollectionMeta", this.updateCollectionMeta, this);
+
+        model.on("addCollectionRequest", this.addCollectionRequest, this);
         model.on("updateCollectionRequest", this.updateCollectionRequest, this);
 
         $('#collection-items').html("");
@@ -78,13 +80,13 @@ var CollectionSidebar = Backbone.View.extend({
 
         $collection_items.on("click", ".request-actions-delete", function () {
             var id = $(this).attr('data-id');
-            model.trigger("deleteCollectionRequest", id);
+            var request = model.getRequestById(id);
+            model.trigger("deleteCollectionRequest", request);
         });
 
         $collection_items.on("click", ".request-actions-edit", function () {
             var id = $(this).attr('data-id');
             var request = model.getRequestById(id);
-            console.log("Triggering request edit", model.getRequestById(id));
             model.trigger("editCollectionRequest", request);
         });
     },
@@ -275,6 +277,28 @@ var CollectionSidebar = Backbone.View.extend({
         else {
             $("#collection-" + id + " .sidebar-collection-head-dt").addClass("disclosure-triangle-close");
         }
+    },
+
+    addCollectionRequest: function(request) {
+        var targetElement = "#collection-requests-" + request.collectionId;
+        $('#sidebar-request-' + request.id).addClass('sidebar-collection-request-active');
+
+        pm.urlCache.addUrl(request.url);
+
+        if (typeof request.name === "undefined") {
+            request.name = request.url;
+        }
+        request.name = limitStringLineWidth(request.name, 43);
+
+        $(targetElement).append(Handlebars.templates.item_collection_sidebar_request(request));
+
+        pm.request.isFromCollection = true;
+        pm.request.collectionRequestId = request.id;
+
+        //TODO This will be handled by request.js
+        $('#update-request-in-collection').css("display", "inline-block");
+
+        this.openCollection(request.collectionId);
     },
 
     updateCollectionRequest: function(request) {

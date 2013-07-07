@@ -107,18 +107,20 @@ var AddCollectionRequestModal = Backbone.View.extend({
     initialize: function() {
         var model = this.model;
 
-        this.model.on("add", this.render, this);
-        this.model.on("remove", this.render, this);
+        this.model.on("add", this.add, this);
+        this.model.on("remove", this.remove, this);
+        var view = this;
 
         $('#form-add-to-collection').submit(function () {
-            model.addRequestToCollection();
+            _.bind(this.addRequestToCollection, view)();
             $('#modal-add-to-collection').modal('hide');
-            return false;
+            $('#new-collection').val("");
         });
 
         $('#modal-add-to-collection .btn-primary').click(function () {
-            model.addRequestToCollection();
+            _.bind(view.addRequestToCollection, view)();
             $('#modal-add-to-collection').modal('hide');
+            $('#new-collection').val("");
         });
 
         $("#modal-add-to-collection").on("shown", function () {
@@ -134,9 +136,51 @@ var AddCollectionRequestModal = Backbone.View.extend({
         $('#select-collection').html("<option>Select</option>");
     },
 
-    render: function() {
-        //Change select item here
+    add: function(model) {
+        $('#select-collection').append(Handlebars.templates.item_collection_selector_list(model.toJSON()));
+    },
+
+    addRequestToCollection: function() {
+        //TODO Use CollectionSidebar for this
+        $('.sidebar-collection-request').removeClass('sidebar-collection-request-active');
+
+        var existingCollectionId = $('#select-collection').val();
+        var newCollection = $("#new-collection").val();
+        var newRequestName = $('#new-request-name').val();
+        var newRequestDescription = $('#new-request-description').val();
+
+        var url = $('#url').val();
+        if (newRequestName === "") {
+            newRequestName = url;
+        }
+
+        var collectionRequest = {};
+        collectionRequest.id = guid();
+        collectionRequest.headers = pm.request.getPackedHeaders();
+        collectionRequest.url = url;
+        collectionRequest.method = pm.request.method;
+        collectionRequest.data = pm.request.body.getData(true);
+        collectionRequest.dataMode = pm.request.dataMode;
+        collectionRequest.name = newRequestName;
+        collectionRequest.description = newRequestDescription;
+        collectionRequest.time = new Date().getTime();
+        collectionRequest.version = 2;
+        collectionRequest.responses = pm.request.responses;
+
+        var collection = {};
+
+        if (newCollection) {
+            collection.id = guid();
+            collection.name = newCollection;
+        }
+        else {
+            collection.id = existingCollectionId;
+        }
+
+        this.model.addRequestToCollection(collectionRequest, collection);
+        this.model.trigger("displayCollectionDetails", collectionRequest);
     }
+
 });
 
 var EditCollectionRequestModal = Backbone.View.extend({
@@ -214,13 +258,10 @@ var DeleteCollectionRequestModal = Backbone.View.extend({
         });
     },
 
-    render: function(id) {
-        //TODO Move this to the model
-        pm.indexedDB.getCollectionRequest(id, function (req) {
-            $('#modal-delete-collection-request-yes').attr('data-id', id);
-            $('#modal-delete-collection-request-name').html(req.name);
-            $('#modal-delete-collection-request').modal('show');
-        });
+    render: function(request) {
+        $('#modal-delete-collection-request-yes').attr('data-id', request.id);
+        $('#modal-delete-collection-request-name').html(request.name);
+        $('#modal-delete-collection-request').modal('show');
     }
 });
 
@@ -323,7 +364,6 @@ var OverwriteCollectionModal = Backbone.View.extend({
     },
 
     render: function(collection) {
-        //TODO Use modal view for this
         $("#modal-overwrite-collection-name").html(collection.name);
         $("#modal-overwrite-collection-overwrite").attr("data-collection-id", collection.id);
         $("#modal-overwrite-collection-duplicate").attr("data-collection-id", collection.id);
@@ -335,6 +375,7 @@ var CollectionRequestDetailsView = Backbone.View.extend({
     initialize: function() {
         var model = this.model;
 
+        model.on("displayCollectionRequest", this.show, this);
         model.on("updateCollectionRequest", this.render, this);
 
         $('#request-samples').on("click", ".sample-response-name", function () {
@@ -347,6 +388,17 @@ var CollectionRequestDetailsView = Backbone.View.extend({
             model.removeSampleResponse(id);
         });
     },
+
+    show: function() {
+        pm.layout.sidebar.select("collections");
+        $('#request-meta').css("display", "block");
+        $('#request-name').css("display", "block");
+        $('#request-description').css("display", "block");
+
+        //TODO Move this to the global Sidebar view
+        $('#sidebar-selectors a[data-id="collections"]').tab('show');
+    },
+
 
     render: function(request) {
         if (pm.request.collectionRequestId === request.id) {

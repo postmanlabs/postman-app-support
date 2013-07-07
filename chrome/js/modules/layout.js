@@ -141,6 +141,7 @@ pm.layout = {
             }
         });
 
+        //TODO This should go into CollectionRequestDetailView
         $('#request-meta').on("mouseenter", function () {
             $('.request-meta-actions').css("display", "block");
         });

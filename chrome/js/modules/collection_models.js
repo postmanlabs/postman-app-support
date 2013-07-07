@@ -262,10 +262,8 @@ var PmCollections = Backbone.Collection.extend({
 
                 newCollection.requests = driveCollectionRequests;
 
+                //TODO Does this trigger renderOne or some kind of update?
                 pmCollection.add(newCollection, {merge: true});
-
-                //TODO This should be called by CollectionSidebar automatically
-                //pm.collections.render(newCollection);
             });
         });
     },
@@ -324,8 +322,6 @@ var PmCollections = Backbone.Collection.extend({
 
             //TODO This can be called automatically by CollectionSidebar
             pmCollection.add(collection, {merge: true});
-
-            //pm.collections.render(collection);
 
             //collection has all the data
             console.log("Queuing update");
@@ -395,8 +391,6 @@ var PmCollections = Backbone.Collection.extend({
 
     getCollectionRequest:function (id) {
         pm.indexedDB.getCollectionRequest(id, function (request) {
-            //TODO Need to refactor request.js
-
             pm.request.isFromCollection = true;
             pm.request.collectionRequestId = id;
             pm.request.loadRequestInEditor(request, true);
@@ -404,7 +398,6 @@ var PmCollections = Backbone.Collection.extend({
     },
 
     loadResponseInEditor:function (id) {
-        //TODO Need to refactor request.js
         var responses = pm.request.responses;
         var responseIndex = find(responses, function (item, i, responses) {
             return item.id === id;
@@ -475,141 +468,65 @@ var PmCollections = Backbone.Collection.extend({
 
     },
 
-    addRequestToCollection:function () {
+    addRequestToCollection:function (collectionRequest, collection) {
         var pmCollection = this;
 
-        //TODO Use CollectionSidebar for this
-        $('.sidebar-collection-request').removeClass('sidebar-collection-request-active');
-
-        //TODO These will be sent to this function by the modal view
-        var existingCollectionId = $('#select-collection').val();
-        var newCollection = $("#new-collection").val();
-        var newRequestName = $('#new-request-name').val();
-        var newRequestDescription = $('#new-request-description').val();
-
-        var url = $('#url').val();
-        if (newRequestName === "") {
-            newRequestName = url;
-        }
-
-        var collection = {};
-
-        var collectionRequest = {};
-        collectionRequest.id = guid();
-        collectionRequest.headers = pm.request.getPackedHeaders();
-        collectionRequest.url = url;
-        collectionRequest.method = pm.request.method;
-        collectionRequest.data = pm.request.body.getData(true);
-        collectionRequest.dataMode = pm.request.dataMode;
-        collectionRequest.name = newRequestName;
-        collectionRequest.description = newRequestDescription;
-        collectionRequest.time = new Date().getTime();
-        collectionRequest.version = 2;
-        collectionRequest.responses = pm.request.responses;
-
-        if (newCollection) {
-            //Add the new collection and get guid
-            collection.id = guid();
-            collection.name = newCollection;
+        if (collection.name) {
+            collection.requests = [];
             collection.order = [collectionRequest.id];
 
-            pm.indexedDB.addCollection(collection, function (collection) {
-                //TODO This will be handled by CollectionSidebar
-                $('#sidebar-section-collections .empty-message').css("display", "none");
-
-                //TODO This will be handled by AddCollectionRequestModal
-                $('#new-collection').val("");
-                collectionRequest.collectionId = collection.id;
-                $('#select-collection').append(Handlebars.templates.item_collection_selector_list(collection));
-
-                //TODO This will be handled by CollectionSidebar
-                $('#collection-items').append(Handlebars.templates.item_collection_sidebar_head(collection));
-
-                $('a[rel="tooltip"]').tooltip();
+            pm.indexedDB.addCollection(collection, function (newCollection) {
+                pmCollection.add(newCollection, {merge: true});
+                collectionRequest.collectionId = newCollection.id;
 
                 pm.indexedDB.addCollectionRequest(collectionRequest, function (req) {
-                    var targetElement = "#collection-requests-" + req.collectionId;
-                    $('#sidebar-request-' + req.id).addClass('sidebar-collection-request-active');
-                    pm.urlCache.addUrl(req.url);
-
-                    if (typeof req.name === "undefined") {
-                        req.name = req.url;
-                    }
-                    req.name = limitStringLineWidth(req.name, 43);
-
-                    $(targetElement).append(Handlebars.templates.item_collection_sidebar_request(req));
-
-                    pm.request.isFromCollection = true;
-                    pm.request.collectionRequestId = collectionRequest.id;
-
-                    //TODO This will be handled by request.js
-                    $('#update-request-in-collection').css("display", "inline-block");
-                    pmCollection.openCollection(collectionRequest.collectionId);
+                    collection.get("requests").push(req);
+                    pmCollection.trigger("addCollectionRequest", req);
 
                     //TODO: Drive syncing will be done later
                     console.log("Send queue request after adding request for new collection");
                     pm.collections.drive.queuePost(collectionRequest.collectionId);
                 });
             });
+
         }
         else {
-            //Get guid of existing collection
-            collection.id = existingCollectionId;
             collectionRequest.collectionId = collection.id;
             console.log("Adding request to existing collection");
             pm.indexedDB.addCollectionRequest(collectionRequest, function (req) {
-                console.log("Added request to existing collection");
-                var targetElement = "#collection-requests-" + req.collectionId;
-                pm.urlCache.addUrl(req.url);
-
-                if (typeof req.name === "undefined") {
-                    req.name = req.url;
-                }
-
-                req.name = limitStringLineWidth(req.name, 43);
-
-                //TODO This will be handled by CollectionSidebar
-                $(targetElement).append(Handlebars.templates.item_collection_sidebar_request(req));
-                $('#sidebar-request-' + req.id).addClass('sidebar-collection-request-active');
-
-                pm.request.isFromCollection = true;
-                pm.request.collectionRequestId = collectionRequest.id;
-
-                //TODO This will be handled by request.js
-                $('#update-request-in-collection').css("display", "inline-block");
-
-                pmCollection.openCollection(collectionRequest.collectionId);
-
                 //Update collection's order element
                 console.log("Updating collection");
-                pm.indexedDB.getCollection(collection.id, function(collection) {
-                    if("order" in collection) {
-                        console.log("Order found in collection");
-                        collection["order"].push(collectionRequest.id);
-                        pm.indexedDB.updateCollection(collection, function() {});
+                pm.indexedDB.getCollection(collection.id, function(newCollection) {
+                    if (!("requests" in newCollection)) {
+                        newCollection["requests"] = [];
+                    }
+
+                    newCollection.requests.push(req);
+
+                    pmCollection.add(newCollection, {merge: true});
+                    pmCollection.trigger("addCollectionRequest", req);
+
+                    if("order" in newCollection) {
+                        newCollection["order"].push(req.id);
+                        pm.indexedDB.updateCollection(newCollection, function() {});
 
                         //TODO: Drive syncing will be done later
                         console.log("Send queue request after adding request");
-                        pm.collections.drive.queueUpdateFromId(collection.id);
+                        pm.collections.drive.queueUpdateFromId(newCollection.id);
                     }
                     else {
-                        console.log("Order not found in collection");
+                        newCollection["order"] = [req.id];
+                        pm.indexedDB.updateCollection(newCollection, function() {});
+
+                        //TODO: Drive syncing will be done later
+                        console.log("Send queue request after adding request");
+                        pm.collections.drive.queueUpdateFromId(newCollection.id);
                     }
                 });
             });
         }
 
-        pm.layout.sidebar.select("collections");
-
-        //TODO Move this to CollectionRequestMeta view
-        $('#request-meta').css("display", "block");
-        $('#request-name').css("display", "block");
-        $('#request-description').css("display", "block");
-        $('#request-name').html(newRequestName);
-        $('#request-description').html(newRequestDescription);
-
-        //TODO Move this to the global Sidebar view
-        $('#sidebar-selectors a[data-id="collections"]').tab('show');
+        this.trigger("updateCollectionRequest", collectionRequest);
     },
 
 
