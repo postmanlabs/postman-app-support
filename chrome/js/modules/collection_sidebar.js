@@ -45,6 +45,7 @@ var CollectionSidebar = Backbone.View.extend({
             var id = $(this).attr('data-id');
             var name = $(this).attr('data-name');
 
+            //TODO Move this to the model
             pm.indexedDB.getCollection(id, function (collection) {
                 $('#modal-delete-collection-yes').attr('data-id', id);
                 $('#modal-delete-collection-name').html(collection.name);
@@ -91,6 +92,8 @@ var CollectionSidebar = Backbone.View.extend({
         $collection_items.on("click", ".request-actions-edit", function () {
             var id = $(this).attr('data-id');
             var request = model.getRequestById(id);
+            console.log(id, request);
+
             model.trigger("editCollectionRequest", request);
         });
     },

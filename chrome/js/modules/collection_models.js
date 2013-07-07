@@ -10,7 +10,8 @@ var PmCollection = Backbone.Model.extend({
         return {
             "id": "",
             "order": [],
-            "requests": []
+            "requests": [],
+            "timestamp": 0
         };
     }
 });
@@ -59,9 +60,13 @@ var PmCollections = Backbone.Collection.extend({
             var itemsLength = items.length;
 
             function onGetAllRequestsInCollection(collection, requests) {
+                console.log(collection);
+
                 var c = new PmCollection(collection);
                 c.set("requests", requests);
                 pmCollection.add(c);
+
+                console.log("Requests", requests, c);
             }
 
             for (var i = 0; i < itemsLength; i++) {
@@ -77,6 +82,8 @@ var PmCollections = Backbone.Collection.extend({
         function existingRequestFinder(r) {
             return r.id === id;
         }
+
+        console.log("Trying to find", id, "in", this.models);
 
         for(var i = 0; i < this.length; i++) {
             var collection = this.models[i];
@@ -264,7 +271,6 @@ var PmCollections = Backbone.Collection.extend({
 
                 newCollection.requests = driveCollectionRequests;
 
-                //TODO Does this trigger renderOne or some kind of update?
                 pmCollection.add(newCollection, {merge: true});
             });
         });
@@ -272,11 +278,14 @@ var PmCollections = Backbone.Collection.extend({
 
     addCollectionDataToDB:function(collection, toSyncWithDrive) {
         var pmCollection = this;
-        this.add(collection, {merge: true});
 
-        pm.indexedDB.addCollection(collection, function (c) {
+        var dbCollection = _.clone(collection);
+        dbCollection["requests"] = [];
+        console.log("Adding collection", dbCollection);
+
+        pm.indexedDB.addCollection(dbCollection, function (c) {
             var message = {
-                name:collection.name,
+                name:dbCollection.name,
                 action:"added"
             };
 
@@ -285,7 +294,7 @@ var PmCollections = Backbone.Collection.extend({
             var requests = [];
 
             var ordered = false;
-            if ("order" in collection) {
+            if ("order" in dbCollection) {
                 ordered = true;
             }
 
@@ -302,7 +311,7 @@ var PmCollections = Backbone.Collection.extend({
                 if (ordered) {
                     var currentId = request.id;
                     var loc = _.indexOf(collection["order"], currentId);
-                    collection["order"][loc] = newId;
+                    dbCollection["order"][loc] = newId;
                 }
 
                 request.id = newId;
@@ -319,17 +328,19 @@ var PmCollections = Backbone.Collection.extend({
                 requests.push(request);
             }
 
-            pm.indexedDB.updateCollection(collection, function() {});
+            pm.indexedDB.updateCollection(dbCollection, function() {});
 
-            var c = new PmCollection(collection);
+            var c = new PmCollection(dbCollection);
             c.set("requests", requests);
-            pmCollection.add(c);
+            pmCollection.add(c, {merge: true});
+
+            console.log("New collection added", c, pmCollection.models);
 
             //collection has all the data
             console.log("Queuing update");
             if (toSyncWithDrive) {
                 //TODO: Drive syncing will be done later
-                pm.collections.drive.queuePostFromCollection(collection);
+                pm.collections.drive.queuePostFromCollection(dbCollection);
             }
 
         });
