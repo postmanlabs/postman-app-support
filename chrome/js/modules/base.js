@@ -88,28 +88,90 @@ var IDBCursor = window.IDBCursor || window.webkitIDBCursor;
 
 window.requestFileSystem = window.requestFileSystem || window.webkitRequestFileSystem;
 
-pm.initializeCollections = function() {
-    var pmCollections = new PmCollections();
-
-    var addCollectionModal = new AddCollectionModal({model: pmCollections});
-    var editCollectionModal = new EditCollectionModal({model: pmCollections});
-    var deleteCollectionModal = new DeleteCollectionModal({model: pmCollections});
-    var importCollectionModal = new ImportCollectionModal({model: pmCollections});
-    var shareCollectionModal = new ShareCollectionModal({model: pmCollections});
-    var overwriteCollectionModal = new OverwriteCollectionModal({model: pmCollections});
-
-    var addCollectionRequestModal = new AddCollectionRequestModal({model: pmCollections});
-    var editCollectionRequestModal = new EditCollectionRequestModal({model: pmCollections});
-    var deleteCollectionRequestModal = new DeleteCollectionRequestModal({model: pmCollections});
-
-    var collectionRequestDetailsView = new CollectionRequestDetailsView({model: pmCollections});
-
-    var collectionSidebar = new CollectionSidebar({model: pmCollections});
-
-    pm.collections = pmCollections;
-};
-
 pm.init = function () {
+    function initializeCollections() {
+        var pmCollections = new PmCollections();
+
+        var addCollectionModal = new AddCollectionModal({model: pmCollections});
+        var editCollectionModal = new EditCollectionModal({model: pmCollections});
+        var deleteCollectionModal = new DeleteCollectionModal({model: pmCollections});
+        var importCollectionModal = new ImportCollectionModal({model: pmCollections});
+        var shareCollectionModal = new ShareCollectionModal({model: pmCollections});
+        var overwriteCollectionModal = new OverwriteCollectionModal({model: pmCollections});
+
+        var addCollectionRequestModal = new AddCollectionRequestModal({model: pmCollections});
+        var editCollectionRequestModal = new EditCollectionRequestModal({model: pmCollections});
+        var deleteCollectionRequestModal = new DeleteCollectionRequestModal({model: pmCollections});
+
+        var collectionRequestDetailsView = new CollectionRequestDetailsView({model: pmCollections});
+
+        var collectionSidebar = new CollectionSidebar({model: pmCollections});
+
+        pm.collections = pmCollections;
+    }
+
+    function initializeHistory() {
+        var history = new History();
+        var historySidebar = new HistorySidebar({model: history});
+        pm.history = history;
+        pm.historySidebar = historySidebar;
+    }
+
+    function initializeHelpers() {
+        var basicAuthProcessor = new BasicAuthProcessor();
+        var digestAuthProcessor = new DigestAuthProcessor();
+        var oAuth1Processor = new OAuth1Processor();
+
+        var basicAuthForm = new BasicAuthForm({model: basicAuthProcessor});
+        var digestAuthForm = new DigestAuthForm({model: digestAuthProcessor});
+        var oAuth1Form = new OAuth1Form({model: oAuth1Processor});
+
+        var helpers = new Helpers({
+            "basicAuth": basicAuthProcessor,
+            "digestAuth": digestAuthProcessor,
+            "oAuth1": oAuth1Processor
+        });
+
+        var helperManager = new HelperManager({model: helpers});
+        pm.helpers = helperManager;
+    }
+
+    function initializeEnvironments() {
+        var globals = new Globals();
+        var environments = new Environments();
+
+        var variableProcessor = new VariableProcessor({
+            "environments": environments,
+            "globals": globals
+        });
+
+        var environmentSelector = new EnvironmentSelector({
+            "environments": environments,
+            "variableProcessor": variableProcessor
+        });
+
+        var environmentManagerModal = new EnvironmentManagerModal({
+            "environments": environments,
+            "globals": globals
+        });
+
+        var quicklookPopOver = new QuickLookPopOver({
+            "environments": environments,
+            "globals": globals,
+            "variableProcessor": variableProcessor
+        });
+
+        pm.envManager = variableProcessor;
+    }
+
+    function initializeHeaderPresets() {
+        pm.headerPresets = new HeaderPresets();
+        pm.headerPresets.init();
+
+        var headerPresetsModal = new HeaderPresetsModal({model: pm.headerPresets});
+        var headerPresetsRequestEditor = new HeaderPresetsRequestEditor({model: pm.headerPresets});
+    }
+
     Handlebars.partials = Handlebars.templates;
     var storage = new Storage();
     pm.storage = storage;
@@ -118,32 +180,14 @@ pm.init = function () {
 
     pm.settings.init(function() {
         var settingsModal = new SettingsModal({model: pm.settings});
+
         pm.indexedDB.open(function() {
-            var basicAuthProcessor = new BasicAuthProcessor();
-            var digestAuthProcessor = new DigestAuthProcessor();
-            var oAuth1Processor = new OAuth1Processor();
-
-            var basicAuthForm = new BasicAuthForm({model: basicAuthProcessor});
-            var digestAuthForm = new DigestAuthForm({model: digestAuthProcessor});
-            var oAuth1Form = new OAuth1Form({model: oAuth1Processor});
-
-            var helpers = new Helpers({
-                "basicAuth": basicAuthProcessor,
-                "digestAuth": digestAuthProcessor,
-                "oAuth1": oAuth1Processor
-            });
-
-            var helperManager = new HelperManager({model: helpers});
-            pm.helpers = helperManager;
+            initializeHelpers();
 
             pm.request.init();
 
-            var history = new History();
-            var historySidebar = new HistorySidebar({model: history});
-            pm.history = history;
-            pm.historySidebar = historySidebar;
-
-            pm.initializeCollections();
+            initializeHistory();
+            initializeCollections();
 
             pm.search.init();
             pm.layout.init();
@@ -152,37 +196,8 @@ pm.init = function () {
             pm.keymap.init();
             pm.filesystem.init();
 
-            var globals = new Globals();
-            var environments = new Environments();
-
-            var variableProcessor = new VariableProcessor({
-                "environments": environments,
-                "globals": globals
-            });
-
-            var environmentSelector = new EnvironmentSelector({
-                "environments": environments,
-                "variableProcessor": variableProcessor
-            });
-
-            var environmentManagerModal = new EnvironmentManagerModal({
-                "environments": environments,
-                "globals": globals
-            });
-
-            var quicklookPopOver = new QuickLookPopOver({
-                "environments": environments,
-                "globals": globals,
-                "variableProcessor": variableProcessor
-            });
-
-            pm.envManager = variableProcessor;
-
-            pm.headerPresets = new HeaderPresets();
-            pm.headerPresets.init();
-
-            var headerPresetsModal = new HeaderPresetsModal({model: pm.headerPresets});
-            var headerPresetsRequestEditor = new HeaderPresetsRequestEditor({model: pm.headerPresets});
+            initializeEnvironments();
+            initializeHeaderPresets();
 
             var activeSidebarSection = pm.settings.getSetting("activeSidebarSection");
 

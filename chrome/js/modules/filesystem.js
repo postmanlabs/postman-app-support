@@ -90,6 +90,10 @@ pm.filesystem = {
 
     saveAndOpenFile:function (name, data, type, callback) {
         chrome.fileSystem.chooseEntry({type: 'saveFile', suggestedName: name}, function(writableFileEntry) {
+            if (!writableFileEntry) {
+                return;
+            }
+
             writableFileEntry.createWriter(function(writer) {
                 writer.onerror = function (e) {
                     callback();
