@@ -8,6 +8,9 @@ var PmCollectionRequest = Backbone.Model.extend({
 var PmCollection = Backbone.Model.extend({
     defaults: function() {
         return {
+            "id": "",
+            "order": [],
+            "requests": []
         };
     }
 });
@@ -53,13 +56,12 @@ var PmCollections = Backbone.Collection.extend({
         var pmCollection = this;
 
         pm.indexedDB.getCollections(function (items) {
-            pmCollection.add(items, {merge: true});
-
             var itemsLength = items.length;
 
             function onGetAllRequestsInCollection(collection, requests) {
-                collection.requests = requests;
-                pmCollection.add([collection], {merge: true});
+                var c = new PmCollection(collection);
+                c.set("requests", requests);
+                pmCollection.add(c);
             }
 
             for (var i = 0; i < itemsLength; i++) {
@@ -480,7 +482,11 @@ var PmCollections = Backbone.Collection.extend({
                 collectionRequest.collectionId = newCollection.id;
 
                 pm.indexedDB.addCollectionRequest(collectionRequest, function (req) {
-                    collection.get("requests").push(req);
+                    console.log("Added collcetion request to DB", req);
+
+                    var c = pmCollection.get(collection.id);
+                    c.get("requests").push(req);
+
                     pmCollection.trigger("addCollectionRequest", req);
 
                     //TODO: Drive syncing will be done later
@@ -494,16 +500,16 @@ var PmCollections = Backbone.Collection.extend({
             collectionRequest.collectionId = collection.id;
             console.log("Adding request to existing collection");
             pm.indexedDB.addCollectionRequest(collectionRequest, function (req) {
+                console.log("Added collcetion request to DB", req);
+
                 //Update collection's order element
                 console.log("Updating collection");
                 pm.indexedDB.getCollection(collection.id, function(newCollection) {
-                    if (!("requests" in newCollection)) {
-                        newCollection["requests"] = [];
-                    }
-
-                    newCollection.requests.push(req);
-
                     pmCollection.add(newCollection, {merge: true});
+
+                    var c = pmCollection.get(newCollection.id);
+                    c.get("requests").push(req);
+
                     pmCollection.trigger("addCollectionRequest", req);
 
                     if("order" in newCollection) {
@@ -529,76 +535,14 @@ var PmCollections = Backbone.Collection.extend({
         this.trigger("updateCollectionRequest", collectionRequest);
     },
 
-
-    // TODO This needs to be handled by the CollectionSidebar
-    handleRequestDropOnCollection: function(event, ui) {
-        var pmCollection = this;
-
-        var id = ui.draggable.context.id;
-        var requestId = $('#' + id + ' .request').attr("data-id");
-        var targetCollectionId = $($(event.target).find('.sidebar-collection-head-name')[0]).attr('data-id');
-
-        //TODO This will be handled by PmCollections
-        pm.indexedDB.getCollection(targetCollectionId, function(collection) {
-            pm.indexedDB.getCollectionRequest(requestId, function(collectionRequest) {
-                if(targetCollectionId === collectionRequest.collectionId) {
-                    return;
-                }
-
-                pm.collections.deleteCollectionRequest(requestId);
-
-                collectionRequest.id = guid();
-                collectionRequest.collectionId = targetCollectionId;
-
-                pm.indexedDB.addCollectionRequest(collectionRequest, function (req) {
-                    //TODO This should be handled by CollectionSidebar
-                    var targetElement = "#collection-requests-" + req.collectionId;
-                    pm.urlCache.addUrl(req.url);
-
-                    if (typeof req.name === "undefined") {
-                        req.name = req.url;
-                    }
-                    req.name = limitStringLineWidth(req.name, 43);
-
-                    $(targetElement).append(Handlebars.templates.item_collection_sidebar_request(req));
-
-                    //TODO This would be handled by request.js
-                    $('#update-request-in-collection').css("display", "inline-block");
-                    pmCollection.openCollection(collectionRequest.collectionId);
-
-                    // TODO This would be handled by CollectionSidebar
-                    //Add the drag event listener
-                    $('#collection-' + collectionRequest.collectionId + " .sidebar-collection-head").droppable({
-                        accept: ".sidebar-collection-request",
-                        hoverClass: "ui-state-hover",
-                        drop: pm.collections.handleRequestDropOnCollection
-                    });
-
-                    //TODO This would be handled by PmCollection
-                    //Update collection's order element
-                    pm.indexedDB.getCollection(collection.id, function(collection) {
-                        console.log("Updating collection order");
-                        if("order" in collection) {
-                            collection["order"].push(collectionRequest.id);
-                            pm.indexedDB.updateCollection(collection, function() {
-                                console.log("Updating collection from drop");
-
-                                //TODO: Drive syncing will be done later
-                                pm.collections.drive.queueUpdateFromId(collection.id);
-                            });
-                        }
-                    });
-                });
-            });
-        });
-    },
-
     deleteCollectionRequest:function (id) {
         var pmCollection = this;
 
-        console.log("deleting request");
+        console.log("Deleting request", id);
         pm.indexedDB.getCollectionRequest(id, function(request) {
             pm.indexedDB.deleteCollectionRequest(id, function () {
+                pmCollection.trigger("removeCollectionRequest", request);
+
                 //Update order
                 pm.indexedDB.getCollection(request.collectionId, function (collection) {
                     //If the collection still exists
@@ -752,6 +696,58 @@ var PmCollections = Backbone.Collection.extend({
         }
 
         return filteredCollections;
+    },
+
+    dropRequestOnCollection: function(requestId, targetCollectionId) {
+        console.log("dropRequestOnCollection", requestId, targetCollectionId);
+
+        var pmCollection = this;
+
+        pm.indexedDB.getCollection(targetCollectionId, function(collection) {
+            console.log("Got target collection", collection, requestId);
+
+            pm.indexedDB.getCollectionRequest(requestId, function(collectionRequest) {
+                console.log("Got target request", collectionRequest);
+
+                if(targetCollectionId === collectionRequest.collectionId) {
+                    console.log("Dropped on the same collection");
+                    return;
+                }
+                else {
+                    console.log("Continue merging");
+                }
+
+                console.log("Delete existing collection request");
+                _.bind(pmCollection.deleteCollectionRequest, pmCollection)(requestId);
+
+                collectionRequest.id = guid();
+                collectionRequest.collectionId = targetCollectionId;
+
+                pm.indexedDB.addCollectionRequest(collectionRequest, function (req) {
+                    console.log("Add new collection request", req);
+
+                    if("order" in collection) {
+                        collection["order"].push(req.id);
+                    }
+                    else {
+                        collection["order"] = [req.id];
+                    }
+
+                    pm.indexedDB.updateCollection(collection, function() {
+                        console.log("Updating collection order", collection);
+                        var c = pmCollection.get(collection.id);
+                        c.get("requests").push(req);
+                        pmCollection.add(c, {merge: true});
+
+                        console.log("Updating collection from drop", c);
+                        pmCollection.trigger("addCollectionRequest", req);
+
+                        //TODO: Drive syncing will be done later
+                        pm.collections.drive.queueUpdateFromId(collection.id);
+                    });
+                });
+            });
+        });
     },
 
     drive: {

@@ -141,9 +141,6 @@ var AddCollectionRequestModal = Backbone.View.extend({
     },
 
     addRequestToCollection: function() {
-        //TODO Use CollectionSidebar for this
-        $('.sidebar-collection-request').removeClass('sidebar-collection-request-active');
-
         var existingCollectionId = $('#select-collection').val();
         var newCollection = $("#new-collection").val();
         var newRequestName = $('#new-request-name').val();

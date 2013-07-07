@@ -8,6 +8,7 @@ var CollectionSidebar = Backbone.View.extend({
         model.on("updateCollectionMeta", this.updateCollectionMeta, this);
 
         model.on("addCollectionRequest", this.addCollectionRequest, this);
+        model.on("removeCollectionRequest", this.removeCollectionRequest, this);
         model.on("updateCollectionRequest", this.updateCollectionRequest, this);
 
         $('#collection-items').html("");
@@ -81,6 +82,9 @@ var CollectionSidebar = Backbone.View.extend({
         $collection_items.on("click", ".request-actions-delete", function () {
             var id = $(this).attr('data-id');
             var request = model.getRequestById(id);
+
+            console.log("Triggering deleteCollectionRequest", request);
+
             model.trigger("deleteCollectionRequest", request);
         });
 
@@ -113,8 +117,9 @@ var CollectionSidebar = Backbone.View.extend({
     },
 
     renderOneCollection:function (model, pmCollection) {
+        console.log("Triggered renderOneCollection");
+
         var collection = model.toJSON();
-        console.log("render collection", collection);
 
         function requestFinder(request) {
             return request.id === collection["order"][j]
@@ -129,6 +134,7 @@ var CollectionSidebar = Backbone.View.extend({
         var insertTarget;
 
         var model = this.model;
+        var view = this;
         var collections = this.model.toJSON();
 
         collectionSidebarListPosition = arrayObjectIndexOf(collections, collection.id, "id");
@@ -192,7 +198,7 @@ var CollectionSidebar = Backbone.View.extend({
         $('#collection-' + collection.id + " .sidebar-collection-head").droppable({
             accept: ".sidebar-collection-request",
             hoverClass: "ui-state-hover",
-            drop: model.handleRequestDropOnCollection
+            drop: _.bind(this.handleRequestDropOnCollection, this)
         });
 
         if ("requests" in collection) {
@@ -280,8 +286,11 @@ var CollectionSidebar = Backbone.View.extend({
     },
 
     addCollectionRequest: function(request) {
+        $('.sidebar-collection-request').removeClass('sidebar-collection-request-active');
         var targetElement = "#collection-requests-" + request.collectionId;
         $('#sidebar-request-' + request.id).addClass('sidebar-collection-request-active');
+
+        $('#sidebar-request-' + request.id).draggable({});
 
         pm.urlCache.addUrl(request.url);
 
@@ -298,7 +307,17 @@ var CollectionSidebar = Backbone.View.extend({
         //TODO This will be handled by request.js
         $('#update-request-in-collection').css("display", "inline-block");
 
+        $('#collection-' + request.collectionId + " .sidebar-collection-head").droppable({
+            accept: ".sidebar-collection-request",
+            hoverClass: "ui-state-hover",
+            drop: _.bind(this.handleRequestDropOnCollection, this)
+        });
+
         this.openCollection(request.collectionId);
+    },
+
+    removeCollectionRequest: function(request) {
+        $('#sidebar-request-' + request.id).remove();
     },
 
     updateCollectionRequest: function(request) {
@@ -343,5 +362,12 @@ var CollectionSidebar = Backbone.View.extend({
             $(target).slideUp(100, function () {
             });
         }
+    },
+
+    handleRequestDropOnCollection: function(event, ui) {
+        var id = ui.draggable.context.id;
+        var requestId = $('#' + id + ' .request').attr("data-id");
+        var targetCollectionId = $($(event.target).find('.sidebar-collection-head-name')[0]).attr('data-id');
+        this.model.dropRequestOnCollection(requestId, targetCollectionId);
     }
 });
