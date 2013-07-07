@@ -88,6 +88,26 @@ var IDBCursor = window.IDBCursor || window.webkitIDBCursor;
 
 window.requestFileSystem = window.requestFileSystem || window.webkitRequestFileSystem;
 
+pm.initializeCollections = function() {
+    var pmCollections = new PmCollections();
+
+    var addCollectionModal = new AddCollectionModal({model: pmCollections});
+    var editCollectionModal = new EditCollectionModal({model: pmCollections});
+    var deleteCollectionModal = new DeleteCollectionModal({model: pmCollections});
+    var importCollectionModal = new ImportCollectionModal({model: pmCollections});
+    var shareCollectionModal = new ShareCollectionModal({model: pmCollections});
+    var overwriteCollectionModal = new OverwriteCollectionModal({model: pmCollections});
+
+    var addCollectionRequestModal = new AddCollectionRequestModal({model: pmCollections});
+    var editCollectionRequestModal = new EditCollectionRequestModal({model: pmCollections});
+    var deleteCollectionRequestModal = new DeleteCollectionRequestModal({model: pmCollections});
+
+    var collectionRequestDetailsView = new CollectionRequestDetailsView({model: pmCollections});
+
+    var collectionSidebar = new CollectionSidebar({model: pmCollections});
+
+    pm.collections = pmCollections;
+};
 
 pm.init = function () {
     Handlebars.partials = Handlebars.templates;
@@ -123,7 +143,8 @@ pm.init = function () {
             pm.history = history;
             pm.historySidebar = historySidebar;
 
-            pm.collections.init();
+            pm.initializeCollections();
+
             pm.search.init();
             pm.layout.init();
             pm.editor.init();

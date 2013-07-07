@@ -187,6 +187,16 @@ var HistorySidebar = Backbone.View.extend({
             model.loadRequest(request_id);
         });
 
+        $('#history-items').on("mouseenter", ".sidebar-request", function () {
+            var actionsEl = jQuery('.request-actions', this);
+            actionsEl.css('display', 'block');
+        });
+
+        $('#history-items').on("mouseleave", ".sidebar-request", function () {
+            var actionsEl = jQuery('.request-actions', this);
+            actionsEl.css('display', 'none');
+        });
+
         this.showEmptyMessage();
     },
 

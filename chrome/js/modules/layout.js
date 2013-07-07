@@ -254,8 +254,6 @@ pm.layout = {
             });
 
             pm.layout.sidebar.width = $('#sidebar').width() + 10;
-
-            this.addRequestListeners();
         },
 
         select:function (section) {

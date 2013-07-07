@@ -754,7 +754,21 @@ pm.request = {
         });
 
         $("#update-request-in-collection").on("click", function () {
-            pm.collections.updateCollectionFromCurrentRequest();
+            //This should come from the caller
+            var url = $('#url').val();
+
+            //TODO Use a simple object for this
+            var collectionRequest = {};
+            collectionRequest.id = pm.request.collectionRequestId;
+            collectionRequest.headers = pm.request.getPackedHeaders();
+            collectionRequest.url = url;
+            collectionRequest.method = pm.request.method;
+            collectionRequest.data = pm.request.body.getData(true);
+            collectionRequest.dataMode = pm.request.dataMode;
+            collectionRequest.version = 2;
+            collectionRequest.time = new Date().getTime();
+
+            pm.collections.updateCollectionRequest(collectionRequest);
         });
 
         $("#cancel-request").on("click", function () {
