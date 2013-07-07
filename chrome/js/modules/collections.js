@@ -138,14 +138,10 @@ var AddCollectionRequestModal = Backbone.View.extend({
     },
 
     add: function(model, pmCollection) {
-        console.log("AddCollectionRequestModal:add", [model.toJSON()], pmCollection.toJSON());
-        console.log($('#select-collection').html());
         $('#select-collection').append(Handlebars.templates.item_collection_selector_list(model.toJSON()));
-        console.log($('#select-collection').html());
     },
 
     remove: function(model, pmCollection) {
-        console.log("AddCollectionRequestModal:remove", model, pmCollection);
         var collection = model.toJSON();
         $('#select-collection option[value="' + collection.id + '"]').remove();
     },

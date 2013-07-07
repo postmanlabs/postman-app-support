@@ -202,7 +202,6 @@ var SettingsModal = Backbone.View.extend({
     el: $("#modal-settings"),
 
     initialize: function() {
-        console.log(this, this.model);
         var settings = this.model;
         this.model.on('change:items', this.render, this);
 
@@ -350,8 +349,6 @@ var SettingsModal = Backbone.View.extend({
     },
 
     render: function() {
-        console.log("Render called");
-
         $('#history-count').val(this.model.getSetting("historyCount"));
         $('#auto-save-request').val(this.model.getSetting("autoSaveRequest") + "");
         $('#retain-link-headers').val(this.model.getSetting("retainLinkHeaders") + "");

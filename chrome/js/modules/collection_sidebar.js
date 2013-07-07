@@ -119,8 +119,6 @@ var CollectionSidebar = Backbone.View.extend({
     renderOneCollection:function (model, pmCollection) {
         var collection = model.toJSON();
 
-        console.log("Sidebar:renderOne", collection);
-
         function requestFinder(request) {
             return request.id === collection["order"][j]
         }

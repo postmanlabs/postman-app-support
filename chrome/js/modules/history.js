@@ -201,8 +201,6 @@ var HistorySidebar = Backbone.View.extend({
     },
 
     addOne: function(model, collection) {
-        console.log("Add one called");
-
         var request = model.toJSON();
 
         var url = request.url;
