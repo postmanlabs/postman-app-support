@@ -320,10 +320,10 @@ var PmCollections = Backbone.Collection.extend({
             }
 
             pm.indexedDB.updateCollection(collection, function() {});
-            collection.requests = requests;
 
-            //TODO This can be called automatically by CollectionSidebar
-            pmCollection.add(collection, {merge: true});
+            var c = new PmCollection(collection);
+            c.set("requests", requests);
+            pmCollection.add(c);
 
             //collection has all the data
             console.log("Queuing update");

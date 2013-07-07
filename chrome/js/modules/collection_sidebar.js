@@ -117,9 +117,9 @@ var CollectionSidebar = Backbone.View.extend({
     },
 
     renderOneCollection:function (model, pmCollection) {
-        console.log("Triggered renderOneCollection");
-
         var collection = model.toJSON();
+
+        console.log("Sidebar:renderOne", collection);
 
         function requestFinder(request) {
             return request.id === collection["order"][j]
@@ -175,9 +175,6 @@ var CollectionSidebar = Backbone.View.extend({
                 }
             }
         }
-
-        //TODO Will be added inside AddCollectionRequestModal
-        $('#select-collection').append(Handlebars.templates.item_collection_selector_list(collection));
 
         if (insertionType) {
             if (insertionType === "after") {

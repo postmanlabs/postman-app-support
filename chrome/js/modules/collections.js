@@ -109,6 +109,7 @@ var AddCollectionRequestModal = Backbone.View.extend({
 
         this.model.on("add", this.add, this);
         this.model.on("remove", this.remove, this);
+
         var view = this;
 
         $('#form-add-to-collection').submit(function () {
@@ -136,8 +137,17 @@ var AddCollectionRequestModal = Backbone.View.extend({
         $('#select-collection').html("<option>Select</option>");
     },
 
-    add: function(model) {
+    add: function(model, pmCollection) {
+        console.log("AddCollectionRequestModal:add", [model.toJSON()], pmCollection.toJSON());
+        console.log($('#select-collection').html());
         $('#select-collection').append(Handlebars.templates.item_collection_selector_list(model.toJSON()));
+        console.log($('#select-collection').html());
+    },
+
+    remove: function(model, pmCollection) {
+        console.log("AddCollectionRequestModal:remove", model, pmCollection);
+        var collection = model.toJSON();
+        $('#select-collection option[value="' + collection.id + '"]').remove();
     },
 
     addRequestToCollection: function() {
