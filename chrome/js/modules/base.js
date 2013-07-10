@@ -18,20 +18,6 @@
  */
 "use strict";
 
-//TODO: Remove these model classes. Being used in indexed_db.js but not needed
-
-function Request() {
-    this.id = "";
-    this.name = "";
-    this.description = "";
-    this.url = "";
-    this.method = "";
-    this.headers = "";
-    this.data = "";
-    this.dataMode = "params";
-    this.timestamp = 0;
-}
-
 var pm = {};
 
 pm.targets = {
@@ -172,6 +158,13 @@ pm.init = function () {
         var headerPresetsRequestEditor = new HeaderPresetsRequestEditor({model: pm.headerPresets});
     }
 
+    function initializeRequester() {
+        var request = new Request();
+        var requestEditor = new RequestEditor({model: request});
+        var responseViewer = new ResponseViewer({model: request});
+    }
+
+
     Handlebars.partials = Handlebars.templates;
     var storage = new Storage();
     pm.storage = storage;
@@ -184,7 +177,7 @@ pm.init = function () {
         pm.indexedDB.open(function() {
             initializeHelpers();
 
-            pm.request.init();
+            initializeRequester();
 
             initializeHistory();
             initializeCollections();

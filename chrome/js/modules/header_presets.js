@@ -7,8 +7,9 @@ var HeaderPresets = Backbone.Model.extend({
     },
 
     init:function () {
-        this.loadPresets();
+        this.on("change:presets", this.refreshAutoCompleteList, this);
 
+        this.loadPresets();
         //TODO Disabling Drive for packaged apps
         //pm.headerPresets.drive.registerHandlers();
     },
@@ -87,6 +88,7 @@ var HeaderPresets = Backbone.Model.extend({
     getPresetsForAutoComplete:function () {
         var list = [];
         var presets = this.get("presets");
+
         for (var i = 0, count = presets.length; i < count; i++) {
             var preset = presets[i];
             var item = {
@@ -99,9 +101,12 @@ var HeaderPresets = Backbone.Model.extend({
             list.push(item);
         }
 
+        list = _.union(list, chromeHeaders);
+
         return list;
     },
 
+    // TODO This does not seem to be working
     refreshAutoCompleteList:function () {
         var presets = this.getPresetsForAutoComplete();
         this.set({"presetsForAutoComplete": _.union(presets, chromeHeaders)});

@@ -29,79 +29,12 @@ pm.layout = {
             title: "Donate"
         });
 
-        $('#response-body-toggle').on("click", function () {
-            pm.request.response.toggleBodySize();
-        });
-
-        $('#response-body-line-wrapping').on("click", function () {
-            pm.editor.toggleLineWrapping();
-            return true;
-        });
-
-        $('#response-open-in-new-window').on("click", function () {
-            var data = pm.request.response.text;
-            pm.request.response.openInNewWindow(data);
-        });
-
-
-        $('#response-formatting').on("click", "a", function () {
-            var previewType = $(this).attr('data-type');
-            pm.request.response.changePreviewType(previewType);
-        });
-
-        $('#response-language').on("click", "a", function () {
-            var language = $(this).attr("data-mode");
-            pm.request.response.setMode(language);
-        });
-
-        $('#response-sample-save-start').on("click", function () {
-            $('#response-sample-save-start-container').css("display", "none");
-            $('#response-sample-save-form').css("display", "inline-block");
-        });
-
-        $('#response-sample-cancel').on("click", function () {
-            $('#response-sample-save-start-container').css("display", "inline-block");
-            $('#response-sample-save-form').css("display", "none");
-        });
-
-        $('#response-sample-save').on("click", function () {
-            var url = $('#url').val();
-
-            var currentResponse = pm.request.response;
-            var request = new CollectionRequest();
-            request.id = guid();
-            request.headers = pm.request.getPackedHeaders();
-            request.url = url;
-            request.method = pm.request.method;
-            request.data = pm.request.body.getData();
-            request.dataMode = pm.request.dataMode;
-            request.time = new Date().getTime();
-
-            var name = $("#response-sample-name").val();
-
-            var response = {
-                "id":guid(),
-                "name":name,
-                "collectionRequestId":pm.request.collectionRequestId,
-                "request":request,
-                "responseCode":currentResponse.responseCode,
-                "time":currentResponse.time,
-                "headers":currentResponse.headers,
-                "cookies":currentResponse.cookies,
-                "text":currentResponse.text
-            };
-
-            pm.collections.saveResponseAsSample(response);
-
-            $('#response-sample-save-start-container').css("display", "inline-block");
-            $('#response-sample-save-form').css("display", "none");
-        });
-
         $('a[rel="tooltip"]').tooltip();
 
         this.sidebar.init();
 
-        pm.request.response.clear();
+        //TODO Move this to ResponseEditor
+        //pm.request.response.clear();
 
         $('#sidebar-selectors li').click(function () {
             var id = $(this).attr('data-id');
@@ -120,34 +53,6 @@ pm.layout = {
                 console.log("Set layout");
                 pm.layout.setLayout();
             }, 500);
-        });
-
-        $('#response-data').on("mousedown", ".cm-link", function () {
-            var link = $(this).html();
-            var headers = $('#headers-keyvaleditor').keyvalueeditor('getValues');
-            pm.request.loadRequestFromLink(link, headers);
-        });
-
-        $('.response-tabs').on("click", "li", function () {
-            var section = $(this).attr('data-section');
-            if (section === "body") {
-                pm.request.response.showBody();
-            }
-            else if (section === "headers") {
-                pm.request.response.showHeaders();
-            }
-            else if (section === "cookies") {
-                pm.request.response.showCookies();
-            }
-        });
-
-        //TODO This should go into CollectionRequestDetailView
-        $('#request-meta').on("mouseenter", function () {
-            $('.request-meta-actions').css("display", "block");
-        });
-
-        $('#request-meta').on("mouseleave", function () {
-            $('.request-meta-actions').css("display", "none");
         });
 
         this.setLayout();

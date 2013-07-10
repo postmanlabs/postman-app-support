@@ -368,6 +368,29 @@ var CollectionRequestDetailsView = Backbone.View.extend({
             var id = $(this).attr("data-id");
             model.removeSampleResponse(id);
         });
+
+        $('.request-meta-actions-togglesize').on("click", function () {
+            var action = $(this).attr('data-action');
+
+            if (action === "minimize") {
+                $(this).attr("data-action", "maximize");
+                $('.request-meta-actions-togglesize img').attr('src', 'img/circle_plus.png');
+                $("#request-description-container").slideUp(100);
+            }
+            else {
+                $('.request-meta-actions-togglesize img').attr('src', 'img/circle_minus.png');
+                $(this).attr("data-action", "minimize");
+                $("#request-description-container").slideDown(100);
+            }
+        });
+
+        $('#request-meta').on("mouseenter", function () {
+            $('.request-meta-actions').css("display", "block");
+        });
+
+        $('#request-meta').on("mouseleave", function () {
+            $('.request-meta-actions').css("display", "none");
+        });
     },
 
     show: function() {
