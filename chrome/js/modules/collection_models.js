@@ -60,13 +60,9 @@ var PmCollections = Backbone.Collection.extend({
             var itemsLength = items.length;
 
             function onGetAllRequestsInCollection(collection, requests) {
-                console.log(collection);
-
                 var c = new PmCollection(collection);
                 c.set("requests", requests);
                 pmCollection.add(c);
-
-                console.log("Requests", requests, c);
             }
 
             for (var i = 0; i < itemsLength; i++) {

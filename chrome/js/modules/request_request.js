@@ -18,7 +18,8 @@ var Request = Backbone.Model.extend({
             xhr:null,
             editorMode:0,
             responses:[],
-            body:null
+            body:null,
+            data:null
         };
     },
 
@@ -26,7 +27,39 @@ var Request = Backbone.Model.extend({
     // Fixed
     initialize: function() {
         var requestBody = new RequestBody();
-        this.body = requestBody;
+        var response = new Response();
+        this.set("body", requestBody);
+        this.set("response", response);
+        // this.body = requestBody;
+
+        this.on("cancelRequest", this.onCancelRequest, this);
+        this.on("startNew", this.onStartNew, this);
+        this.on("send", this.onSend, this);
+
+        this.on("readyToLoadRequest", this.onReadyToLoadRequest, this);
+    },
+
+    onReadyToLoadRequest: function() {
+        var lastRequest = pm.settings.getSetting("lastRequest");
+
+        if (lastRequest !== "" && lastRequest !== undefined) {
+            var lastRequestParsed = JSON.parse(lastRequest);
+            this.set("isFromCollection", false);
+            this.loadRequestInEditor(lastRequestParsed);
+        }
+    },
+
+    onCancelRequest: function() {
+        console.log("Cancel request");
+    },
+
+    onStartNew: function() {
+        this.startNew();
+    },
+
+    onSend: function(type) {
+        console.log("Triggered onSend", this);
+        this.send(type);
     },
 
     // Fixed
@@ -48,6 +81,31 @@ var Request = Backbone.Model.extend({
         }
 
         return paramString;
+    },
+
+    getHeaderValue:function (key) {
+        var headers = this.get("headers");
+
+        key = key.toLowerCase();
+        for (var i = 0, count = headers.length; i < count; i++) {
+            var headerKey = headers[i].key.toLowerCase();
+
+            if (headerKey === key) {
+                return headers[i].value;
+            }
+        }
+
+        return false;
+    },
+
+    saveCurrentRequestToLocalStorage:function () {
+        pm.settings.setSetting("lastRequest", this.getAsJson());
+    },
+
+    getTotalTime:function () {
+        var totalTime = this.get("endTime") - this.get("startTime");
+        this.set("totalTime", totalTime);
+        return totalTime;
     },
 
     // Fixed
@@ -130,20 +188,8 @@ var Request = Backbone.Model.extend({
     },
 
     // Fixed
-    getBodyParamString:function (params) {
-        var paramsLength = params.length;
-        var paramArr = [];
-        for (var i = 0; i < paramsLength; i++) {
-            var p = params[i];
-            if (p.key && p.key !== "") {
-                paramArr.push(p.key + "=" + p.value);
-            }
-        }
-        return paramArr.join('&');
-    },
-
-    // Fixed
     setUrlParamString:function (params) {
+        console.log("setUrlParamString called");
         var url = $('#url').val();
         this.set("url", url);
 
@@ -269,7 +315,7 @@ var Request = Backbone.Model.extend({
         var body = this.get("body");
         var request = {
             url: $('#url').val(),
-            data: body.getData(true),
+            data: body.get("dataAsObjects"), //TODO This should be available in the model itself, asObjects = true
             headers: this.getPackedHeaders(),
             dataMode: this.get("dataMode"),
             method: this.get("method"),
@@ -280,7 +326,8 @@ var Request = Backbone.Model.extend({
     },
 
     startNew:function () {
-        var body = this.geT("body");
+        var body = this.get("body");
+        var response = this.get("response");
 
         // TODO RequestEditor should be listening to this
         this.set("editorMode", 0);
@@ -314,24 +361,23 @@ var Request = Backbone.Model.extend({
         $('#url').val();
         $('#url').focus();
 
-        //TODO This goes into the ResponseView
-        pm.request.response.clear();
+        response.clear();
     },
 
     cancel:function () {
+        var response = this.get("response");
         var xhr = this.get("xhr");
         if (xhr !== null) {
             xhr.abort();
         }
 
-        //TODO This goes into the ResponseView
-        pm.request.response.clear();
+        response.clear();
     },
 
     loadRequestFromLink:function (link, headers) {
         this.startNew();
 
-        this.set("url", pm.request.decodeLink(link));
+        this.set("url", this.decodeLink(link));
         this.set("method", "GET");
 
         this.set("isFromCollection", false);
@@ -344,7 +390,10 @@ var Request = Backbone.Model.extend({
     },
 
     loadRequestInEditor:function (request, isFromCollection, isFromSample) {
+        console.log("Load request in Editor", request, isFromCollection, isFromSample);
+
         var body = this.get("body");
+        var response = this.get("response");
 
         this.set("editorMode", 0);
         pm.helpers.showRequestHelper("normal");
@@ -356,73 +405,37 @@ var Request = Backbone.Model.extend({
         this.set("method", request.method.toUpperCase());
 
         if (isFromCollection) {
-            $('#update-request-in-collection').css("display", "inline-block");
-
             if (typeof request.name !== "undefined") {
                 this.set("name", request.name);
-                $('#request-meta').css("display", "block");
-                $('#request-name').html(request.name);
-                $('#request-name').css("display", "inline-block");
             }
             else {
                 this.set("name", "");
-                $('#request-meta').css("display", "none");
-                $('#request-name').css("display", "none");
             }
 
             if (typeof request.description !== "undefined") {
                 this.set("description", request.description);
-                $('#request-description').html(this.get("description"));
-                $('#request-description').css("display", "block");
             }
             else {
                 this.set("description", "");
-                $('#request-description').css("display", "none");
             }
 
-            $('#response-sample-save-form').css("display", "none");
-
-            //Disabling pm.request. Will enable after resolving indexedDB issues
-            //$('#response-sample-save-start-container').css("display", "inline-block");
-
-            $('.request-meta-actions-togglesize').attr('data-action', 'minimize');
-            $('.request-meta-actions-togglesize img').attr('src', 'img/circle_minus.png');
-
-            //TODO Fix this later load samples
             if ("responses" in request) {
                 this.set("responses", request.responses);
-                pm.request.responses = request.responses;
-                $("#request-samples").css("display", "block");
                 if (request.responses) {
-                    if (request.responses.length > 0) {
-                        $('#request-samples table').html("");
-                        $('#request-samples table').append(Handlebars.templates.sample_responses({"items":request.responses}));
-                    }
-                    else {
-                        $('#request-samples table').html("");
-                        $("#request-samples").css("display", "none");
-                    }
                 }
                 else {
                     this.set("responses", []);
-                    $('#request-samples table').html("");
-                    $("#request-samples").css("display", "none");
                 }
 
             }
             else {
                 this.set("responses", []);
-                $('#request-samples table').html("");
-                $("#request-samples").css("display", "none");
             }
         }
         else if (isFromSample) {
-            $('#update-request-in-collection').css("display", "inline-block");
         }
         else {
             this.set("name", "");
-            $('#request-meta').css("display", "none");
-            $('#update-request-in-collection').css("display", "none");
         }
 
         if (typeof request.headers !== "undefined") {
@@ -432,45 +445,30 @@ var Request = Backbone.Model.extend({
             this.set("headers", []);
         }
 
-        $('#headers-keyvaleditor-actions-open .headers-count').html(this.get("headers").length);
-
-        $('#url').val(this.get("url"));
-
-        var newUrlParams = getUrlVars(this.get("url"), false);
-
-        //@todoSet params using keyvalueeditor function
-        $('#url-keyvaleditor').keyvalueeditor('reset', newUrlParams);
-        $('#headers-keyvaleditor').keyvalueeditor('reset', this.get("headers"));
-
-        // TODO Fire an event for this
-        pm.request.response.clear();
-
-        $('#request-method-selector').val(pm.request.method);
+        response.clear();
 
         if (this.isMethodWithBody(this.get("method"))) {
             this.set("dataMode", request.dataMode);
-            $('#data').css("display", "block");
 
             if("version" in request) {
                 if(request.version === 2) {
                     body.loadData(request.dataMode, request.data, true);
                 }
                 else {
-                    body.loadData(request.dataMode, request.data);
+                    body.loadData(request.dataMode, request.data, false);
                 }
             }
             else {
-                body.loadData(request.dataMode, request.data);
+                body.loadData(request.dataMode, request.data, false);
             }
 
         }
         else {
             this.set("dataMode", "params");
-            $('#data').css("display", "none");
         }
 
         //Set raw body editor value if Content-Type is present
-        var contentType = pm.request.getHeaderValue("Content-Type");
+        var contentType = this.getHeaderValue("Content-Type");
         var mode;
         var language;
         if (contentType === false) {
@@ -490,32 +488,39 @@ var Request = Backbone.Model.extend({
             language = contentType;
         }
         else {
-            language = 'text';
+            mode = 'text';
             language = contentType;
         }
 
-        body.setEditorMode(mode, language);
-        $('body').scrollTop(0);
+        body.set("mode", "text");
+        body.set("language", contentType);
+
+        // TODO Should be called in RequestBodyRawEditor automatically
+        // body.setEditorMode(mode, language);
+        console.log("Triggering event loadRequest");
+        this.trigger("loadRequest", this);
     },
 
     prepareForSending: function() {
+        // TODO Would NOT work if stuff is being changed and 'Enter' is pressed
         // Set state as if change event of input handlers was called
-        this.setUrlParamString(this.getUrlEditorParams());
+        // this.setUrlParamString(this.getUrlEditorParams());
 
         if (pm.helpers.getActiveHelperType() === "oauth1" && pm.helpers.getHelper("oAuth1").get("auto")) {
             pm.helpers.getHelper("oAuth1").generateHelper();
             pm.helpers.getHelper("oAuth1").process();
         }
 
-        $('#headers-keyvaleditor-actions-open .headers-count').html(pm.request.headers.length);
+        var headers = this.get("headers");
+
+        $('#headers-keyvaleditor-actions-open .headers-count').html(headers.length);
         this.set("url", this.processUrl($('#url').val()));
         this.set("startTime", new Date().getTime());
     },
 
     getXhrHeaders: function() {
-        this.set("headers", this.getHeaderEditorParams());
-
-        var headers = this.getHeaderEditorParams();
+        //TODO Make sure this works even while editors are being edited
+        var headers = this.get("headers");
         if(pm.settings.getSetting("sendNoCacheHeader") === true) {
             var noCacheHeader = {
                 key: "Cache-Control",
@@ -549,7 +554,7 @@ var Request = Backbone.Model.extend({
         }
 
         if (pm.settings.getSetting("usePostmanProxy") === true) {
-            headers = pm.request.prepareHeadersForProxy(headers);
+            headers = this.prepareHeadersForProxy(headers);
         }
 
         var i;
@@ -632,72 +637,8 @@ var Request = Backbone.Model.extend({
         }
     },
 
-    getFormDataBody: function() {
-        var rows, count, j;
-        var i;
-        var row, key, value;
-        var paramsBodyData = new FormData();
-        rows = $('#formdata-keyvaleditor').keyvalueeditor('getElements');
-        count = rows.length;
-
-        if (count > 0) {
-            for (j = 0; j < count; j++) {
-                row = rows[j];
-                key = row.keyElement.val();
-                var valueType = row.valueType;
-                var valueElement = row.valueElement;
-
-                if (valueType === "file") {
-                    var domEl = valueElement.get(0);
-                    var len = domEl.files.length;
-                    for (i = 0; i < len; i++) {
-                        paramsBodyData.append(key, domEl.files[i]);
-                    }
-                }
-                else {
-                    value = valueElement.val();
-                    value = pm.envManager.getCurrentValue(value);
-                    paramsBodyData.append(key, value);
-                }
-            }
-
-            return paramsBodyData;
-        }
-        else {
-            return false;
-        }
-    },
-
-    getUrlEncodedBody: function() {
-        var rows, count, j;
-        var row, key, value;
-        var urlEncodedBodyData = "";
-        rows = $('#urlencoded-keyvaleditor').keyvalueeditor('getElements');
-        count = rows.length;
-
-        if (count > 0) {
-            for (j = 0; j < count; j++) {
-                row = rows[j];
-                value = row.valueElement.val();
-                value = pm.envManager.getCurrentValue(value);
-                value = encodeURIComponent(value);
-                value = value.replace(/%20/g, '+');
-                key = encodeURIComponent(row.keyElement.val());
-                key = key.replace(/%20/g, '+');
-
-                urlEncodedBodyData += key + "=" + value + "&";
-            }
-
-            urlEncodedBodyData = urlEncodedBodyData.substr(0, urlEncodedBodyData.length - 1);
-
-            return urlEncodedBodyData;
-        }
-        else {
-            return false;
-        }
-    },
-
     getRequestBodyPreview: function() {
+        //TODO This will be set by the view itself
         var dataMode = this.get("dataMode");
         var body = this.get("body");
 
@@ -726,38 +667,9 @@ var Request = Backbone.Model.extend({
         }
     },
 
-    getRequestBodyToBeSent: function() {
-        var dataMode = this.get("dataMode");
-        var body = this.get("body");
-
-        if (dataMode === 'raw') {
-            var rawBodyData = body.getData(true);
-            rawBodyData = pm.envManager.getCurrentValue(rawBodyData);
-            return rawBodyData;
-        }
-        else if (dataMode === 'params') {
-            var formDataBody = this.getFormDataBody();
-            if(formDataBody !== false) {
-                return formDataBody;
-            }
-            else {
-                return false;
-            }
-        }
-        else if (dataMode === 'urlencoded') {
-            var urlEncodedBodyData = this.getUrlEncodedBody();
-            if(urlEncodedBodyData !== false) {
-                return urlEncodedBodyData;
-            }
-            else {
-                return false;
-            }
-        }
-    },
-
-    //Send the current request
     send:function (responseRawDataType) {
         var body = this.get("body");
+        var response = this.get("response");
 
         pm.urlCache.refreshAutoComplete();
         this.prepareForSending();
@@ -766,17 +678,18 @@ var Request = Backbone.Model.extend({
             return;
         }
 
-        var originalUrl = $('#url').val(); //Store this for saving the request
+        var originalUrl = this.get("url"); //Store this for saving the request
 
         var url = this.encodeUrl(this.get("url"));
         var method = this.get("method").toUpperCase();
-        var originalData = body.getData(true);
+
+        var originalData = body.get("dataAsObjects");
 
         //Start setting up XHR
         var xhr = new XMLHttpRequest();
         xhr.open(method, url, true); //Open the XHR request. Will be sent later
         xhr.onreadystatechange = function (event) {
-            pm.request.response.load(event.target);
+            response.load(event.target);
         };
 
         //Response raw data type is used for fetching binary responses while generating PDFs
@@ -792,12 +705,12 @@ var Request = Backbone.Model.extend({
 
         // Prepare body
         if (this.isMethodWithBody(method)) {
-            var body = this.getRequestBodyToBeSent();
-            if(body === false) {
+            var data = body.get("data");
+            if(data === false) {
                 xhr.send();
             }
             else {
-                xhr.send(body);
+                xhr.send(data);
             }
         } else {
             xhr.send();
@@ -814,33 +727,35 @@ var Request = Backbone.Model.extend({
                 this.get("dataMode"));
         }
 
+        var response = this.get("response");
         this.saveCurrentRequestToLocalStorage();
-
-        //TODO Trigger request send event
-        this.updateUiPostSending();
+        response.trigger("requestSent", this);
+        this.trigger("requestSent", this);
     },
 
-    updateUiPostSending: function() {
-        $('#submit-request').button("loading");
-        pm.request.response.clear();
-        pm.request.response.showScreen("waiting");
-    },
+    // TODO Response will be listening for this
+    // updateUiPostSending: function() {
+        // var response = this.get("response");
+
+        // response.clear();
+        // response.showScreen("waiting");
+    // },
 
     // TODO Should be activated on click
     handlePreviewClick:function() {
-        var method = pm.request.method.toUpperCase();
+        var method = this.get("method").toUpperCase();
         var httpVersion = "HTTP/1.1";
-        var hostAndPath = pm.request.splitUrlIntoHostAndPath(pm.request.url);
+        var hostAndPath = this.splitUrlIntoHostAndPath(this.get("url"));
 
         var path = hostAndPath.path;
         var host = hostAndPath.host;
 
-        var headers = pm.request.getXhrHeaders();
-        var hasBody = pm.request.isMethodWithBody(pm.request.method.toUpperCase());
+        var headers = this.getXhrHeaders();
+        var hasBody = this.isMethodWithBody(method);
         var body;
 
         if(hasBody) {
-            body = pm.request.getRequestBodyPreview();
+            body = this.getRequestBodyPreview();
         }
 
         var requestPreview = method + " " + path + " " + httpVersion + "<br/>";
@@ -879,148 +794,45 @@ var RequestBody = Backbone.Model.extend({
 
     },
 
-    init:function () {
-        var lastRequest = pm.settings.getSetting("lastRequest");
-
-        if (lastRequest !== "" && lastRequest !== undefined) {
-            var lastRequestParsed = JSON.parse(lastRequest);
-            pm.request.isFromCollection = false;
-            pm.request.loadRequestInEditor(lastRequestParsed);
-        }
-    },
-
-    getHeaderValue:function (key) {
-        var headers = this.get("headers");
-
-        key = key.toLowerCase();
-        for (var i = 0, count = headers.length; i < count; i++) {
-            var headerKey = headers[i].key.toLowerCase();
-
-            if (headerKey === key) {
-                return headers[i].value;
+    // Fixed
+    getBodyParamString:function (params) {
+        var paramsLength = params.length;
+        var paramArr = [];
+        for (var i = 0; i < paramsLength; i++) {
+            var p = params[i];
+            if (p.key && p.key !== "") {
+                paramArr.push(p.key + "=" + p.value);
             }
         }
-
-        return false;
-    },
-
-    saveCurrentRequestToLocalStorage:function () {
-        pm.settings.setSetting("lastRequest", pm.request.getAsJson());
-    },
-
-    getTotalTime:function () {
-        var totalTime = this.get("endTime") - this.get("startTime");
-        this.set("totalTime", totalTime);
-        return totalTime;
-    },
-
-    getRawData:function () {
-        if (pm.request.body.isEditorInitialized) {
-            var data = pm.request.body.codeMirror.getValue();
-
-            if (pm.settings.getSetting("forceWindowsLineEndings") === true) {
-                data = data.replace(/\r/g, '');
-                data = data.replace(/\n/g, "\r\n");
-            }
-
-            return data;
-        }
-        else {
-            return "";
-        }
+        return paramArr.join('&');
     },
 
     getDataMode:function () {
-        return pm.request.body.mode;
+        return this.get("mode");
     },
 
-    //Be able to return direct keyvaleditor params
-    getData:function (asObjects) {
-        var data;
-        var mode = pm.request.body.mode;
-        var params;
-        var newParams;
-        var param;
-        var i;
-
-        if (mode === "params") {
-            params = $('#formdata-keyvaleditor').keyvalueeditor('getValues');
-            newParams = [];
-            for (i = 0; i < params.length; i++) {
-                param = {
-                    key:params[i].key,
-                    value:params[i].value,
-                    type:params[i].type
-                };
-
-                newParams.push(param);
-            }
-
-            if(asObjects === true) {
-                return newParams;
-            }
-            else {
-                data = pm.request.getBodyParamString(newParams);
-            }
-
-        }
-        else if (mode === "raw") {
-            data = pm.request.body.getRawData();
-        }
-        else if (mode === "urlencoded") {
-            params = $('#urlencoded-keyvaleditor').keyvalueeditor('getValues');
-            newParams = [];
-            for (i = 0; i < params.length; i++) {
-                param = {
-                    key:params[i].key,
-                    value:params[i].value,
-                    type:params[i].type
-                };
-
-                newParams.push(param);
-            }
-
-            if(asObjects === true) {
-                return newParams;
-            }
-            else {
-                data = pm.request.getBodyParamString(newParams);
-            }
-        }
-
-        return data;
-    },
-
-    //TODO Some part of this goes into ResponseBodyEditor
     loadData:function (mode, data, asObjects) {
-        var body = pm.request.body;
-        body.setDataMode(mode);
+        console.log("Load body", mode, data, asObjects);
 
-        body.data = data;
+        this.set("mode", mode);
+        this.set("asObjects", asObjects);
 
-        var params;
-        if (mode === "params") {
-            if(asObjects === true) {
-                $('#formdata-keyvaleditor').keyvalueeditor('reset', data);
+        if (mode !== "raw") {
+            if (!asObjects) {
+                var params = getBodyVars(data, false);
+                this.set("data", params);
             }
             else {
-                params = getBodyVars(data, false);
-                $('#formdata-keyvaleditor').keyvalueeditor('reset', params);
+                this.set("data", data);
             }
+        }
+        else {
+            this.set("data", data);
+        }
 
-        }
-        else if (mode === "raw") {
-            body.loadRawData(data);
-        }
-        else if (mode === "urlencoded") {
-            if(asObjects === true) {
-                $('#urlencoded-keyvaleditor').keyvalueeditor('reset', data);
-            }
-            else {
-                params = getBodyVars(data, false);
-                $('#urlencoded-keyvaleditor').keyvalueeditor('reset', params);
-            }
 
-        }
+        console.log(this.get("data"));
+
+        this.trigger("dataLoaded", this);
     }
 });

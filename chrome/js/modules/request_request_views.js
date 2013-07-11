@@ -2,25 +2,30 @@ var RequestEditor = Backbone.View.extend({
     initialize: function() {
         var model = this.model;
         var view = this;
+        var body = model.get("body");
 
-        var requestMethodEditor = new RequestMethodEditor({model: this.model});
-        var requestHeaderEditor = new RequestHeaderEditor({model: this.model});
-        var requestURLEditor = new RequestURLEditor({model: this.model});
-        var requestBodyEditor = new RequestBodyEditor({model: this.model});
-        var requestClipboard = new RequestClipboard({model: this.model});
-        var requestPreviewer = new RequestPreviewer({model: this.model});
+        this.requestMethodEditor = new RequestMethodEditor({model: this.model});
+        this.requestHeaderEditor = new RequestHeaderEditor({model: this.model});
+        this.requestURLEditor = new RequestURLEditor({model: this.model});
+        this.requestBodyEditor = new RequestBodyEditor({model: this.model});
+        this.requestClipboard = new RequestClipboard({model: this.model});
+        this.requestPreviewer = new RequestPreviewer({model: this.model});
+
+        console.log("Initialized RequestEditor");
+
+        model.on("loadRequest", this.onLoadRequest, this);
+        model.on("sentRequest", this.onSentRequest, this);
+
+        this.on("send", this.onSend, this);
 
         $("#update-request-in-collection").on("click", function () {
-            //This should come from the caller
-            var url = $('#url').val();
-
             var collectionRequest = {};
-            collectionRequest.id = pm.request.collectionRequestId;
-            collectionRequest.headers = pm.request.getPackedHeaders();
-            collectionRequest.url = url;
-            collectionRequest.method = pm.request.method;
-            collectionRequest.data = pm.request.body.getData(true);
-            collectionRequest.dataMode = pm.request.dataMode;
+            collectionRequest.id = model.get("collectionRequestId");
+            collectionRequest.headers = model.getPackedHeaders();
+            collectionRequest.url = model.get("url");
+            collectionRequest.method = model.get("method");
+            collectionRequest.data = body.getData(true);
+            collectionRequest.dataMode = body.get("dataMode");
             collectionRequest.version = 2;
             collectionRequest.time = new Date().getTime();
 
@@ -28,13 +33,11 @@ var RequestEditor = Backbone.View.extend({
         });
 
         $("#cancel-request").on("click", function () {
-            // TODO This can trigger the cancel event
-            pm.request.cancel();
+            model.trigger("cancelRequest", model);
         });
 
         $("#request-actions-reset").on("click", function () {
-            // TODO This can trigger the start new event
-            pm.request.startNew();
+            model.trigger("startNew", model);
         });
 
         $('#add-to-collection').on("click", function () {
@@ -44,13 +47,118 @@ var RequestEditor = Backbone.View.extend({
         });
 
         $("#submit-request").on("click", function () {
-            // TODO This should trigger the send event
-            pm.request.send("text");
+            view.trigger("send", view);
         });
 
         $("#preview-request").on("click", function () {
             _.bind(view.onPreviewRequestClick, view)();
         });
+
+        model.trigger("readyToLoadRequest", this);
+    },
+
+    onSend: function() {
+        console.log("Collect everything!");
+
+        this.requestHeaderEditor.updateModel();
+        this.requestURLEditor.updateModel();
+        this.requestBodyEditor.updateModel();
+
+        this.model.trigger("send", "text");
+    },
+
+    onSentRequest: function() {
+        $('#submit-request').button("loading");
+    },
+
+    onLoadRequest: function(m) {
+        console.log("onLoadRequest called", m);
+
+        var model = this.model;
+        var body = model.get("body");
+        var method = model.get("method");
+        var isMethodWithBody = model.isMethodWithBody(method);
+        var url = model.get("url");
+        var headers = model.get("headers");
+        var data = model.get("data");
+        var name = model.get("name");
+        var description = model.get("description");
+        var responses = model.get("responses");
+        var isFromSample = model.get("isFromSample");
+        var isFromCollection = model.get("isFromCollection");
+
+        if (isFromCollection) {
+            $('#update-request-in-collection').css("display", "inline-block");
+
+            if (typeof name !== "undefined") {
+                $('#request-meta').css("display", "block");
+                $('#request-name').html(name);
+                $('#request-name').css("display", "inline-block");
+            }
+            else {
+                $('#request-meta').css("display", "none");
+                $('#request-name').css("display", "none");
+            }
+
+            if (typeof description !== "undefined") {
+                $('#request-description').html(description);
+                $('#request-description').css("display", "block");
+            }
+            else {
+                $('#request-description').css("display", "none");
+            }
+
+            $('#response-sample-save-form').css("display", "none");
+
+            //Disabling pm.request. Will enable after resolving indexedDB issues
+            //$('#response-sample-save-start-container').css("display", "inline-block");
+
+            $('.request-meta-actions-togglesize').attr('data-action', 'minimize');
+            $('.request-meta-actions-togglesize img').attr('src', 'img/circle_minus.png');
+
+            //TODO Fix this later load samples
+            if (responses) {
+                $("#request-samples").css("display", "block");
+                if (responses.length > 0) {
+                    $('#request-samples table').html("");
+                    $('#request-samples table').append(Handlebars.templates.sample_responses({"items":responses}));
+                }
+                else {
+                    $('#request-samples table').html("");
+                    $("#request-samples").css("display", "none");
+                }
+            }
+            else {
+                $('#request-samples table').html("");
+                $("#request-samples").css("display", "none");
+            }
+        }
+        else if (isFromSample) {
+            $('#update-request-in-collection').css("display", "inline-block");
+        }
+        else {
+            $('#request-meta').css("display", "none");
+            $('#update-request-in-collection').css("display", "none");
+        }
+
+        $('#headers-keyvaleditor-actions-open .headers-count').html(headers.length);
+
+        $('#url').val(url);
+
+        var newUrlParams = getUrlVars(url, false);
+
+        //@todoSet params using keyvalueeditor function
+        $('#url-keyvaleditor').keyvalueeditor('reset', newUrlParams);
+        $('#headers-keyvaleditor').keyvalueeditor('reset', headers);
+
+        $('#request-method-selector').val(method);
+
+        if (isMethodWithBody) {
+            $('#data').css("display", "block");
+        }
+        else {
+            $('#data').css("display", "none");
+        }
     },
 
     showRequestBuilder: function() {
@@ -76,56 +184,12 @@ var RequestEditor = Backbone.View.extend({
             this.showPreview();
         }
     },
-
-    refreshLayout:function () {
-        $('#url').val(pm.request.url);
-        $('#request-method-selector').val(pm.request.method);
-
-        pm.request.body.loadRawData(pm.request.body.getData());
-
-        var newUrlParams = getUrlVars(pm.request.url, false);
-
-        //@todoSet params using keyvalueeditor function
-        $('#url-keyvaleditor').keyvalueeditor('reset', newUrlParams);
-        $('#headers-keyvaleditor').keyvalueeditor('reset', pm.request.headers);
-
-        $('#headers-keyvaleditor-actions-open .headers-count').html(pm.request.headers.length);
-        $('#submit-request').button("reset");
-        $('#data-mode-selector a').removeClass("active");
-        $('#data-mode-selector a[data-mode="' + pm.request.dataMode + '"]').addClass("active");
-
-        if (pm.request.isMethodWithBody(pm.request.method)) {
-            $("#data").css("display", "block");
-            var mode = pm.request.dataMode;
-            pm.request.body.setDataMode(mode);
-        } else {
-            pm.request.body.hide();
-        }
-
-        if (pm.request.name !== "") {
-            $('#request-meta').css("display", "block");
-            $('#request-name').css("display", "inline-block");
-            if ($('#request-description').css("display") === "block") {
-                $('#request-description').css("display", "block");
-            }
-            else {
-                $('#request-description').css("display", "none");
-            }
-        }
-        else {
-            $('#request-meta').css("display", "none");
-            $('#request-name').css("display", "none");
-            $('#request-description').css("display", "none");
-            $('#request-samples').css("display", "none");
-        }
-
-        $('.request-help-actions-togglesize a').attr('data-action', 'minimize');
-        $('.request-help-actions-togglesize img').attr('src', 'img/circle_minus.png');
-    }
 });
 
 var RequestURLEditor = Backbone.View.extend({
     initialize: function() {
+        console.log("Initialized RequestURLEditor");
+
         var model = this.model;
         var view = this;
 
@@ -168,6 +232,10 @@ var RequestURLEditor = Backbone.View.extend({
             var newRows = getUrlVars($('#url').val(), false);
             $('#url-keyvaleditor').keyvalueeditor('reset', newRows);
         });
+    },
+
+    updateModel: function() {
+        this.model.setUrlParamString(this.getUrlEditorParams());
     },
 
     openUrlEditor:function () {
@@ -226,12 +294,13 @@ var RequestMethodEditor = Backbone.View.extend({
 
 var RequestHeaderEditor = Backbone.View.extend({
     initialize: function() {
+        console.log("Initialized RequestHeaderEditor");
+
         var model = this.model;
         var view = this;
 
         model.on("change:headers", this.onChangeHeaders, this);
 
-        //TODO Autocomplete for default headers is not working
         var params = {
             placeHolderKey:"Header",
             placeHolderValue:"Value",
@@ -346,6 +415,12 @@ var RequestHeaderEditor = Backbone.View.extend({
         $(editorId).keyvalueeditor('reset', headers);
     },
 
+    updateModel: function() {
+        this.model.set("headers", this.getHeaderEditorParams(), {silent: true});
+        var headers = this.model.get("headers");
+        $('#headers-keyvaleditor-actions-open .headers-count').html(headers.length);
+    },
+
     getHeaderEditorParams:function () {
         var hs = $('#headers-keyvaleditor').keyvalueeditor('getValues');
         var newHeaders = [];
@@ -434,6 +509,105 @@ var RequestBodyEditor = Backbone.View.extend({
         });
     },
 
+    getRequestBodyToBeSent: function() {
+        var model = this.model;
+        var body = model.get("body");
+        var dataMode = body.get("dataMode");
+        var body = body.get("body");
+
+        if (dataMode === 'raw') {
+            var rawBodyData = this.getData(true);
+            rawBodyData = pm.envManager.getCurrentValue(rawBodyData);
+            return rawBodyData;
+        }
+        else if (dataMode === 'params') {
+            var formDataBody = this.bodyFormDataEditor.getFormDataBody();
+            if(formDataBody !== false) {
+                return formDataBody;
+            }
+            else {
+                return false;
+            }
+        }
+        else if (dataMode === 'urlencoded') {
+            var urlEncodedBodyData = this.bodyURLEncodedEditor.getUrlEncodedBody();
+            if(urlEncodedBodyData !== false) {
+                return urlEncodedBodyData;
+            }
+            else {
+                return false;
+            }
+        }
+    },
+
+    getData:function (asObjects) {
+        var model = this.model;
+        var body = this.model.get("body");
+        var mode = body.get("mode");
+
+        var data;
+        var params;
+        var newParams;
+        var param;
+        var i;
+
+        if (mode === "params") {
+            params = $('#formdata-keyvaleditor').keyvalueeditor('getValues');
+            newParams = [];
+            for (i = 0; i < params.length; i++) {
+                param = {
+                    key:params[i].key,
+                    value:params[i].value,
+                    type:params[i].type
+                };
+
+                newParams.push(param);
+            }
+
+            if(asObjects === true) {
+                return newParams;
+            }
+            else {
+                data = model.getBodyParamString(newParams);
+            }
+
+        }
+        else if (mode === "raw") {
+            data = this.bodyRawEditor.getRawData();
+        }
+        else if (mode === "urlencoded") {
+            params = $('#urlencoded-keyvaleditor').keyvalueeditor('getValues');
+            newParams = [];
+            for (i = 0; i < params.length; i++) {
+                param = {
+                    key:params[i].key,
+                    value:params[i].value,
+                    type:params[i].type
+                };
+
+                newParams.push(param);
+            }
+
+            if(asObjects === true) {
+                return newParams;
+            }
+            else {
+                data = model.getBodyParamString(newParams);
+            }
+        }
+
+        return data;
+    },
+
+    updateModel: function() {
+        console.log("Updating all models");
+        var data = this.getRequestBodyToBeSent();
+        var body = this.model.get("body");
+        var dataAsObjects = this.getData(true);
+        body.set("data", data);
+        body.set("dataAsObjects", dataAsObjects);
+    },
+
     openFormDataEditor:function () {
         var containerId = "#formdata-keyvaleditor-container";
         $(containerId).css("display", "block");
@@ -515,12 +689,12 @@ var RequestBodyEditor = Backbone.View.extend({
             $('#body-data-container').css("display", "block");
 
             var isEditorInitialized = body.get("isEditorInitialized");
-
+            var codeMirror = body.get("codeMirror");
             if (isEditorInitialized === false) {
                 view.bodyRawEditor.initCodeMirrorEditor();
             }
             else {
-                view.bodyRawEditor.codeMirror.refresh();
+                codeMirror.refresh();
             }
 
             $("#body-editor-mode-selector").css("display", "block");
@@ -535,6 +709,9 @@ var RequestBodyEditor = Backbone.View.extend({
 
 var RequestBodyFormDataEditor = Backbone.View.extend({
     initialize: function() {
+        var body = this.model.get("body");
+        body.on("change:data", this.onChangeBodyData, this);
+
         var editorId = "#formdata-keyvaleditor";
 
         var params = {
@@ -550,11 +727,61 @@ var RequestBodyFormDataEditor = Backbone.View.extend({
         };
 
         $(editorId).keyvalueeditor('init', params);
+    },
+
+    onChangeBodyData: function() {
+        var body = this.model.get("body");
+        var mode = body.get("mode");
+        var asObjects = body.get("asObjects");
+        var data = body.get("data");
+
+        if (mode === "params") {
+            $('#formdata-keyvaleditor').keyvalueeditor('reset', data);
+        }
+    },
+
+    getFormDataBody: function() {
+        var rows, count, j;
+        var i;
+        var row, key, value;
+        var paramsBodyData = new FormData();
+        rows = $('#formdata-keyvaleditor').keyvalueeditor('getElements');
+        count = rows.length;
+
+        if (count > 0) {
+            for (j = 0; j < count; j++) {
+                row = rows[j];
+                key = row.keyElement.val();
+                var valueType = row.valueType;
+                var valueElement = row.valueElement;
+
+                if (valueType === "file") {
+                    var domEl = valueElement.get(0);
+                    var len = domEl.files.length;
+                    for (i = 0; i < len; i++) {
+                        paramsBodyData.append(key, domEl.files[i]);
+                    }
+                }
+                else {
+                    value = valueElement.val();
+                    value = pm.envManager.getCurrentValue(value);
+                    paramsBodyData.append(key, value);
+                }
+            }
+
+            return paramsBodyData;
+        }
+        else {
+            return false;
+        }
     }
 });
 
 var RequestBodyURLEncodedEditor = Backbone.View.extend({
     initialize: function() {
+        var body = this.model.get("body");
+        body.on("change:data", this.onChangeBodyData, this);
+
         var editorId = "#urlencoded-keyvaleditor";
 
         var params = {
@@ -570,6 +797,46 @@ var RequestBodyURLEncodedEditor = Backbone.View.extend({
         };
 
         $(editorId).keyvalueeditor('init', params);
+    },
+
+    onChangeBodyData: function() {
+        var body = this.model.get("body");
+        var mode = body.get("mode");
+        var asObjects = body.get("asObjects");
+        var data = body.get("data");
+
+        if (mode === "urlencoded") {
+            $('#urlencoded-keyvaleditor').keyvalueeditor('reset', data);
+        }
+    },
+
+    getUrlEncodedBody: function() {
+        var rows, count, j;
+        var row, key, value;
+        var urlEncodedBodyData = "";
+        rows = $('#urlencoded-keyvaleditor').keyvalueeditor('getElements');
+        count = rows.length;
+
+        if (count > 0) {
+            for (j = 0; j < count; j++) {
+                row = rows[j];
+                value = row.valueElement.val();
+                value = pm.envManager.getCurrentValue(value);
+                value = encodeURIComponent(value);
+                value = value.replace(/%20/g, '+');
+                key = encodeURIComponent(row.keyElement.val());
+                key = key.replace(/%20/g, '+');
+
+                urlEncodedBodyData += key + "=" + value + "&";
+            }
+
+            urlEncodedBodyData = urlEncodedBodyData.substr(0, urlEncodedBodyData.length - 1);
+
+            return urlEncodedBodyData;
+        }
+        else {
+            return false;
+        }
     }
 });
 
@@ -578,6 +845,20 @@ var RequestBodyRawEditor = Backbone.View.extend({
         var model = this.model;
         var view = this;
         var body = this.model.get("body");
+
+        var body = this.model.get("body");
+        body.on("change:data", this.onChangeBodyData, this);
+    },
+
+    onChangeBodyData: function() {
+        var body = this.model.get("body");
+        var mode = body.get("mode");
+        var asObjects = body.get("asObjects");
+        var data = body.get("data");
+
+        if (mode === "raw") {
+            this.loadRawData(data);
+        }
     },
 
     initCodeMirrorEditor:function () {
@@ -604,8 +885,6 @@ var RequestBodyRawEditor = Backbone.View.extend({
             resize: function(event, ui) {
                 ui.size.width = ui.originalSize.width;
                 $(".CodeMirror-scroll").height($(this).height());
-
-                //TODO Check if this is called
                 codeMirror.refresh();
             }
         });
@@ -639,7 +918,6 @@ var RequestBodyRawEditor = Backbone.View.extend({
             }
 
             // TODO Can be shifted to the model
-            //Add proper content-type header
             if (toSetHeader) {
                 var headers = this.model.get("headers");
                 var contentTypeHeaderKey = "Content-Type";
@@ -692,7 +970,7 @@ var RequestBodyRawEditor = Backbone.View.extend({
                     validated = pm.jsonlint.instance.parse(content);
                     if (validated) {
                         content = JSON.parse(codeMirror.getValue());
-                        pm.request.body.codeMirror.setValue(JSON.stringify(content, null, 4));
+                        codeMirror.setValue(JSON.stringify(content, null, 4));
                     }
                 } catch(e) {
                     result = e.message;
@@ -721,6 +999,27 @@ var RequestBodyRawEditor = Backbone.View.extend({
             codeMirror.setValue(data);
             codeMirror.refresh();
         }
+    },
+
+    getRawData:function () {
+        var model = this.model;
+        var body = model.get("body");
+        var isEditorInitialized = body.get("isEditorInitialized");
+        var codeMirror = body.get("codeMirror");
+
+        if (isEditorInitialized) {
+            var data = codeMirror.getValue();
+
+            if (pm.settings.getSetting("forceWindowsLineEndings") === true) {
+                data = data.replace(/\r/g, '');
+                data = data.replace(/\n/g, "\r\n");
+            }
+
+            return data;
+        }
+        else {
+            return "";
+        }
     }
 });
 
@@ -732,10 +1031,12 @@ var RequestPreviewer = Backbone.View.extend({
 
 var RequestClipboard = Backbone.View.extend({
     initialize: function() {
+        var model = this.model;
+        var response = model.get("response");
+
         $("#response-copy-button").on("click", function() {
             var scrollTop = $(window).scrollTop();
-            //TODO Need this to access response text in another way
-            copyToClipboard(pm.request.response.text);
+            copyToClipboard(response.get("text"));
             $(document).scrollTop(scrollTop);
         });
     }

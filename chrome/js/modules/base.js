@@ -162,6 +162,7 @@ pm.init = function () {
         var request = new Request();
         var requestEditor = new RequestEditor({model: request});
         var responseViewer = new ResponseViewer({model: request});
+        pm.request = request;
     }
 
 
