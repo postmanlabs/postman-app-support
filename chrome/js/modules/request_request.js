@@ -341,7 +341,6 @@ var Request = Backbone.Model.extend({
             xhr.abort();
         }
 
-        //TODO This should trigger the proper stuff
         this.set("url", "");
         this.set("urlParams", {});
         this.set("bodyParams", {});
@@ -349,7 +348,7 @@ var Request = Backbone.Model.extend({
         this.set("description", "");
         this.set("headers", []);
         this.set("method", "GET");
-        this.set("dataMode", ""); // TODO Check this again
+        this.set("dataMode", "");
 
         body.set("data", "");
 

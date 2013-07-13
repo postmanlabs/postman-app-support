@@ -25,6 +25,8 @@ var PmCollections = Backbone.Collection.extend({
     model: PmCollection,
 
     comparator: function(a, b) {
+        console.log("Sorter called", a, b);
+        
         var counter;
 
         var aName = a.get("name");

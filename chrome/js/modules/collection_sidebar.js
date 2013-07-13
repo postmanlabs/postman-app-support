@@ -212,6 +212,7 @@ var CollectionSidebar = Backbone.View.extend({
 
             if (count > 0) {
                 for (var i = 0; i < count; i++) {
+                    //TODO Move this to the model
                     pm.urlCache.addUrl(requests[i].url);
 
                     if (typeof requests[i].name === "undefined") {
@@ -226,10 +227,16 @@ var CollectionSidebar = Backbone.View.extend({
                 }
 
                 //Sort requests as A-Z order
-                if (!("order" in collection)) {
+                // TODO This needs to be handled in the model
+                var hasOrder = "order" in collection;
+                if (hasOrder) {
+                    hasOrder = collection.order.length !== 0;
+                }
+
+                if (!hasOrder) {
                     requests.sort(sortAlphabetical);
                 }
-                else {
+                else {                    
                     if(collection["order"].length === requests.length) {
                         var orderedRequests = [];
                         for (var j = 0, len = collection["order"].length; j < len; j++) {
