@@ -23,11 +23,11 @@ var Request = Backbone.Model.extend({
         };
     },
 
-
     // Fixed
     initialize: function() {
         var requestBody = new RequestBody();
         var response = new Response();
+
         this.set("body", requestBody);
         this.set("response", response);
         // this.body = requestBody;
@@ -667,6 +667,8 @@ var Request = Backbone.Model.extend({
     },
 
     send:function (responseRawDataType) {
+        var model = this;
+
         var body = this.get("body");
         var response = this.get("response");
 
@@ -688,7 +690,8 @@ var Request = Backbone.Model.extend({
         var xhr = new XMLHttpRequest();
         xhr.open(method, url, true); //Open the XHR request. Will be sent later
         xhr.onreadystatechange = function (event) {
-            response.load(event.target);
+            console.log("Load response");
+            _.bind(response.load, model)(event.target);
         };
 
         //Response raw data type is used for fetching binary responses while generating PDFs
@@ -728,8 +731,8 @@ var Request = Backbone.Model.extend({
 
         var response = this.get("response");
         this.saveCurrentRequestToLocalStorage();
-        response.trigger("requestSent", this);
-        this.trigger("requestSent", this);
+        response.trigger("sentRequest", this);
+        this.trigger("sentRequest", this);
     },
 
     // TODO Response will be listening for this

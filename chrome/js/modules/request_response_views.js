@@ -1,28 +1,33 @@
 var ResponseViewer = Backbone.View.extend({
     initialize: function() {
+        var model = this.model;
+        var responseModel = model.get("response");
+        var view = this;
+
+        this.responseBodyViewer = new ResponseBodyViewer({model: this.model});
+        this.responseHeaderViewer = new ResponseHeaderViewer({model: this.model});
+        this.responseCookieViewer = new ResponseCookieViewer({model: this.model});
+        this.responseMetaViewer = new ResponseMetaViewer({model: this.model});
+
+        responseModel.on("failedRequest", this.onFailedRequest, this);
+
         $('#response-body-toggle').on("click", function () {
-            pm.request.response.toggleBodySize();
+            view.toggleBodySize();
         });
 
         $('#response-body-line-wrapping').on("click", function () {
-            pm.editor.toggleLineWrapping();
+            view.toggleLineWrapping();
             return true;
         });
 
-        $('#response-open-in-new-window').on("click", function () {
-            var data = pm.request.response.text;
-            pm.request.response.openInNewWindow(data);
-        });
-
-
         $('#response-formatting').on("click", "a", function () {
             var previewType = $(this).attr('data-type');
-            pm.request.response.changePreviewType(previewType);
+            view.changePreviewType(previewType);
         });
 
         $('#response-language').on("click", "a", function () {
             var language = $(this).attr("data-mode");
-            pm.request.response.setMode(language);
+            view.setMode(language);
         });
 
         $('#response-sample-save-start').on("click", function () {
@@ -71,169 +76,47 @@ var ResponseViewer = Backbone.View.extend({
         $('#response-data').on("mousedown", ".cm-link", function () {
             var link = $(this).html();
             var headers = $('#headers-keyvaleditor').keyvalueeditor('getValues');
-            pm.request.loadRequestFromLink(link, headers);
+            model.loadRequestFromLink(link, headers);
         });
 
         $('.response-tabs').on("click", "li", function () {
             var section = $(this).attr('data-section');
             if (section === "body") {
-                pm.request.response.showBody();
+                view.showBody();
             }
             else if (section === "headers") {
-                pm.request.response.showHeaders();
+                view.showHeaders();
             }
             else if (section === "cookies") {
-                pm.request.response.showCookies();
+                view.showCookies();
             }
         });
     },
 
-    clear:function () {
-        pm.request.response.startTime = 0;
-        pm.request.response.endTime = 0;
-        pm.request.response.totalTime = 0;
-        pm.request.response.status = "";
-        pm.request.response.time = 0;
-        pm.request.response.headers = {};
-        pm.request.response.mime = "";
-        pm.request.response.state.size = "normal";
-        pm.request.response.previewType = "parsed";
-        $('#response').css("display", "none");
-    },
-
-    showScreen:function (screen) {
-        $("#response").css("display", "block");
-        var active_id = "#response-" + screen + "-container";
-        var all_ids = ["#response-waiting-container",
-            "#response-failed-container",
-            "#response-success-container"];
-        for (var i = 0; i < 3; i++) {
-            $(all_ids[i]).css("display", "none");
-        }
-
-        $(active_id).css("display", "block");
-    },
-
-    //Needs to be updated
-    render:function (response) {
-        pm.request.response.showScreen("success");
-        $('#response-status').html(Handlebars.templates.item_response_code(response.responseCode));
-        $('.response-code').popover({
-            trigger: "hover"
-        });
-
-        //This sets pm.request.response.headers
-        $("#response-headers").append(Handlebars.templates.response_headers({"items":response.headers}));
-
-        $('.response-tabs li[data-section="headers"]').html("Headers (" + response.headers.length + ")");
-        $("#response-data").css("display", "block");
-
-        $("#loader").css("display", "none");
-
-        $('#response-time .data').html(response.time + " ms");
-
-        var contentTypeIndexOf = find(response.headers, function (element, index, collection) {
-            return element.key === "Content-Type";
-        });
-
-        var contentType;
-        if (contentTypeIndexOf >= 0) {
-            contentType = response.headers[contentTypeIndexOf].value;
-        }
-
-        $('#response').css("display", "block");
-        $('#submit-request').button("reset");
-        $('#code-data').css("display", "block");
-
-        var language = 'html';
-
-        pm.request.response.previewType = pm.settings.getSetting("previewType");
-
-        var responsePreviewType = 'html';
-
-        if (!_.isUndefined(contentType) && !_.isNull(contentType)) {
-            if (contentType.search(/json/i) !== -1 || contentType.search(/javascript/i) !== -1 || pm.settings.getSetting("languageDetection") === 'javascript') {
-                language = 'javascript';
-            }
-
-            $('#language').val(language);
-
-            if (contentType.search(/image/i) >= 0) {
-                responsePreviewType = 'image';
-
-                $('#response-as-code').css("display", "none");
-                $('#response-as-text').css("display", "none");
-                $('#response-as-image').css("display", "block");
-
-                var imgLink = pm.request.processUrl($('#url').val());
-
-                $('#response-formatting').css("display", "none");
-                $('#response-actions').css("display", "none");
-                $("#response-language").css("display", "none");
-                $("#response-as-preview").css("display", "none");
-                $("#response-pretty-modifiers").css("display", "none");
-                $("#response-as-image").html("<img src='" + imgLink + "'/>");
-
-                //TODO: Needs to be updated
-            }
-            else {
-                responsePreviewType = 'html';
-                pm.request.response.setFormat(language, response.text, pm.settings.getSetting("previewType"), true);
-            }
-        }
-        else {
-            if (pm.settings.getSetting("languageDetection") === 'javascript') {
-                language = 'javascript';
-            }
-            pm.request.response.setFormat(language, response.text, pm.settings.getSetting("previewType"), true);
-        }
-
-        pm.request.response.renderCookies(response.cookies);
-        if (responsePreviewType === "html") {
-            $("#response-as-preview").html("");
-
-            var cleanResponseText = pm.request.response.stripScriptTag(pm.request.response.text);
-            pm.filesystem.renderResponsePreview("response.html", cleanResponseText, "html", function (response_url) {
-                $("#response-as-preview").html("<iframe></iframe>");
-                $("#response-as-preview iframe").attr("src", response_url);
-            });
-        }
-
-        if (pm.request.method === "HEAD") {
-            pm.request.response.showHeaders()
-        }
-
-        if (pm.request.isFromCollection === true) {
-            $("#response-collection-request-actions").css("display", "block");
-        }
-        else {
-            $("#response-collection-request-actions").css("display", "none");
-        }
-
-        $("#response-sample-status").css("display", "block");
-
-        var r = pm.request.response;
-        r.time = response.time;
-        r.cookies = response.cookies;
-        r.headers = response.headers;
-        r.text = response.text;
-        r.responseCode = response.responseCode;
-
-        $("#response-samples").css("display", "block");
+    onFailedRequest: function(errorUrl) {
+        $('#connection-error-url').html("<a href='" + errorUrl + "' target='_blank'>" + errorUrl + "</a>");
+        this.showScreen("failed");
     },
 
     load:function (response) {
+        // TODO Should be in the view
         $("#response-sample-status").css("display", "none");
+
         if (response.readyState === 4) {
             //Something went wrong
             if (response.status === 0) {
                 var errorUrl = pm.envManager.getCurrentValue(pm.request.url);
+
+                // TODO Trigger fail event
                 $('#connection-error-url').html("<a href='" + errorUrl + "' target='_blank'>" + errorUrl + "</a>");
                 pm.request.response.showScreen("failed");
+
+                // TODO Should be set by the fail event
                 $('#submit-request').button("reset");
                 return false;
             }
 
+            // TODO Trigger this at the end
             pm.request.response.showScreen("success")
             pm.request.response.showBody();
 
@@ -280,14 +163,17 @@ var ResponseViewer = Backbone.View.extend({
             pm.request.response.time = diff;
             pm.request.response.responseCode = responseCode;
 
+            // TODO Trigger this in the response view
             $('#response-status').html(Handlebars.templates.item_response_code(responseCode));
             $('.response-code').popover({
                 trigger: "hover"
             });
 
             //This sets pm.request.response.headers
+            // TODO Some part in the view. Needs to be brought into the view
             pm.request.response.loadHeaders(response.getAllResponseHeaders());
 
+            // TODO Set this in the view
             $('.response-tabs li[data-section="headers"]').html("Headers (" + pm.request.response.headers.length + ")");
             $("#response-data").css("display", "block");
 
@@ -297,6 +183,7 @@ var ResponseViewer = Backbone.View.extend({
 
             var contentType = response.getResponseHeader("Content-Type");
 
+            // TODO Move this to the view
             $('#response').css("display", "block");
             $('#submit-request').button("reset");
             $('#code-data').css("display", "block");
@@ -307,13 +194,17 @@ var ResponseViewer = Backbone.View.extend({
 
             var responsePreviewType = 'html';
 
+            // TODO This needs to be thought about in more detail
             if (!_.isUndefined(contentType) && !_.isNull(contentType)) {
                 if (contentType.search(/json/i) !== -1 || contentType.search(/javascript/i) !== -1 || pm.settings.getSetting("languageDetection") === 'javascript') {
                     language = 'javascript';
                 }
 
+                // TODO This moves to the view
                 $('#language').val(language);
 
+                // TODO This needs to be moved to the view
+                // TODO Some part of this would be present in the request
                 if (contentType.search(/image/i) >= 0) {
                     responsePreviewType = 'image';
 
@@ -346,6 +237,7 @@ var ResponseViewer = Backbone.View.extend({
                     RAL.Queue.setMaxConnections(4);
                     RAL.Queue.start();
                 }
+                // TODO Some part of this would be moved to the request
                 else if (contentType.search(/pdf/i) >= 0 && response.responseRawDataType === "arraybuffer") {
                     responsePreviewType = 'pdf';
 
@@ -361,11 +253,13 @@ var ResponseViewer = Backbone.View.extend({
                     $("#response-as-preview").html("");
                     $("#response-as-preview").css("display", "block");
                     $("#response-pretty-modifiers").css("display", "none");
+
                     pm.filesystem.renderResponsePreview("response.pdf", responseData, "pdf", function (response_url) {
                         $("#response-as-preview").html("<iframe src='" + response_url + "'/>");
                     });
 
                 }
+                // TODO This needs to be triggered through an event
                 else if (contentType.search(/pdf/i) >= 0 && response.responseRawDataType === "text") {
                     pm.request.send("arraybuffer");
                     return;
@@ -382,11 +276,13 @@ var ResponseViewer = Backbone.View.extend({
                 pm.request.response.setFormat(language, pm.request.response.text, pm.settings.getSetting("previewType"), true);
             }
 
+            // TODO Should be accessed using a model.get
             var url = pm.request.url;
 
             //Sets pm.request.response.cookies
             pm.request.response.loadCookies(url);
 
+            // TODO This needs to be moved to the view
             if (responsePreviewType === "html") {
                 $("#response-as-preview").html("");
                 var cleanResponseText = pm.request.response.stripScriptTag(pm.request.response.text);
@@ -396,6 +292,7 @@ var ResponseViewer = Backbone.View.extend({
                 });
             }
 
+            // TODO This needs to be moved to the view
             if (pm.request.method === "HEAD") {
                 pm.request.response.showHeaders()
             }
@@ -408,22 +305,47 @@ var ResponseViewer = Backbone.View.extend({
             }
         }
 
+        // TODO No need for this
         pm.layout.setLayout();
         return true;
     },
 
-    openInNewWindow:function (data) {
-        var name = "response.html";
-        var type = "text/html";
-        pm.filesystem.saveAndOpenFile(name, data, type, function () {
-        });
+    // TODO Move this to the model
+    clear:function () {
+        pm.request.response.startTime = 0;
+        pm.request.response.endTime = 0;
+        pm.request.response.totalTime = 0;
+        pm.request.response.status = "";
+        pm.request.response.time = 0;
+        pm.request.response.headers = {};
+        pm.request.response.mime = "";
+        pm.request.response.state.size = "normal";
+        pm.request.response.previewType = "parsed";
+
+        // TODO This can be triggered as an event
+        $('#response').css("display", "none");
     },
 
+    showScreen:function (screen) {
+        $("#response").css("display", "block");
+        var active_id = "#response-" + screen + "-container";
+        var all_ids = ["#response-waiting-container",
+            "#response-failed-container",
+            "#response-success-container"];
+        for (var i = 0; i < 3; i++) {
+            $(all_ids[i]).css("display", "none");
+        }
+
+        $(active_id).css("display", "block");
+    },    
+
+    // TODO This should go into the model
     setMode:function (mode) {
         var text = pm.request.response.text;
         pm.request.response.setFormat(mode, text, pm.settings.getSetting("previewType"), true);
     },
 
+    // TODO This should go into the model
     stripScriptTag:function (text) {
         var re = /<script\b[^>]*>([\s\S]*?)<\/script>/gm;
         text = text.replace(re, "");
@@ -433,7 +355,10 @@ var ResponseViewer = Backbone.View.extend({
 
 var ResponseBodyViewer = Backbone.View.extend({
     initialize: function() {
-
+        this.responseBodyPrettyViewer = new ResponseBodyPrettyViewer({model: this.model});
+        this.responseBodyRawViewer = new ResponseBodyRawViewer({model: this.model});        
+        this.responseBodyImageViewer = new ResponseBodyImageViewer({model: this.model});
+        this.responseBodyIframeViewer = new ResponseBodyIframeViewer({model: this.model});
     },
 
     setFormat:function (language, response, format, forceCreate) {
@@ -457,6 +382,7 @@ var ResponseBodyViewer = Backbone.View.extend({
 
         $('#response-language').css("display", "block");
         $('#response-language a').removeClass("active");
+
         //Use prettyprint here instead of stringify
         if (language === 'javascript') {
             try {
@@ -551,8 +477,6 @@ var ResponseBodyViewer = Backbone.View.extend({
             $('#response-as-preview').css("display", "block");
             $('#response-pretty-modifiers').css("display", "none");
         }
-
-
     },
 
     showHeaders:function () {
@@ -578,7 +502,25 @@ var ResponseBodyViewer = Backbone.View.extend({
         $('#response-headers-container').css("display", "none");
         $('#response-cookies-container').css("display", "block");
     },
+    
+    loadImage: function(url) {
+        var remoteImage = new RAL.RemoteImage({
+            priority: 0,
+            src: imgLink,
+            headers: pm.request.getXhrHeaders()
+        });
 
+        remoteImage.addEventListener('loaded', function(remoteImage) {
+        });
+
+        $("#response-as-image").html("");
+        var container = document.querySelector('#response-as-image');
+        container.appendChild(remoteImage.element);
+
+        RAL.Queue.add(remoteImage);
+        RAL.Queue.setMaxConnections(4);
+        RAL.Queue.start();
+    },
 
     changePreviewType:function (newType) {
         if (pm.request.response.previewType === newType) {
@@ -674,6 +616,12 @@ var ResponseBodyImageViewer = Backbone.View.extend({
     }
 });
 
+var ResponseBodyIframeViewer = Backbone.View.extend({
+    initialize: function() {
+
+    }
+});
+
 var ResponseCookieViewer = Backbone.View.extend({
     initialize: function() {
 
@@ -732,6 +680,7 @@ var ResponseHeaderViewer = Backbone.View.extend({
     },
 
     loadHeaders:function (data) {
+        // TODO Set this in the model
         pm.request.response.headers = pm.request.unpackResponseHeaders(data);
 
         if(pm.settings.getSetting("usePostmanProxy") === true) {
@@ -746,6 +695,8 @@ var ResponseHeaderViewer = Backbone.View.extend({
         }
 
         $('#response-headers').html("");
+
+        // TODO Set this in the model
         pm.request.response.headers = _.sortBy(pm.request.response.headers, function (header) {
             return header.name;
         });
@@ -760,6 +711,5 @@ var ResponseHeaderViewer = Backbone.View.extend({
 
 var ResponseMetaViewer = Backbone.View.extend({
     initialize: function() {
-
     }
 });

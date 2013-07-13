@@ -1,6 +1,7 @@
 var RequestEditor = Backbone.View.extend({
     initialize: function() {
         var model = this.model;
+        var responseModel = model.get("response");
         var view = this;
         var body = model.get("body");
 
@@ -15,6 +16,7 @@ var RequestEditor = Backbone.View.extend({
 
         model.on("loadRequest", this.onLoadRequest, this);
         model.on("sentRequest", this.onSentRequest, this);
+        responseModel.on("failedRequest", this.onFailedRequest, this);
 
         this.on("send", this.onSend, this);
 
@@ -68,7 +70,12 @@ var RequestEditor = Backbone.View.extend({
     },
 
     onSentRequest: function() {
+        console.log("Set button as loading");
         $('#submit-request').button("loading");
+    },
+
+    onFailedRequest: function() {
+        $('#submit-request').button("reset");
     },
 
     onLoadRequest: function(m) {
