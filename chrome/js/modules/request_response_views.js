@@ -10,6 +10,7 @@ var ResponseViewer = Backbone.View.extend({
         this.responseMetaViewer = new ResponseMetaViewer({model: this.model});
 
         responseModel.on("failedRequest", this.onFailedRequest, this);
+        responseModel.on("loadResponse", this.load, this);
 
         $('#response-body-toggle').on("click", function () {
             view.toggleBodySize();
@@ -98,216 +99,122 @@ var ResponseViewer = Backbone.View.extend({
         this.showScreen("failed");
     },
 
-    load:function (response) {
-        // TODO Should be in the view
-        $("#response-sample-status").css("display", "none");
+    load:function () {
+        var model = this.model;
+        var response = model.get("response");
+        var headers = response.get("headers");
+        var time = response.get("time");
 
-        if (response.readyState === 4) {
-            //Something went wrong
-            if (response.status === 0) {
-                var errorUrl = pm.envManager.getCurrentValue(pm.request.url);
+        var previewType = response.get("previewType");
+        var language = response.get("language");
+        var responseRawDataType = response.get("rawDataType");
 
-                // TODO Trigger fail event
-                $('#connection-error-url').html("<a href='" + errorUrl + "' target='_blank'>" + errorUrl + "</a>");
-                pm.request.response.showScreen("failed");
+        $("#response-sample-status").css("display", "none");                    
+        
+        this.showScreen("success")
+        this.showBody();
+        
+        $('#response-status').html(Handlebars.templates.item_response_code(response.get("responseCode"));
+        $('.response-code').popover({
+            trigger: "hover"
+        });
+        
+        $('.response-tabs li[data-section="headers"]').html("Headers (" + headers.length + ")");
+        $("#response-data").css("display", "block");
 
-                // TODO Should be set by the fail event
-                $('#submit-request').button("reset");
-                return false;
-            }
+        $("#loader").css("display", "none");
 
-            // TODO Trigger this at the end
-            pm.request.response.showScreen("success")
-            pm.request.response.showBody();
+        $('#response-time .data').html(time + " ms");
+        
+        $('#response').css("display", "block");
+        $('#submit-request').button("reset");
+        $('#code-data').css("display", "block");
 
-            var responseCodeName;
-            var responseCodeDetail;
+                
+        // TODO This moves to the view
+        $('#language').val(language);
 
-            if ("statusText" in response) {
-                responseCodeName = response.statusText;
-                responseCodeDetail = "";
+        // TODO This needs to be moved to the view
+        // TODO Some part of this would be present in the request
+        if (previewType === "image") {
+            $('#response-as-code').css("display", "none");
+            $('#response-as-text').css("display", "none");
+            $('#response-as-image').css("display", "block");
 
-                if (response.status in httpStatusCodes) {
-                    responseCodeDetail = httpStatusCodes[response.status]['detail'];
-                }
-            }
-            else {
-                if (response.status in httpStatusCodes) {
-                    responseCodeName = httpStatusCodes[response.status]['name'];
-                    responseCodeDetail = httpStatusCodes[response.status]['detail'];
-                }
-                else {
-                    responseCodeName = "";
-                    responseCodeDetail = "";
-                }
-            }
+            var imgLink = request.get("url");
 
-            var responseCode = {
-                'code':response.status,
-                'name':responseCodeName,
-                'detail':responseCodeDetail
-            };
+            $('#response-formatting').css("display", "none");
+            $('#response-actions').css("display", "none");
+            $("#response-language").css("display", "none");
+            $("#response-as-preview").css("display", "none");
+            $("#response-copy-container").css("display", "none");
+            $("#response-pretty-modifiers").css("display", "none");
 
-            var responseData;
-            if (response.responseRawDataType === "arraybuffer") {
-                responseData = response.response;
-            }
-            else {
-                pm.request.response.text = response.responseText;
-            }
-
-            pm.request.endTime = new Date().getTime();
-
-            var diff = pm.request.getTotalTime();
-
-            pm.request.response.time = diff;
-            pm.request.response.responseCode = responseCode;
-
-            // TODO Trigger this in the response view
-            $('#response-status').html(Handlebars.templates.item_response_code(responseCode));
-            $('.response-code').popover({
-                trigger: "hover"
+            var remoteImage = new RAL.RemoteImage({
+                priority: 0,
+                src: imgLink,
+                headers: request.getXhrHeaders()
             });
 
-            //This sets pm.request.response.headers
-            // TODO Some part in the view. Needs to be brought into the view
-            pm.request.response.loadHeaders(response.getAllResponseHeaders());
+            remoteImage.addEventListener('loaded', function(remoteImage) {
+            });
 
-            // TODO Set this in the view
-            $('.response-tabs li[data-section="headers"]').html("Headers (" + pm.request.response.headers.length + ")");
-            $("#response-data").css("display", "block");
+            $("#response-as-image").html("");
+            var container = document.querySelector('#response-as-image');
+            container.appendChild(remoteImage.element);
 
-            $("#loader").css("display", "none");
+            RAL.Queue.add(remoteImage);
+            RAL.Queue.setMaxConnections(4);
+            RAL.Queue.start();
+        }
+        // TODO Some part of this would be moved to the request
+        else if (previewType === "pdf" && responseRawDataType === "arraybuffer") {                
+            // Hide everything else
+            $('#response-as-code').css("display", "none");
+            $('#response-as-text').css("display", "none");
+            $('#response-as-image').css("display", "none");
+            $('#response-formatting').css("display", "none");
+            $('#response-actions').css("display", "none");
+            $("#response-language").css("display", "none");
+            $("#response-copy-container").css("display", "none");
 
-            $('#response-time .data').html(diff + " ms");
+            $("#response-as-preview").html("");
+            $("#response-as-preview").css("display", "block");
+            $("#response-pretty-modifiers").css("display", "none");
 
-            var contentType = response.getResponseHeader("Content-Type");
+            pm.filesystem.renderResponsePreview("response.pdf", responseData, "pdf", function (response_url) {
+                $("#response-as-preview").html("<iframe src='" + response_url + "'/>");
+            });
 
-            // TODO Move this to the view
-            $('#response').css("display", "block");
-            $('#submit-request').button("reset");
-            $('#code-data').css("display", "block");
-
-            var language = 'html';
-
-            pm.request.response.previewType = pm.settings.getSetting("previewType");
-
-            var responsePreviewType = 'html';
-
-            // TODO This needs to be thought about in more detail
-            if (!_.isUndefined(contentType) && !_.isNull(contentType)) {
-                if (contentType.search(/json/i) !== -1 || contentType.search(/javascript/i) !== -1 || pm.settings.getSetting("languageDetection") === 'javascript') {
-                    language = 'javascript';
-                }
-
-                // TODO This moves to the view
-                $('#language').val(language);
-
-                // TODO This needs to be moved to the view
-                // TODO Some part of this would be present in the request
-                if (contentType.search(/image/i) >= 0) {
-                    responsePreviewType = 'image';
-
-                    $('#response-as-code').css("display", "none");
-                    $('#response-as-text').css("display", "none");
-                    $('#response-as-image').css("display", "block");
-                    var imgLink = pm.request.processUrl($('#url').val());
-
-                    $('#response-formatting').css("display", "none");
-                    $('#response-actions').css("display", "none");
-                    $("#response-language").css("display", "none");
-                    $("#response-as-preview").css("display", "none");
-                    $("#response-copy-container").css("display", "none");
-                    $("#response-pretty-modifiers").css("display", "none");
-
-                    var remoteImage = new RAL.RemoteImage({
-                        priority: 0,
-                        src: imgLink,
-                        headers: pm.request.getXhrHeaders()
-                    });
-
-                    remoteImage.addEventListener('loaded', function(remoteImage) {
-                    });
-
-                    $("#response-as-image").html("");
-                    var container = document.querySelector('#response-as-image');
-                    container.appendChild(remoteImage.element);
-
-                    RAL.Queue.add(remoteImage);
-                    RAL.Queue.setMaxConnections(4);
-                    RAL.Queue.start();
-                }
-                // TODO Some part of this would be moved to the request
-                else if (contentType.search(/pdf/i) >= 0 && response.responseRawDataType === "arraybuffer") {
-                    responsePreviewType = 'pdf';
-
-                    // Hide everything else
-                    $('#response-as-code').css("display", "none");
-                    $('#response-as-text').css("display", "none");
-                    $('#response-as-image').css("display", "none");
-                    $('#response-formatting').css("display", "none");
-                    $('#response-actions').css("display", "none");
-                    $("#response-language").css("display", "none");
-                    $("#response-copy-container").css("display", "none");
-
-                    $("#response-as-preview").html("");
-                    $("#response-as-preview").css("display", "block");
-                    $("#response-pretty-modifiers").css("display", "none");
-
-                    pm.filesystem.renderResponsePreview("response.pdf", responseData, "pdf", function (response_url) {
-                        $("#response-as-preview").html("<iframe src='" + response_url + "'/>");
-                    });
-
-                }
-                // TODO This needs to be triggered through an event
-                else if (contentType.search(/pdf/i) >= 0 && response.responseRawDataType === "text") {
-                    pm.request.send("arraybuffer");
-                    return;
-                }
-                else {
-                    responsePreviewType = 'html';
-                    pm.request.response.setFormat(language, pm.request.response.text, pm.settings.getSetting("previewType"), true);
-                }
-            }
-            else {
-                if (pm.settings.getSetting("languageDetection") === 'javascript') {
-                    language = 'javascript';
-                }
-                pm.request.response.setFormat(language, pm.request.response.text, pm.settings.getSetting("previewType"), true);
-            }
-
-            // TODO Should be accessed using a model.get
-            var url = pm.request.url;
-
-            //Sets pm.request.response.cookies
-            pm.request.response.loadCookies(url);
-
-            // TODO This needs to be moved to the view
-            if (responsePreviewType === "html") {
-                $("#response-as-preview").html("");
-                var cleanResponseText = pm.request.response.stripScriptTag(pm.request.response.text);
-                pm.filesystem.renderResponsePreview("response.html", cleanResponseText, "html", function (response_url) {
-                    $("#response-as-preview").html("<iframe></iframe>");
-                    $("#response-as-preview iframe").attr("src", response_url);
-                });
-            }
-
-            // TODO This needs to be moved to the view
-            if (pm.request.method === "HEAD") {
-                pm.request.response.showHeaders()
-            }
-
-            if (pm.request.isFromCollection === true) {
-                $("#response-collection-request-actions").css("display", "block");
-            }
-            else {
-                $("#response-collection-request-actions").css("display", "none");
-            }
+        }
+        // TODO This needs to be triggered through an event
+        else if (previewType === "pdf" && responseRawDataType === "text") {
+            
+        }
+        else {
+            this.setFormat(language, pm.request.response.text, pm.settings.getSetting("previewType"), true);
+        }        
+        
+        if (previewType === "html") {
+            $("#response-as-preview").html("");
+            var cleanResponseText = this.stripScriptTag(response.get("text"));
+            pm.filesystem.renderResponsePreview("response.html", cleanResponseText, "html", function (response_url) {
+                $("#response-as-preview").html("<iframe></iframe>");
+                $("#response-as-preview iframe").attr("src", response_url);
+            });
+        }
+        
+        if (request.get("method") === "HEAD") {
+            this.showHeaders()
         }
 
-        // TODO No need for this
-        pm.layout.setLayout();
-        return true;
+        if (request.get("isFromCollection") === true) {
+            $("#response-collection-request-actions").css("display", "block");
+        }
+        else {
+            $("#response-collection-request-actions").css("display", "none");
+        }
+        
     },
 
     // TODO Move this to the model
@@ -359,6 +266,7 @@ var ResponseBodyViewer = Backbone.View.extend({
         this.responseBodyRawViewer = new ResponseBodyRawViewer({model: this.model});        
         this.responseBodyImageViewer = new ResponseBodyImageViewer({model: this.model});
         this.responseBodyIframeViewer = new ResponseBodyIframeViewer({model: this.model});
+        this.responseBodyPDFViewer = new responseBodyPDFViewer({model: this.model});
     },
 
     setFormat:function (language, response, format, forceCreate) {
@@ -502,7 +410,7 @@ var ResponseBodyViewer = Backbone.View.extend({
         $('#response-headers-container').css("display", "none");
         $('#response-cookies-container').css("display", "block");
     },
-    
+
     loadImage: function(url) {
         var remoteImage = new RAL.RemoteImage({
             priority: 0,
@@ -611,6 +519,12 @@ var ResponseBodyRawViewer = Backbone.View.extend({
 });
 
 var ResponseBodyImageViewer = Backbone.View.extend({
+    initialize: function() {
+
+    }
+});
+
+var ResponseBodyPDFViewer = Backbone.View.extend({
     initialize: function() {
 
     }

@@ -96,17 +96,34 @@ var Response = Backbone.Model.extend({
         */
     },
 
+    doesContentTypeExist: function(contentType) {
+        return (!_.isUndefined(contentType) && !_.isNull(contentType))
+    },
+
+    isContentTypeJavascript: function(contentType) {
+        return (contentType.search(/json/i) !== -1 || contentType.search(/javascript/i) !== -1 || pm.settings.getSetting("languageDetection") === 'javascript');
+    },
+
+    isContentTypeImage: function(contentType) {
+        return (contentType.search(/image/i) >= 0);
+    },
+
+    isContentTypePDF: function(contentType) {
+        return (contentType.search(/pdf/i) >= 0);
+    },
+
     // Renders the response from a request
     // Called with this = request
     load:function (response) {        
         var request = this;
-        var model = this.get("response");
+        var model = request.get("response");
 
         if (response.readyState === 4) {
             //Something went wrong
             if (response.status === 0) {
                 var errorUrl = pm.envManager.getCurrentValue(request.get("url"));
-                model.trigger("failedRequest", errorUrl);                                
+                model.trigger("failedRequest", errorUrl);        
+                return;                        
             }
             else {
                 var url = request.get("url");
@@ -122,19 +139,20 @@ var Response = Backbone.Model.extend({
                 var previewType = pm.settings.getSetting("previewType");
                 var responsePreviewType = 'html';                
                 
-                if (!_.isUndefined(contentType) && !_.isNull(contentType)) {
-                    if (contentType.search(/json/i) !== -1 || contentType.search(/javascript/i) !== -1 || pm.settings.getSetting("languageDetection") === 'javascript') {
+                if (model.doesContentTypeExist(contentType)) {
+                    if (model.isContentTypeJavascript(contentType)) {
                         language = 'javascript';
                     }
 
-                    if (contentType.search(/image/i) >= 0) {                        
+                    if (model.isContentTypeImage(contentType)) {                        
                         responsePreviewType = 'image';
                     }                    
-                    else if (contentType.search(/pdf/i) >= 0 && response.responseRawDataType === "arraybuffer") {
+                    else if (model.isContentTypePDF(contentType) && response.responseRawDataType === "arraybuffer") {
                         responsePreviewType = 'pdf';                        
                     }                    
-                    else if (contentType.search(/pdf/i) >= 0 && response.responseRawDataType === "text") {                        
-                        // TODO Trigger new request                        
+                    else if (model.isContentTypePDF(contentType) && response.responseRawDataType === "text") {                        
+                        // TODO Trigger new request                  
+                        return;      
                     }
                     else {
                         responsePreviewType = 'html';                        
@@ -144,10 +162,14 @@ var Response = Backbone.Model.extend({
                     if (pm.settings.getSetting("languageDetection") === 'javascript') {
                         language = 'javascript';
                     }                    
+                    else {
+                        language = 'html';
+                    }
                 }
 
                 model.set("language", language);
                 model.set("previewType", responsePreviewType);
+                model.trigger("loadResponse", model);
             }                
         }
     },
