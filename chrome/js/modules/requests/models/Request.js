@@ -280,9 +280,10 @@ var Request = Backbone.Model.extend({
 
     getAsJson:function () {
         var body = this.get("body");
+        
         var request = {
             url: $('#url').val(),
-            data: body.get("dataAsObjects"), //TODO This should be available in the model itself, asObjects = true
+            data: body.get("data"), //TODO This should be available in the model itself, asObjects = true
             headers: this.getPackedHeaders(),
             dataMode: this.get("dataMode"),
             method: this.get("method"),
@@ -366,7 +367,9 @@ var Request = Backbone.Model.extend({
         pm.helpers.showRequestHelper("normal");
 
         this.set("url", request.url);
+
         body.set("data", request.body);
+
         this.set("isFromCollection", isFromCollection);
         this.set("isFromSample", isFromSample);
         this.set("method", request.method.toUpperCase());
@@ -651,7 +654,9 @@ var Request = Backbone.Model.extend({
         var url = this.encodeUrl(this.get("url"));
         var method = this.get("method").toUpperCase();
 
-        var originalData = body.get("dataAsObjects");
+        var originalData = body.get("data");
+
+        console.log("data = ", originalData);
 
         //Start setting up XHR
         var xhr = new XMLHttpRequest();

@@ -50,9 +50,6 @@ var RequestBody = Backbone.Model.extend({
             this.set("data", data);
         }
 
-
-        console.log(this.get("data"));
-
         this.trigger("dataLoaded", this);
     }
 });

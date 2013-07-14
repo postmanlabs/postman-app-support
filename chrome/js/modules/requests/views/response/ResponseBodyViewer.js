@@ -48,7 +48,9 @@ var ResponseBodyViewer = Backbone.View.extend({
             $("#response-pretty-modifiers").css("display", "none");            
         }       
         else if (previewType === "pdf" && responseRawDataType === "text") {           
-            // TODO Will trigger request            
+            // TODO Will trigger request           
+            // This would have updated the model already 
+            request.trigger("send", "arraybuffer");
         } 
         else {
             console.log("Show text");
@@ -56,12 +58,15 @@ var ResponseBodyViewer = Backbone.View.extend({
         }
     },
 
+    // TODO Refactor this
     displayTextResponse:function (language, response, format, forceCreate) {
         console.log(language, response, format, forceCreate);                
         var codeDataArea = document.getElementById("code-data");
         var codeDataWidth = $(document).width() - $('#sidebar').width() - 60;
         var foldFunc;
         var mode;
+        var lineWrapping;
+        var renderMode = mode;
 
         // $('#code-data').css("display", "block");        
         
@@ -83,8 +88,7 @@ var ResponseBodyViewer = Backbone.View.extend({
 
         $('#response-language').css("display", "block");
         $('#response-language a').removeClass("active");
-
-        //Use prettyprint here instead of stringify
+        
         if (language === 'javascript') {
             try {
                 if ('string' ===  typeof response && response.match(/^[\)\]\}]/)) {
@@ -111,7 +115,7 @@ var ResponseBodyViewer = Backbone.View.extend({
             mode = 'text';
         }
 
-        var lineWrapping;
+        
         if (pm.settings.getSetting("lineWrapping") === true) {
             $('#response-body-line-wrapping').addClass("active");
             lineWrapping = true;
@@ -121,8 +125,7 @@ var ResponseBodyViewer = Backbone.View.extend({
             lineWrapping = false;
         }
 
-        pm.editor.mode = mode;
-        var renderMode = mode;
+        pm.editor.mode = mode;        
 
         if ($.inArray(mode, ["javascript", "xml", "html"]) >= 0) {
             renderMode = "links";
