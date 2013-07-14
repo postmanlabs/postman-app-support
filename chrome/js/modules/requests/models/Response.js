@@ -14,6 +14,10 @@ var Response = Backbone.Model.extend({
         };
     },
 
+    initialize: function() {
+        console.log("Initialized response object", this.toJSON());
+    },  
+
     setResponseCode: function(response) {
         var responseCodeName;
         var responseCodeDetail;
@@ -48,7 +52,7 @@ var Response = Backbone.Model.extend({
 
     setResponseTime: function(startTime) {
         var endTime = new Date().getTime();
-        var diff = endTime = startTime;
+        var diff = endTime - startTime;
         this.set("time", diff);
     },
 
@@ -64,8 +68,9 @@ var Response = Backbone.Model.extend({
         this.set("rawDataType", response.responseRawDataType);
     },
 
+    // getAllResponseHeaders - Headers are separated by \n
     setHeaders: function(response) {
-        var headers = this.unpackResponseHeaders(data);
+        var headers = this.unpackResponseHeaders(response.getAllResponseHeaders());
 
         if(pm.settings.getSetting("usePostmanProxy") === true) {
             var count = headers.length;
@@ -82,6 +87,8 @@ var Response = Backbone.Model.extend({
         headers = _.sortBy(headers, function (header) {
             return header.name;
         });
+
+        console.log("Set headers as ", headers);
 
         this.set("headers", headers);
     },
@@ -116,9 +123,15 @@ var Response = Backbone.Model.extend({
     // Called with this = request
     load:function (response) {        
         var request = this;
-        var model = request.get("response");
+        var model = request.get("response");        
+
+        // TODO These need to be renamed something else
+        var presetPreviewType = pm.settings.getSetting("previewType");
+        var languageDetection = pm.settings.getSetting("languageDetection");
 
         if (response.readyState === 4) {
+            console.log("Request", request.toJSON());            
+
             //Something went wrong
             if (response.status === 0) {
                 var errorUrl = pm.envManager.getCurrentValue(request.get("url"));
@@ -135,8 +148,7 @@ var Response = Backbone.Model.extend({
 
                 var contentType = response.getResponseHeader("Content-Type");
                 var language = 'html';
-
-                var previewType = pm.settings.getSetting("previewType");
+                
                 var responsePreviewType = 'html';                
                 
                 if (model.doesContentTypeExist(contentType)) {
@@ -159,7 +171,7 @@ var Response = Backbone.Model.extend({
                     }
                 }
                 else {
-                    if (pm.settings.getSetting("languageDetection") === 'javascript') {
+                    if (languageDetection === 'javascript') {
                         language = 'javascript';
                     }                    
                     else {
@@ -169,7 +181,10 @@ var Response = Backbone.Model.extend({
 
                 model.set("language", language);
                 model.set("previewType", responsePreviewType);
+                model.set("state", {size: "normal"});
                 model.trigger("loadResponse", model);
+
+                console.log("Response", model.toJSON());
             }                
         }
     },
@@ -205,8 +220,4 @@ var Response = Backbone.Model.extend({
             return vars;
         }
     }
-});
-
-var ResponseBody = Backbone.Model.extend({
-
 });

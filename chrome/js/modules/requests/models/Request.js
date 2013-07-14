@@ -39,6 +39,7 @@ var Request = Backbone.Model.extend({
         this.on("readyToLoadRequest", this.onReadyToLoadRequest, this);
     },
 
+    // TODO This can be set by the view directly. Why should the model wait for the view to initialize?
     onReadyToLoadRequest: function() {
         var lastRequest = pm.settings.getSetting("lastRequest");
 
@@ -57,6 +58,7 @@ var Request = Backbone.Model.extend({
         this.startNew();
     },
 
+    // TODO Either text or arraybuffer
     onSend: function(type) {
         console.log("Triggered onSend", this);
         this.send(type);
@@ -107,13 +109,11 @@ var Request = Backbone.Model.extend({
         this.set("totalTime", totalTime);
         return totalTime;
     },
-
-    // Fixed
+    
     getPackedHeaders:function () {
         return this.packHeaders(this.get("headers"));
     },
-
-    // Fixed
+    
     unpackResponseHeaders:function (data) {
         if (data === null || data === "") {
             return [];
@@ -145,8 +145,7 @@ var Request = Backbone.Model.extend({
             return vars;
         }
     },
-
-    // Fixed
+    
     unpackHeaders:function (data) {
         if (data === null || data === "") {
             return [];
@@ -325,6 +324,7 @@ var Request = Backbone.Model.extend({
         return JSON.stringify(request);
     },
 
+    // TODO Needs to be refactored
     startNew:function () {
         var body = this.get("body");
         var response = this.get("response");
@@ -517,8 +517,8 @@ var Request = Backbone.Model.extend({
         this.set("startTime", new Date().getTime());
     },
 
+    // TODO Do not modify the response object headers value
     getXhrHeaders: function() {
-        //TODO Make sure this works even while editors are being edited
         var headers = this.get("headers");
         if(pm.settings.getSetting("sendNoCacheHeader") === true) {
             var noCacheHeader = {
@@ -718,6 +718,7 @@ var Request = Backbone.Model.extend({
             xhr.send();
         }
 
+        this.unset("xhr");
         this.set("xhr", xhr);
 
         //Save the request
@@ -778,63 +779,4 @@ var Request = Backbone.Model.extend({
         $("#request-preview-content").html(requestPreview);
     }
 
-});
-
-var RequestBody = Backbone.Model.extend({
-    defaults: function() {
-        return {
-            data: "",
-            mode:"params",
-            isEditorInitialized:false,
-            codeMirror:false,
-            rawEditorType:"editor",
-            bodyParams: {}
-        };
-    },
-
-    initialize: function() {
-
-    },
-
-    // Fixed
-    getBodyParamString:function (params) {
-        var paramsLength = params.length;
-        var paramArr = [];
-        for (var i = 0; i < paramsLength; i++) {
-            var p = params[i];
-            if (p.key && p.key !== "") {
-                paramArr.push(p.key + "=" + p.value);
-            }
-        }
-        return paramArr.join('&');
-    },
-
-    getDataMode:function () {
-        return this.get("mode");
-    },
-
-    loadData:function (mode, data, asObjects) {
-        console.log("Load body", mode, data, asObjects);
-
-        this.set("mode", mode);
-        this.set("asObjects", asObjects);
-
-        if (mode !== "raw") {
-            if (!asObjects) {
-                var params = getBodyVars(data, false);
-                this.set("data", params);
-            }
-            else {
-                this.set("data", data);
-            }
-        }
-        else {
-            this.set("data", data);
-        }
-
-
-        console.log(this.get("data"));
-
-        this.trigger("dataLoaded", this);
-    }
 });

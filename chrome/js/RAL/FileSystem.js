@@ -140,13 +140,13 @@ RAL.FileSystem = (function() {
 
       //Add the cache directory
       dirPath = ["cache"].concat(dirPath);
-      consoe.log("Setting the directory path");
+      console.log("Setting the directory path");
       console.log("Directory path is ", dirPath);
 
       // create the directories all the way
       // down to the path
       createDir(root, dirPath, function() {
-        consoe.log("Created the directories");
+        console.log("Created the directories");
         // now get a reference to our file, create it
         // if necessary
         root.getFile(filePath, {create: true}, function(fileEntry) {

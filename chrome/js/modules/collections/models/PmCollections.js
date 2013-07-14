@@ -1,21 +1,3 @@
-var PmCollectionRequest = Backbone.Model.extend({
-    defaults: function() {
-        return {
-        };
-    }
-});
-
-var PmCollection = Backbone.Model.extend({
-    defaults: function() {
-        return {
-            "id": "",
-            "order": [],
-            "requests": [],
-            "timestamp": 0
-        };
-    }
-});
-
 var PmCollections = Backbone.Collection.extend({
     areLoaded: false,
 
