@@ -135,7 +135,7 @@ var Response = Backbone.Model.extend({
             //Something went wrong
             if (response.status === 0) {
                 var errorUrl = pm.envManager.getCurrentValue(request.get("url"));
-                model.trigger("failedRequest", errorUrl);        
+                model.trigger("failedRequest", errorUrl);
                 return;                        
             }
             else {
@@ -183,8 +183,6 @@ var Response = Backbone.Model.extend({
                 model.set("previewType", responsePreviewType);
                 model.set("state", {size: "normal"});
                 model.trigger("loadResponse", model);
-
-                console.log("Response", model.toJSON());
             }                
         }
     },
@@ -219,5 +217,5 @@ var Response = Backbone.Model.extend({
 
             return vars;
         }
-    }
+    }    
 });

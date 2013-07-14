@@ -1,6 +1,8 @@
 var ResponseCookieViewer = Backbone.View.extend({
     initialize: function() {
-
+        var model = this.model;
+        var response = model.get("response");
+        response.on("finishedLoadResponse", this.load, this);
     },
 
     renderCookies:function (cookies) {

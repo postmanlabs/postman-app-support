@@ -114,38 +114,6 @@ var Request = Backbone.Model.extend({
         return this.packHeaders(this.get("headers"));
     },
     
-    unpackResponseHeaders:function (data) {
-        if (data === null || data === "") {
-            return [];
-        }
-        else {
-            var vars = [], hash;
-            var hashes = data.split('\n');
-            var header;
-
-            for (var i = 0; i < hashes.length; i++) {
-                hash = hashes[i];
-                var loc = hash.search(':');
-
-                if (loc !== -1) {
-                    var name = $.trim(hash.substr(0, loc));
-                    var value = $.trim(hash.substr(loc + 1));
-
-                    header = {
-                        "name":name,
-                        "key":name,
-                        "value":value,
-                        "description":headerDetails[name.toLowerCase()]
-                    };
-
-                    vars.push(header);
-                }
-            }
-
-            return vars;
-        }
-    },
-    
     unpackHeaders:function (data) {
         if (data === null || data === "") {
             return [];
@@ -516,10 +484,9 @@ var Request = Backbone.Model.extend({
         this.set("url", this.processUrl($('#url').val()));
         this.set("startTime", new Date().getTime());
     },
-
-    // TODO Do not modify the response object headers value
+    
     getXhrHeaders: function() {
-        var headers = this.get("headers");
+        var headers = _.clone(this.get("headers"));
         if(pm.settings.getSetting("sendNoCacheHeader") === true) {
             var noCacheHeader = {
                 key: "Cache-Control",
@@ -777,6 +744,12 @@ var Request = Backbone.Model.extend({
         }
 
         $("#request-preview-content").html(requestPreview);
-    }
+    },
 
+    // TODO This should go into the model
+    stripScriptTag:function (text) {
+        var re = /<script\b[^>]*>([\s\S]*?)<\/script>/gm;
+        text = text.replace(re, "");
+        return text;
+    }
 });

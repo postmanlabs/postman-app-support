@@ -938,6 +938,9 @@ input[type="file"] {
 #response-data-container {
   background-color: #fff; }
 
+#response-sample-status {
+  display: none; }
+
 #response-editors {
   margin-top: -5px;
   margin-left: -10px;

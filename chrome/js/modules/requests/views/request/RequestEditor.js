@@ -16,7 +16,9 @@ var RequestEditor = Backbone.View.extend({
 
         model.on("loadRequest", this.onLoadRequest, this);
         model.on("sentRequest", this.onSentRequest, this);
+
         responseModel.on("failedRequest", this.onFailedRequest, this);
+        responseModel.on("finishedLoadResponse", this.onFinishedLoadResponse, this);
 
         this.on("send", this.onSend, this);
 
@@ -75,6 +77,10 @@ var RequestEditor = Backbone.View.extend({
     },
 
     onFailedRequest: function() {
+        $('#submit-request').button("reset");
+    },
+
+    onFinishedLoadResponse: function() {
         $('#submit-request').button("reset");
     },
 

@@ -1,30 +1,85 @@
 var ResponseBodyViewer = Backbone.View.extend({
     initialize: function() {
+        var model = this.model;
+        var response = model.get("response");
+        response.on("finishedLoadResponse", this.load, this);
+
         this.responseBodyPrettyViewer = new ResponseBodyPrettyViewer({model: this.model});
-        this.responseBodyRawViewer = new ResponseBodyRawViewer({model: this.model});        
-        this.responseBodyImageViewer = new ResponseBodyImageViewer({model: this.model});
-        this.responseBodyIframeViewer = new ResponseBodyIframeViewer({model: this.model});
+        this.responseBodyRawViewer = new ResponseBodyRawViewer({model: this.model});    
+        this.responseBodyIFrameViewer = new ResponseBodyIFrameViewer({model: this.model});
+
+        this.responseBodyImageViewer = new ResponseBodyImageViewer({model: this.model});        
         this.responseBodyPDFViewer = new ResponseBodyPDFViewer({model: this.model});
     },
 
-    setFormat:function (language, response, format, forceCreate) {
+    load: function() {
+        var model = this.model;
+        var request = model;
+        var response = model.get("response");
+        var previewType = response.get("previewType");
+        var responseRawDataType = response.get("rawDataType");
+        var presetPreviewType = pm.settings.getSetting("previewType");
+        var language = response.get("language");
+        var text = response.get("text");        
+
+        $('#response-data-container').css("display", "block");
+
+        if (previewType === "image") {
+            $('#response-as-code').css("display", "none");
+            $('#response-as-text').css("display", "none");                        
+
+            $('#response-formatting').css("display", "none");
+            $('#response-actions').css("display", "none");
+            $("#response-language").css("display", "none");
+            $("#response-as-preview").css("display", "none");
+            $("#response-copy-container").css("display", "none");
+            $("#response-pretty-modifiers").css("display", "none");
+        }        
+        else if (previewType === "pdf" && responseRawDataType === "arraybuffer") {           
+            // Hide everything else
+            $('#response-as-code').css("display", "none");
+            $('#response-as-text').css("display", "none");
+            $('#response-as-image').css("display", "none");
+
+            $('#response-formatting').css("display", "none");
+            $('#response-actions').css("display", "none");
+            $("#response-language").css("display", "none");
+            $("#response-copy-container").css("display", "none");            
+            $("#response-pretty-modifiers").css("display", "none");            
+        }       
+        else if (previewType === "pdf" && responseRawDataType === "text") {           
+            // TODO Will trigger request            
+        } 
+        else {
+            console.log("Show text");
+            this.displayTextResponse(language, text, presetPreviewType, true);
+        }
+    },
+
+    displayTextResponse:function (language, response, format, forceCreate) {
+        console.log(language, response, format, forceCreate);                
+        var codeDataArea = document.getElementById("code-data");
+        var codeDataWidth = $(document).width() - $('#sidebar').width() - 60;
+        var foldFunc;
+        var mode;
+
+        // $('#code-data').css("display", "block");        
+        
         //Keep CodeMirror div visible otherwise the response gets cut off
         $("#response-copy-container").css("display", "block");
+        
         $('#response-as-code').css("display", "block");
         $('#response-as-text').css("display", "none");
-
         $('#response-as-image').css("display", "none");
+
         $('#response-formatting').css("display", "block");
         $('#response-actions').css("display", "block");
 
         $('#response-formatting a').removeClass('active');
         $('#response-formatting a[data-type="' + format + '"]').addClass('active');
+
         $('#code-data').css("display", "none");
         $('#code-data').attr("data-mime", language);
-
-        var codeDataArea = document.getElementById("code-data");
-        var foldFunc;
-        var mode;
 
         $('#response-language').css("display", "block");
         $('#response-language a').removeClass("active");
@@ -68,11 +123,12 @@ var ResponseBodyViewer = Backbone.View.extend({
 
         pm.editor.mode = mode;
         var renderMode = mode;
+
         if ($.inArray(mode, ["javascript", "xml", "html"]) >= 0) {
             renderMode = "links";
         }
 
-        if (!pm.editor.codeMirror || forceCreate) {
+        if (!pm.editor.codeMirror || forceCreate) {            
             $('#response .CodeMirror').remove();
             pm.editor.codeMirror = CodeMirror.fromTextArea(codeDataArea,
             {
@@ -87,6 +143,9 @@ var ResponseBodyViewer = Backbone.View.extend({
 
             var cm = pm.editor.codeMirror;
             cm.setValue(response);
+            cm.refresh();
+
+            console.log("Initializing CodeMirror", pm.editor.codeMirror);
         }
         else {
             pm.editor.codeMirror.setOption("onGutterClick", foldFunc);
@@ -101,7 +160,6 @@ var ResponseBodyViewer = Backbone.View.extend({
             $(window).scrollTop(0);
         }
 
-        //If the format is raw then switch
         if (format === "parsed") {
             $('#response-as-code').css("display", "block");
             $('#response-as-text').css("display", "none");
@@ -109,8 +167,7 @@ var ResponseBodyViewer = Backbone.View.extend({
             $('#response-pretty-modifiers').css("display", "block");
         }
         else if (format === "raw") {
-            $('#code-data-raw').val(response);
-            var codeDataWidth = $(document).width() - $('#sidebar').width() - 60;
+            $('#code-data-raw').val(response);            
             $('#code-data-raw').css("width", codeDataWidth + "px");
             $('#code-data-raw').css("height", "600px");
             $('#response-as-code').css("display", "none");
@@ -161,7 +218,7 @@ var ResponseBodyViewer = Backbone.View.extend({
         $('#response-formatting a').removeClass('active');
         $('#response-formatting a[data-type="' + previewType + '"]').addClass('active');        
 
-        if (newType === 'raw') {
+        if (previewType === 'raw') {
             $('#response-as-text').css("display", "block");
             $('#response-as-code').css("display", "none");
             $('#response-as-preview').css("display", "none");
@@ -171,7 +228,8 @@ var ResponseBodyViewer = Backbone.View.extend({
             $('#code-data-raw').css("height", "600px");
             $('#response-pretty-modifiers').css("display", "none");
         }
-        else if (newType === 'parsed') {
+        else if (previewType === 'parsed') {
+            console.log("Rendering parsed view");
             $('#response-as-text').css("display", "none");
             $('#response-as-code').css("display", "block");
             $('#response-as-preview').css("display", "none");
@@ -179,7 +237,7 @@ var ResponseBodyViewer = Backbone.View.extend({
             $('#response-pretty-modifiers').css("display", "block");
             pm.editor.codeMirror.refresh();
         }
-        else if (newType === 'preview') {
+        else if (previewType === 'preview') {
             $('#response-as-text').css("display", "none");
             $('#response-as-code').css("display", "none");
             $('#code-data').css("display", "none");
@@ -232,5 +290,22 @@ var ResponseBodyViewer = Backbone.View.extend({
         }
 
         response.set("state", state);
+    },    
+
+    toggleLineWrapping: function() {
+        pm.editor.toggleLineWrapping();
     },
+    
+    setMode:function (mode) {
+        var model = this.model;
+        var request = model;
+        var response = model.get("response");
+        var responseBody = response.get("body");
+
+        var text = response.get("text");
+
+        // TODO Make sure this is being stored properly
+        var previewType = pm.settings.getSetting("previewType");
+        this.displayTextResponse(mode, text, previewType, true);
+    }
 });

@@ -1,32 +1,19 @@
 var ResponseHeaderViewer = Backbone.View.extend({
     initialize: function() {
-
+        var model = this.model;
+        var response = model.get("response");
+        response.on("finishedLoadResponse", this.load, this);
     },
 
-    loadHeaders:function (data) {
-        // TODO Set this in the model
-        pm.request.response.headers = pm.request.unpackResponseHeaders(data);
+    load:function (data) {
+        var model = this.model;
+        var request = model;
+        var response = model.get("response");
+        var headers = response.get("headers");        
 
-        if(pm.settings.getSetting("usePostmanProxy") === true) {
-            var count = pm.request.response.headers.length;
-            for(var i = 0; i < count; i++) {
-                if(pm.request.response.headers[i].key === "Postman-Location") {
-                    pm.request.response.headers[i].key = "Location";
-                    pm.request.response.headers[i].name = "Location";
-                    break;
-                }
-            }
-        }
-
+        $('.response-tabs li[data-section="headers"]').html("Headers (" + headers.length + ")");
         $('#response-headers').html("");
-
-        // TODO Set this in the model
-        pm.request.response.headers = _.sortBy(pm.request.response.headers, function (header) {
-            return header.name;
-        });
-
-
-        $("#response-headers").append(Handlebars.templates.response_headers({"items":pm.request.response.headers}));
+        $("#response-headers").append(Handlebars.templates.response_headers({"items":headers}));
         $('.response-header-name').popover({
             trigger: "hover",
         });
