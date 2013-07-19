@@ -472,13 +472,13 @@ var PmCollections = Backbone.Collection.extend({
                 pmCollection.add(newCollection, {merge: true});
                 collectionRequest.collectionId = newCollection.id;
 
-                pm.indexedDB.addCollectionRequest(collectionRequest, function (req) {
-                    console.log("Added collcetion request to DB", req);
-
+                pm.indexedDB.addCollectionRequest(collectionRequest, function (req) {                                                            
+                    console.log("Added collection request to DB", req);
                     var c = pmCollection.get(collection.id);
                     c.get("requests").push(req);
-
                     pmCollection.trigger("addCollectionRequest", req);
+
+                    pm.request.loadRequestInEditor(req, true, false);
 
                     //TODO: Drive syncing will be done later
                     console.log("Send queue request after adding request for new collection");
@@ -489,8 +489,9 @@ var PmCollections = Backbone.Collection.extend({
         }
         else {
             collectionRequest.collectionId = collection.id;
-            console.log("Adding request to existing collection");
             pm.indexedDB.addCollectionRequest(collectionRequest, function (req) {
+                pm.request.loadRequestInEditor(req, true, false);
+
                 console.log("Added collcetion request to DB", req);
 
                 //Update collection's order element

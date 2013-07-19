@@ -22,13 +22,8 @@ var RequestEditor = Backbone.View.extend({
         this.on("send", this.onSend, this);
         this.on("preview", this.onPreview, this);
 
-        $("#update-request-in-collection").on("click", function () {
-            console.log("Update request in model");
-
-            //TODO Should trigger request to update body model
-            view.requestHeaderEditor.updateModel();
-            view.requestURLEditor.updateModel();
-            view.requestBodyEditor.updateModel();
+        $("#update-request-in-collection").on("click", function () {            
+            view.updateModel();
 
             var current = model.getAsObject();
             var collectionRequest = {
@@ -56,6 +51,7 @@ var RequestEditor = Backbone.View.extend({
         });
 
         $('#add-to-collection').on("click", function () {
+            view.updateModel();
             if (pm.collections.areLoaded === false) {
                 pm.collections.getAllCollections();
             }
@@ -105,21 +101,20 @@ var RequestEditor = Backbone.View.extend({
         $('#update-request-in-collection').css("display", "none");
     },
 
-    onSend: function() {
+    updateModel: function() {
         this.requestHeaderEditor.updateModel();
         this.requestURLEditor.updateModel();
         this.requestBodyEditor.updateModel();
+    },
 
+    onSend: function() {
+        this.updateModel();
         this.model.trigger("send", "text");
     },
 
     onPreview: function() {
-        this.requestHeaderEditor.updateModel();
-        this.requestURLEditor.updateModel();        
-        this.requestBodyEditor.updateModel();
-
+        this.updateModel();
         this.model.generatePreview();
-
         this.showPreview();
     },
 

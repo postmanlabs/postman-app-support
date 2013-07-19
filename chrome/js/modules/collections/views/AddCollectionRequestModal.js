@@ -45,25 +45,28 @@ var AddCollectionRequestModal = Backbone.View.extend({
         var existingCollectionId = $('#select-collection').val();
         var newCollection = $("#new-collection").val();
         var newRequestName = $('#new-request-name').val();
-        var newRequestDescription = $('#new-request-description').val();
+        var newRequestDescription = $('#new-request-description').val();        
+        var model = pm.request;
+        var body = model.get("body");
 
-        var url = $('#url').val();
+        var url = model.get("url");
         if (newRequestName === "") {
             newRequestName = url;
         }
 
         var collectionRequest = {};
         collectionRequest.id = guid();
-        collectionRequest.headers = pm.request.getPackedHeaders();
+        collectionRequest.headers = model.getPackedHeaders();
         collectionRequest.url = url;
-        collectionRequest.method = pm.request.method;
-        collectionRequest.data = pm.request.body.getData(true);
-        collectionRequest.dataMode = pm.request.dataMode;
+        collectionRequest.method = model.get("method");
+        collectionRequest.data = body.get("dataAsObjects");
+        collectionRequest.dataMode = body.get("dataMode");
         collectionRequest.name = newRequestName;
         collectionRequest.description = newRequestDescription;
         collectionRequest.time = new Date().getTime();
         collectionRequest.version = 2;
-        collectionRequest.responses = pm.request.responses;
+
+        collectionRequest.responses = [];
 
         var collection = {};
 
@@ -78,5 +81,4 @@ var AddCollectionRequestModal = Backbone.View.extend({
         this.model.addRequestToCollection(collectionRequest, collection);
         this.model.trigger("displayCollectionDetails", collectionRequest);
     }
-
 });
