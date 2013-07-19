@@ -96,6 +96,9 @@ var Environments = Backbone.Collection.extend({
     },
 
     importEnvironments:function (files) {
+        var environments = this;
+        console.log("Importing environments", files);
+
         // Loop through the FileList
         for (var i = 0, f; f = files[i]; i++) {
             var reader = new FileReader();
@@ -107,7 +110,10 @@ var Environments = Backbone.Collection.extend({
                     var data = e.currentTarget.result;
                     var environment = JSON.parse(data);
 
-                    pm.indexedDB.environments.addEnvironment(environment, function () {
+                    pm.indexedDB.environments.addEnvironment(environment, function () {                        
+                        var envModel = new Environment(environment);
+                        environments.add(envModel);
+                        environments.trigger("importedEnvironment", environment);                        
                         //TODO: Drive syncing here
                         // pm.envManager.drive.queueEnvironmentPost(environment);
                     });

@@ -10,6 +10,8 @@ var EnvironmentManagerModal = Backbone.View.extend({
         this.environments.on('reset', this.render, this);
         this.environments.on('add', this.render, this);
         this.environments.on('remove', this.render, this);
+        this.environments.on("importedEnvironment", this.onImportedEnvironment, this);
+
         this.globals.on('change', this.render, this);
 
         var environments = this.environments;
@@ -52,6 +54,7 @@ var EnvironmentManagerModal = Backbone.View.extend({
 
         $('#environment-files-input').on('change', function (event) {
             var files = event.target.files;
+            console.log("Start importEnvironments");
             environments.importEnvironments(files);
             $('#environment-files-input').val("");
         });
@@ -116,6 +119,17 @@ var EnvironmentManagerModal = Backbone.View.extend({
         $('#globals-keyvaleditor').keyvalueeditor('init', params);
 
         this.render();
+    },
+
+    onImportedEnvironment: function(environment) {
+        noty(
+        {
+            type:'success',
+            dismissQueue: true,
+            text:'Imported ' + environment.name,
+            layout:'topCenter',
+            timeout: 2500
+        });
     },
 
     showEditor:function (id) {
