@@ -25,6 +25,7 @@ var RequestHeaderEditor = Backbone.View.extend({
             onDeleteRow:function () {
                 var headers = view.getHeaderEditorParams();
                 $('#headers-keyvaleditor-actions-open .headers-count').html(headers.length);
+                model.set(headers, { silent: true });
             },
 
             onFocusElement:function () {
@@ -48,11 +49,13 @@ var RequestHeaderEditor = Backbone.View.extend({
                 
                 var headers = view.getHeaderEditorParams();
                 $('#headers-keyvaleditor-actions-open .headers-count').html(headers.length);
+                model.set(headers, { silent: true });
             },
 
             onReset:function () {
-                var hs = $('#headers-keyvaleditor').keyvalueeditor('getValues');
-                $('#headers-keyvaleditor-actions-open .headers-count').html(hs.length);
+                var headers = $('#headers-keyvaleditor').keyvalueeditor('getValues');
+                $('#headers-keyvaleditor-actions-open .headers-count').html(headers.length);
+                model.set(headers, { silent: true });
             }
         };
 

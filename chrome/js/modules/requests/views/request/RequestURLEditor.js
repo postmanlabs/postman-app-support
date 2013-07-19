@@ -15,10 +15,12 @@ var RequestURLEditor = Backbone.View.extend({
             placeHolderValue:"Value",
             deleteButton:'<img class="deleteButton" src="img/delete.png">',
             onDeleteRow:function () {
+                // TODO Also set urlParams separately
                 model.setUrlParamString(view.getUrlEditorParams());
             },
 
             onBlurElement:function () {
+                // TODO Also set urlParams separately
                 model.setUrlParamString(view.getUrlEditorParams());
             }
         };

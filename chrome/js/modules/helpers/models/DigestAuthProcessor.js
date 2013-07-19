@@ -33,17 +33,21 @@ var DigestAuthProcessor = Backbone.Model.extend({
         var username = pm.envManager.getCurrentValue(this.get("username"));
         var realm = pm.envManager.getCurrentValue(this.get("realm"));
         var password = pm.envManager.getCurrentValue(this.get("password"));
-        var method = pm.request.method.toUpperCase();
+        var method = pm.request.get("method");
         var nonce = pm.envManager.getCurrentValue(this.get("nonce"));
         var nonceCount = pm.envManager.getCurrentValue(this.get("nonceCount"));
         var clientNonce = pm.envManager.getCurrentValue(this.get("clientNonce"));
 
         var opaque = pm.envManager.getCurrentValue(this.get("opaque"));
         var qop = pm.envManager.getCurrentValue(this.get("qop"));
+
+        // TODO Make sure this comes from the body
         var body = pm.request.getRequestBodyPreview();
 
-        var url = pm.request.processUrl($('#url').val());
+        // TODO Get the url from the model
+        var url = pm.request.processUrl(pm.request.get("url"));
         var urlParts = pm.request.splitUrlIntoHostAndPath(url);
+
         var digestUri = urlParts.path;
 
         var a1;
@@ -105,32 +109,15 @@ var DigestAuthProcessor = Backbone.Model.extend({
     },
 
     process: function () {
-        var headers = pm.request.headers;
+        var headers = pm.request.get("headers");
         var authHeaderKey = "Authorization";
-        var pos = findPosition(headers, "key", authHeaderKey);
 
         //Generate digest header here
-
         var algorithm = $("#request-helper-digestAuth-realm").val();
-        var headerVal;
-
-        headerVal = this.getHeader();
+        var headerVal = this.getHeader();
         headerVal = "Digest" + headerVal;
 
-        if (pos >= 0) {
-            headers[pos] = {
-                key: authHeaderKey,
-                name: authHeaderKey,
-                value: headerVal
-            };
-        }
-        else {
-            headers.push({key: authHeaderKey, name: authHeaderKey, value: headerVal});
-        }
-
-        pm.request.headers = headers;
-        $('#headers-keyvaleditor').keyvalueeditor('reset', headers);
-        pm.request.openHeaderEditor();
+        pm.request.setHeader(authHeaderKey, headerVal);
     },
 
     updateDB: function() {

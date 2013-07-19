@@ -19,7 +19,7 @@ var BasicAuthProcessor = Backbone.Model.extend({
     },
 
     process: function () {
-        var headers = pm.request.headers;
+        var headers = pm.request.get("headers");
         var authHeaderKey = "Authorization";
         var pos = findPosition(headers, "key", authHeaderKey);
 
@@ -32,20 +32,7 @@ var BasicAuthProcessor = Backbone.Model.extend({
         var rawString = username + ":" + password;
         var encodedString = "Basic " + btoa(rawString);
 
-        if (pos >= 0) {
-            headers[pos] = {
-                key: authHeaderKey,
-                name: authHeaderKey,
-                value: encodedString
-            };
-        }
-        else {
-            headers.push({key: authHeaderKey, name: authHeaderKey, value: encodedString});
-        }
-
-        pm.request.headers = headers;
-        $('#headers-keyvaleditor').keyvalueeditor('reset', headers);
-        pm.request.openHeaderEditor();
+        pm.request.setHeader(authHeaderKey, encodedString);        
     },
 
     updateDB: function() {

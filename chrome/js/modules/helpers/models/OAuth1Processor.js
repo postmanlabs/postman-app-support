@@ -69,6 +69,9 @@ var OAuth1Processor = Backbone.Model.extend({
 
         var realm = $('#request-helper-oauth1-realm').val();
 
+        var method = pm.request.get("method");
+        var requestBody = pm.request.get("body");
+
         if (realm === '') {
             processedUrl = pm.envManager.convertString($('#url').val()).trim();
         }
@@ -84,7 +87,7 @@ var OAuth1Processor = Backbone.Model.extend({
 
         var message = {
             action: processedUrl,
-            method: pm.request.method,
+            method: method,
             parameters: []
         };
 
@@ -99,17 +102,7 @@ var OAuth1Processor = Backbone.Model.extend({
 
         //Get parameters
         var urlParams = $('#url-keyvaleditor').keyvalueeditor('getValues');
-        var bodyParams = [];
-
-        if (pm.request.isMethodWithBody(pm.request.method)) {
-            if (pm.request.body.mode === "params") {
-                bodyParams = $('#formdata-keyvaleditor').keyvalueeditor('getValues');
-            }
-            else if (pm.request.body.mode === "urlencoded") {
-                bodyParams = $('#urlencoded-keyvaleditor').keyvalueeditor('getValues');
-            }
-        }
-
+        var bodyParams = requestBody.get("dataAsObjects");
 
         var params = urlParams.concat(bodyParams);
 
@@ -161,15 +154,17 @@ var OAuth1Processor = Backbone.Model.extend({
     process: function () {
         var i, j, count, length;
         var params = [];
+
+        // TODO This does not exist
         var urlParams = pm.request.getUrlEditorParams();
         var bodyParams = [];
 
-        if (pm.request.body.mode === "params") {
-            bodyParams = $('#formdata-keyvaleditor').keyvalueeditor('getValues');
-        }
-        else if (pm.request.body.mode === "urlencoded") {
-            bodyParams = $('#urlencoded-keyvaleditor').keyvalueeditor('getValues');
-        }
+        var body = pm.request.get("body");
+        var dataMode = body.get("dataMode");
+        var method = pm.request.get("method");
+
+        // TODO Need to test if this works
+        var bodyParams = body.get("dataAsObjects");
 
         params = params.concat(urlParams);
         params = params.concat(bodyParams);
@@ -186,8 +181,6 @@ var OAuth1Processor = Backbone.Model.extend({
                 oAuthParams.push({key: $(this).attr('key'), value: val});
             }
         });
-
-        console.log("After adding oAuth params", params);
 
         //Convert environment values
         for (i = 0, length = params.length; i < length; i++) {
@@ -219,46 +212,27 @@ var OAuth1Processor = Backbone.Model.extend({
                 realm = realm.split("?")[0];
             }
 
-            console.log(realm);
-
-            var headers = pm.request.headers;
             var authHeaderKey = "Authorization";
-
-            var pos = findPosition(headers, "key", authHeaderKey);
-
             var rawString = "OAuth realm=\"" + realm + "\",";
-
             var len = oAuthParams.length;
+            
             for (i = 0; i < len; i++) {
                 rawString += encodeURIComponent(oAuthParams[i].key) + "=\"" + encodeURIComponent(oAuthParams[i].value) + "\",";
             }
+
             rawString = rawString.substring(0, rawString.length - 1);
 
-            console.log(rawString);
-
-            if (pos >= 0) {
-                headers[pos] = {
-                    key: authHeaderKey,
-                    name: authHeaderKey,
-                    value: rawString
-                };
-            }
-            else {
-                headers.push({key: authHeaderKey, name: authHeaderKey, value: rawString});
-            }
-
-            pm.request.headers = headers;
-            $('#headers-keyvaleditor').keyvalueeditor('reset', headers);
-            pm.request.openHeaderEditor();
+            // This changes the model, so everything works
+            pm.request.setHeader(authHeaderKey, rawString);
         } else {
+            // TODO Make this change the model
             params = params.concat(oAuthParams);
 
-            if (pm.request.method === "GET") {
+            if (method === "GET") {
                 $('#url-keyvaleditor').keyvalueeditor('reset', params);
                 pm.request.setUrlParamString(params);
                 pm.request.openUrlEditor();
-            } else {
-                var dataMode = pm.request.body.getDataMode();
+            } else {                
                 if (dataMode === 'urlencoded') {
                     $('#urlencoded-keyvaleditor').keyvalueeditor('reset', params);
                 }
@@ -267,8 +241,7 @@ var OAuth1Processor = Backbone.Model.extend({
                 }
                 else if (dataMode === 'raw') {
                     $('#url-keyvaleditor').keyvalueeditor('reset', params);
-                    pm.request.setUrlParamString(params);
-                    pm.request.openUrlEditor();
+                    pm.request.setUrlParamString(params);                    
                 }
             }
         }
