@@ -16,22 +16,25 @@ var RequestBodyRawEditor = Backbone.View.extend({
         var editorMode = "text";
         var language = "text";
         
-        if (contentType.search(/json/i) !== -1 || contentType.search(/javascript/i) !== -1) {
-            editorMode = 'javascript';
-            language = contentType;
+        if (contentType) {
+            if (contentType.search(/json/i) !== -1 || contentType.search(/javascript/i) !== -1) {
+                editorMode = 'javascript';
+                language = contentType;
+            }
+            else if (contentType.search(/xml/i) !== -1) {
+                editorMode = 'xml';
+                language = contentType;
+            }
+            else if (contentType.search(/html/i) !== -1) {
+                editorMode = 'xml';
+                language = contentType;
+            }
+            else {
+                editorMode = 'text';
+                language = contentType;
+            }    
         }
-        else if (contentType.search(/xml/i) !== -1) {
-            editorMode = 'xml';
-            language = contentType;
-        }
-        else if (contentType.search(/html/i) !== -1) {
-            editorMode = 'xml';
-            language = contentType;
-        }
-        else {
-            editorMode = 'text';
-            language = contentType;
-        }
+        
 
         body.set("editorMode", editorMode);
         body.set("language", language);
@@ -58,6 +61,7 @@ var RequestBodyRawEditor = Backbone.View.extend({
         var model = this.model;
         var view = this;
         var body = this.model.get("body");
+        var editorMode = body.get("editorMode");
 
         body.set("isEditorInitialized", true);
 
@@ -81,6 +85,21 @@ var RequestBodyRawEditor = Backbone.View.extend({
                 codeMirror.refresh();
             }
         });
+
+        if (editorMode) {
+            if (editorMode === "javascript") {
+                codeMirror.setOption("mode", {"name":"javascript", "json":true});
+            }
+            else {
+                codeMirror.setOption("mode", editorMode);
+            }
+
+            if (editorMode === "text") {
+                $('#body-editor-mode-selector-format').addClass('disabled');
+            } else {
+                $('#body-editor-mode-selector-format').removeClass('disabled');
+            }
+        }        
 
         $("#request .CodeMirror-scroll").css("height", "200px");
         codeMirror.refresh();
