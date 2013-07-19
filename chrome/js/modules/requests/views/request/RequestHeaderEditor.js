@@ -2,7 +2,6 @@ var RequestHeaderEditor = Backbone.View.extend({
     initialize: function() {
         var model = this.model;
         var view = this;
-
         model.on("change:headers", this.onChangeHeaders, this);
 
         var params = {
@@ -24,8 +23,7 @@ var RequestHeaderEditor = Backbone.View.extend({
             },
 
             onDeleteRow:function () {
-                model.set("headers", view.getHeaderEditorParams(), {silent: true});
-                var headers = model.get("headers");
+                var headers = view.getHeaderEditorParams();
                 $('#headers-keyvaleditor-actions-open .headers-count').html(headers.length);
             },
 
@@ -47,8 +45,8 @@ var RequestHeaderEditor = Backbone.View.extend({
                         view.onHeaderAutoCompleteItemSelect(item.item);
                     }
                 });
-                model.set("headers", view.getHeaderEditorParams(), {silent: true});
-                var headers = model.get("headers");
+                
+                var headers = view.getHeaderEditorParams();
                 $('#headers-keyvaleditor-actions-open .headers-count').html(headers.length);
             },
 
@@ -76,8 +74,9 @@ var RequestHeaderEditor = Backbone.View.extend({
         });
     },
 
-    onChangeHeaders: function() {
-        var headers = this.model.get("headers");
+    onChangeHeaders: function() {                
+        var headers = this.model.get("headers");        
+        console.log("onChangeHeaders called", headers);
         $('#headers-keyvaleditor').keyvalueeditor('reset', headers);
     },
 

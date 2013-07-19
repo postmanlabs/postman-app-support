@@ -478,6 +478,32 @@ var Request = Backbone.Model.extend({
         $('#headers-keyvaleditor-actions-open .headers-count').html(headers.length);
         this.set("url", this.processUrl($('#url').val()));
         this.set("startTime", new Date().getTime());
+    },    
+
+    setHeader: function(key, value) {
+        var headers = _.clone(this.get("headers"));
+        var contentTypeHeaderKey = key;
+        var pos = findPosition(headers, "key", contentTypeHeaderKey);
+
+        if (value === 'text') {
+            if (pos >= 0) {
+                headers.splice(pos, 1);
+            }
+        }
+        else {
+            if (pos >= 0) {
+                headers[pos] = {
+                    key: contentTypeHeaderKey,
+                    name: contentTypeHeaderKey,
+                    value: value
+                };
+            }
+            else {
+                headers.push({key: contentTypeHeaderKey, name: contentTypeHeaderKey, value: value});
+            }
+        }        
+
+        this.set("headers", headers);        
     },
     
     getXhrHeaders: function() {

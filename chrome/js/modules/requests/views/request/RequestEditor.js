@@ -22,12 +22,14 @@ var RequestEditor = Backbone.View.extend({
         this.on("send", this.onSend, this);
 
         $("#update-request-in-collection").on("click", function () {
+            //TODO Should trigger request to update body model
+            
             var collectionRequest = {};
             collectionRequest.id = model.get("collectionRequestId");
             collectionRequest.headers = model.getPackedHeaders();
             collectionRequest.url = model.get("url");
             collectionRequest.method = model.get("method");
-            collectionRequest.data = body.getData(true);
+            collectionRequest.data = body.get("data");
             collectionRequest.dataMode = body.get("dataMode");
             collectionRequest.version = 2;
             collectionRequest.time = new Date().getTime();
@@ -98,7 +100,6 @@ var RequestEditor = Backbone.View.extend({
 
         this.requestHeaderEditor.updateModel();
         this.requestURLEditor.updateModel();
-
         this.requestBodyEditor.updateModel();
 
         this.model.trigger("send", "text");

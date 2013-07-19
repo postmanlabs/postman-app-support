@@ -3,8 +3,6 @@ var RequestBodyRawEditor = Backbone.View.extend({
         var model = this.model;
         var view = this;
         var body = this.model.get("body");
-
-        var body = this.model.get("body");
         body.on("change:data", this.onChangeBodyData, this);
     },
 
@@ -13,8 +11,6 @@ var RequestBodyRawEditor = Backbone.View.extend({
         var mode = body.get("dataMode");
         var asObjects = body.get("asObjects");
         var data = body.get("data");
-
-        console.log("Set RawEditor data", mode, data);
 
         if (mode === "raw") {
             if (data) {
@@ -56,6 +52,8 @@ var RequestBodyRawEditor = Backbone.View.extend({
     },
 
     setEditorMode:function (mode, language, toSetHeader) {
+        console.log("setEditorMode called", mode, language, toSetHeader);
+
         var model = this.model;
         var body = model.get("body");
         var codeMirror = body.get("codeMirror");
@@ -79,31 +77,8 @@ var RequestBodyRawEditor = Backbone.View.extend({
                 $('#body-editor-mode-selector-format').removeClass('disabled');
             }
 
-            // TODO Can be shifted to the model
-            if (toSetHeader) {
-                var headers = this.model.get("headers");
-                var contentTypeHeaderKey = "Content-Type";
-                var pos = findPosition(headers, "key", contentTypeHeaderKey);
-
-                if (language === 'text') {
-                    if (pos >= 0) {
-                        headers.splice(pos, 1);
-                    }
-                }
-                else {
-                    if (pos >= 0) {
-                        headers[pos] = {
-                            key: contentTypeHeaderKey,
-                            name: contentTypeHeaderKey,
-                            value: language
-                        };
-                    }
-                    else {
-                        headers.push({key: contentTypeHeaderKey, name: contentTypeHeaderKey, value: language});
-                    }
-                }
-
-                this.model.set("headers", headers);
+            if (toSetHeader) {                
+                model.setHeader("Content-Type", language);                
             }
 
             codeMirror.refresh();

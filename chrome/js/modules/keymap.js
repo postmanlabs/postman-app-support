@@ -26,21 +26,6 @@ pm.keymap = {
             pm.request.startNew();
         };
 
-        $('body').on('keydown', 'input', function (event) {
-            if(pm.layout.isModalOpen) {
-                return;
-            }
-
-            if (event.keyCode === 27) {
-                $(event.target).blur();
-            }
-            else if (event.keyCode === 13) {
-                pm.request.send("text");
-            }
-
-            return true;
-        });
-
         $('body').on('keydown', 'textarea', function (event) {
             if(pm.layout.isModalOpen) {
                 return;
