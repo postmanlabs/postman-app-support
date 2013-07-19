@@ -1219,7 +1219,8 @@ input[type="file"] {
 /* End collections */
 /*Environments*/
 #environment-quicklook-wrapper {
-  float: left; }
+  float: left;
+  margin-left: 10px; }
   #environment-quicklook-wrapper .btn-group {
     font-size: 12px; }
   #environment-quicklook-wrapper .btn-group .dropdown-menu li a {

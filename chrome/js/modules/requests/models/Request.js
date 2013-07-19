@@ -8,7 +8,7 @@ var Request = Backbone.Model.extend({
             bodyParams:{},
             headers:[],
             method:"GET",
-            dataMode:"",
+            dataMode:"params",
             isFromCollection:false,
             collectionRequestId:"",
             methodsWithBody:["POST", "PUT", "PATCH", "DELETE", "LINK", "UNLINK"],
@@ -321,6 +321,8 @@ var Request = Backbone.Model.extend({
         this.set("dataMode", "");
 
         body.set("data", "");            
+
+        response.trigger("clearResponse");
     },
 
     cancel:function () {
@@ -460,6 +462,7 @@ var Request = Backbone.Model.extend({
         // TODO Should be called in RequestBodyRawEditor automatically
         // body.setEditorMode(mode, language);
         console.log("Triggering event loadRequest");
+        response.trigger("clearResponse");
         this.trigger("loadRequest", this);
     },
 

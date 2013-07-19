@@ -41,6 +41,8 @@ var RequestBodyEditor = Backbone.View.extend({
             var type = $(this).attr('data-container-type');
             pm.settings.setSetting("requestBodyEditorContainerType", type);
         });
+
+        this.setDataMode("params");
     },
 
     onChangeData: function() {

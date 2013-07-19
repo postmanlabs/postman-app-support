@@ -10,6 +10,7 @@ var ResponseViewer = Backbone.View.extend({
         this.responseMetaViewer = new ResponseMetaViewer({model: this.model});
 
         responseModel.on("failedRequest", this.onFailedRequest, this);
+        responseModel.on("clearResponse", this.clear, this);
         responseModel.on("loadResponse", this.load, this);
 
         $('#response-body-toggle').on("click", function () {
@@ -57,6 +58,10 @@ var ResponseViewer = Backbone.View.extend({
         this.showScreen("failed");
     },
 
+    clear: function() {
+        $('#response').css("display", "none");
+    },
+
     load:function () {
         var model = this.model;
         var request = model;
@@ -94,23 +99,7 @@ var ResponseViewer = Backbone.View.extend({
 
         response.trigger("finishedLoadResponse");        
     },
-
-    // TODO Move this to the model
-    clear:function () {
-        pm.request.response.startTime = 0;
-        pm.request.response.endTime = 0;
-        pm.request.response.totalTime = 0;
-        pm.request.response.status = "";
-        pm.request.response.time = 0;
-        pm.request.response.headers = {};
-        pm.request.response.mime = "";
-        pm.request.response.state.size = "normal";
-        pm.request.response.previewType = "parsed";
-
-        // TODO This can be triggered as an event
-        $('#response').css("display", "none");
-    },
-
+    
     showHeaders:function () {
         $('.response-tabs li').removeClass("active");
         $('.response-tabs li[data-section="headers"]').addClass("active");
