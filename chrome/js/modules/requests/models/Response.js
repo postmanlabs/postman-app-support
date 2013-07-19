@@ -87,8 +87,6 @@ var Response = Backbone.Model.extend({
             return header.name;
         });
 
-        console.log("Set headers as ", headers);
-
         this.set("headers", headers);
     },
 
@@ -129,8 +127,6 @@ var Response = Backbone.Model.extend({
         var languageDetection = pm.settings.getSetting("languageDetection");
 
         if (response.readyState === 4) {
-            console.log("Request", request.toJSON());            
-
             //Something went wrong
             if (response.status === 0) {
                 var errorUrl = pm.envManager.getCurrentValue(request.get("url"));

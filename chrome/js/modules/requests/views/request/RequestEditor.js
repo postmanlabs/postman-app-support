@@ -106,7 +106,7 @@ var RequestEditor = Backbone.View.extend({
 
     onPreview: function() {
         this.requestHeaderEditor.updateModel();
-        this.requestURLEditor.updateModel();
+        this.requestURLEditor.updateModel();        
         this.requestBodyEditor.updateModel();
 
         this.model.generatePreview();

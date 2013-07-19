@@ -51,7 +51,6 @@ var Request = Backbone.Model.extend({
     },
 
     onCancelRequest: function() {
-        console.log("Cancel request");
     },
 
     onStartNew: function() {
@@ -60,7 +59,6 @@ var Request = Backbone.Model.extend({
 
     // TODO Either text or arraybuffer
     onSend: function(type) {
-        console.log("Triggered onSend", this);
         this.send(type);
     },
 
@@ -156,7 +154,6 @@ var Request = Backbone.Model.extend({
 
     // Fixed
     setUrlParamString:function (params) {
-        console.log("setUrlParamString called");
         var url = $('#url').val();
         this.set("url", url);
 
@@ -284,8 +281,6 @@ var Request = Backbone.Model.extend({
             version: 2
         };
 
-        console.log("Request is ", request);
-
         return JSON.stringify(request);
     },
 
@@ -345,8 +340,6 @@ var Request = Backbone.Model.extend({
     },
 
     loadRequestInEditor:function (request, isFromCollection, isFromSample) {
-        console.log("Load request in Editor", request, isFromCollection, isFromSample);
-
         var body = this.get("body");
         var response = this.get("response");
 
@@ -420,42 +413,11 @@ var Request = Backbone.Model.extend({
         }
         else {
             body.set("dataMode", "params");
-        }
-
-        //Set raw body editor value if Content-Type is present
-        var contentType = this.getHeaderValue("Content-Type");
-        var mode;
-        var language;
-        if (contentType === false) {
-            mode = 'text';
-            language = 'text';
-        }
-        else if (contentType.search(/json/i) !== -1 || contentType.search(/javascript/i) !== -1) {
-            mode = 'javascript';
-            language = contentType;
-        }
-        else if (contentType.search(/xml/i) !== -1) {
-            mode = 'xml';
-            language = contentType;
-        }
-        else if (contentType.search(/html/i) !== -1) {
-            mode = 'xml';
-            language = contentType;
-        }
-        else {
-            mode = 'text';
-            language = contentType;
-        }
-
-        body.set("mode", "text");
-        body.set("language", contentType);
-
-        console.log(this.toJSON());
-        console.log(body.toJSON());
+        }        
 
         // TODO Should be called in RequestBodyRawEditor automatically
         // body.setEditorMode(mode, language);
-        console.log("Triggering event loadRequest");
+        
         response.trigger("clearResponse");
         this.trigger("loadRequest", this);
     },
@@ -582,8 +544,7 @@ var Request = Backbone.Model.extend({
         //Start setting up XHR
         var xhr = new XMLHttpRequest();
         xhr.open(method, url, true); //Open the XHR request. Will be sent later
-        xhr.onreadystatechange = function (event) {
-            console.log("Load response");
+        xhr.onreadystatechange = function (event) {            
             _.bind(response.load, model)(event.target);
         };
 

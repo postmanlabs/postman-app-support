@@ -3,7 +3,40 @@ var RequestBodyRawEditor = Backbone.View.extend({
         var model = this.model;
         var view = this;
         var body = this.model.get("body");
-        body.on("change:data", this.onChangeBodyData, this);
+
+        body.on("change:data", this.onChangeBodyData, this);   
+        model.on("change:headers", this.onChangeHeaders, this);     
+    },
+
+    onChangeHeaders: function() {
+        var body = this.model.get("body");
+
+        //Set raw body editor value if Content-Type is present
+        var contentType = this.model.getHeaderValue("Content-Type");
+        var editorMode = "text";
+        var language = "text";
+        
+        if (contentType.search(/json/i) !== -1 || contentType.search(/javascript/i) !== -1) {
+            editorMode = 'javascript';
+            language = contentType;
+        }
+        else if (contentType.search(/xml/i) !== -1) {
+            editorMode = 'xml';
+            language = contentType;
+        }
+        else if (contentType.search(/html/i) !== -1) {
+            editorMode = 'xml';
+            language = contentType;
+        }
+        else {
+            editorMode = 'text';
+            language = contentType;
+        }
+
+        body.set("editorMode", editorMode);
+        body.set("language", language);
+
+        this.setEditorMode(editorMode, language, false);
     },
 
     onChangeBodyData: function() {
@@ -11,6 +44,8 @@ var RequestBodyRawEditor = Backbone.View.extend({
         var mode = body.get("dataMode");
         var asObjects = body.get("asObjects");
         var data = body.get("data");
+        var language = body.get("language");
+        var editorMode = body.get("editorMode");
 
         if (mode === "raw") {
             if (data) {
