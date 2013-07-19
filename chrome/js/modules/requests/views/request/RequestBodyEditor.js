@@ -49,17 +49,44 @@ var RequestBodyEditor = Backbone.View.extend({
         console.log("Change data in the body");
     },
 
+    getRequestBodyPreview: function() {        
+        var body = this.model.get("body");
+        var dataMode = body.get("dataMode");
+        console.log("Preview called", body, dataMode);
+
+        if (dataMode === 'raw') {
+            var rawBodyData = body.get("data");
+            rawBodyData = pm.envManager.getCurrentValue(rawBodyData);
+            return rawBodyData;
+        }
+        else if (dataMode === 'params') {
+            var formDataBody = this.bodyFormDataEditor.getFormDataPreview();
+            if(formDataBody !== false) {
+                return formDataBody;
+            }
+            else {
+                return false;
+            }
+        }
+        else if (dataMode === 'urlencoded') {
+            var urlEncodedBodyData = this.bodyURLEncodedEditor.getUrlEncodedBody();
+            if(urlEncodedBodyData !== false) {
+                return urlEncodedBodyData;
+            }
+            else {
+                return false;
+            }
+        }
+    },
+
     getRequestBodyToBeSent: function() {
         var model = this.model;
-        var body = model.get("body");
-        console.log(body);
+        var body = model.get("body");        
 
         var dataMode = body.get("dataMode");        
-        console.log("Data mode is ", dataMode);
 
         if (dataMode === 'raw') {
             var rawBodyData = this.getData(true);            
-            console.log("Raw body data is", rawBodyData);
             rawBodyData = pm.envManager.getCurrentValue(rawBodyData);
             return rawBodyData;
         }
@@ -143,16 +170,17 @@ var RequestBodyEditor = Backbone.View.extend({
         return data;
     },
 
-    updateModel: function() {
-        console.log("Updating all models");
-        var data = this.getRequestBodyToBeSent();
-        var body = this.model.get("body");
-        var dataAsObjects = this.getData(true);
-
+    // TODO Needs to be in this order for updating the data property
+    updateModel: function() {        
+        var body = this.model.get("body");        
+        var data = this.getRequestBodyToBeSent();        
         body.set("data", data);
+
+        var dataAsObjects = this.getData(true);
         body.set("dataAsObjects", dataAsObjects);
 
-        console.log("Update body model", data, dataAsObjects);
+        var dataAsPreview = this.getRequestBodyPreview();        
+        body.set("dataAsPreview", dataAsPreview);
     },
 
     openFormDataEditor:function () {

@@ -20,10 +20,11 @@ var RequestEditor = Backbone.View.extend({
         responseModel.on("finishedLoadResponse", this.onFinishedLoadResponse, this);
 
         this.on("send", this.onSend, this);
+        this.on("preview", this.onPreview, this);
 
         $("#update-request-in-collection").on("click", function () {
             //TODO Should trigger request to update body model
-            
+
             var collectionRequest = {};
             collectionRequest.id = model.get("collectionRequestId");
             collectionRequest.headers = model.getPackedHeaders();
@@ -96,13 +97,21 @@ var RequestEditor = Backbone.View.extend({
     },
 
     onSend: function() {
-        console.log("Collect everything!");
-
         this.requestHeaderEditor.updateModel();
         this.requestURLEditor.updateModel();
         this.requestBodyEditor.updateModel();
 
         this.model.trigger("send", "text");
+    },
+
+    onPreview: function() {
+        this.requestHeaderEditor.updateModel();
+        this.requestURLEditor.updateModel();
+        this.requestBodyEditor.updateModel();
+
+        this.model.generatePreview();
+
+        this.showPreview();
     },
 
     onSentRequest: function() {
@@ -198,10 +207,10 @@ var RequestEditor = Backbone.View.extend({
     // TODO Implement this using events
     showPreview: function() {
         this.model.set("editorMode", 1);
-        this.model.generatePreview();
 
         var previewHtml = this.model.get("previewHtml");
-        $("#request-preview-content").html(requestPreview);
+
+        $("#request-preview-content").html(previewHtml);
         $("#preview-request").html("Build");        
         $("#request-builder").css("display", "none");
         $("#request-preview").css("display", "block");
@@ -212,8 +221,8 @@ var RequestEditor = Backbone.View.extend({
         if(editorMode === 1) {
             this.showRequestBuilder();
         }
-        else {
-            this.showPreview();
+        else {            
+            this.trigger("preview", this);            
         }
     },
 });

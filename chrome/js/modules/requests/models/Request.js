@@ -237,12 +237,6 @@ var Request = Backbone.Model.extend({
     },
 
     // Fixed
-    getDummyFormDataBoundary: function() {
-        var boundary = "----WebKitFormBoundaryE19zNvXGzXaLvS5C";
-        return boundary;
-    },
-
-    // Fixed
     splitUrlIntoHostAndPath: function(url) {
         var path = "";
         var host;
@@ -560,104 +554,11 @@ var Request = Backbone.Model.extend({
         }
 
         return finalHeaders;
-    },
-
-    // TODO Needs to come from the view
-    getFormDataPreview: function() {
-        var rows, count, j;
-        var row, key, value;
-        var i;
-        rows = $('#formdata-keyvaleditor').keyvalueeditor('getElements');
-        count = rows.length;
-        var params = [];
-
-        if (count > 0) {
-            for (j = 0; j < count; j++) {
-                row = rows[j];
-                key = row.keyElement.val();
-                var valueType = row.valueType;
-                var valueElement = row.valueElement;
-
-                if (valueType === "file") {
-                    var domEl = valueElement.get(0);
-                    var len = domEl.files.length;
-                    for (i = 0; i < len; i++) {
-                        var fileObj = {
-                            key: key,
-                            value: domEl.files[i],
-                            type: "file",
-                        }
-                        params.push(fileObj);
-                    }
-                }
-                else {
-                    value = valueElement.val();
-                    value = pm.envManager.getCurrentValue(value);
-                    var textObj = {
-                        key: key,
-                        value: value,
-                        type: "text",
-                    }
-                    params.push(textObj);
-                }
-            }
-
-            var paramsCount = params.length;
-            var body = "";
-            for(i = 0; i < paramsCount; i++) {
-                var param = params[i];
-                console.log(param);
-                body += this.getDummyFormDataBoundary();
-                if(param.type === "text") {
-                    body += "<br/>Content-Disposition: form-data; name=\"" + param.key + "\"<br/><br/>";
-                    body += param.value;
-                    body += "<br/>";
-                }
-                else if(param.type === "file") {
-                    body += "<br/>Content-Disposition: form-data; name=\"" + param.key + "\"; filename=";
-                    body += "\"" + param.value.name + "\"<br/>";
-                    body += "Content-Type: " + param.value.type;
-                    body += "<br/><br/><br/>"
-                }
-            }
-
-            body += this.getDummyFormDataBoundary();
-
-            return body;
-        }
-        else {
-            return false;
-        }
-    },
-
-    // TODO Needs to come from the view
+    },    
+    
     getRequestBodyPreview: function() {
-        var dataMode = this.get("dataMode");
         var body = this.get("body");
-
-        if (dataMode === 'raw') {
-            var rawBodyData = body.getData(true);
-            rawBodyData = pm.envManager.getCurrentValue(rawBodyData);
-            return rawBodyData;
-        }
-        else if (dataMode === 'params') {
-            var formDataBody = this.getFormDataPreview();
-            if(formDataBody !== false) {
-                return formDataBody;
-            }
-            else {
-                return false;
-            }
-        }
-        else if (dataMode === 'urlencoded') {
-            var urlEncodedBodyData = this.getUrlEncodedBody();
-            if(urlEncodedBodyData !== false) {
-                return urlEncodedBodyData;
-            }
-            else {
-                return false;
-            }
-        }
+        return body.get("dataAsPreview");
     },
 
     send:function (responseRawDataType) {
@@ -730,8 +631,6 @@ var Request = Backbone.Model.extend({
 
     // TODO Should be activated on click    
     generatePreview:function() {
-        console.log("Preview stuff");
-
         var method = this.get("method").toUpperCase();
         var httpVersion = "HTTP/1.1";
         var hostAndPath = this.splitUrlIntoHostAndPath(this.get("url"));
@@ -761,6 +660,8 @@ var Request = Backbone.Model.extend({
         else {
             requestPreview += "<br/><br/>";
         }        
+
+        this.set("previewHtml", requestPreview);
     },
 
     // TODO This should go into the model
