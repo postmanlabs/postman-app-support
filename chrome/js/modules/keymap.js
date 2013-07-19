@@ -50,11 +50,6 @@ pm.keymap = {
             pm.request.handlePreviewClick();
         });
 
-        $(document).bind('keydown', 'q', function () {
-            pm.envManager.quicklook.toggleDisplay();
-            return false;
-        });
-
         $(document).bind('keydown', 'e', function () {
             if(pm.layout.isModalOpen) {
                 return;

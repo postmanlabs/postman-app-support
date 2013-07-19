@@ -1,11 +1,14 @@
 var QuickLookPopOver = Backbone.View.extend({
     initialize: function() {
+        var view = this;
+        
         this.environments = this.options.environments;
         this.variableProcessor = this.options.variableProcessor;
         this.globals = this.options.globals;
 
         this.environments.on('change', this.render, this);
         this.variableProcessor.on('change:selectedEnv', this.render, this);
+
         this.globals.on('change', this.render, this);
 
         $('#environment-quicklook').on("mouseenter", function () {
@@ -14,6 +17,12 @@ var QuickLookPopOver = Backbone.View.extend({
 
         $('#environment-quicklook').on("mouseleave", function () {
             $('#environment-quicklook-content').css("display", "none");
+        });
+
+
+        $(document).bind('keydown', 'q', function () {
+            view.toggleDisplay();
+            return false;
         });
 
         this.render();
