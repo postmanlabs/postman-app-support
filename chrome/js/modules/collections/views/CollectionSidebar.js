@@ -8,6 +8,7 @@ var CollectionSidebar = Backbone.View.extend({
         model.on("updateCollectionMeta", this.updateCollectionMeta, this);
 
         model.on("addCollectionRequest", this.addCollectionRequest, this);
+        model.on("selectedCollectionRequest", this.selectedCollectionRequest, this);
         model.on("removeCollectionRequest", this.removeCollectionRequest, this);
         model.on("updateCollectionRequest", this.updateCollectionRequest, this);
 
@@ -73,9 +74,7 @@ var CollectionSidebar = Backbone.View.extend({
         });
 
         $collection_items.on("click", ".request-actions-load", function () {
-            var id = $(this).attr('data-id');
-            $('.sidebar-collection-request').removeClass('sidebar-collection-request-active');
-            $('#sidebar-request-' + id).addClass('sidebar-collection-request-active');
+            var id = $(this).attr('data-id');            
             model.getCollectionRequest(id);
         });
 
@@ -96,6 +95,12 @@ var CollectionSidebar = Backbone.View.extend({
 
             model.trigger("editCollectionRequest", request);
         });
+    },
+
+    selectedCollectionRequest: function(request) {
+        var id = request.id;
+        $('.sidebar-collection-request').removeClass('sidebar-collection-request-active');
+        $('#sidebar-request-' + id).addClass('sidebar-collection-request-active');
     },
 
     addRequestListeners:function () {

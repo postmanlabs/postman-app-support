@@ -6,9 +6,7 @@ var PmCollections = Backbone.Collection.extend({
 
     model: PmCollection,
 
-    comparator: function(a, b) {
-        console.log("Sorter called", a, b);
-        
+    comparator: function(a, b) {        
         var counter;
 
         var aName = a.get("name");
@@ -383,10 +381,13 @@ var PmCollections = Backbone.Collection.extend({
     },
 
     getCollectionRequest:function (id) {
+        var pmCollection = this;
+        
         pm.indexedDB.getCollectionRequest(id, function (request) {
             pm.request.isFromCollection = true;
             pm.request.collectionRequestId = id;
             pm.request.loadRequestInEditor(request, true);
+            pmCollection.trigger("selectedCollectionRequest", request);
         });
     },
 
@@ -478,7 +479,7 @@ var PmCollections = Backbone.Collection.extend({
                     c.get("requests").push(req);
                     pmCollection.trigger("addCollectionRequest", req);
 
-                    pm.request.loadRequestInEditor(req, true, false);
+                    pmCollection.getCollectionRequest(req.id);
 
                     //TODO: Drive syncing will be done later
                     console.log("Send queue request after adding request for new collection");
@@ -489,14 +490,10 @@ var PmCollections = Backbone.Collection.extend({
         }
         else {
             collectionRequest.collectionId = collection.id;
-            pm.indexedDB.addCollectionRequest(collectionRequest, function (req) {
-                pm.request.loadRequestInEditor(req, true, false);
-
-                console.log("Added collcetion request to DB", req);
-
-                //Update collection's order element
-                console.log("Updating collection");
+            pm.indexedDB.addCollectionRequest(collectionRequest, function (req) {                
                 pm.indexedDB.getCollection(collection.id, function(newCollection) {
+                    pmCollection.getCollectionRequest(req.id);
+
                     pmCollection.add(newCollection, {merge: true});
 
                     var c = pmCollection.get(newCollection.id);
