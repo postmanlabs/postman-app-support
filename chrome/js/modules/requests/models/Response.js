@@ -15,7 +15,6 @@ var Response = Backbone.Model.extend({
     },
 
     initialize: function() {
-        console.log("Initialized response object", this.toJSON());
     },  
 
     setResponseCode: function(response) {

@@ -1,7 +1,9 @@
 var RequestBodyURLEncodedEditor = Backbone.View.extend({
     initialize: function() {
+        this.model.on("startNew", this.onStartNew, this);
+
         var body = this.model.get("body");
-        body.on("change:data", this.onChangeBodyData, this);
+        body.on("change:dataAsObjects", this.onChangeBodyData, this);
 
         var editorId = "#urlencoded-keyvaleditor";
 
@@ -20,11 +22,18 @@ var RequestBodyURLEncodedEditor = Backbone.View.extend({
         $(editorId).keyvalueeditor('init', params);
     },
 
-    onChangeBodyData: function() {
+    onStartNew: function() {
+        $('#urlencoded-keyvaleditor').keyvalueeditor('reset');
+    },
+
+    onChangeBodyData: function() {        
+
         var body = this.model.get("body");
-        var mode = body.get("mode");
+        var mode = body.get("dataMode");
         var asObjects = body.get("asObjects");
-        var data = body.get("data");
+        var data = body.get("dataAsObjects");
+
+        console.log("Set URLEncodedEditor data", mode, data);
 
         if (mode === "urlencoded") {
             if (data) {

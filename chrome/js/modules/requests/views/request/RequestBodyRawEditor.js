@@ -10,9 +10,11 @@ var RequestBodyRawEditor = Backbone.View.extend({
 
     onChangeBodyData: function() {
         var body = this.model.get("body");
-        var mode = body.get("mode");
+        var mode = body.get("dataMode");
         var asObjects = body.get("asObjects");
         var data = body.get("data");
+
+        console.log("Set RawEditor data", mode, data);
 
         if (mode === "raw") {
             if (data) {
@@ -169,7 +171,11 @@ var RequestBodyRawEditor = Backbone.View.extend({
         var isEditorInitialized = body.get("isEditorInitialized");
         var codeMirror = body.get("codeMirror");
 
+        console.log("Trying to get raw data");
+
         if (isEditorInitialized) {
+            console.log("Editor is initialized");
+
             var data = codeMirror.getValue();
 
             if (pm.settings.getSetting("forceWindowsLineEndings") === true) {
@@ -180,6 +186,7 @@ var RequestBodyRawEditor = Backbone.View.extend({
             return data;
         }
         else {
+            console.log("Editor is not initialized");
             return "";
         }
     }

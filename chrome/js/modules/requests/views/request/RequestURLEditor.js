@@ -1,12 +1,14 @@
 var RequestURLEditor = Backbone.View.extend({
     initialize: function() {
-        console.log("Initialized RequestURLEditor");
-
         var model = this.model;
         var view = this;
 
         var editorId;
         editorId = "#url-keyvaleditor";
+
+        this.editorId = editorId;
+
+        model.on("startNew", this.onStartNew, this);
 
         var params = {
             placeHolderKey:"URL Parameter Key",
@@ -44,6 +46,13 @@ var RequestURLEditor = Backbone.View.extend({
             var newRows = getUrlVars($('#url').val(), false);
             $('#url-keyvaleditor').keyvalueeditor('reset', newRows);
         });
+    },
+
+    onStartNew: function(model) {
+        $("#url").val("");
+        var newRows = [];
+        $(this.editorId).keyvalueeditor('reset', newRows);
+        $('#url').focus();
     },
 
     updateModel: function() {

@@ -92,15 +92,6 @@ pm.keymap = {
             return false;
         });
 
-        $(document).bind('keydown', 'return', function () {
-            if(pm.layout.isModalOpen) {
-                return;
-            }
-
-            pm.request.send("text");
-            return false;
-        });
-
         $(document).bind('keydown', 'p', function () {
             if(pm.layout.isModalOpen) {
                 return;

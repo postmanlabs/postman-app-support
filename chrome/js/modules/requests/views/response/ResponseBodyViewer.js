@@ -53,14 +53,12 @@ var ResponseBodyViewer = Backbone.View.extend({
             request.trigger("send", "arraybuffer");
         } 
         else {
-            console.log("Show text");
             this.displayTextResponse(language, text, presetPreviewType, true);
         }
     },
 
     // TODO Refactor this
-    displayTextResponse:function (language, response, format, forceCreate) {
-        console.log(language, response, format, forceCreate);                
+    displayTextResponse:function (language, response, format, forceCreate) {    
         var codeDataArea = document.getElementById("code-data");
         var codeDataWidth = $(document).width() - $('#sidebar').width() - 60;
         var foldFunc;
@@ -147,8 +145,6 @@ var ResponseBodyViewer = Backbone.View.extend({
             var cm = pm.editor.codeMirror;
             cm.setValue(response);
             cm.refresh();
-
-            console.log("Initializing CodeMirror", pm.editor.codeMirror);
         }
         else {
             pm.editor.codeMirror.setOption("onGutterClick", foldFunc);
@@ -232,7 +228,6 @@ var ResponseBodyViewer = Backbone.View.extend({
             $('#response-pretty-modifiers').css("display", "none");
         }
         else if (previewType === 'parsed') {
-            console.log("Rendering parsed view");
             $('#response-as-text').css("display", "none");
             $('#response-as-code').css("display", "block");
             $('#response-as-preview').css("display", "none");
@@ -253,8 +248,6 @@ var ResponseBodyViewer = Backbone.View.extend({
         var request = this.model;
         var response = request.get("response");
         var state = response.get("state");
-
-        console.log("Response model is", response);
 
         if ($('#response').css("display") === "none") {
             return false;

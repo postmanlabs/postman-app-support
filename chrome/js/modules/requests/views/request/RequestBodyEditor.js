@@ -2,9 +2,12 @@ var RequestBodyEditor = Backbone.View.extend({
     initialize: function() {
         var model = this.model;
         var view = this;
+        var body = model.get("body");
 
         model.on("change:method", this.onChangeMethod, this);
-        model.on("change:dataMode", this.onChangeDataMode, this);
+
+        body.on("change:dataMode", this.onChangeDataMode, this);        
+        body.on("change:data", this.onChangeData, this);
 
         this.bodyFormDataEditor = new RequestBodyFormDataEditor({model: this.model});
         this.bodyURLEncodedEditor = new RequestBodyURLEncodedEditor({model: this.model});
@@ -40,14 +43,21 @@ var RequestBodyEditor = Backbone.View.extend({
         });
     },
 
+    onChangeData: function() {
+        console.log("Change data in the body");
+    },
+
     getRequestBodyToBeSent: function() {
         var model = this.model;
         var body = model.get("body");
-        var dataMode = body.get("dataMode");
-        var body = body.get("body");
+        console.log(body);
+
+        var dataMode = body.get("dataMode");        
+        console.log("Data mode is ", dataMode);
 
         if (dataMode === 'raw') {
-            var rawBodyData = this.getData(true);
+            var rawBodyData = this.getData(true);            
+            console.log("Raw body data is", rawBodyData);
             rawBodyData = pm.envManager.getCurrentValue(rawBodyData);
             return rawBodyData;
         }
@@ -74,7 +84,7 @@ var RequestBodyEditor = Backbone.View.extend({
     getData:function (asObjects) {
         var model = this.model;
         var body = this.model.get("body");
-        var mode = body.get("mode");
+        var mode = body.get("dataMode");
 
         var data;
         var params;
@@ -104,6 +114,7 @@ var RequestBodyEditor = Backbone.View.extend({
 
         }
         else if (mode === "raw") {
+            console.log("Get raw data", mode);
             data = this.bodyRawEditor.getRawData();
         }
         else if (mode === "urlencoded") {
@@ -135,8 +146,11 @@ var RequestBodyEditor = Backbone.View.extend({
         var data = this.getRequestBodyToBeSent();
         var body = this.model.get("body");
         var dataAsObjects = this.getData(true);
+
         body.set("data", data);
         body.set("dataAsObjects", dataAsObjects);
+
+        console.log("Update body model", data, dataAsObjects);
     },
 
     openFormDataEditor:function () {
@@ -194,16 +208,20 @@ var RequestBodyEditor = Backbone.View.extend({
     },
 
     onChangeDataMode: function(event) {
-        var dataMode = this.model.get("dataMode");
+        console.log("Changed data mode");
+        var body = this.model.get("body");
+        var dataMode = body.get("dataMode");
         this.setDataMode(dataMode);
     },
 
     setDataMode:function (mode) {
+        console.log("Set data mode", mode);
+
         var model = this.model;
         var view = this;
         var body = this.model.get("body");
 
-        this.model.get("body").set("mode", mode);
+        body.set("dataMode", mode);
 
         $('#data-mode-selector a').removeClass("active");
         $('#data-mode-selector a[data-mode="' + mode + '"]').addClass("active");

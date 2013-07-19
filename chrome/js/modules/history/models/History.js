@@ -30,7 +30,6 @@ var History = Backbone.Collection.extend({
                 }
             }
 
-            console.log(historyRequests, model);
             model.add(outAr, {merge: true});
         });
     },

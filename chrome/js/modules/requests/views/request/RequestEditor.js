@@ -12,10 +12,9 @@ var RequestEditor = Backbone.View.extend({
         this.requestClipboard = new RequestClipboard({model: this.model});
         this.requestPreviewer = new RequestPreviewer({model: this.model});
 
-        console.log("Initialized RequestEditor");
-
         model.on("loadRequest", this.onLoadRequest, this);
-        model.on("sentRequest", this.onSentRequest, this);
+        model.on("sentRequest", this.onSentRequest, this);        
+        model.on("startNew", this.onStartNew, this);
 
         responseModel.on("failedRequest", this.onFailedRequest, this);
         responseModel.on("finishedLoadResponse", this.onFinishedLoadResponse, this);
@@ -58,7 +57,40 @@ var RequestEditor = Backbone.View.extend({
             _.bind(view.onPreviewRequestClick, view)();
         });
 
+
+        $('body').on('keydown', 'input', function (event) {
+            if(pm.layout.isModalOpen) {
+                return;
+            }
+
+            if (event.keyCode === 27) {
+                $(event.target).blur();
+            }
+            else if (event.keyCode === 13) {
+                view.trigger("send", view);
+            }
+
+            return true;
+        });
+
+
+        $(document).bind('keydown', 'return', function () {
+            if(pm.layout.isModalOpen) {
+                return;
+            }
+
+            console.log("Triggering send");
+
+            view.trigger("send", view);
+            return false;
+        });
+
         model.trigger("readyToLoadRequest", this);
+    },
+
+    onStartNew: function() {
+        $('.sidebar-collection-request').removeClass('sidebar-collection-request-active');
+        $('#update-request-in-collection').css("display", "none");
     },
 
     onSend: function() {
@@ -66,6 +98,7 @@ var RequestEditor = Backbone.View.extend({
 
         this.requestHeaderEditor.updateModel();
         this.requestURLEditor.updateModel();
+
         this.requestBodyEditor.updateModel();
 
         this.model.trigger("send", "text");
@@ -85,8 +118,6 @@ var RequestEditor = Backbone.View.extend({
     },
 
     onLoadRequest: function(m) {
-        console.log("onLoadRequest called", m);
-
         var model = this.model;
         var body = model.get("body");
         var method = model.get("method");
@@ -123,28 +154,8 @@ var RequestEditor = Backbone.View.extend({
 
             $('#response-sample-save-form').css("display", "none");
 
-            //Disabling pm.request. Will enable after resolving indexedDB issues
-            //$('#response-sample-save-start-container').css("display", "inline-block");
-
             $('.request-meta-actions-togglesize').attr('data-action', 'minimize');
             $('.request-meta-actions-togglesize img').attr('src', 'img/circle_minus.png');
-
-            //TODO Fix this later load samples
-            if (responses) {
-                $("#request-samples").css("display", "block");
-                if (responses.length > 0) {
-                    $('#request-samples table').html("");
-                    $('#request-samples table').append(Handlebars.templates.sample_responses({"items":responses}));
-                }
-                else {
-                    $('#request-samples table').html("");
-                    $("#request-samples").css("display", "none");
-                }
-            }
-            else {
-                $('#request-samples table').html("");
-                $("#request-samples").css("display", "none");
-            }
         }
         else if (isFromSample) {
             $('#update-request-in-collection').css("display", "inline-block");
@@ -172,6 +183,8 @@ var RequestEditor = Backbone.View.extend({
         else {
             $('#data').css("display", "none");
         }
+
+        console.log("Should load body data at this point");
     },
 
     showRequestBuilder: function() {
@@ -181,9 +194,14 @@ var RequestEditor = Backbone.View.extend({
         $("#request-preview").css("display", "none");
     },
 
+    // TODO Implement this using events
     showPreview: function() {
-        $("#preview-request").html("Build");
         this.model.set("editorMode", 1);
+        this.model.generatePreview();
+
+        var previewHtml = this.model.get("previewHtml");
+        $("#request-preview-content").html(requestPreview);
+        $("#preview-request").html("Build");        
         $("#request-builder").css("display", "none");
         $("#request-preview").css("display", "block");
     },

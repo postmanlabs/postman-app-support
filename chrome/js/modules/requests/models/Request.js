@@ -283,12 +283,14 @@ var Request = Backbone.Model.extend({
         
         var request = {
             url: $('#url').val(),
-            data: body.get("data"), //TODO This should be available in the model itself, asObjects = true
+            data: body.get("dataAsObjects"), //TODO This should be available in the model itself, asObjects = true
             headers: this.getPackedHeaders(),
-            dataMode: this.get("dataMode"),
+            dataMode: body.get("dataMode"),
             method: this.get("method"),
             version: 2
         };
+
+        console.log("Request is ", request);
 
         return JSON.stringify(request);
     },
@@ -299,15 +301,14 @@ var Request = Backbone.Model.extend({
         var response = this.get("response");
 
         // TODO RequestEditor should be listening to this
-        this.set("editorMode", 0);
-
-        // TODO Sidebar should be listening to this event too
-        $('.sidebar-collection-request').removeClass('sidebar-collection-request-active');
+        // TODO Needs to be made clearer
+        this.set("editorMode", 0);        
 
         var xhr = this.get("xhr");
 
         if (xhr !== null) {
             xhr.abort();
+            this.unset("xhr");
         }
 
         this.set("url", "");
@@ -319,17 +320,7 @@ var Request = Backbone.Model.extend({
         this.set("method", "GET");
         this.set("dataMode", "");
 
-        body.set("data", "");
-
-        //TODO This goes into respective views
-        $('#url-keyvaleditor').keyvalueeditor('reset');
-        $('#headers-keyvaleditor').keyvalueeditor('reset');
-        $('#formdata-keyvaleditor').keyvalueeditor('reset');
-        $('#update-request-in-collection').css("display", "none");
-        $('#url').val();
-        $('#url').focus();
-
-        response.clear();
+        body.set("data", "");            
     },
 
     cancel:function () {
@@ -367,8 +358,6 @@ var Request = Backbone.Model.extend({
         pm.helpers.showRequestHelper("normal");
 
         this.set("url", request.url);
-
-        body.set("data", request.body);
 
         this.set("isFromCollection", isFromCollection);
         this.set("isFromSample", isFromSample);
@@ -418,7 +407,7 @@ var Request = Backbone.Model.extend({
         response.clear();
 
         if (this.isMethodWithBody(this.get("method"))) {
-            this.set("dataMode", request.dataMode);
+            body.set("dataMode", request.dataMode);
 
             if("version" in request) {
                 if(request.version === 2) {
@@ -434,7 +423,7 @@ var Request = Backbone.Model.extend({
 
         }
         else {
-            this.set("dataMode", "params");
+            body.set("dataMode", "params");
         }
 
         //Set raw body editor value if Content-Type is present
@@ -465,6 +454,9 @@ var Request = Backbone.Model.extend({
         body.set("mode", "text");
         body.set("language", contentType);
 
+        console.log(this.toJSON());
+        console.log(body.toJSON());
+
         // TODO Should be called in RequestBodyRawEditor automatically
         // body.setEditorMode(mode, language);
         console.log("Triggering event loadRequest");
@@ -489,6 +481,8 @@ var Request = Backbone.Model.extend({
     },
     
     getXhrHeaders: function() {
+        var body = this.get("body");
+
         var headers = _.clone(this.get("headers"));
         if(pm.settings.getSetting("sendNoCacheHeader") === true) {
             var noCacheHeader = {
@@ -511,7 +505,7 @@ var Request = Backbone.Model.extend({
         }
 
         if (this.isMethodWithBody(this.get("method"))) {
-            if(this.get("dataMode") === "urlencoded") {
+            if(body.get("dataMode") === "urlencoded") {
                 var urlencodedHeader = {
                     key: "Content-Type",
                     name: "Content-Type",
@@ -539,6 +533,7 @@ var Request = Backbone.Model.extend({
         return finalHeaders;
     },
 
+    // TODO Needs to come from the view
     getFormDataPreview: function() {
         var rows, count, j;
         var row, key, value;
@@ -606,8 +601,8 @@ var Request = Backbone.Model.extend({
         }
     },
 
+    // TODO Needs to come from the view
     getRequestBodyPreview: function() {
-        //TODO This will be set by the view itself
         var dataMode = this.get("dataMode");
         var body = this.get("body");
 
@@ -654,10 +649,6 @@ var Request = Backbone.Model.extend({
         var url = this.encodeUrl(this.get("url"));
         var method = this.get("method").toUpperCase();
 
-        var originalData = body.get("data");
-
-        console.log("data = ", originalData);
-
         //Start setting up XHR
         var xhr = new XMLHttpRequest();
         xhr.open(method, url, true); //Open the XHR request. Will be sent later
@@ -698,8 +689,8 @@ var Request = Backbone.Model.extend({
             pm.history.addRequest(originalUrl,
                 method,
                 this.getPackedHeaders(),
-                originalData,
-                this.get("dataMode"));
+                body.get("dataAsObjects"),
+                body.get("dataMode"));
         }
 
         var response = this.get("response");
@@ -708,16 +699,10 @@ var Request = Backbone.Model.extend({
         this.trigger("sentRequest", this);
     },
 
-    // TODO Response will be listening for this
-    // updateUiPostSending: function() {
-        // var response = this.get("response");
+    // TODO Should be activated on click    
+    generatePreview:function() {
+        console.log("Preview stuff");
 
-        // response.clear();
-        // response.showScreen("waiting");
-    // },
-
-    // TODO Should be activated on click
-    handlePreviewClick:function() {
         var method = this.get("method").toUpperCase();
         var httpVersion = "HTTP/1.1";
         var hostAndPath = this.splitUrlIntoHostAndPath(this.get("url"));
@@ -746,9 +731,7 @@ var Request = Backbone.Model.extend({
         }
         else {
             requestPreview += "<br/><br/>";
-        }
-
-        $("#request-preview-content").html(requestPreview);
+        }        
     },
 
     // TODO This should go into the model

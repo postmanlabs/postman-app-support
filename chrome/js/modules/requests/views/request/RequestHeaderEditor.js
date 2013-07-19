@@ -1,7 +1,5 @@
 var RequestHeaderEditor = Backbone.View.extend({
     initialize: function() {
-        console.log("Initialized RequestHeaderEditor");
-
         var model = this.model;
         var view = this;
 

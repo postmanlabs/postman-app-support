@@ -2,7 +2,7 @@ var RequestBody = Backbone.Model.extend({
     defaults: function() {
         return {
             data: "",
-            mode:"params",
+            dataMode:"params",
             isEditorInitialized:false,
             codeMirror:false,
             rawEditorType:"editor",
@@ -28,26 +28,30 @@ var RequestBody = Backbone.Model.extend({
     },
 
     getDataMode:function () {
-        return this.get("mode");
+        return this.get("dataMode");
     },
 
     loadData:function (mode, data, asObjects) {
         console.log("Load body", mode, data, asObjects);
 
-        this.set("mode", mode);
+        this.set("dataMode", mode);
         this.set("asObjects", asObjects);
 
         if (mode !== "raw") {
-            if (!asObjects) {
-                var params = getBodyVars(data, false);
-                this.set("data", params);
+            if (asObjects) {
+                this.set("data", _.clone(data));
+                this.set("dataAsObjects", _.clone(data));
             }
             else {
-                this.set("data", data);
+                var params = getBodyVars(data, false);
+                this.set("data", _.clone(params));
+                this.set("dataAsObjects", _.clone(params));
+                console.log("Not as objects", params);
             }
         }
         else {
-            this.set("data", data);
+            //No need for objects
+            this.set("data", _.clone(data));
         }
 
         this.trigger("dataLoaded", this);
