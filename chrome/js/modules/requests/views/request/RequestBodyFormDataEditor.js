@@ -32,8 +32,6 @@ var RequestBodyFormDataEditor = Backbone.View.extend({
         var asObjects = body.get("asObjects");
         var data = body.get("dataAsObjects");
 
-        console.log("Set FormDataEditor data", mode, data);
-
         if (mode === "params") {
             if (data) {
                 try {

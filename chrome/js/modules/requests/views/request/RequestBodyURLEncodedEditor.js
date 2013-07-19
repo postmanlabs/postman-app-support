@@ -26,14 +26,11 @@ var RequestBodyURLEncodedEditor = Backbone.View.extend({
         $('#urlencoded-keyvaleditor').keyvalueeditor('reset');
     },
 
-    onChangeBodyData: function() {        
-
+    onChangeBodyData: function() {
         var body = this.model.get("body");
         var mode = body.get("dataMode");
         var asObjects = body.get("asObjects");
         var data = body.get("dataAsObjects");
-
-        console.log("Set URLEncodedEditor data", mode, data);
 
         if (mode === "urlencoded") {
             if (data) {

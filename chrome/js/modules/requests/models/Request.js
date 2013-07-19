@@ -269,6 +269,21 @@ var Request = Backbone.Model.extend({
         return { host: host, path: path };
     },
 
+    getAsObject: function() {
+        var body = this.get("body");
+        
+        var request = {
+            url: this.get("url"),
+            data: body.get("dataAsObjects"), //TODO This should be available in the model itself, asObjects = true
+            headers: this.getPackedHeaders(),
+            dataMode: body.get("dataMode"),
+            method: this.get("method"),
+            version: 2
+        };
+
+        return request;
+    },
+
     getAsJson:function () {
         var body = this.get("body");
         
@@ -340,6 +355,8 @@ var Request = Backbone.Model.extend({
     },
 
     loadRequestInEditor:function (request, isFromCollection, isFromSample) {
+        console.log(request);
+
         var body = this.get("body");
         var response = this.get("response");
 
@@ -353,6 +370,9 @@ var Request = Backbone.Model.extend({
         this.set("method", request.method.toUpperCase());
 
         if (isFromCollection) {
+            this.set("collectionid", request.collectionid);
+            this.set("collectionRequestId", request.id);
+
             if (typeof request.name !== "undefined") {
                 this.set("name", request.name);
             }

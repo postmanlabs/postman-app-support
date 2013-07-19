@@ -52,7 +52,6 @@ var RequestBodyEditor = Backbone.View.extend({
     getRequestBodyPreview: function() {        
         var body = this.model.get("body");
         var dataMode = body.get("dataMode");
-        console.log("Preview called", body, dataMode);
 
         if (dataMode === 'raw') {
             var rawBodyData = body.get("data");

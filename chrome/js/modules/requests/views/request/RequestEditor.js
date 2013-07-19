@@ -23,17 +23,26 @@ var RequestEditor = Backbone.View.extend({
         this.on("preview", this.onPreview, this);
 
         $("#update-request-in-collection").on("click", function () {
-            //TODO Should trigger request to update body model
+            console.log("Update request in model");
 
-            var collectionRequest = {};
-            collectionRequest.id = model.get("collectionRequestId");
-            collectionRequest.headers = model.getPackedHeaders();
-            collectionRequest.url = model.get("url");
-            collectionRequest.method = model.get("method");
-            collectionRequest.data = body.get("data");
-            collectionRequest.dataMode = body.get("dataMode");
-            collectionRequest.version = 2;
-            collectionRequest.time = new Date().getTime();
+            //TODO Should trigger request to update body model
+            view.requestHeaderEditor.updateModel();
+            view.requestURLEditor.updateModel();
+            view.requestBodyEditor.updateModel();
+
+            var current = model.getAsObject();
+            var collectionRequest = {
+                id: model.get("collectionRequestId"),
+                url: current.url,
+                data: current.data,
+                headers: current.headers,
+                dataMode: current.dataMode,
+                method: current.method,
+                version: current.version,
+                time: new Date().getTime()
+            };            
+
+            console.log("Request is", collectionRequest);
 
             pm.collections.updateCollectionRequest(collectionRequest);
         });
