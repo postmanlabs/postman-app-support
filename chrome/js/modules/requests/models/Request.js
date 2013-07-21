@@ -51,6 +51,7 @@ var Request = Backbone.Model.extend({
     },
 
     onCancelRequest: function() {
+        this.startNew();
     },
 
     onStartNew: function() {

@@ -92,7 +92,10 @@ var VariableProcessor = Backbone.Model.extend({
             }
         }
 
-        return this.processString(string, envValues);
+        var globals = this.get("globals").get("globals");
+        var values = _.union(envValues, globals);
+
+        return this.processString(string, values);
     },
 
     getCurrentValue: function(string) {
@@ -106,6 +109,9 @@ var VariableProcessor = Backbone.Model.extend({
             }
         }
 
-        return this.processString(string, envValues);
+        var globals = this.get("globals").get("globals");
+        var values = _.union(envValues, globals);
+
+        return this.processString(string, values);
     },
 });

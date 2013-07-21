@@ -22,8 +22,10 @@ var ResponseBodyViewer = Backbone.View.extend({
         var language = response.get("language");
         var text = response.get("text");        
 
-        $('#response-data-container').css("display", "block");
-
+        if (model.get("method") !== "HEAD") {
+            $('#response-data-container').css("display", "block");    
+        }
+        
         if (previewType === "image") {
             $('#response-as-code').css("display", "none");
             $('#response-as-text').css("display", "none");                        

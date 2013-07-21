@@ -93,7 +93,8 @@ var ResponseViewer = Backbone.View.extend({
         $("#response-data").css("display", "block");                
         
         if (method === "HEAD") {
-            this.showHeaders()
+            console.log("Show headers");
+            this.showHeaders();
         }
         else {
             this.showBody();
@@ -110,6 +111,8 @@ var ResponseViewer = Backbone.View.extend({
     },
     
     showHeaders:function () {
+        console.log("Hide response data container");
+        
         $('.response-tabs li').removeClass("active");
         $('.response-tabs li[data-section="headers"]').addClass("active");
         $('#response-data-container').css("display", "none");
