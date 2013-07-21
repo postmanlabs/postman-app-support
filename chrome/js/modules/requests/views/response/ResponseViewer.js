@@ -11,6 +11,7 @@ var ResponseViewer = Backbone.View.extend({
 
         responseModel.on("failedRequest", this.onFailedRequest, this);
         responseModel.on("clearResponse", this.clear, this);
+        responseModel.on("sentRequest", this.onSentRequest, this);
         responseModel.on("loadResponse", this.load, this);
 
         $('#response-body-toggle').on("click", function () {
@@ -60,6 +61,10 @@ var ResponseViewer = Backbone.View.extend({
 
             view.responseBodyViewer.toggleBodySize();
         });
+    },
+
+    onSentRequest: function() {
+        this.showScreen("waiting");
     },
 
     onFailedRequest: function(errorUrl) {
@@ -112,7 +117,7 @@ var ResponseViewer = Backbone.View.extend({
     
     showHeaders:function () {
         console.log("Hide response data container");
-        
+
         $('.response-tabs li').removeClass("active");
         $('.response-tabs li[data-section="headers"]').addClass("active");
         $('#response-data-container').css("display", "none");

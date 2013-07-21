@@ -28,7 +28,7 @@ var Sidebar = Backbone.View.extend({
     	}
     	else {
     	    this.select("history");
-    	}            
+    	}                    
 
     	$('#sidebar-selectors li').click(function () {
     	    var id = $(this).attr('data-id');
@@ -36,6 +36,12 @@ var Sidebar = Backbone.View.extend({
     	});
 
     	$(":input:first").focus();
+
+        collections.on("addCollectionRequest", this.onAddCollectionRequest, this);
+    },
+
+    onAddCollectionRequest: function() {
+        this.select("collections");
     },
 
     minimizeSidebar:function () {
