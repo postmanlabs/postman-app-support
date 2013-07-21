@@ -1,7 +1,10 @@
 var Sidebar = Backbone.View.extend({
     initialize: function() {
-    	var historySidebar = new HistorySidebar({model: this.model.get("history")});
-    	var collectionSidebar = new CollectionSidebar({model: this.model.get("collections")});
+        var history = this.model.get("history");
+        var collections = this.model.get("collections");
+
+    	var historySidebar = new HistorySidebar({model: history});
+    	var collectionSidebar = new CollectionSidebar({model: collections});
     	var view = this;
 
     	var searchState = new SearchState({
@@ -12,6 +15,13 @@ var Sidebar = Backbone.View.extend({
     	var searchForm = new SearchForm({model: searchState});
 
     	var activeSidebarSection = pm.settings.getSetting("activeSidebarSection");
+
+
+        $('#sidebar-toggle').on("click", function () {
+            view.toggleSidebar();
+        });
+
+        this.model.set("width", $('#sidebar').width() + 10);      
 
     	if (activeSidebarSection) {
     	    this.select(activeSidebarSection);
@@ -72,16 +82,6 @@ var Sidebar = Backbone.View.extend({
         }
 
         model.set("isSidebarMaximized", !isSidebarMaximized);
-    },
-
-    init:function () {
-    	var view = this;
-
-        $('#sidebar-toggle').on("click", function () {
-            view.toggleSidebar();
-        });
-
-        model.set("width", $('#sidebar').width() + 10);      
     },
 
     select:function (section) {
