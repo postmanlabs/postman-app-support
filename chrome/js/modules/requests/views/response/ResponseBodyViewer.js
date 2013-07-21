@@ -47,11 +47,14 @@ var ResponseBodyViewer = Backbone.View.extend({
             $('#response-actions').css("display", "none");
             $("#response-language").css("display", "none");
             $("#response-copy-container").css("display", "none");            
-            $("#response-pretty-modifiers").css("display", "none");            
+            $("#response-pretty-modifiers").css("display", "none");        
+
+            console.log("Hide everything else to render PDF");    
         }       
         else if (previewType === "pdf" && responseRawDataType === "text") {           
             // TODO Will trigger request           
             // This would have updated the model already 
+            console.log("Trigger new PDF request");
             request.trigger("send", "arraybuffer");
         } 
         else {

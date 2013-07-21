@@ -1220,7 +1220,7 @@ input[type="file"] {
 /*Environments*/
 #environment-quicklook-wrapper {
   float: left;
-  margin-left: 10px; }
+  margin-left: 20px; }
   #environment-quicklook-wrapper .btn-group {
     font-size: 12px; }
   #environment-quicklook-wrapper .btn-group .dropdown-menu li a {

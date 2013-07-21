@@ -12,6 +12,8 @@ var ResponseBodyPDFViewer = Backbone.View.extend({
     	var responseRawDataType = response.get("rawDataType");
 
     	if (previewType === "pdf" && responseRawDataType === "arraybuffer") {
+            console.log("Render the PDF");
+            
 	    	var responseData = response.get("responseData");    	
 	    	$("#response-as-preview").html("");
 	    	$("#response-as-preview").css("display", "block");
@@ -21,8 +23,7 @@ var ResponseBodyPDFViewer = Backbone.View.extend({
 	    	});
     	}    	
     	else if (previewType === "pdf" && responseRawDataType === "text") {
-    	 	// Trigger an arraybuffer request with the same parameters   
-    	 	
+    	 	// Trigger an arraybuffer request with the same parameters       	 	
     	}
     }
 });

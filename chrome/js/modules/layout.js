@@ -31,8 +31,7 @@ pm.layout = {
         });
 
         $('a[rel="tooltip"]').tooltip();        
-
-        $('a[rel="tooltip"]').tooltip();
+        
         $('input[rel="popover"]').popover();
 
         var resizeTimeout;
