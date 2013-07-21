@@ -74,6 +74,7 @@ var chromeHeaders = [
     { label: "If-Range", category: "Standard HTTP Headers", type: "http" },
     { label: "If-Unmodified-Since", category: "Standard HTTP Headers", type: "http" },
     { label: "Max-Forwards", category: "Standard HTTP Headers", type: "http" },
+    { label: "Origin", category: "Standard HTTP Headers", type: "http" },
     { label: "Pragma", category: "Standard HTTP Headers", type: "http" },
     { label: "Proxy-Authorization", category: "Standard HTTP Headers", type: "http" },
     { label: "Range", category: "Standard HTTP Headers", type: "http" },
