@@ -15,12 +15,14 @@ var RequestURLEditor = Backbone.View.extend({
             placeHolderValue:"Value",
             deleteButton:'<img class="deleteButton" src="img/delete.png">',
             onDeleteRow:function () {
-                // TODO Also set urlParams separately
+                var params = view.getUrlEditorParams();
+                model.setUrlParams(params);
                 model.setUrlParamString(view.getUrlEditorParams());
             },
 
             onBlurElement:function () {
-                // TODO Also set urlParams separately
+                var params = view.getUrlEditorParams();
+                model.setUrlParams(params);
                 model.setUrlParamString(view.getUrlEditorParams());
             }
         };
@@ -48,6 +50,18 @@ var RequestURLEditor = Backbone.View.extend({
             var newRows = getUrlVars($('#url').val(), false);
             $('#url-keyvaleditor').keyvalueeditor('reset', newRows);
         });
+
+
+        var urlFocusHandler = function () {
+            if(pm.layout.isModalOpen) {
+                return;
+            }
+
+            $('#url').focus();
+            return false;
+        };
+
+        $(document).bind('keydown', 'backspace', urlFocusHandler);
     },
 
     onStartNew: function(model) {

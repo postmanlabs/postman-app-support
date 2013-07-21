@@ -75,6 +75,8 @@ var IDBCursor = window.IDBCursor || window.webkitIDBCursor;
 window.requestFileSystem = window.requestFileSystem || window.webkitRequestFileSystem;
 
 pm.init = function () {
+    Handlebars.partials = Handlebars.templates;
+
     function initializeCollections() {
         var pmCollections = new PmCollections();
 
@@ -91,16 +93,13 @@ pm.init = function () {
 
         var collectionRequestDetailsView = new CollectionRequestDetailsView({model: pmCollections});
 
-        var collectionSidebar = new CollectionSidebar({model: pmCollections});
-
-        pm.collections = pmCollections;
+        pm.collections = pmCollections;        
+        pm.collectionRequestDetailsView = collectionRequestDetailsView;
     }
 
     function initializeHistory() {
         var history = new History();
-        var historySidebar = new HistorySidebar({model: history});
-        pm.history = history;
-        pm.historySidebar = historySidebar;
+        pm.history = history;        
     }
 
     function initializeHelpers() {
@@ -165,10 +164,18 @@ pm.init = function () {
         pm.request = request;
     }
 
+    function initializeStorage() {
+        var storage = new Storage();
+        pm.storage = storage;
+    }
 
-    Handlebars.partials = Handlebars.templates;
-    var storage = new Storage();
-    pm.storage = storage;
+    function initializeSidebar() {
+        var sidebarState = new SidebarState({history: pm.history, collections: pm.collections});
+        var sidebar = new Sidebar({ model: sidebarState });
+        pm.layout.sidebar = sidebar;
+    }
+
+    initializeStorage();
 
     pm.settings = new Settings();
 
@@ -177,36 +184,27 @@ pm.init = function () {
 
         pm.indexedDB.open(function() {
             initializeHelpers();
-
             initializeRequester();
-
             initializeHistory();
-            initializeCollections();
+            initializeCollections();            
 
-            pm.search.init();
             pm.layout.init();
             pm.editor.init();
-
             pm.keymap.init();
             pm.filesystem.init();
 
             initializeEnvironments();
             initializeHeaderPresets();
 
-            var activeSidebarSection = pm.settings.getSetting("activeSidebarSection");
+            initializeSidebar();            
 
-            if (activeSidebarSection) {
-                pm.layout.sidebar.select(activeSidebarSection);
-            }
-            else {
-                pm.layout.sidebar.select("history");
-            }
+            pm.request.on("startNew", function() {
+                pm.collectionRequestDetailsView.hide();
+            });
         });
 
         pm.drive.setupUiHandlers();
         pm.broadcasts.init();
-
-        $(":input:first").focus();
     });
 };
 

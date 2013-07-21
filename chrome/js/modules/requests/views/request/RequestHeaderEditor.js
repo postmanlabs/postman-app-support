@@ -75,6 +75,17 @@ var RequestHeaderEditor = Backbone.View.extend({
                 view.openHeaderEditor();
             }
         });
+
+        
+        $(document).bind('keydown', 'h', function () {
+            if(pm.layout.isModalOpen) {
+                return;
+            }
+
+            view.openHeaderEditor();
+            $('#headers-keyvaleditor div:first-child input:first-child').focus();
+            return false;
+        });
     },
 
     onChangeHeaders: function() {                

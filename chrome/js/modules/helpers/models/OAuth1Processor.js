@@ -59,7 +59,8 @@ var OAuth1Processor = Backbone.Model.extend({
     generateSignature: function () {
         //Make sure the URL is urlencoded properly
         //Set the URL keyval editor as well. Other get params disappear when you click on URL params again
-        if ($('#url').val() === '') {
+        var url = pm.request.get("url");
+        if (url === '') {
             $('#request-helpers').css("display", "block");
             alert('Please enter the URL first.');
             return null;
@@ -73,7 +74,7 @@ var OAuth1Processor = Backbone.Model.extend({
         var requestBody = pm.request.get("body");
 
         if (realm === '') {
-            processedUrl = pm.envManager.convertString($('#url').val()).trim();
+            processedUrl = pm.envManager.convertString(url).trim();
         }
         else {
             processedUrl = pm.envManager.convertString(realm);
@@ -101,7 +102,7 @@ var OAuth1Processor = Backbone.Model.extend({
         });
 
         //Get parameters
-        var urlParams = $('#url-keyvaleditor').keyvalueeditor('getValues');
+        var urlParams = pm.request.getUrlParams();
         var bodyParams = requestBody.get("dataAsObjects");
 
         var params = urlParams.concat(bodyParams);
@@ -156,9 +157,10 @@ var OAuth1Processor = Backbone.Model.extend({
         var params = [];
 
         // TODO This does not exist
-        var urlParams = pm.request.getUrlEditorParams();
+        var urlParams = pm.request.getUrlParams();
         var bodyParams = [];
 
+        var url = pm.request.get("url");
         var body = pm.request.get("body");
         var dataMode = body.get("dataMode");
         var method = pm.request.get("method");
@@ -205,7 +207,7 @@ var OAuth1Processor = Backbone.Model.extend({
             var realm = $('#request-helper-oauth1-realm').val();
 
             if (realm === '') {
-                realm = pm.envManager.convertString($('#url').val()).trim();
+                realm = pm.envManager.convertString(url.trim());
             }
 
             if (realm.indexOf('?') > 0) {
@@ -228,19 +230,17 @@ var OAuth1Processor = Backbone.Model.extend({
             // TODO Make this change the model
             params = params.concat(oAuthParams);
 
-            if (method === "GET") {
-                $('#url-keyvaleditor').keyvalueeditor('reset', params);
-                pm.request.setUrlParamString(params);
-                pm.request.openUrlEditor();
+            if (!pm.request.isMethodWithBody(method)) {                
+                // TODO URLEditor should set this automatically
+                pm.request.setUrlParamString(params);                
             } else {                
                 if (dataMode === 'urlencoded') {
-                    $('#urlencoded-keyvaleditor').keyvalueeditor('reset', params);
+                    pm.request.setBodyParams(params);
                 }
                 else if (dataMode === 'params') {
-                    $('#formdata-keyvaleditor').keyvalueeditor('reset', params);
+                    pm.request.setBodyParams(params);
                 }
                 else if (dataMode === 'raw') {
-                    $('#url-keyvaleditor').keyvalueeditor('reset', params);
                     pm.request.setUrlParamString(params);                    
                 }
             }

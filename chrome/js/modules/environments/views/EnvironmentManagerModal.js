@@ -116,7 +116,18 @@ var EnvironmentManagerModal = Backbone.View.extend({
         };
 
         $('#environment-keyvaleditor').keyvalueeditor('init', params);
-        $('#globals-keyvaleditor').keyvalueeditor('init', params);
+        $('#globals-keyvaleditor').keyvalueeditor('init', params);        
+
+        $(document).bind('keydown', 'e', function () {
+            if(pm.layout.isModalOpen) {
+                return;
+            }
+
+            $('#modal-environments').modal({
+                keyboard:true,
+                backdrop:"static"
+            });
+        });
 
         this.render();
     },

@@ -1,3 +1,4 @@
+// TODO This will be defined as the global app view
 pm.layout = {
     isModalOpen:false,
     activeModal: "",
@@ -29,17 +30,7 @@ pm.layout = {
             title: "Donate"
         });
 
-        $('a[rel="tooltip"]').tooltip();
-
-        this.sidebar.init();
-
-        //TODO Move this to ResponseEditor
-        //pm.request.response.clear();
-
-        $('#sidebar-selectors li').click(function () {
-            var id = $(this).attr('data-id');
-            pm.layout.sidebar.select(id);
-        });
+        $('a[rel="tooltip"]').tooltip();        
 
         $('a[rel="tooltip"]').tooltip();
         $('input[rel="popover"]').popover();
@@ -102,85 +93,5 @@ pm.layout = {
 
     showDonationBar: function() {
         $("#header-donate-link-container").css("display", "block");
-    },
-
-    sidebar:{
-        currentSection:"history",
-        isSidebarMaximized:true,
-        sections:[ "history", "collections" ],
-        width:0,
-        animationDuration:250,
-
-        minimizeSidebar:function () {
-            pm.layout.sidebar.width = $("#sidebar").width();
-
-            var animationDuration = pm.layout.sidebar.animationDuration;
-            $('#sidebar-toggle').animate({left:"0"}, animationDuration);
-            $('#sidebar').animate({width:"0px", marginLeft: "-10px"}, animationDuration);
-            $('#sidebar-search-container').css("display", "none");
-            $('#sidebar div').animate({opacity:0}, animationDuration);
-            var newMainWidth = $(document).width();
-            $('#main').animate({width:newMainWidth + "px", "margin-left":"5px"}, animationDuration);
-            $('#sidebar-toggle img').attr('src', 'img/tri_arrow_right.png');
-        },
-
-        maximizeSidebar:function () {
-            var animationDuration = pm.layout.sidebar.animationDuration;
-            $('#sidebar-toggle').animate({left:"350px"}, animationDuration, function () {
-                if (pm.settings.getSetting("haveDonated") === false) {
-                    $('#sidebar-search-container').fadeIn();
-                }
-
-            });
-
-            $('#sidebar').animate({width:pm.layout.sidebar.width + "px", marginLeft: "0px"}, animationDuration);
-            $('#sidebar div').animate({opacity:1}, animationDuration);
-            $('#sidebar-toggle img').attr('src', 'img/tri_arrow_left.png');
-            var newMainWidth = $(document).width() - pm.layout.sidebar.width - 10;
-            var marginLeft = pm.layout.sidebar.width + 10;
-            $('#main').animate({width:newMainWidth + "px", "margin-left": marginLeft+ "px"}, animationDuration);
-            pm.layout.refreshScrollPanes();
-        },
-
-        toggleSidebar:function () {
-            var isSidebarMaximized = pm.layout.sidebar.isSidebarMaximized;
-            if (isSidebarMaximized) {
-                pm.layout.sidebar.minimizeSidebar();
-            }
-            else {
-                pm.layout.sidebar.maximizeSidebar();
-            }
-
-            pm.layout.sidebar.isSidebarMaximized = !isSidebarMaximized;
-        },
-
-        init:function () {
-            $('#sidebar-toggle').on("click", function () {
-                pm.layout.sidebar.toggleSidebar();
-            });
-
-            pm.layout.sidebar.width = $('#sidebar').width() + 10;
-        },
-
-        select:function (section) {
-            $("#sidebar-selectors li").removeClass("active");
-            $("#sidebar-selectors-" + section).addClass("active");
-
-            pm.settings.setSetting("activeSidebarSection", section);
-
-            if (pm.collections.areLoaded === false) {
-                pm.collections.getAllCollections();
-            }
-
-            $('#sidebar-section-' + this.currentSection).css("display", "none");
-            $('#' + this.currentSection + '-options').css("display", "none");
-
-            this.currentSection = section;
-
-            $('#sidebar-section-' + section).css("display", "block");
-            $('#' + section + '-options').css("display", "block");
-            pm.layout.refreshScrollPanes();
-            return true;
-        }
     }
 };

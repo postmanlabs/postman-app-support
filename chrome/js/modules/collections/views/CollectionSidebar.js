@@ -12,6 +12,9 @@ var CollectionSidebar = Backbone.View.extend({
         model.on("removeCollectionRequest", this.removeCollectionRequest, this);
         model.on("updateCollectionRequest", this.updateCollectionRequest, this);
 
+        model.on("filter", this.onFilter, this);
+        model.on("revertFilter", this.onRevertFilter, this);
+
         $('#collection-items').html("");
         $('#collection-items').append(Handlebars.templates.message_no_collection({}));
 
@@ -77,7 +80,6 @@ var CollectionSidebar = Backbone.View.extend({
             var id = $(this).attr('data-id');            
             model.getCollectionRequest(id);
         });
-
 
         $collection_items.on("click", ".request-actions-delete", function () {
             var id = $(this).attr('data-id');
@@ -311,16 +313,14 @@ var CollectionSidebar = Backbone.View.extend({
         if (typeof request.name === "undefined") {
             request.name = request.url;
         }
+
         request.name = limitStringLineWidth(request.name, 43);
 
         $(targetElement).append(Handlebars.templates.item_collection_sidebar_request(request));
 
-        pm.request.isFromCollection = true;
-        pm.request.collectionRequestId = request.id;
-
-        //TODO This will be handled by request.js
-        $('#update-request-in-collection').css("display", "inline-block");
-
+        request.isFromCollection = true;
+        request.collectionRequestId = request.id;
+        
         $('#collection-' + request.collectionId + " .sidebar-collection-head").droppable({
             accept: ".sidebar-collection-request",
             hoverClass: "ui-state-hover",
@@ -328,6 +328,8 @@ var CollectionSidebar = Backbone.View.extend({
         });
 
         this.openCollection(request.collectionId);
+
+        pm.request.loadRequestInEditor(request);
     },
 
     removeCollectionRequest: function(request) {
@@ -383,5 +385,50 @@ var CollectionSidebar = Backbone.View.extend({
         var requestId = $('#' + id + ' .request').attr("data-id");
         var targetCollectionId = $($(event.target).find('.sidebar-collection-head-name')[0]).attr('data-id');
         this.model.dropRequestOnCollection(requestId, targetCollectionId);
+    },
+
+    onFilter: function(filteredCollectionItems) {
+        var collectionsCount = filteredCollectionItems.length;
+        for(var i = 0; i < collectionsCount; i++) {
+            var c = filteredCollectionItems[i];
+            var collectionDomId = "#collection-" + c.id;
+            var collectionRequestsDomId = "#collection-requests-" + c.id;
+            var dtDomId = "#collection-" + c.id + " .sidebar-collection-head-dt";
+
+            if(c.toShow) {
+                $(collectionDomId).css("display", "block");
+                $(collectionRequestsDomId).css("display", "block");
+                $(dtDomId).removeClass("disclosure-triangle-close");
+                $(dtDomId).addClass("disclosure-triangle-open");
+
+                var requests = c.requests;
+                if(requests) {
+                    var requestsCount = requests.length;
+                    for(var j = 0; j < requestsCount; j++) {
+                        var r = requests[j];
+                        var requestDomId = "#sidebar-request-" + r.id;
+                        if(r.toShow) {
+                            $(requestDomId).css("display", "block");
+                        }
+                        else {
+                            $(requestDomId).css("display", "none");
+                        }
+                    }
+                }
+            }
+            else {
+                $(collectionDomId).css("display", "none");
+                $(collectionRequestsDomId).css("display", "none");
+                $(dtDomId).removeClass("disclosure-triangle-open");
+                $(dtDomId).addClass("disclosure-triangle-close");
+            }
+        }
+
+        pm.layout.refreshScrollPanes();
+    },
+
+    onRevertFilter: function() {
+        $(".sidebar-collection").css("display", "block");
+        $(".sidebar-collection-request").css("display", "block");        
     }
 });

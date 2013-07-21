@@ -21,13 +21,10 @@ var RequestMethodEditor = Backbone.View.extend({
         this.model.set("url", $('#url').val());
         this.model.set("method", method);
 
-        //TODO Why do we need this?
-        //TODO Caution! Changed from previous logic
-        if (this.model.isMethodWithBody(method)) {
+        // Change only for methods not with body to make sure
+        // current body type is not switched
+        if (!this.model.isMethodWithBody(method)) {
             body.set("dataMode", "params");
-        }
-        else {
-            body.set("dataMode", "");
         }
     }
 })

@@ -30,6 +30,23 @@ var AddCollectionRequestModal = Backbone.View.extend({
 
         //Initialize select-collection options
         $('#select-collection').html("<option>Select</option>");
+
+        $(document).bind('keydown', 'a', function () {
+            if(pm.layout.isModalOpen) {
+                return;
+            }
+
+            $('#modal-add-to-collection').modal({
+                keyboard:true,
+                backdrop:"static"
+            });
+
+            $('#modal-add-to-collection').modal('show');
+
+            $('#new-request-name').val("");
+            $('#new-request-description').val("");
+            return false;
+        });
     },
 
     add: function(model, pmCollection) {

@@ -42,6 +42,18 @@ var RequestBodyEditor = Backbone.View.extend({
             pm.settings.setSetting("requestBodyEditorContainerType", type);
         });
 
+
+        $(document).bind('keydown', 'p', function () {
+            if(pm.layout.isModalOpen) {
+                return;
+            }
+
+            if (model.isMethodWithBody(model.get("method"))) {
+                $('#formdata-keyvaleditor div:first-child input:first-child').focus();
+                return false;
+            }
+        });
+
         this.setDataMode("params");
     },
 

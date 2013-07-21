@@ -138,6 +138,19 @@ var SettingsModal = Backbone.View.extend({
             });
         });
 
+        $(document).bind('keydown', 'shift+/', function () {
+            if(pm.layout.isModalOpen) {
+                return;
+            }
+
+            $('#modal-settings').modal({
+                keyboard: true
+            });
+
+            $('#modal-settings').modal('show');
+            $('#modal-settings a[href="#settings-shortcuts"]').tab('show');
+        });
+
         if (this.model.getSetting("usePostmanProxy") === true) {
             $('#postman-proxy-url-container').css("display", "block");
         }

@@ -152,6 +152,14 @@ var Request = Backbone.Model.extend({
         return $(document.createElement('div')).html(link).text();
     },
 
+    getUrlParams: function() {
+        return this.get("urlParams");
+    },
+
+    setUrlParams: function(params) {
+        this.set("urlParams", params);
+    },
+
     // Fixed
     setUrlParamString:function (params) {
         var url = $('#url').val();
@@ -185,6 +193,10 @@ var Request = Backbone.Model.extend({
 
         //TODO Cleaner way to do this?
         this.set("url", $('#url').val());
+    },
+
+    setBodyParams: function(params) {
+        console.log("Will set parameters for urlencoded and formdata");
     },
 
     // Fixed

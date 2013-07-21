@@ -51,6 +51,15 @@ var ResponseViewer = Backbone.View.extend({
                 view.showCookies();
             }
         });
+
+        
+        $(document).bind('keydown', 'f', function () {
+            if(pm.layout.isModalOpen) {
+                return;
+            }
+
+            view.responseBodyViewer.toggleBodySize();
+        });
     },
 
     onFailedRequest: function(errorUrl) {

@@ -37,8 +37,6 @@ var RequestEditor = Backbone.View.extend({
                 time: new Date().getTime()
             };            
 
-            console.log("Request is", collectionRequest);
-
             pm.collections.updateCollectionRequest(collectionRequest);
         });
 
@@ -93,6 +91,21 @@ var RequestEditor = Backbone.View.extend({
             return false;
         });
 
+        var newRequestHandler = function () {
+            if(pm.layout.isModalOpen) {
+                return;
+            }
+
+            model.trigger("startNew", model);
+        };        
+        
+
+        $(document).bind('keydown', 'alt+p', function() {
+            _.bind(view.onPreviewRequestClick, view)();
+        });
+
+        $(document).bind('keydown', 'alt+n', newRequestHandler);
+
         model.trigger("readyToLoadRequest", this);
     },
 
@@ -145,6 +158,7 @@ var RequestEditor = Backbone.View.extend({
         var isFromSample = model.get("isFromSample");
         var isFromCollection = model.get("isFromCollection");
 
+        // TODO This needs to be in the CollectionRequestDetailsView
         if (isFromCollection) {
             $('#update-request-in-collection').css("display", "inline-block");
 

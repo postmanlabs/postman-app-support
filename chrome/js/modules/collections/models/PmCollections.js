@@ -384,13 +384,14 @@ var PmCollections = Backbone.Collection.extend({
         var pmCollection = this;
         
         pm.indexedDB.getCollectionRequest(id, function (request) {
-            pm.request.isFromCollection = true;
-            pm.request.collectionRequestId = id;
+            request.isFromCollection = true;
+            request.collectionRequestId = id;
             pm.request.loadRequestInEditor(request, true);
             pmCollection.trigger("selectedCollectionRequest", request);
         });
     },
 
+    // TODO Needs to be changed
     loadResponseInEditor:function (id) {
         var responses = pm.request.responses;
         var responseIndex = find(responses, function (item, i, responses) {
@@ -402,6 +403,7 @@ var PmCollections = Backbone.Collection.extend({
         pm.request.response.render(response);
     },
 
+    // TODO Needs to be changed
     //Feature not active yet
     removeSampleResponse:function (id) {
         var responses = pm.request.responses;
@@ -684,7 +686,12 @@ var PmCollections = Backbone.Collection.extend({
             filteredCollections.push(c);
         }
 
+        this.trigger("filter", filteredCollections);
         return filteredCollections;
+    },
+
+    revert: function() {
+        this.trigger("revertFilter");
     },
 
     dropRequestOnCollection: function(requestId, targetCollectionId) {

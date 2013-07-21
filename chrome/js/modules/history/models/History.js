@@ -157,7 +157,13 @@ var History = Backbone.Collection.extend({
 
             filteredItems.push(filteredItem);
         }
+        
+        this.trigger("filter", filteredItems);
 
         return filteredItems;
+    },
+
+    revert: function() {
+        this.trigger("revertFilter");
     }
 });

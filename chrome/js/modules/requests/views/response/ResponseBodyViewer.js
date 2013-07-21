@@ -181,11 +181,11 @@ var ResponseBodyViewer = Backbone.View.extend({
         }
     },
 
-    loadImage: function(url) {
+    loadImage: function(url) {        
         var remoteImage = new RAL.RemoteImage({
             priority: 0,
             src: imgLink,
-            headers: pm.request.getXhrHeaders()
+            headers: this.model.getXhrHeaders()
         });
 
         remoteImage.addEventListener('loaded', function(remoteImage) {

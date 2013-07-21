@@ -1,3 +1,4 @@
+// TODO This can be made part of the RequestEditor - RequestMetaViewer
 var CollectionRequestDetailsView = Backbone.View.extend({
     initialize: function() {
         var model = this.model;
@@ -49,9 +50,14 @@ var CollectionRequestDetailsView = Backbone.View.extend({
         $('#sidebar-selectors a[data-id="collections"]').tab('show');
     },
 
+    hide: function() {
+        $('#request-meta').css("display", "none");
+    },
 
     render: function(request) {
-        if (pm.request.collectionRequestId === request.id) {
+        var currentId = pm.request.get("collectionRequestId");
+
+        if (currentId === request.id) {
             $('#request-name').html(request.name);
             $('#request-description').html(request.description);
         }

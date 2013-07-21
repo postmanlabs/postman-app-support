@@ -7,6 +7,9 @@ var HistorySidebar = Backbone.View.extend({
         this.model.on("reset", this.render, this);
         this.model.on("add", this.addOne, this);
         this.model.on("remove", this.removeOne, this);
+
+        this.model.on("filter", this.onFilter, this);
+        this.model.on("revertFilter", this.onRevertFilter, this);
         //Event: Delete request
 
         $('.history-actions-delete').click(function () {
@@ -32,6 +35,17 @@ var HistorySidebar = Backbone.View.extend({
             var actionsEl = jQuery('.request-actions', this);
             actionsEl.css('display', 'none');
         });
+
+        var clearHistoryHandler = function () {
+            if(pm.layout.isModalOpen) {
+                return;
+            }
+
+            pm.history.clear();
+            return false;
+        };
+
+        $(document).bind('keydown', 'alt+c', clearHistoryHandler);
 
         this.showEmptyMessage();
     },
@@ -96,8 +110,6 @@ var HistorySidebar = Backbone.View.extend({
     },
 
     render: function() {
-        console.log("Render history");
-
         var requests = this.model.toJSON();
 
         if (requests.length === 0) {
@@ -109,5 +121,24 @@ var HistorySidebar = Backbone.View.extend({
             $('#history-items').append(Handlebars.templates.history_sidebar_requests({"items":requests}));
             $('#history-items').fadeIn();
         }
+    },
+
+    onFilter: function(filteredHistoryItems) {
+        var count = filteredHistoryItems.length;
+        for(var i = 0; i < count; i++) {
+            var item = filteredHistoryItems[i];
+            var id = "#sidebar-request-" + item.id;
+
+            if(item.toShow) {
+                $(id).css("display", "block");
+            }
+            else {
+                $(id).css("display", "none");
+            }
+        }
+    },
+
+    onRevertFilter: function() {
+        $("#history-items li").css("display", "block");
     }
 });
