@@ -91,6 +91,7 @@ var RequestURLEditor = Backbone.View.extend({
     },
 
     updateModel: function() {
+        this.model.set("url", $("#url").val())
         this.model.setUrlParamString(this.getUrlEditorParams());
     },
 
