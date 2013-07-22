@@ -663,5 +663,13 @@ var Request = Backbone.Model.extend({
         var re = /<script\b[^>]*>([\s\S]*?)<\/script>/gm;
         text = text.replace(re, "");
         return text;
+    },
+
+    checkIfCurrentRequestIsUpdated: function(request) {
+        var id = this.get("id");
+        if(id === request.id) {
+            this.set("name", request.name);
+            this.set("description", request.description);
+        }
     }
 });

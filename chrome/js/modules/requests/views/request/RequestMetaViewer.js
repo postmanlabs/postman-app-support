@@ -1,20 +1,10 @@
-// TODO This can be made part of the RequestEditor - RequestMetaViewer
-var CollectionRequestDetailsView = Backbone.View.extend({
+var RequestMetaViewer = Backbone.View.extend({
     initialize: function() {
         var model = this.model;
 
-        model.on("displayCollectionRequest", this.show, this);
-        model.on("updateCollectionRequest", this.render, this);
-
-        $('#request-samples').on("click", ".sample-response-name", function () {
-            var id = $(this).attr("data-id");
-            model.loadResponseInEditor(id);
-        });
-
-        $('#request-samples').on("click", ".sample-response-delete", function () {
-            var id = $(this).attr("data-id");
-            model.removeSampleResponse(id);
-        });
+        model.on("loadRequest", this.render, this);
+        model.on("change:name", this.render, this);
+        model.on("change:description", this.render, this);
 
         $('.request-meta-actions-togglesize').on("click", function () {
             var action = $(this).attr('data-action');
@@ -44,21 +34,23 @@ var CollectionRequestDetailsView = Backbone.View.extend({
         $('#request-meta').css("display", "block");
         $('#request-name').css("display", "block");
         $('#request-description').css("display", "block");
-
-        //TODO Move this to the global Sidebar view
-        $('#sidebar-selectors a[data-id="collections"]').tab('show');
     },
 
     hide: function() {
         $('#request-meta').css("display", "none");
     },
 
-    render: function(request) {
-        var currentId = pm.request.get("collectionRequestId");
+    render: function() {
+        var request = this.model;
+        var isFromCollection = this.model.get("isFromCollection");
 
-        if (currentId === request.id) {
-            $('#request-name').html(request.name);
-            $('#request-description').html(request.description);
+        if (isFromCollection) {
+            this.show();
+            $('#request-name').html(request.get("name"));
+            $('#request-description').html(request.get("description"));
+        }
+        else {
+            this.hide();
         }
     }
 });

@@ -94,7 +94,6 @@ pm.init = function () {
         var collectionRequestDetailsView = new CollectionRequestDetailsView({model: pmCollections});
 
         pm.collections = pmCollections;        
-        pm.collectionRequestDetailsView = collectionRequestDetailsView;
     }
 
     function initializeHistory() {
@@ -204,8 +203,8 @@ pm.init = function () {
 
             initializeSidebar();            
 
-            pm.request.on("startNew", function() {
-                pm.collectionRequestDetailsView.hide();
+            pm.collections.on("updateCollectionRequest", function(request) {
+                pm.request.checkIfCurrentRequestIsUpdated(request);
             });
 
             pm.drive.setupUiHandlers();

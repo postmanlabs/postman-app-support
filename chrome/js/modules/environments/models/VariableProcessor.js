@@ -79,25 +79,7 @@ var VariableProcessor = Backbone.Model.extend({
             return finalString;
         }
     },
-
-    // TODO Just use one of these functions
-    convertString:function (string) {
-        var envModel = this.get("selectedEnv");
-        var envValues = [];
-
-        if (envModel) {
-            var environment = envModel.toJSON();
-            if (environment !== null) {
-                envValues = environment.values;
-            }
-        }
-
-        var globals = this.get("globals").get("globals");
-        var values = _.union(envValues, globals);
-
-        return this.processString(string, values);
-    },
-
+    
     getCurrentValue: function(string) {
         var envModel = this.get("selectedEnv");
         var envValues = [];

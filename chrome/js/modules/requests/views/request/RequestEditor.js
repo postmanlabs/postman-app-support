@@ -5,6 +5,7 @@ var RequestEditor = Backbone.View.extend({
         var view = this;
         var body = model.get("body");
 
+        this.requestMetaViewer = new RequestMetaViewer({model: this.model});
         this.requestMethodEditor = new RequestMethodEditor({model: this.model});
         this.requestHeaderEditor = new RequestHeaderEditor({model: this.model});
         this.requestURLEditor = new RequestURLEditor({model: this.model});

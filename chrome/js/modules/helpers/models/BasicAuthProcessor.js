@@ -26,8 +26,8 @@ var BasicAuthProcessor = Backbone.Model.extend({
         var username = this.get("username");
         var password = this.get("password");
 
-        username = pm.envManager.convertString(username);
-        password = pm.envManager.convertString(password);
+        username = pm.envManager.getCurrentValue(username);
+        password = pm.envManager.getCurrentValue(password);
 
         var rawString = username + ":" + password;
         var encodedString = "Basic " + btoa(rawString);
