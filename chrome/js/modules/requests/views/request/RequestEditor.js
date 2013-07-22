@@ -65,7 +65,7 @@ var RequestEditor = Backbone.View.extend({
 
 
         $('body').on('keydown', 'input', function (event) {
-            if(pm.layout.isModalOpen) {
+            if(pm.app.isModalOpen()) {
                 return;
             }
 
@@ -81,7 +81,7 @@ var RequestEditor = Backbone.View.extend({
 
 
         $(document).bind('keydown', 'return', function () {
-            if(pm.layout.isModalOpen) {
+            if(pm.app.isModalOpen()) {
                 return;
             }
 
@@ -92,7 +92,7 @@ var RequestEditor = Backbone.View.extend({
         });
 
         var newRequestHandler = function () {
-            if(pm.layout.isModalOpen) {
+            if(pm.app.isModalOpen()) {
                 return;
             }
 

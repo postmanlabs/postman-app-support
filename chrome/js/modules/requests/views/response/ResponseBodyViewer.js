@@ -128,15 +128,21 @@ var ResponseBodyViewer = Backbone.View.extend({
             lineWrapping = false;
         }
 
-        pm.editor.mode = mode;        
+        this.responseBodyPrettyViewer.mode = mode;
+        this.responseBodyPrettyViewer.defineCodeMirrorLinksMode();
+
+        var codeMirror = this.responseBodyPrettyViewer.codeMirror;
 
         if ($.inArray(mode, ["javascript", "xml", "html"]) >= 0) {
+            this.responseBodyPrettyViewer.mode = mode;
             renderMode = "links";
         }
 
-        if (!pm.editor.codeMirror || forceCreate) {            
+        if (!codeMirror) {            
+            console.log("Force creating codeMirror", renderMode);
+
             $('#response .CodeMirror').remove();
-            pm.editor.codeMirror = CodeMirror.fromTextArea(codeDataArea,
+            codeMirror = CodeMirror.fromTextArea(codeDataArea,
             {
                 mode:renderMode,
                 lineNumbers:true,
@@ -146,23 +152,26 @@ var ResponseBodyViewer = Backbone.View.extend({
                 lineWrapping:lineWrapping,
                 readOnly:true
             });
+            
+            codeMirror.setValue(response);
+            codeMirror.refresh();
 
-            var cm = pm.editor.codeMirror;
-            cm.setValue(response);
-            cm.refresh();
+            this.responseBodyPrettyViewer.codeMirror = codeMirror;
         }
         else {
-            pm.editor.codeMirror.setOption("onGutterClick", foldFunc);
-            pm.editor.codeMirror.setOption("mode", renderMode);
-            pm.editor.codeMirror.setOption("lineWrapping", lineWrapping);
-            pm.editor.codeMirror.setOption("theme", "eclipse");
-            pm.editor.codeMirror.setOption("readOnly", false);
-            pm.editor.codeMirror.setValue(response);
-            pm.editor.codeMirror.refresh();
+            codeMirror.setOption("onGutterClick", foldFunc);
+            codeMirror.setOption("mode", renderMode);
+            codeMirror.setOption("lineWrapping", lineWrapping);
+            codeMirror.setOption("theme", "eclipse");
+            codeMirror.setOption("readOnly", false);
+            codeMirror.setValue(response);
+            codeMirror.refresh();
 
-            CodeMirror.commands["goDocStart"](pm.editor.codeMirror);
+            CodeMirror.commands["goDocStart"](codeMirror);
             $(window).scrollTop(0);
         }
+
+        console.log(this.responseBodyPrettyViewer);
 
         if (format === "parsed") {
             $('#response-as-code').css("display", "block");
@@ -238,7 +247,7 @@ var ResponseBodyViewer = Backbone.View.extend({
             $('#response-as-preview').css("display", "none");
             $('#code-data').css("display", "none");
             $('#response-pretty-modifiers').css("display", "block");
-            pm.editor.codeMirror.refresh();
+            this.responseBodyPrettyViewer.codeMirror.refresh();
         }
         else if (previewType === 'preview') {
             $('#response-as-text').css("display", "none");
@@ -294,7 +303,7 @@ var ResponseBodyViewer = Backbone.View.extend({
     },    
 
     toggleLineWrapping: function() {
-        pm.editor.toggleLineWrapping();
+        this.responseBodyPrettyViewer.toggleLineWrapping();
     },
     
     setMode:function (mode) {

@@ -16,11 +16,11 @@ var ShareCollectionModal = Backbone.View.extend({
         });
 
         $("#modal-share-collection").on("shown", function () {
-            pm.layout.onModalOpen("#modal-share-collection");
+            pm.app.onModalOpen("#modal-share-collection");
         });
 
         $("#modal-share-collection").on("hidden", function () {
-            pm.layout.onModalClose();
+            pm.app.onModalClose();
         });
     },
 

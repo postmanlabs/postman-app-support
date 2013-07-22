@@ -37,7 +37,7 @@ var HistorySidebar = Backbone.View.extend({
         });
 
         var clearHistoryHandler = function () {
-            if(pm.layout.isModalOpen) {
+            if(pm.app.isModalOpen()) {
                 return;
             }
 

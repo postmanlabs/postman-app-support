@@ -8,11 +8,11 @@ var DeleteCollectionModal = Backbone.View.extend({
         });
 
         $("#modal-delete-collection").on("shown", function () {
-            pm.layout.onModalOpen("#modal-delete-collection");
+            pm.app.onModalOpen("#modal-delete-collection");
         });
 
         $("#modal-delete-collection").on("hidden", function () {
-            pm.layout.onModalClose();
+            pm.app.onModalClose();
         });
     },
 

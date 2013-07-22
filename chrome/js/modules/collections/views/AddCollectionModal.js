@@ -20,11 +20,11 @@ var AddCollectionModal = Backbone.View.extend({
 
         $("#modal-new-collection").on("shown", function () {
             $("#new-collection-blank").focus();
-            pm.layout.onModalOpen("#modal-new-collection");
+            pm.app.onModalOpen("#modal-new-collection");
         });
 
         $("#modal-new-collection").on("hidden", function () {
-            pm.layout.onModalClose();
+            pm.app.onModalClose();
         });
     },
 

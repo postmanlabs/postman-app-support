@@ -44,7 +44,7 @@ var RequestBodyEditor = Backbone.View.extend({
 
 
         $(document).bind('keydown', 'p', function () {
-            if(pm.layout.isModalOpen) {
+            if(pm.app.isModalOpen()) {
                 return;
             }
 

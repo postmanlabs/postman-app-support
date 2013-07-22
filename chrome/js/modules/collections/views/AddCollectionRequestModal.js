@@ -21,18 +21,18 @@ var AddCollectionRequestModal = Backbone.View.extend({
 
         $("#modal-add-to-collection").on("shown", function () {
             $("#select-collection").focus();
-            pm.layout.onModalOpen("#modal-add-to-collection");
+            pm.app.onModalOpen("#modal-add-to-collection");
         });
 
         $("#modal-add-to-collection").on("hidden", function () {
-            pm.layout.onModalClose();
+            pm.app.onModalClose();
         });
 
         //Initialize select-collection options
         $('#select-collection').html("<option>Select</option>");
 
         $(document).bind('keydown', 'a', function () {
-            if(pm.layout.isModalOpen) {
+            if(pm.app.isModalOpen()) {
                 return;
             }
 

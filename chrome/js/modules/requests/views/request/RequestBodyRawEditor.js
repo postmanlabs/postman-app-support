@@ -1,4 +1,4 @@
-var RequestBodyRawEditor = Backbone.View.extend({
+var RequestBodyRawEditor = Backbone.View.extend({    
     initialize: function() {
         var model = this.model;
         var view = this;

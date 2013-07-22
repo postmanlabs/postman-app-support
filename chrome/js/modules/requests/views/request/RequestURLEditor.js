@@ -53,7 +53,7 @@ var RequestURLEditor = Backbone.View.extend({
 
 
         var urlFocusHandler = function () {
-            if(pm.layout.isModalOpen) {
+            if(pm.app.isModalOpen()) {
                 return;
             }
 

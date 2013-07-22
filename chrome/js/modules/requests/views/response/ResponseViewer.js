@@ -55,7 +55,7 @@ var ResponseViewer = Backbone.View.extend({
 
         
         $(document).bind('keydown', 'f', function () {
-            if(pm.layout.isModalOpen) {
+            if(pm.app.isModalOpen()) {
                 return;
             }
 

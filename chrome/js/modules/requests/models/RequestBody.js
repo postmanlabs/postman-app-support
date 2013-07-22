@@ -7,7 +7,7 @@ var RequestBody = Backbone.Model.extend({
             codeMirror:false,
             rawEditorType:"editor",
             bodyParams: {},
-            editorMode:"text",
+            editorMode:"html",
             language:""
         };
     },

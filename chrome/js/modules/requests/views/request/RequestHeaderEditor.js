@@ -78,7 +78,7 @@ var RequestHeaderEditor = Backbone.View.extend({
 
         
         $(document).bind('keydown', 'h', function () {
-            if(pm.layout.isModalOpen) {
+            if(pm.app.isModalOpen()) {
                 return;
             }
 

@@ -27,11 +27,11 @@ var EditCollectionModal = Backbone.View.extend({
 
         $("#modal-edit-collection").on("shown", function () {
             $("#modal-edit-collection .collection-name").focus();
-            pm.layout.onModalOpen("#modal-edit-collection");
+            pm.app.onModalOpen("#modal-edit-collection");
         });
 
         $("#modal-edit-collection").on("hidden", function () {
-            pm.layout.onModalClose();
+            pm.app.onModalClose();
         });
     },
 

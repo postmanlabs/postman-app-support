@@ -171,8 +171,14 @@ pm.init = function () {
 
     function initializeSidebar() {
         var sidebarState = new SidebarState({history: pm.history, collections: pm.collections});
-        var sidebar = new Sidebar({ model: sidebarState });
-        pm.layout.sidebar = sidebar;
+        var sidebar = new Sidebar({ model: sidebarState });        
+    }
+
+    function initializeAppView() {
+        var appState = new AppState();
+        var appView = new App({model: appState});
+
+        pm.app = appView;
     }
 
     initializeStorage();
@@ -181,17 +187,14 @@ pm.init = function () {
 
     pm.settings.init(function() {
         var settingsModal = new SettingsModal({model: pm.settings});
-
+        pm.filesystem.init();
         pm.indexedDB.open(function() {
             initializeHelpers();
             initializeRequester();
             initializeHistory();
             initializeCollections();            
 
-            pm.layout.init();
-            pm.editor.init();
-            pm.keymap.init();
-            pm.filesystem.init();
+            initializeAppView();                            
 
             initializeEnvironments();
             initializeHeaderPresets();
@@ -201,10 +204,10 @@ pm.init = function () {
             pm.request.on("startNew", function() {
                 pm.collectionRequestDetailsView.hide();
             });
-        });
 
-        pm.drive.setupUiHandlers();
-        pm.broadcasts.init();
+            pm.drive.setupUiHandlers();
+            pm.broadcasts.init();
+        });
     });
 };
 

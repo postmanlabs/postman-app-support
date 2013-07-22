@@ -31,11 +31,11 @@ var ImportCollectionModal = Backbone.View.extend({
         });
 
         $("#modal-import-collection").on("shown", function () {
-            pm.layout.onModalOpen("#modal-import-collection");
+            pm.app.onModalOpen("#modal-import-collection");
         });
 
         $("#modal-import-collection").on("hidden", function () {
-            pm.layout.onModalClose();
+            pm.app.onModalClose();
         });
     },
 

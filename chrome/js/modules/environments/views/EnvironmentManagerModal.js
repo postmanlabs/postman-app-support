@@ -20,11 +20,11 @@ var EnvironmentManagerModal = Backbone.View.extend({
 
         $("#modal-environments").on("shown", function () {
             $('.environments-actions-add').focus();
-            pm.layout.onModalOpen("#modal-environments");
+            pm.app.onModalOpen("#modal-environments");
         });
 
         $("#modal-environments").on("hidden", function () {
-            pm.layout.onModalClose();
+            pm.app.onModalClose();
         });
 
         $('#environments-list').on("click", ".environment-action-delete", function () {
@@ -119,7 +119,7 @@ var EnvironmentManagerModal = Backbone.View.extend({
         $('#globals-keyvaleditor').keyvalueeditor('init', params);        
 
         $(document).bind('keydown', 'e', function () {
-            if(pm.layout.isModalOpen) {
+            if(pm.app.isModalOpen()) {
                 return;
             }
 

@@ -41,7 +41,6 @@ var CollectionRequestDetailsView = Backbone.View.extend({
     },
 
     show: function() {
-        pm.layout.sidebar.select("collections");
         $('#request-meta').css("display", "block");
         $('#request-name').css("display", "block");
         $('#request-description').css("display", "block");
