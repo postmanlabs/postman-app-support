@@ -61,6 +61,16 @@ var RequestURLEditor = Backbone.View.extend({
             return false;
         };
 
+        try {
+            $("#url").autocomplete({
+                source: pm.urlCache.getUrls(),
+                delay: 50
+            });
+        }
+        catch(e) {
+
+        }
+        
         $(document).bind('keydown', 'backspace', urlFocusHandler);
     },
 

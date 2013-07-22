@@ -562,7 +562,7 @@ var Request = Backbone.Model.extend({
         var body = this.get("body");
         var response = this.get("response");
 
-        pm.urlCache.refreshAutoComplete();
+        // pm.urlCache.refreshAutoComplete();
         this.prepareForSending();
 
         if (this.get("url") === "") {

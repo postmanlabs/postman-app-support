@@ -158,6 +158,9 @@ pm.init = function () {
     }
 
     function initializeRequester() {
+        var urlCache = new URLCache();
+        pm.urlCache = urlCache;
+        
         var request = new Request();
         var requestEditor = new RequestEditor({model: request});
         var responseViewer = new ResponseViewer({model: request});
