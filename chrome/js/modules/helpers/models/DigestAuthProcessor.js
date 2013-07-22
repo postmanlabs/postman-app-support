@@ -122,8 +122,6 @@ var DigestAuthProcessor = Backbone.Model.extend({
         var headerVal = this.getHeader();
         headerVal = "Digest" + headerVal;
 
-        console.log(headerVal);
-
         request.setHeader(authHeaderKey, headerVal);
     },
 

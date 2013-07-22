@@ -58,7 +58,6 @@ var RequestBodyEditor = Backbone.View.extend({
     },
 
     onChangeData: function() {
-        console.log("Change data in the body");
     },
 
     getRequestBodyPreview: function() {        
@@ -154,7 +153,6 @@ var RequestBodyEditor = Backbone.View.extend({
 
         }
         else if (mode === "raw") {
-            console.log("Get raw data", mode);
             data = this.bodyRawEditor.getRawData();
         }
         else if (mode === "urlencoded") {
@@ -249,15 +247,12 @@ var RequestBodyEditor = Backbone.View.extend({
     },
 
     onChangeDataMode: function(event) {
-        console.log("Changed data mode");
         var body = this.model.get("body");
         var dataMode = body.get("dataMode");
         this.setDataMode(dataMode);
     },
 
     setDataMode:function (mode) {
-        console.log("Set data mode", mode);
-
         var model = this.model;
         var view = this;
         var body = this.model.get("body");

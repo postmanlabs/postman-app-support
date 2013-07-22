@@ -106,8 +106,6 @@ var RequestBodyRawEditor = Backbone.View.extend({
     },
 
     setEditorMode:function (mode, language, toSetHeader) {
-        console.log("setEditorMode called", mode, language, toSetHeader);
-
         var model = this.model;
         var body = model.get("body");
         var codeMirror = body.get("codeMirror");

@@ -38,7 +38,6 @@ var RequestBodyFormDataEditor = Backbone.View.extend({
                     $('#formdata-keyvaleditor').keyvalueeditor('reset', data);        
                 }
                 catch(e) {
-                    console.log(e);
                 }
                 
             }            
@@ -129,8 +128,7 @@ var RequestBodyFormDataEditor = Backbone.View.extend({
             var paramsCount = params.length;
             var body = "";
             for(i = 0; i < paramsCount; i++) {
-                var param = params[i];
-                console.log(param);
+                var param = params[i];                
                 body += this.getDummyFormDataBoundary();
                 if(param.type === "text") {
                     body += "<br/>Content-Disposition: form-data; name=\"" + param.key + "\"<br/><br/>";

@@ -106,7 +106,6 @@ var HeaderPresets = Backbone.Model.extend({
         return list;
     },
 
-    // TODO This does not seem to be working
     refreshAutoCompleteList:function () {
         var presets = this.getPresetsForAutoComplete();
         this.set({"presetsForAutoComplete": _.union(presets, chromeHeaders)});

@@ -342,8 +342,6 @@ var Request = Backbone.Model.extend({
     },
 
     loadRequestInEditor:function (request, isFromCollection, isFromSample) {
-        console.log(request);
-
         var body = this.get("body");
         var response = this.get("response");
 
@@ -522,8 +520,6 @@ var Request = Backbone.Model.extend({
     },
 
     send:function (responseRawDataType) {
-        console.log("Send request with data type", responseRawDataType);
-
         var model = this;
 
         var body = this.get("body");
@@ -625,7 +621,6 @@ var Request = Backbone.Model.extend({
         this.set("previewHtml", requestPreview);
     },
 
-    // TODO This should go into the model
     stripScriptTag:function (text) {
         var re = /<script\b[^>]*>([\s\S]*?)<\/script>/gm;
         text = text.replace(re, "");

@@ -57,7 +57,6 @@ var Response = Backbone.Model.extend({
 
     setResponseData: function(response) {
         var responseData;
-        console.log(this.get("rawDataType"));
 
         if (response.responseType === "arraybuffer") {            
             this.set("responseData", response.response);
@@ -136,8 +135,7 @@ var Response = Backbone.Model.extend({
             else {
                 var url = request.get("url");
                 model.setResponseCode(response);
-                model.setResponseTime(request.get("startTime"));
-                console.log("Response is ", response);
+                model.setResponseTime(request.get("startTime"));                
 
                 model.setResponseData(response);
                 model.setHeaders(response);

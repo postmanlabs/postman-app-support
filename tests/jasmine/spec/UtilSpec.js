@@ -1,4 +1,4 @@
-describe("Util", function() {
+describe("Postman utility functions", function() {
 
   beforeEach(function() {
   });
@@ -12,9 +12,9 @@ describe("Util", function() {
   });
 
   it("should split URL into key/val pairs", function() {    
-    var url = "http://localhost/?foo=bar";
+    var url = "http://localhost/?foo=bar&test=blah";
     var vars = getUrlVars(url);
-    expect(vars.length).toBe(1);
+    expect(vars.length).toBe(2);
   });
 
   it("should split URL into associative array", function() {

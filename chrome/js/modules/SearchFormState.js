@@ -8,7 +8,6 @@ var SearchState = Backbone.Model.extend({
     },
 
     initialize: function(options) {
-        console.log("Initialized SearchState");
         this.on("change:term", this.onChangeSearchTerm, this);
     },
 
