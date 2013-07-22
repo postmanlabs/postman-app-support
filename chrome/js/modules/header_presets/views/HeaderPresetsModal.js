@@ -29,6 +29,7 @@ var HeaderPresetsModal = Backbone.View.extend({
             var name = $("#header-presets-editor-name").val();
             var headers = $("#header-presets-keyvaleditor").keyvalueeditor("getValues");
 
+            // TODO Hacky
             if (id === "0") {
                 _.bind(headerPresets.addHeaderPreset, headerPresets)(name, headers);
             }

@@ -149,10 +149,7 @@ var Request = Backbone.Model.extend({
         this.set("urlParams", params);
     },
 
-    // Fixed
     setUrlParamString:function (params, silent) {
-        // this.trigger("updateModel");
-
         var paramArr = [];
         var url = this.get("url");
 
@@ -186,15 +183,6 @@ var Request = Backbone.Model.extend({
         
     },
 
-    setBodyParams: function(params) {
-        console.log("Will set parameters for urlencoded and formdata");
-    },
-
-    // Fixed
-    reset:function () {
-    },
-
-    // Fixed
     encodeUrl:function (url) {
         var quesLocation = url.indexOf('?');
 
@@ -214,8 +202,7 @@ var Request = Backbone.Model.extend({
             return url;
         }
     },
-
-    // Fixed
+    
     prepareHeadersForProxy:function (headers) {
         var count = headers.length;
         for (var i = 0; i < count; i++) {
@@ -229,14 +216,12 @@ var Request = Backbone.Model.extend({
         return headers;
     },
 
-    // Fixed
     processUrl:function (url) {
         var finalUrl = pm.envManager.getCurrentValue(url);
         finalUrl = ensureProperUrl(finalUrl);
         return finalUrl;
     },
 
-    // Fixed
     splitUrlIntoHostAndPath: function(url) {
         var path = "";
         var host;
@@ -434,20 +419,13 @@ var Request = Backbone.Model.extend({
         }
         else {
             body.set("dataMode", "params");
-        }        
-
-        // TODO Should be called in RequestBodyRawEditor automatically
-        // body.setEditorMode(mode, language);
+        }
         
         response.trigger("clearResponse");
         this.trigger("loadRequest", this);
     },
 
     prepareForSending: function() {
-        // TODO Would NOT work if stuff is being changed and 'Enter' is pressed
-        // Set state as if change event of input handlers was called
-        // this.setUrlParamString(this.getUrlEditorParams());
-
         if (pm.helpers.getActiveHelperType() === "oauth1" && pm.helpers.getHelper("oAuth1").get("auto")) {
             pm.helpers.getHelper("oAuth1").generateHelper();
             pm.helpers.getHelper("oAuth1").process();
@@ -455,8 +433,7 @@ var Request = Backbone.Model.extend({
 
         var headers = this.get("headers");
 
-        $('#headers-keyvaleditor-actions-open .headers-count').html(headers.length);
-        this.set("url", this.processUrl($('#url').val()));
+        $('#headers-keyvaleditor-actions-open .headers-count').html(headers.length);        
         this.set("startTime", new Date().getTime());
     },    
 
@@ -552,7 +529,6 @@ var Request = Backbone.Model.extend({
         var body = this.get("body");
         var response = this.get("response");
 
-        // pm.urlCache.refreshAutoComplete();
         this.prepareForSending();
 
         if (this.get("url") === "") {
@@ -562,6 +538,7 @@ var Request = Backbone.Model.extend({
         var originalUrl = this.get("url"); //Store this for saving the request
 
         var url = this.encodeUrl(this.get("url"));
+        url = pm.envManager.getCurrentValue(url);
         var method = this.get("method").toUpperCase();
 
         //Start setting up XHR

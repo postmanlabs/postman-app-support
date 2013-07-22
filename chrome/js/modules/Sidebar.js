@@ -37,7 +37,12 @@ var Sidebar = Backbone.View.extend({
 
     	$(":input:first").focus();
 
+        history.on("loadRequest", this.onLoadHistoryRequest, this);
         collections.on("addCollectionRequest", this.onAddCollectionRequest, this);
+    },
+
+    onLoadHistoryRequest: function() {
+        $('.sidebar-collection-request').removeClass('sidebar-collection-request-active');
     },
 
     onAddCollectionRequest: function() {

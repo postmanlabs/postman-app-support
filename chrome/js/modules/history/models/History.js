@@ -71,9 +71,7 @@ var History = Backbone.Collection.extend({
     loadRequest:function (id) {
         var request = this.get(id).toJSON();
         pm.request.loadRequestInEditor(request);
-
-        //TODO Trigger event
-        $('.sidebar-collection-request').removeClass('sidebar-collection-request-active');
+        this.trigger("loadRequest");
     },
 
     addRequest:function (url, method, headers, data, dataMode) {

@@ -61,8 +61,6 @@ var PmCollections = Backbone.Collection.extend({
             return r.id === id;
         }
 
-        console.log("Trying to find", id, "in", this.models);
-
         for(var i = 0; i < this.length; i++) {
             var collection = this.models[i];
             var requests = collection.get("requests");
@@ -157,7 +155,6 @@ var PmCollections = Backbone.Collection.extend({
     mergeCollection: function(collection, toSyncWithDrive) {
         var pmCollection = this;
 
-        console.log("To merge", collection);
         //Update local collection
         var newCollection = {
             id: collection.id,
@@ -169,15 +166,10 @@ var PmCollections = Backbone.Collection.extend({
             newCollection.order = collection.order;
         }
 
-        console.log("Merging collection", newCollection);
-
         pm.indexedDB.updateCollection(newCollection, function(c) {
-            console.log("Collection updated", newCollection);
-
             var driveCollectionRequests = collection.requests;
 
-            pm.indexedDB.getAllRequestsInCollection(collection, function(collection, oldCollectionRequests) {
-                console.log("Old collection requests", oldCollectionRequests);
+            pm.indexedDB.getAllRequestsInCollection(collection, function(collection, oldCollectionRequests) {                
                 var updatedRequests = [];
                 var deletedRequests = [];
                 var newRequests = [];
@@ -219,8 +211,7 @@ var PmCollections = Backbone.Collection.extend({
 
                 //Update requests
                 var sizeUpdatedRequests = updatedRequests.length;
-                function onUpdateCollectionRequest(r) {
-                    console.log("Updated the request");
+                function onUpdateCollectionRequest(r) {                    
                 }
 
                 for(i = 0; i < sizeUpdatedRequests; i++) {
@@ -228,8 +219,7 @@ var PmCollections = Backbone.Collection.extend({
                 }
 
                 //Add requests
-                function onAddCollectionRequest(r) {
-                    console.log("Added the request");
+                function onAddCollectionRequest(r) {                    
                 }
 
                 var sizeNewRequests = newRequests.length;
@@ -238,8 +228,7 @@ var PmCollections = Backbone.Collection.extend({
                 }
 
                 //Delete requests
-                function onDeleteCollectionRequest(id) {
-                    console.log("Deleted the request");
+                function onDeleteCollectionRequest(id) {                    
                 }
 
                 var sizeDeletedRequests = deletedRequests.length;
@@ -259,7 +248,6 @@ var PmCollections = Backbone.Collection.extend({
 
         var dbCollection = _.clone(collection);
         dbCollection["requests"] = [];
-        console.log("Adding collection", dbCollection);
 
         pm.indexedDB.addCollection(dbCollection, function (c) {
             var message = {
@@ -276,8 +264,7 @@ var PmCollections = Backbone.Collection.extend({
                 ordered = true;
             }
 
-            function onAddCollectionRequest(req) {
-                console.log(req);
+            function onAddCollectionRequest(req) {                
             }
 
             for (var i = 0; i < collection.requests.length; i++) {
@@ -312,10 +299,6 @@ var PmCollections = Backbone.Collection.extend({
             c.set("requests", requests);
             pmCollection.add(c, {merge: true});
 
-            console.log("New collection added", c, pmCollection.models);
-
-            //collection has all the data
-            console.log("Queuing update");
             if (toSyncWithDrive) {
                 //TODO: Drive syncing will be done later
                 pm.collections.drive.queuePostFromCollection(dbCollection);
@@ -475,16 +458,13 @@ var PmCollections = Backbone.Collection.extend({
                 pmCollection.add(newCollection, {merge: true});
                 collectionRequest.collectionId = newCollection.id;
 
-                pm.indexedDB.addCollectionRequest(collectionRequest, function (req) {                                                            
-                    console.log("Added collection request to DB", req);
+                pm.indexedDB.addCollectionRequest(collectionRequest, function (req) {                                                                                
                     var c = pmCollection.get(collection.id);
                     c.get("requests").push(req);
                     pmCollection.trigger("addCollectionRequest", req);
 
                     pmCollection.getCollectionRequest(req.id);
 
-                    //TODO: Drive syncing will be done later
-                    console.log("Send queue request after adding request for new collection");
                     pm.collections.drive.queuePost(collectionRequest.collectionId);
                 });
             });
@@ -506,17 +486,11 @@ var PmCollections = Backbone.Collection.extend({
                     if("order" in newCollection) {
                         newCollection["order"].push(req.id);
                         pm.indexedDB.updateCollection(newCollection, function() {});
-
-                        //TODO: Drive syncing will be done later
-                        console.log("Send queue request after adding request");
                         pm.collections.drive.queueUpdateFromId(newCollection.id);
                     }
                     else {
                         newCollection["order"] = [req.id];
                         pm.indexedDB.updateCollection(newCollection, function() {});
-
-                        //TODO: Drive syncing will be done later
-                        console.log("Send queue request after adding request");
                         pm.collections.drive.queueUpdateFromId(newCollection.id);
                     }
                 });
@@ -528,8 +502,6 @@ var PmCollections = Backbone.Collection.extend({
 
     deleteCollectionRequest:function (id) {
         var pmCollection = this;
-
-        console.log("Deleting request", id);
         pm.indexedDB.getCollectionRequest(id, function(request) {
             pm.indexedDB.deleteCollectionRequest(id, function () {
                 pmCollection.trigger("removeCollectionRequest", request);
@@ -544,7 +516,6 @@ var PmCollections = Backbone.Collection.extend({
                             order.splice(index, 1);
                             collection["order"] = order;
                             pm.indexedDB.updateCollection(collection, function (collection) {
-                                console.log("Updated collection order, queue update for drive");
 
                                 // TODO: Drive syncing will be done later
                                 // pm.collections.drive.queueUpdateFromId(collection.id);
@@ -590,9 +561,6 @@ var PmCollections = Backbone.Collection.extend({
             req.description = description;
             pm.indexedDB.updateCollectionRequest(req, function (newRequest) {
                 pmCollection.trigger("updateCollectionRequest", newRequest);
-
-                //TODO: Drive syncing will be done later
-                console.log("Queue update after updating collection request meta");
                 pm.collections.drive.queueUpdateFromId(req.collectionId);
             });
         });

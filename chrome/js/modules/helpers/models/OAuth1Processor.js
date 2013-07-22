@@ -1,3 +1,4 @@
+// TODO Can be made cleaner by moving code for fetching stuff to the view. Already doing it. Just need to sort out signatureParam class stuff
 var OAuth1Processor = Backbone.Model.extend({
     defaults: function() {
         return {

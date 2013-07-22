@@ -97,7 +97,6 @@ var Environments = Backbone.Collection.extend({
 
     importEnvironments:function (files) {
         var environments = this;
-        console.log("Importing environments", files);
 
         // Loop through the FileList
         for (var i = 0, f; f = files[i]; i++) {

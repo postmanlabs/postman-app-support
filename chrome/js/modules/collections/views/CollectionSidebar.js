@@ -86,16 +86,12 @@ var CollectionSidebar = Backbone.View.extend({
         $collection_items.on("click", ".request-actions-delete", function () {
             var id = $(this).attr('data-id');
             var request = model.getRequestById(id);
-
-            console.log("Triggering deleteCollectionRequest", request);
-
             model.trigger("deleteCollectionRequest", request);
         });
 
         $collection_items.on("click", ".request-actions-edit", function () {
             var id = $(this).attr('data-id');
-            var request = model.getRequestById(id);
-            console.log(id, request);
+            var request = model.getRequestById(id);            
 
             model.trigger("editCollectionRequest", request);
         });
@@ -158,8 +154,7 @@ var CollectionSidebar = Backbone.View.extend({
             //Find current element list position
             if (collectionSidebarListPosition === 0) {
                 insertionType = "before";
-                insertTarget = $('#collection-' + collections[collectionSidebarListPosition + 1].id);
-                console.log(insertTarget);
+                insertTarget = $('#collection-' + collections[collectionSidebarListPosition + 1].id);                
             }
             else {
                 insertionType = "after";
@@ -285,7 +280,6 @@ var CollectionSidebar = Backbone.View.extend({
     },
 
     updateCollectionMeta: function(collection) {
-        console.log("On update collection meta", collection);
         var id = collection.id;
 
         var currentClass = $("#collection-" + id + " .sidebar-collection-head-dt").attr("class");

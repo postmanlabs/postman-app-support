@@ -92,8 +92,6 @@ var HistorySidebar = Backbone.View.extend({
     },
 
     removeOne:function (model, collection) {
-        console.log("Remove one called");
-
         var historyRequest = model.toJSON();
         var id = historyRequest.id;
 
