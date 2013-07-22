@@ -169,7 +169,6 @@ function getUrlVars(url, associative) {
             };
         }
 
-
         (associative) ? (varsAssoc[element.key] = element.value) : (vars.push(element));
     }
 
