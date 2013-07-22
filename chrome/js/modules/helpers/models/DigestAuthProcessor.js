@@ -11,7 +11,8 @@ var DigestAuthProcessor = Backbone.Model.extend({
             "nonceCount": "",
             "clientNonce": "",
             "opaque": "",
-            "qop": ""
+            "qop": "",
+            "request": null
         };
     },
 
@@ -28,12 +29,14 @@ var DigestAuthProcessor = Backbone.Model.extend({
     },
 
     getHeader: function () {
+        var request = this.get("request");
+
         var algorithm = pm.envManager.getCurrentValue(this.get("algorithm"));
 
         var username = pm.envManager.getCurrentValue(this.get("username"));
         var realm = pm.envManager.getCurrentValue(this.get("realm"));
         var password = pm.envManager.getCurrentValue(this.get("password"));
-        var method = pm.request.get("method");
+        var method = request.get("method");
         var nonce = pm.envManager.getCurrentValue(this.get("nonce"));
         var nonceCount = pm.envManager.getCurrentValue(this.get("nonceCount"));
         var clientNonce = pm.envManager.getCurrentValue(this.get("clientNonce"));
@@ -42,11 +45,11 @@ var DigestAuthProcessor = Backbone.Model.extend({
         var qop = pm.envManager.getCurrentValue(this.get("qop"));
 
         // TODO Make sure this comes from the body
-        var body = pm.request.getRequestBodyPreview();
+        var body = request.getRequestBodyPreview();
 
         // TODO Get the url from the model
-        var url = pm.request.processUrl(pm.request.get("url"));
-        var urlParts = pm.request.splitUrlIntoHostAndPath(url);
+        var url = request.processUrl(request.get("url"));
+        var urlParts = request.splitUrlIntoHostAndPath(url);
 
         var digestUri = urlParts.path;
 
@@ -109,7 +112,9 @@ var DigestAuthProcessor = Backbone.Model.extend({
     },
 
     process: function () {
-        var headers = pm.request.get("headers");
+        var request = this.get("request");
+        
+        var headers = request.get("headers");
         var authHeaderKey = "Authorization";
 
         //Generate digest header here
@@ -117,7 +122,7 @@ var DigestAuthProcessor = Backbone.Model.extend({
         var headerVal = this.getHeader();
         headerVal = "Digest" + headerVal;
 
-        pm.request.setHeader(authHeaderKey, headerVal);
+        request.setHeader(authHeaderKey, headerVal);
     },
 
     updateDB: function() {

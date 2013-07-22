@@ -35,19 +35,6 @@ var Request = Backbone.Model.extend({
         this.on("cancelRequest", this.onCancelRequest, this);
         this.on("startNew", this.onStartNew, this);
         this.on("send", this.onSend, this);
-
-        this.on("readyToLoadRequest", this.onReadyToLoadRequest, this);
-    },
-
-    // TODO This can be set by the view directly. Why should the model wait for the view to initialize?
-    onReadyToLoadRequest: function() {
-        var lastRequest = pm.settings.getSetting("lastRequest");
-
-        if (lastRequest !== "" && lastRequest !== undefined) {
-            var lastRequestParsed = JSON.parse(lastRequest);
-            this.set("isFromCollection", false);
-            this.loadRequestInEditor(lastRequestParsed);
-        }
     },
 
     onCancelRequest: function() {
@@ -373,8 +360,7 @@ var Request = Backbone.Model.extend({
         var body = this.get("body");
         var response = this.get("response");
 
-        this.set("editorMode", 0);
-        pm.helpers.showRequestHelper("normal");
+        this.set("editorMode", 0);        
 
         this.set("url", request.url);
 

@@ -1,6 +1,16 @@
 var HelperManager = Backbone.View.extend({
     initialize: function() {
+        var model = this.model;
+
+        var basicAuthForm = new BasicAuthForm({model: model.get("basicAuth")});
+        var digestAuthForm = new DigestAuthForm({model: model.get("digestAuth")});
+        var oAuth1Form = new OAuth1Form({model: model.get("oAuth1")});
+
         this.model.on("change:activeHelper", this.render, this);
+
+        var request = model.get("request");
+
+        request.on("loadRequest", this.onLoadRequest, this);
 
         var view = this;
 
@@ -11,6 +21,10 @@ var HelperManager = Backbone.View.extend({
             view.showRequestHelper(type);
             view.render();
         });
+    },
+
+    onLoadRequest: function() {
+        this.showRequestHelper("normal");
     },
 
     getActiveHelperType: function() {

@@ -107,7 +107,20 @@ var RequestEditor = Backbone.View.extend({
 
         $(document).bind('keydown', 'alt+n', newRequestHandler);
 
-        model.trigger("readyToLoadRequest", this);
+        this.loadLastSavedRequest();
+    },
+
+    loadLastSavedRequest: function() {
+        var lastRequest = pm.settings.getSetting("lastRequest");
+
+        // TODO Have a generic function for falsy values
+        if (lastRequest !== "" && lastRequest !== undefined) {
+
+            var lastRequestParsed = JSON.parse(lastRequest);
+            // TODO Be able to set isFromCollection too
+            this.model.set("isFromCollection", false);
+            this.model.loadRequestInEditor(lastRequestParsed);
+        }
     },
 
     onStartNew: function() {

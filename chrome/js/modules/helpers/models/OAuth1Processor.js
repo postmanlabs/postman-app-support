@@ -13,7 +13,8 @@ var OAuth1Processor = Backbone.Model.extend({
             "version": "",
             "realm": "",
             "header": "",
-            "auto": ""
+            "auto": "",
+            "request": null
         };
     },
 
@@ -59,7 +60,9 @@ var OAuth1Processor = Backbone.Model.extend({
     generateSignature: function () {
         //Make sure the URL is urlencoded properly
         //Set the URL keyval editor as well. Other get params disappear when you click on URL params again
-        var url = pm.request.get("url");
+        var request = this.get("request");
+
+        var url = request.get("url");
         if (url === '') {
             $('#request-helpers').css("display", "block");
             alert('Please enter the URL first.');
@@ -70,8 +73,8 @@ var OAuth1Processor = Backbone.Model.extend({
 
         var realm = $('#request-helper-oauth1-realm').val();
 
-        var method = pm.request.get("method");
-        var requestBody = pm.request.get("body");
+        var method = request.get("method");
+        var requestBody = request.get("body");
 
         if (realm === '') {
             processedUrl = pm.envManager.getCurrentValue(url).trim();
@@ -102,7 +105,7 @@ var OAuth1Processor = Backbone.Model.extend({
         });
 
         //Get parameters
-        var urlParams = pm.request.getUrlParams();
+        var urlParams = request.getUrlParams();
         var bodyParams = requestBody.get("dataAsObjects");
 
         var params = urlParams.concat(bodyParams);
@@ -153,17 +156,19 @@ var OAuth1Processor = Backbone.Model.extend({
     },
 
     process: function () {
+        var request = this.get("request");
+        
         var i, j, count, length;
         var params = [];
 
         // TODO This does not exist
-        var urlParams = pm.request.getUrlParams();
+        var urlParams = request.getUrlParams();
         var bodyParams = [];
 
-        var url = pm.request.get("url");
-        var body = pm.request.get("body");
+        var url = request.get("url");
+        var body = request.get("body");
         var dataMode = body.get("dataMode");
-        var method = pm.request.get("method");
+        var method = request.get("method");
 
         // TODO Need to test if this works
         var bodyParams = body.get("dataAsObjects");
@@ -225,23 +230,23 @@ var OAuth1Processor = Backbone.Model.extend({
             rawString = rawString.substring(0, rawString.length - 1);
 
             // This changes the model, so everything works
-            pm.request.setHeader(authHeaderKey, rawString);
+            request.setHeader(authHeaderKey, rawString);
         } else {
             // TODO Make this change the model
             params = params.concat(oAuthParams);
 
-            if (!pm.request.isMethodWithBody(method)) {                
+            if (!request.isMethodWithBody(method)) {                
                 // TODO URLEditor should set this automatically
-                pm.request.setUrlParamString(params);                
+                request.setUrlParamString(params);                
             } else {                
                 if (dataMode === 'urlencoded') {
-                    pm.request.setBodyParams(params);
+                    request.setBodyParams(params);
                 }
                 else if (dataMode === 'params') {
-                    pm.request.setBodyParams(params);
+                    request.setBodyParams(params);
                 }
                 else if (dataMode === 'raw') {
-                    pm.request.setUrlParamString(params);                    
+                    request.setUrlParamString(params);                    
                 }
             }
         }

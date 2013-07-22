@@ -90,9 +90,6 @@ pm.init = function () {
         var addCollectionRequestModal = new AddCollectionRequestModal({model: pmCollections});
         var editCollectionRequestModal = new EditCollectionRequestModal({model: pmCollections});
         var deleteCollectionRequestModal = new DeleteCollectionRequestModal({model: pmCollections});
-
-        var collectionRequestDetailsView = new CollectionRequestDetailsView({model: pmCollections});
-
         pm.collections = pmCollections;        
     }
 
@@ -102,18 +99,15 @@ pm.init = function () {
     }
 
     function initializeHelpers() {
-        var basicAuthProcessor = new BasicAuthProcessor();
-        var digestAuthProcessor = new DigestAuthProcessor();
-        var oAuth1Processor = new OAuth1Processor();
-
-        var basicAuthForm = new BasicAuthForm({model: basicAuthProcessor});
-        var digestAuthForm = new DigestAuthForm({model: digestAuthProcessor});
-        var oAuth1Form = new OAuth1Form({model: oAuth1Processor});
-
+        var basicAuthProcessor = new BasicAuthProcessor({request: pm.request});
+        var digestAuthProcessor = new DigestAuthProcessor({request: pm.request});
+        var oAuth1Processor = new OAuth1Processor({request: pm.request});
+        
         var helpers = new Helpers({
             "basicAuth": basicAuthProcessor,
             "digestAuth": digestAuthProcessor,
-            "oAuth1": oAuth1Processor
+            "oAuth1": oAuth1Processor,
+            "request": pm.request
         });
 
         var helperManager = new HelperManager({model: helpers});
@@ -190,9 +184,9 @@ pm.init = function () {
     pm.settings.init(function() {
         var settingsModal = new SettingsModal({model: pm.settings});
         pm.filesystem.init();
-        pm.indexedDB.open(function() {
-            initializeHelpers();
+        pm.indexedDB.open(function() {            
             initializeRequester();
+            initializeHelpers();
             initializeHistory();
             initializeCollections();            
 
