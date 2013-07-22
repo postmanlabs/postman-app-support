@@ -5,6 +5,21 @@ var ResponseBodyPDFViewer = Backbone.View.extend({
     	response.on("finishedLoadResponse", this.render, this);
     },
 
+    renderAsImage: function(responseData) {
+        var uInt8Array = new Uint8Array(this.response);
+        var i = uInt8Array.length;
+        var binaryString = new Array(i);
+        while (i--)
+        {
+          binaryString[i] = String.fromCharCode(uInt8Array[i]);
+        }
+        var data = binaryString.join('');
+
+        var base64 = window.btoa(data);
+
+        document.getElementById("myImage").src="data:image/png;base64,"+base64;
+    },
+
     render: function() {
     	var model = this.model;
     	var response = model.get("response");

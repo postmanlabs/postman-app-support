@@ -5,32 +5,37 @@ var ResponseBodyImageViewer = Backbone.View.extend({
     	response.on("finishedLoadResponse", this.render, this);
     },
 
+    renderAsImage: function(responseData) {
+        var uInt8Array = new Uint8Array(responseData);
+        var i = uInt8Array.length;
+        var binaryString = new Array(i);
+        while (i--)
+        {
+          binaryString[i] = String.fromCharCode(uInt8Array[i]);
+        }
+        var data = binaryString.join('');
+
+        var base64 = window.btoa(data);
+
+        $("#response-as-image").html("<img id='response-as-image-inline'/>");
+        document.getElementById("response-as-image-inline").src="data:image/png;base64,"+base64;
+    },
+
     render: function() {
     	var model = this.model;
     	var request = model;
     	var response = model.get("response");
     	var previewType = response.get("previewType");
+        var responseRawDataType = response.get("rawDataType");
 
-    	if (previewType === "image") {
+    	if (previewType === "image" && responseRawDataType === "text") {
     		$('#response-as-image').css("display", "block");
-    		
-    		var imgLink = request.get("url");
-    		var remoteImage = new RAL.RemoteImage({
-    		    priority: 0,
-    		    src: imgLink,
-    		    headers: request.getXhrHeaders()
-    		});
-
-    		remoteImage.addEventListener('loaded', function(remoteImage) {
-    		});
-
-    		$("#response-as-image").html("");
-    		var container = document.querySelector('#response-as-image');
-    		container.appendChild(remoteImage.element);
-
-    		RAL.Queue.add(remoteImage);
-    		RAL.Queue.setMaxConnections(4);
-    		RAL.Queue.start();
-    	}
+            model.trigger("send", "arraybuffer")
+        }
+        else if (previewType === "image" && responseRawDataType === "arraybuffer") {
+            var responseData = response.get("responseData");
+            this.renderAsImage(responseData);
+            console.log("Render arraybuffer data");
+        }    	
     }
 });
