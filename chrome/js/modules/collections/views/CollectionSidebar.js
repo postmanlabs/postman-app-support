@@ -425,8 +425,6 @@ var CollectionSidebar = Backbone.View.extend({
                 $(dtDomId).addClass("disclosure-triangle-close");
             }
         }
-
-        pm.layout.refreshScrollPanes();
     },
 
     onRevertFilter: function() {

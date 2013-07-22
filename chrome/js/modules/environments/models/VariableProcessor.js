@@ -94,6 +94,12 @@ var VariableProcessor = Backbone.Model.extend({
         var globals = this.get("globals").get("globals");
         var values = _.union(envValues, globals);
 
-        return this.processString(string, values);
+        if (string) {
+            return this.processString(string, values);
+        }
+        else {
+            return string;
+        }
+        
     },
 });

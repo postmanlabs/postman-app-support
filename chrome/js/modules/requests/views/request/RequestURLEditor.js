@@ -8,6 +8,7 @@ var RequestURLEditor = Backbone.View.extend({
 
         this.editorId = editorId;
 
+        model.on("change:url", this.onChangeUrl, this);
         model.on("startNew", this.onStartNew, this);
 
         var params = {
@@ -72,6 +73,14 @@ var RequestURLEditor = Backbone.View.extend({
         }
         
         $(document).bind('keydown', 'backspace', urlFocusHandler);
+    },
+
+    onChangeUrl: function() {
+        var url = this.model.get("url");
+        $("#url").val(url);
+
+        var newRows = getUrlVars(url, false);
+        $('#url-keyvaleditor').keyvalueeditor('reset', newRows);
     },
 
     onStartNew: function(model) {

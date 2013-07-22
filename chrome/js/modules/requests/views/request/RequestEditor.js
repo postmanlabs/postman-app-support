@@ -16,6 +16,7 @@ var RequestEditor = Backbone.View.extend({
         model.on("loadRequest", this.onLoadRequest, this);
         model.on("sentRequest", this.onSentRequest, this);        
         model.on("startNew", this.onStartNew, this);
+        model.on("updateModel", this.updateModel, this);        
 
         responseModel.on("failedRequest", this.onFailedRequest, this);
         responseModel.on("finishedLoadResponse", this.onFinishedLoadResponse, this);

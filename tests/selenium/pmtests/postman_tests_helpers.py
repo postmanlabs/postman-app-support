@@ -710,8 +710,8 @@ class PostmanTestsHelpers(PostmanTests):
         refresh_headers = self.browser.find_element_by_css_selector("#request-helper-digestAuth .request-helper-submit")
         refresh_headers.click()
 
-        input_elements = self.browser.find_elements_by_css_selector("#headers-keyvaleditor .keyvalueeditor-row")
-        
+        input_elements = self.browser.find_elements_by_css_selector("#headers-keyvaleditor .keyvalueeditor-row")            
+
         found_digest_response = False
         for element in input_elements:
             value = self.browser.execute_script("return arguments[0].innerHTML", element)            

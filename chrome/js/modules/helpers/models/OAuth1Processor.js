@@ -106,9 +106,12 @@ var OAuth1Processor = Backbone.Model.extend({
 
         //Get parameters
         var urlParams = request.getUrlParams();
+
         var bodyParams = requestBody.get("dataAsObjects");
 
-        var params = urlParams.concat(bodyParams);
+        var params = _.union(urlParams, bodyParams);
+
+        console.log("URL params are", params);
 
         for (var i = 0; i < params.length; i++) {
             var param = params[i];
@@ -127,6 +130,8 @@ var OAuth1Processor = Backbone.Model.extend({
             accessor.tokenSecret = $('input[key="oauth_token_secret"]').val();
             accessor.tokenSecret = pm.envManager.getCurrentValue(accessor.tokenSecret);
         }
+
+        console.log("Generating using", message, accessor);
 
         return OAuth.SignatureMethod.sign(message, accessor);
     },
@@ -155,13 +160,13 @@ var OAuth1Processor = Backbone.Model.extend({
         return newParams;
     },
 
-    process: function () {
+    process: function () {        
         var request = this.get("request");
+        request.trigger("updateModel");
         
         var i, j, count, length;
         var params = [];
-
-        // TODO This does not exist
+        
         var urlParams = request.getUrlParams();
         var bodyParams = [];
 
@@ -228,25 +233,21 @@ var OAuth1Processor = Backbone.Model.extend({
             }
 
             rawString = rawString.substring(0, rawString.length - 1);
-
-            // This changes the model, so everything works
             request.setHeader(authHeaderKey, rawString);
-        } else {
-            // TODO Make this change the model
+        } else {            
             params = params.concat(oAuthParams);
 
-            if (!request.isMethodWithBody(method)) {                
-                // TODO URLEditor should set this automatically
+            if (!request.isMethodWithBody(method)) {
                 request.setUrlParamString(params);                
             } else {                
                 if (dataMode === 'urlencoded') {
-                    request.setBodyParams(params);
+                    body.loadData("urlencoded", oAuthParams, true);
                 }
                 else if (dataMode === 'params') {
-                    request.setBodyParams(params);
+                    body.loadData("params", oAuthParams, true);
                 }
                 else if (dataMode === 'raw') {
-                    request.setUrlParamString(params);                    
+                    request.setUrlParamString(oAuthParams);                    
                 }
             }
         }

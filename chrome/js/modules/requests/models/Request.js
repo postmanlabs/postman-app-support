@@ -141,7 +141,8 @@ var Request = Backbone.Model.extend({
     },
 
     getUrlParams: function() {
-        return this.get("urlParams");
+        var params = getUrlVars(this.get("url"));        
+        return params;
     },
 
     setUrlParams: function(params) {
@@ -149,11 +150,11 @@ var Request = Backbone.Model.extend({
     },
 
     // Fixed
-    setUrlParamString:function (params) {
-        var url = $('#url').val();
-        this.set("url", url);
+    setUrlParamString:function (params, silent) {
+        // this.trigger("updateModel");
 
         var paramArr = [];
+        var url = this.get("url");
 
         for (var i = 0; i < params.length; i++) {
             var p = params[i];
@@ -167,20 +168,22 @@ var Request = Backbone.Model.extend({
 
         var baseUrl = url.split("?")[0];
         if (paramArr.length > 0) {
-            $('#url').val(baseUrl + "?" + paramArr.join('&'));
+            url = baseUrl + "?" + paramArr.join('&');            
         }
         else {
             //Has key/val pair
             if (url.indexOf("?") > 0 && url.indexOf("=") > 0) {
-                $('#url').val(baseUrl);
-            }
-            else {
-                $('#url').val(url);
+                url = baseUrl;
             }
         }
 
-        //TODO Cleaner way to do this?
-        this.set("url", $('#url').val());
+        if (silent) {
+            this.set("url", url, { "silent": true });
+        }
+        else {
+            this.set("url", url);    
+        }
+        
     },
 
     setBodyParams: function(params) {
@@ -288,7 +291,7 @@ var Request = Backbone.Model.extend({
         var body = this.get("body");
         
         var request = {
-            url: $('#url').val(),
+            url: this.get("url"),
             data: body.get("dataAsObjects"), //TODO This should be available in the model itself, asObjects = true
             headers: this.getPackedHeaders(),
             dataMode: body.get("dataMode"),
@@ -299,7 +302,6 @@ var Request = Backbone.Model.extend({
         return JSON.stringify(request);
     },
 
-    // TODO Needs to be refactored
     startNew:function () {
         var body = this.get("body");
         var response = this.get("response");
@@ -544,7 +546,7 @@ var Request = Backbone.Model.extend({
 
     send:function (responseRawDataType) {
         console.log("Send request with data type", responseRawDataType);
-        
+
         var model = this;
 
         var body = this.get("body");

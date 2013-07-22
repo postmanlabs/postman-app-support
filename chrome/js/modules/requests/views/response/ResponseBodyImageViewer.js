@@ -5,6 +5,7 @@ var ResponseBodyImageViewer = Backbone.View.extend({
     	response.on("finishedLoadResponse", this.render, this);
     },
 
+    // Source: http://stackoverflow.com/questions/8022425/getting-blob-data-from-xhr-request
     renderAsImage: function(responseData) {
         var uInt8Array = new Uint8Array(responseData);
         var i = uInt8Array.length;

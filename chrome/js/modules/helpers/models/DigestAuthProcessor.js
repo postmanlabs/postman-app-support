@@ -28,27 +28,27 @@ var DigestAuthProcessor = Backbone.Model.extend({
         });
     },
 
-    getHeader: function () {
+    getHeader: function () {        
         var request = this.get("request");
-
+        request.trigger("updateModel");
+        
         var algorithm = pm.envManager.getCurrentValue(this.get("algorithm"));
 
         var username = pm.envManager.getCurrentValue(this.get("username"));
         var realm = pm.envManager.getCurrentValue(this.get("realm"));
         var password = pm.envManager.getCurrentValue(this.get("password"));
+
         var method = request.get("method");
+
         var nonce = pm.envManager.getCurrentValue(this.get("nonce"));
         var nonceCount = pm.envManager.getCurrentValue(this.get("nonceCount"));
         var clientNonce = pm.envManager.getCurrentValue(this.get("clientNonce"));
 
         var opaque = pm.envManager.getCurrentValue(this.get("opaque"));
         var qop = pm.envManager.getCurrentValue(this.get("qop"));
-
-        // TODO Make sure this comes from the body
-        var body = request.getRequestBodyPreview();
-
-        // TODO Get the url from the model
+        var body = request.getRequestBodyPreview();        
         var url = request.processUrl(request.get("url"));
+
         var urlParts = request.splitUrlIntoHostAndPath(url);
 
         var digestUri = urlParts.path;
@@ -121,6 +121,8 @@ var DigestAuthProcessor = Backbone.Model.extend({
         var algorithm = $("#request-helper-digestAuth-realm").val();
         var headerVal = this.getHeader();
         headerVal = "Digest" + headerVal;
+
+        console.log(headerVal);
 
         request.setHeader(authHeaderKey, headerVal);
     },
