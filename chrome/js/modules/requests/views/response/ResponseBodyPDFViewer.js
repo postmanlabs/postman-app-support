@@ -18,9 +18,18 @@ var ResponseBodyPDFViewer = Backbone.View.extend({
 	    	$("#response-as-preview").html("");
 	    	$("#response-as-preview").css("display", "block");
 
-	    	pm.filesystem.renderResponsePreview("response.pdf", responseData, "pdf", function (response_url) {
-	    	    $("#response-as-preview").html("<iframe src='" + response_url + "'/>");
-	    	});
+            var filename = "response.pdf";
+            var type = "pdf";
+
+            pm.filesystem.saveAndOpenFile(filename, responseData, type, function () {
+                noty(
+                    {
+                        type:'success',
+                        text:'Saved PDF to disk',
+                        layout:'topCenter',
+                        timeout:750
+                    });
+            });
     	}    	
     	else if (previewType === "pdf" && responseRawDataType === "text") {
     	 	// Trigger an arraybuffer request with the same parameters       	 	

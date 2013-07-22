@@ -61,8 +61,7 @@ var ResponseBodyViewer = Backbone.View.extend({
             this.displayTextResponse(language, text, presetPreviewType, true);
         }
     },
-
-    // TODO Refactor this
+    
     displayTextResponse:function (language, response, format, forceCreate) {    
         var codeDataArea = document.getElementById("code-data");
         var codeDataWidth = $(document).width() - $('#sidebar').width() - 60;

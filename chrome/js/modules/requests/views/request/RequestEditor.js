@@ -171,39 +171,14 @@ var RequestEditor = Backbone.View.extend({
         var responses = model.get("responses");
         var isFromSample = model.get("isFromSample");
         var isFromCollection = model.get("isFromCollection");
-
-        // TODO This needs to be in the CollectionRequestDetailsView
+        
         if (isFromCollection) {
             $('#update-request-in-collection').css("display", "inline-block");
-
-            if (typeof name !== "undefined") {
-                $('#request-meta').css("display", "block");
-                $('#request-name').html(name);
-                $('#request-name').css("display", "inline-block");
-            }
-            else {
-                $('#request-meta').css("display", "none");
-                $('#request-name').css("display", "none");
-            }
-
-            if (typeof description !== "undefined") {
-                $('#request-description').html(description);
-                $('#request-description').css("display", "block");
-            }
-            else {
-                $('#request-description').css("display", "none");
-            }
-
-            $('#response-sample-save-form').css("display", "none");
-
-            $('.request-meta-actions-togglesize').attr('data-action', 'minimize');
-            $('.request-meta-actions-togglesize img').attr('src', 'img/circle_minus.png');
         }
         else if (isFromSample) {
             $('#update-request-in-collection').css("display", "inline-block");
         }
-        else {
-            $('#request-meta').css("display", "none");
+        else {            
             $('#update-request-in-collection').css("display", "none");
         }
 

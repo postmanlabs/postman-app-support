@@ -46,8 +46,30 @@ var RequestMetaViewer = Backbone.View.extend({
 
         if (isFromCollection) {
             this.show();
-            $('#request-name').html(request.get("name"));
-            $('#request-description').html(request.get("description"));
+
+            var name = request.get("name");
+            var description = request.get("description");
+            
+            if (typeof name !== "undefined") {
+                $('#request-meta').css("display", "block");
+                $('#request-name').html(name);
+                $('#request-name').css("display", "inline-block");
+            }
+            else {
+                $('#request-meta').css("display", "none");
+                $('#request-name').css("display", "none");
+            }
+
+            if (typeof description !== "undefined") {
+                $('#request-description').html(description);
+                $('#request-description').css("display", "block");
+            }
+            else {
+                $('#request-description').css("display", "none");
+            }
+
+            $('.request-meta-actions-togglesize').attr('data-action', 'minimize');
+            $('.request-meta-actions-togglesize img').attr('src', 'img/circle_minus.png');
         }
         else {
             this.hide();

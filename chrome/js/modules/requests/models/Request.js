@@ -543,6 +543,8 @@ var Request = Backbone.Model.extend({
     },
 
     send:function (responseRawDataType) {
+        console.log("Send request with data type", responseRawDataType);
+        
         var model = this;
 
         var body = this.get("body");

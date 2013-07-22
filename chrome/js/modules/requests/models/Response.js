@@ -57,14 +57,14 @@ var Response = Backbone.Model.extend({
 
     setResponseData: function(response) {
         var responseData;
-        if (response.responseRawDataType === "arraybuffer") {            
+        console.log(this.get("rawDataType"));
+
+        if (response.responseType === "arraybuffer") {            
             this.set("responseData", response.response);
         }
         else {
             this.set("text", response.responseText);
         }
-
-        this.set("rawDataType", response.responseRawDataType);
     },
 
     // getAllResponseHeaders - Headers are separated by \n
@@ -137,6 +137,8 @@ var Response = Backbone.Model.extend({
                 var url = request.get("url");
                 model.setResponseCode(response);
                 model.setResponseTime(request.get("startTime"));
+                console.log("Response is ", response);
+
                 model.setResponseData(response);
                 model.setHeaders(response);
                 model.setCookies(url);
@@ -154,12 +156,11 @@ var Response = Backbone.Model.extend({
                     if (model.isContentTypeImage(contentType)) {                        
                         responsePreviewType = 'image';
                     }                    
-                    else if (model.isContentTypePDF(contentType) && response.responseRawDataType === "arraybuffer") {
+                    else if (model.isContentTypePDF(contentType) && response.responseType === "arraybuffer") {
                         responsePreviewType = 'pdf';                        
                     }                    
-                    else if (model.isContentTypePDF(contentType) && response.responseRawDataType === "text") {                        
-                        // TODO Trigger new request                  
-                        return;      
+                    else if (model.isContentTypePDF(contentType) && response.responseType === "text") {                                        
+                        responsePreviewType = 'pdf';                        
                     }
                     else {
                         responsePreviewType = 'html';                        
@@ -176,6 +177,7 @@ var Response = Backbone.Model.extend({
 
                 model.set("language", language);
                 model.set("previewType", responsePreviewType);
+                model.set("rawDataType", response.responseType);
                 model.set("state", {size: "normal"});
                 model.trigger("loadResponse", model);
             }                
