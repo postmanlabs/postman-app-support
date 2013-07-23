@@ -1474,6 +1474,12 @@ input[type="file"] {
     margin-top: 15px;
     margin-bottom: 15px;
     margin-left: 0;
+
+    -moz-user-select: text;
+    -khtml-user-select: text;
+    -webkit-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
 }
 
 /*Collections*/

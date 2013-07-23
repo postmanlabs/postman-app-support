@@ -109,13 +109,36 @@ describe("Postman utility functions", function() {
   });
 
   describe("getHeaderVars", function() {
-    it("should break up headers", function() {      
+    it("should break up headers into key/val pairs", function() {
+      var data = "Access-Control-Allow-Origin: chrome-extension://aglpidefogoeiamaehklpfoafichfmdk\n";
+      data += "Content-Length: 870\n";
+      data += "Content-Type: application/json\n";
+      data += "Date: Tue, 23 Jul 2013 10:34:32 GMT";
+
+      headers = getHeaderVars(data);
+
+      expect(headers).toBeDefined();
+      expect(headers.length).toBe(4);
+      expect(headers[0].key).toBe("Access-Control-Allow-Origin");
+      expect(headers[1].key).toBe("Content-Length");
+      expect(headers[1].value).toBe("870");
+      expect(headers[2].value).toBe("application/json");
     });
   });
 
   describe("arrayObjectIndexOf", function() {
     it("should return index of object in an array according to property", function() {
+      var a = [
+        { "id": 1, "name": "Abc" },
+        { "id": 2, "name": "def" },
+        { "id": 3, "name": "xyz" }
+      ];
 
+      var index = arrayObjectIndexOf(a, 1, "id");
+      expect(index).toBe(0);
+
+      index = arrayObjectIndexOf(a, "def", "name");
+      expect(index).toBe(1);
     });
   });
 });
