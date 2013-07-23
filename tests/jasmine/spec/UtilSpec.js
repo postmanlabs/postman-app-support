@@ -26,6 +26,22 @@ describe("Postman utility functions", function() {
       var url = "http://localhost/?foo=bar&test=blah";
       var vars = getUrlVars(url);
       expect(vars.length).toBe(2);
+    });    
+
+    // #130: Key and value modified if value contains ?xxxx=
+    // https://github.com/a85/POSTMan-Chrome-Extension/issues/130
+    it("should not split values with ?", function() {    
+      var url = 'http://localhost/?foo=bar&test=<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
+      var vars = getUrlVars(url);
+      expect(vars.length).toBe(2);
+    });     
+
+    // #174: Semicolon not working in URL
+    // https://github.com/a85/POSTMan-Chrome-Extension/issues/174?source=cc
+    it("should not split values with ;", function() {    
+     var url = 'http://www.example.com/path;jsessionid=abc';
+     var vars = getUrlVars(url);
+     expect(vars.length).toBe(0);
     });
   });
 
@@ -68,15 +84,38 @@ describe("Postman utility functions", function() {
     });
   });
   
-  it("should return body vars", function() {
+  describe("getBodyVars", function() {
+    it("should return body with single variable", function() {
+      var body = "foo=bar";
+      var vars = getBodyVars(body);
+      expect(vars.length).toBe(1);
+    });
 
+    it("should split body with multiple variables", function() {
+      var body = "foo=bar&test=blah";
+      var vars = getBodyVars(body);
+      expect(vars.length).toBe(2);
+    });
+
+    it("should split body with nothing", function() {
+      var body = "foo";
+      var vars = getBodyVars(body);
+      expect(vars.length).toBe(0);
+
+      body = "";
+      vars = getBodyVars(body);
+      expect(vars.length).toBe(0);
+    });
   });
 
-  it("should break up headers", function() {
-
+  describe("getHeaderVars", function() {
+    it("should break up headers", function() {      
+    });
   });
 
-  it("should return index of object in an array according to property", function() {
+  describe("arrayObjectIndexOf", function() {
+    it("should return index of object in an array according to property", function() {
 
+    });
   });
 });
