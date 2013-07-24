@@ -240,11 +240,13 @@ var OAuth1Processor = Backbone.Model.extend({
 
             rawString = rawString.substring(0, rawString.length - 1);
             request.setHeader(authHeaderKey, rawString);
+            request.trigger("customHeaderUpdate");
         } else {            
             params = params.concat(oAuthParams);
 
             if (!request.isMethodWithBody(method)) {
-                request.setUrlParamString(params);                
+                request.setUrlParamString(params);
+                request.trigger("customURLParamUpdate");
             } else {                
                 if (dataMode === 'urlencoded') {
                     body.loadData("urlencoded", oAuthParams, true);
@@ -254,6 +256,7 @@ var OAuth1Processor = Backbone.Model.extend({
                 }
                 else if (dataMode === 'raw') {
                     request.setUrlParamString(oAuthParams);                    
+                    request.trigger("customURLParamUpdate");
                 }
             }
         }

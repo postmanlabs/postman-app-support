@@ -36,6 +36,7 @@ var BasicAuthProcessor = Backbone.Model.extend({
         var encodedString = "Basic " + btoa(rawString);
 
         request.setHeader(authHeaderKey, encodedString);        
+        request.trigger("customHeaderUpdate");
     },
 
     updateDB: function() {

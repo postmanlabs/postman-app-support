@@ -11,6 +11,7 @@ var RequestURLEditor = Backbone.View.extend({
         model.on("change:url", this.onChangeUrl, this);
         model.on("updateURLInputText", this.onUpdateURLInputText, this);
         model.on("startNew", this.onStartNew, this);        
+        model.on("customURLParamUpdate", this.onCustomUrlParamUpdate, this);
 
         var params = {
             placeHolderKey:"URL Parameter Key",
@@ -74,6 +75,10 @@ var RequestURLEditor = Backbone.View.extend({
         }
         
         $(document).bind('keydown', 'backspace', urlFocusHandler);
+    },
+
+    onCustomUrlParamUpdate: function() {
+        this.openUrlEditor();
     },
 
     onUpdateURLInputText: function() {

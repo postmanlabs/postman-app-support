@@ -123,6 +123,7 @@ var DigestAuthProcessor = Backbone.Model.extend({
         headerVal = "Digest" + headerVal;
 
         request.setHeader(authHeaderKey, headerVal);
+        request.trigger("customHeaderUpdate");
     },
 
     updateDB: function() {

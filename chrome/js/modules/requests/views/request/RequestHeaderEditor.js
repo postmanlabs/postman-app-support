@@ -3,6 +3,7 @@ var RequestHeaderEditor = Backbone.View.extend({
         var model = this.model;
         var view = this;
         model.on("change:headers", this.onChangeHeaders, this);
+        model.on("customHeaderUpdate", this.onCustomHeaderUpdate, this);
 
         var params = {
             placeHolderKey:"Header",
@@ -86,6 +87,10 @@ var RequestHeaderEditor = Backbone.View.extend({
             $('#headers-keyvaleditor div:first-child input:first-child').focus();
             return false;
         });
+    },
+
+    onCustomHeaderUpdate: function() {
+        this.openHeaderEditor();
     },
 
     onChangeHeaders: function() {                
