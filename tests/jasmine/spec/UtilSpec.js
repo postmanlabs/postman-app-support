@@ -127,7 +127,7 @@ describe("Postman utility functions", function() {
   });
 
   describe("arrayObjectIndexOf", function() {
-    it("should return index of object in an array according to property", function() {
+    it("should return index of object in an array according to a property", function() {
       var a = [
         { "id": 1, "name": "Abc" },
         { "id": 2, "name": "def" },
