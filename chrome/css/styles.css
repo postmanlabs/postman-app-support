@@ -950,7 +950,12 @@ input[type="file"] {
   margin-left: -10px;
   background: white;
   min-height: 200px;
-  padding-left: 10px; }
+  padding-left: 10px;
+  -moz-user-select: text;
+  -khtml-user-select: text;
+  -webkit-user-select: text;
+  -ms-user-select: text;
+  user-select: text; }
 
 #response-editors:focus {
   border: none;
@@ -1000,14 +1005,24 @@ input[type="file"] {
 #response-status {
   margin-top: 5px;
   float: left;
-  margin-left: 30px; }
+  margin-left: 30px;
+  -moz-user-select: text;
+  -khtml-user-select: text;
+  -webkit-user-select: text;
+  -ms-user-select: text;
+  user-select: text; }
 
 #response-time, #response-status, #response-sample-status {
   margin-top: 8px; }
 
 #response-time {
   float: left;
-  margin-left: 10px; }
+  margin-left: 10px;
+  -moz-user-select: text;
+  -khtml-user-select: text;
+  -webkit-user-select: text;
+  -ms-user-select: text;
+  user-select: text; }
 
 #response-sample-status {
   float: left;

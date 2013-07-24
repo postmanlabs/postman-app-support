@@ -1167,6 +1167,12 @@ input[type="file"] {
     background: white;
     min-height: 200px;
     padding-left: 10px;
+
+    -moz-user-select: text;
+    -khtml-user-select: text;
+    -webkit-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
 }
 
 #response-editors:focus {
@@ -1230,6 +1236,12 @@ input[type="file"] {
     margin-top: 5px;
     float: left;
     margin-left: 30px;
+
+    -moz-user-select: text;
+    -khtml-user-select: text;
+    -webkit-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
 }
 
 #response-time, #response-status, #response-sample-status {
@@ -1239,6 +1251,12 @@ input[type="file"] {
 #response-time {
     float: left;
     margin-left: 10px;
+
+    -moz-user-select: text;
+    -khtml-user-select: text;
+    -webkit-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
 }
 
 #response-sample-status {

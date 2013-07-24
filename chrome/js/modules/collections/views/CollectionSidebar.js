@@ -50,12 +50,7 @@ var CollectionSidebar = Backbone.View.extend({
             var name = $(this).attr('data-name');
 
             $('#modal-delete-collection-yes').attr('data-id', id);
-            $('#modal-delete-collection-name').html(name);
-            
-            //TODO Move this to the model
-            pm.indexedDB.getCollection(id, function (collection) {
-                
-            });
+            $('#modal-delete-collection-name').html(name);            
         });
 
         $collection_items.on("click", ".collection-actions-download", function () {

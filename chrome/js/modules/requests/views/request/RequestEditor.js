@@ -125,6 +125,7 @@ var RequestEditor = Backbone.View.extend({
     },
 
     onStartNew: function() {
+        // TODO Needs to be handled by the Sidebar
         $('.sidebar-collection-request').removeClass('sidebar-collection-request-active');
         $('#update-request-in-collection').css("display", "none");
     },

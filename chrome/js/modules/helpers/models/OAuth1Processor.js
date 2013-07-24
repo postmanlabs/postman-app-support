@@ -54,6 +54,13 @@ var OAuth1Processor = Backbone.Model.extend({
     },
 
     generateHelper: function () {
+        if(this.get("version") === "") {
+            this.set("version", "1.0");
+        }
+
+        if(this.get("signatureMethod" === "")) {
+            this.set("signatureMethod", "HMAC-SHA1");
+        }
         this.set("timestamp", OAuth.timestamp());
         this.set("nonce", OAuth.nonce(6));
     },
@@ -131,8 +138,6 @@ var OAuth1Processor = Backbone.Model.extend({
             accessor.tokenSecret = $('input[key="oauth_token_secret"]').val();
             accessor.tokenSecret = pm.envManager.getCurrentValue(accessor.tokenSecret);
         }
-
-        console.log("Generating using", message, accessor);
 
         return OAuth.SignatureMethod.sign(message, accessor);
     },

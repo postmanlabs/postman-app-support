@@ -298,7 +298,7 @@ var Request = Backbone.Model.extend({
 
         var xhr = this.get("xhr");
 
-        if (xhr !== null) {
+        if (xhr) {
             xhr.abort();
             this.unset("xhr");
         }
@@ -311,9 +311,12 @@ var Request = Backbone.Model.extend({
         this.set("headers", []);
         this.set("method", "GET");
         this.set("dataMode", "");
+        this.set("isFromCollection", false);
+        this.set("collectionRequestId", "");
 
         body.set("data", "");            
 
+        this.trigger("loadRequest", this);
         response.trigger("clearResponse");
     },
 
@@ -328,11 +331,10 @@ var Request = Backbone.Model.extend({
     },
 
     loadRequestFromLink:function (link, headers) {
-        this.startNew();
+        this.trigger("startNew");
 
         this.set("url", this.decodeLink(link));
         this.set("method", "GET");
-
         this.set("isFromCollection", false);
 
         if (pm.settings.getSetting("retainLinkHeaders") === true) {
