@@ -131,9 +131,7 @@ var ResponseBodyViewer = Backbone.View.extend({
             renderMode = "links";
         }
 
-        if (!codeMirror) {            
-            console.log("Force creating codeMirror", renderMode);
-
+        if (!codeMirror) {
             $('#response .CodeMirror').remove();
             codeMirror = CodeMirror.fromTextArea(codeDataArea,
             {
@@ -163,8 +161,6 @@ var ResponseBodyViewer = Backbone.View.extend({
             CodeMirror.commands["goDocStart"](codeMirror);
             $(window).scrollTop(0);
         }
-
-        console.log(this.responseBodyPrettyViewer);
 
         if (format === "parsed") {
             $('#response-as-code').css("display", "block");

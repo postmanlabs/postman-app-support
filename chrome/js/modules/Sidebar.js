@@ -74,6 +74,7 @@ var Sidebar = Backbone.View.extend({
         });
 
         $('#sidebar').animate({width:sidebarWidth + "px", marginLeft: "0px"}, animationDuration);
+        $('#sidebar-search-container').fadeIn(animationDuration);
         $('#sidebar div').animate({opacity:1}, animationDuration);
         $('#sidebar-toggle img').attr('src', 'img/tri_arrow_left.png');
         var newMainWidth = $(document).width() - sidebarWidth - 10;

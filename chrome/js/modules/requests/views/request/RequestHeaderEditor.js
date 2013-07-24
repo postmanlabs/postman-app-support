@@ -83,8 +83,16 @@ var RequestHeaderEditor = Backbone.View.extend({
                 return;
             }
 
-            view.openHeaderEditor();
-            $('#headers-keyvaleditor div:first-child input:first-child').focus();
+            var display = $("#headers-keyvaleditor-container").css("display");
+
+            if (display === "block") {
+                view.closeHeaderEditor();
+            }
+            else {
+                view.openHeaderEditor();
+                $('#headers-keyvaleditor div:first-child input:first-child').focus();    
+            }
+            
             return false;
         });
     },
@@ -94,8 +102,7 @@ var RequestHeaderEditor = Backbone.View.extend({
     },
 
     onChangeHeaders: function() {                
-        var headers = this.model.get("headers");        
-        console.log("onChangeHeaders called", headers);
+        var headers = this.model.get("headers");
         $('#headers-keyvaleditor').keyvalueeditor('reset', headers);
     },
 
