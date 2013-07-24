@@ -9,7 +9,8 @@ var RequestURLEditor = Backbone.View.extend({
         this.editorId = editorId;
 
         model.on("change:url", this.onChangeUrl, this);
-        model.on("startNew", this.onStartNew, this);
+        model.on("updateURLInputText", this.onUpdateURLInputText, this);
+        model.on("startNew", this.onStartNew, this);        
 
         var params = {
             placeHolderKey:"URL Parameter Key",
@@ -18,13 +19,13 @@ var RequestURLEditor = Backbone.View.extend({
             onDeleteRow:function () {
                 var params = view.getUrlEditorParams();
                 model.setUrlParams(params);
-                model.setUrlParamString(view.getUrlEditorParams());
+                model.setUrlParamString(view.getUrlEditorParams(), true);
             },
 
             onBlurElement:function () {
                 var params = view.getUrlEditorParams();
                 model.setUrlParams(params);
-                model.setUrlParamString(view.getUrlEditorParams());
+                model.setUrlParamString(view.getUrlEditorParams(), true);
             }
         };
 
@@ -75,6 +76,11 @@ var RequestURLEditor = Backbone.View.extend({
         $(document).bind('keydown', 'backspace', urlFocusHandler);
     },
 
+    onUpdateURLInputText: function() {
+        var url = this.model.get("url");
+        $("#url").val(url);
+    },
+
     onChangeUrl: function() {
         var url = this.model.get("url");
         $("#url").val(url);
@@ -91,8 +97,8 @@ var RequestURLEditor = Backbone.View.extend({
     },
 
     updateModel: function() {
-        this.model.set("url", $("#url").val())
-        this.model.setUrlParamString(this.getUrlEditorParams());
+        this.model.set("url", $("#url").val());
+        this.model.setUrlParamString(this.getUrlEditorParams(), true);        
     },
 
     openUrlEditor:function () {

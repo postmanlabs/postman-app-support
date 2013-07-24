@@ -176,6 +176,7 @@ var Request = Backbone.Model.extend({
 
         if (silent) {
             this.set("url", url, { "silent": true });
+            this.trigger("updateURLInputText");
         }
         else {
             this.set("url", url);    
