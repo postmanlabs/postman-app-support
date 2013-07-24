@@ -264,9 +264,11 @@ var ResponseBodyViewer = Backbone.View.extend({
             state.width = $('#response-data').width();
             state.height = $('#response-data').height();
             state.display = $('#response-data').css("display");
+            state.overflow = $('#response-data').css("overflow");
             state.position = $('#response-data').css("position");
 
             $('#response-data').css("position", "absolute");
+            $('#response-data').css("overflow", "scroll");
             $('#response-data').css("left", 0);
             $('#response-data').css("top", "-15px");
             $('#response-data').css("width", $(document).width() - 20);
@@ -279,6 +281,7 @@ var ResponseBodyViewer = Backbone.View.extend({
             state.size = "normal";
             $('#response-body-toggle img').attr("src", "img/full-screen-alt-4.png");
             $('#response-data').css("position", state.position);
+            $('#response-data').css("overflow", state.overflow);
             $('#response-data').css("left", 0);
             $('#response-data').css("top", 0);
             $('#response-data').css("width", state.width);
