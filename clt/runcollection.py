@@ -45,7 +45,18 @@ def is_valid_destination(destination):
 
 def get_headers(header_string):
 	headers = {}
-	return headers
+
+	if not header_string
+		return headers
+
+	hs = header_string.split("\n")
+	for header in hs:
+		h = header.split(":")
+		key = h[0].trim()
+		value = h[1].trim()
+		headers[key] = value
+
+	print headers
 
 def save_response(request, data, destination_dir):	
 	name = request['name']
@@ -69,7 +80,7 @@ def get_urlencoded_for_requests(data):
 		body = body + kvpair['key'] + "=" + kvpair['value'] + "&"
 
 	body = body[:-1]
-	
+
 	return body
 
 def execute_request(request, destination_dir):	
@@ -212,8 +223,6 @@ def run_collection(collection_file, environment_file, destination_dir):
 
 	print "Finished running collection."	
 	# pprint(collection)
-
-
 
 def main():
     parser = argparse.ArgumentParser(description="Postman collection runner")
