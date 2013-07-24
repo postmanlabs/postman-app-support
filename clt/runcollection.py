@@ -46,17 +46,20 @@ def is_valid_destination(destination):
 def get_headers(header_string):
 	headers = {}
 
-	if not header_string
+	if not header_string:
 		return headers
 
 	hs = header_string.split("\n")
-	for header in hs:
-		h = header.split(":")
-		key = h[0].trim()
-		value = h[1].trim()
-		headers[key] = value
+	pprint(hs)
 
-	print headers
+	for header in hs:		
+		h = header.split(":")
+		if len(h) > 1:
+			key = h[0].strip().lower()
+			value = h[1].strip()
+			headers[key] = value
+				
+	return headers
 
 def save_response(request, data, destination_dir):	
 	name = request['name']
@@ -107,7 +110,7 @@ def execute_request(request, destination_dir):
 		if dataMode == 'params':
 			body = get_formdata_for_requests(request['data'])
 		elif dataMode == 'urlencoded':			
-			headers['Content-Type'] = "application/x-www-form-urlencoded";
+			headers['content-type'] = "application/x-www-form-urlencoded";
 			body = get_urlencoded_for_requests(request['data'])			
 		elif dataMode == 'raw':
 			body = request['data']
@@ -127,6 +130,7 @@ def execute_request(request, destination_dir):
 			response['success'] = False
 	elif method == 'POST':
 		try:
+			print headers
 			r = requests.post(url, headers=headers, data=body)
 			executed = True
 			save_response(request, r.text, destination_dir)
