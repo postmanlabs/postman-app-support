@@ -37,15 +37,30 @@ def is_valid_destination(destination):
 
 def execute_formdata_request(request, destination_dir):
 	print "Execute formdata request"
-	return []
+	response = {
+		'status': 0, 
+		'success': false
+	}
+
+	return response
 
 def execute_urlencoded_request(request, destination_dir):
 	print "Execute urlencoded request"
-	return []
+	response = {
+		'status': 0, 
+		'success': false
+	}
+
+	return response
 
 def execute_raw_request(request, destination_dir):
 	print "Execute raw request"
-	return []
+	response = {
+		'status': 0, 
+		'success': false
+	}
+
+	return response
 	
 def execute_request(request, destination_dir):
 	print "Running request %s" % request['name']
