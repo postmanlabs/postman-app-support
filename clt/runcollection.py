@@ -5,8 +5,16 @@ import sys
 import time
 import requests
 import json
+import traceback
 from colorama import deinit
 from pprint import pprint
+
+def is_method_with_body(method):
+	methods_with_body = ["POST", "PUT", "PATCH", "DELETE"];
+	if method in methods_with_body:
+		return True
+	else:
+		return False
 
 def is_valid_collection(collection):
 	print "Collection: %s" % collection
@@ -35,48 +43,140 @@ def is_valid_destination(destination):
 
 	return True
 
-def execute_formdata_request(request, destination_dir):
-	print "Execute formdata request"
-	response = {
-		'status': 0, 
-		'success': false
-	}
+def get_headers(header_string):
+	headers = {}
+	return headers
 
-	return response
+def save_response(request, data, destination_dir):	
+	name = request['name']
+	name = name.replace('/', '_')
+	file_name = os.path.join(destination_dir, name)
+	f = open(file_name, 'w+')
+	f.write(data)
+	f.close()
 
-def execute_urlencoded_request(request, destination_dir):
-	print "Execute urlencoded request"
-	response = {
-		'status': 0, 
-		'success': false
-	}
+def get_formdata_for_requests(data):
+	body = {}
+	for kvpair in data:
+		if kvpair['type'] == 'text':
+			body[kvpair['key']] = kvpair['value']
 
-	return response
+	return body
 
-def execute_raw_request(request, destination_dir):
-	print "Execute raw request"
-	response = {
-		'status': 0, 
-		'success': false
-	}
+def get_urlencoded_for_requests(data):
+	body = ""
+	for kvpair in data:
+		body = body + kvpair['key'] + "=" + kvpair['value'] + "&"
 
-	return response
+	body = body[:-1]
 	
-def execute_request(request, destination_dir):
-	print "Running request %s" % request['name']
-	dataMode = request['dataMode']	
+	return body
 
-	if dataMode == "params":
-		response = execute_formdata_request(request, destination_dir)
-	elif dataMode == "urlencoded":		
-		response = execute_urlencoded_request(request, destination_dir)
-	elif dataMode == "raw":
-		response = execute_raw_request(request, destination_dir)
+def execute_request(request, destination_dir):	
+	print "\n**********"
+	print request['name']
+	response = {
+		'request': {
+			'name': request['name'],
+			'url': request['url'],
+			'method': request['method']
+		},
+		'status_code': 0,
+		'success': False
+	}
+
+	url = request['url']
+	method = request['method'].upper()
+	headers = get_headers(request['headers'])
+	dataMode = request['dataMode']
+	executed = False
+
+	if is_method_with_body(method):
+		has_body = True
+		if dataMode == 'params':
+			body = get_formdata_for_requests(request['data'])
+		elif dataMode == 'urlencoded':			
+			headers['Content-Type'] = "application/x-www-form-urlencoded";
+			body = get_urlencoded_for_requests(request['data'])			
+		elif dataMode == 'raw':
+			body = request['data']
+	else:
+		has_body = False
+
+	if method == 'GET':		
+		try:
+			r = requests.get(url, headers=headers)
+			executed = True
+			save_response(request, r.text, destination_dir)
+			response['status_code'] = r.status_code
+			response['success'] = True
+		except Exception as e:			
+			traceback.print_exc()
+			executed = True
+			response['success'] = False
+	elif method == 'POST':
+		try:
+			r = requests.post(url, headers=headers, data=body)
+			executed = True
+			save_response(request, r.text, destination_dir)
+			response['status_code'] = r.status_code
+			response['success'] = True
+		except Exception as e:			
+			traceback.print_exc()
+			executed = True
+			response['success'] = False
+	elif method == 'PUT':
+		try:
+			r = requests.put(url, headers=headers, data=body)
+			executed = True
+			save_response(request, r.text, destination_dir)
+			response['status_code'] = r.status_code
+			response['success'] = True
+		except Exception as e:			
+			traceback.print_exc()
+			executed = True
+			response['success'] = False
+	elif method == 'DELETE':
+		try:
+			r = requests.delete(url, headers=headers, data=body)
+			executed = True
+			save_response(request, r.text, destination_dir)
+			response['status_code'] = r.status_code
+			response['success'] = True
+		except Exception as e:			
+			traceback.print_exc()
+			executed = True
+			response['success'] = False
+	elif method == 'HEAD':
+		try:
+			r = requests.head(url, headers=headers)
+			executed = True
+			save_response(request, json.dumps(r.headers, ensure_ascii=False), destination_dir)
+			response['status_code'] = r.status_code
+			response['success'] = True
+		except Exception as e:			
+			traceback.print_exc()
+			executed = True
+			response['success'] = False
+	elif method == 'OPTIONS':
+		try:
+			r = requests.options(url, headers=headers)
+			executed = True
+			save_response(request, r.text, destination_dir)
+			response['status_code'] = r.status_code
+			response['success'] = True
+		except Exception as e:			
+			traceback.print_exc()
+			executed = True
+			response['success'] = False
+	else:
+		print "Method %s not supported" % method
 
 	return response
 
 def write_result(responses, destination_dir):
 	print "Writing result file"
+	# TODO Write JSON file here
 	pprint(responses)
 
 def execute_requests(requests, destination_dir):
@@ -102,6 +202,7 @@ def run_collection(collection_file, environment_file, destination_dir):
 
 	f = open(collection_file)
 	collection = json.load(f)
+	f.close()
 
 	print "Everything in order. Running collection %s..." % collection['name']
 
@@ -109,7 +210,7 @@ def run_collection(collection_file, environment_file, destination_dir):
 
 	execute_requests(requests, destination_dir)
 
-	print "Finished running collection."
+	print "Finished running collection."	
 	# pprint(collection)
 
 
