@@ -109,6 +109,7 @@ var History = Backbone.Collection.extend({
         }
 
         pm.indexedDB.addRequest(historyRequest, function (request) {
+            pm.urlCache.addUrl(request.url);
             var historyRequestModel = new HistoryRequest(request);
             historyRequestModel.set("position", "top");
             collection.add(historyRequestModel);

@@ -53,19 +53,19 @@ var HistorySidebar = Backbone.View.extend({
     addOne: function(model, collection) {
         var request = model.toJSON();
 
-        var url = request.url;
+        var displayUrl = _.clone(request.url);
         var method = request.method;
         var id = request.id;
         var position = request.position;
 
-        if (url.length > 80) {
-            url = url.substring(0, 80) + "...";
+        if (displayUrl.length > 80) {
+            displayUrl = displayUrl.substring(0, 80) + "...";
         }
 
-        url = limitStringLineWidth(url, 40);
+        displayUrl = limitStringLineWidth(displayUrl, 40);
 
         var request = {
-            url:url,
+            url:displayUrl,
             method:method,
             id:id,
             position:position
@@ -77,8 +77,6 @@ var HistorySidebar = Backbone.View.extend({
         else {
             $('#history-items').append(Handlebars.templates.item_history_sidebar_request(request));
         }
-
-        pm.urlCache.addUrl(request.url);
 
         this.hideEmptyMessage();
     },
