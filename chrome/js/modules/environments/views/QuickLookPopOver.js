@@ -36,7 +36,7 @@ var QuickLookPopOver = Backbone.View.extend({
             $('#environment-quicklook-environments ul').html("");
         }
         else {
-            $('#environment-quicklook-environments h6').html(environment.name);
+            $('#environment-quicklook-environments h6').html(environment.get("name"));
             $('#environment-quicklook-environments ul').html("");
             $('#environment-quicklook-environments ul').append(Handlebars.templates.environment_quicklook({
                 "items":environment.toJSON().values

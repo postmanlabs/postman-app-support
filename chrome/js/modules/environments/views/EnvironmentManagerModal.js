@@ -59,7 +59,6 @@ var EnvironmentManagerModal = Backbone.View.extend({
             $('#environment-files-input').val("");
         });
 
-
         $('.environments-actions-add').on("click", function () {
             view.showEditor();
         });
@@ -72,7 +71,7 @@ var EnvironmentManagerModal = Backbone.View.extend({
             view.showGlobals();
         });
 
-        $('.environments-actions-add-submit').on("click", function () {
+        function submitEnvironmentEditorForm() {
             var id = $('#environment-editor-id').val();
             var name = $('#environment-editor-name').val();
             var values = $('#environment-keyvaleditor').keyvalueeditor('getValues');
@@ -88,6 +87,15 @@ var EnvironmentManagerModal = Backbone.View.extend({
             $('#environment-keyvaleditor').keyvalueeditor('reset', []);
 
             view.showSelector();
+        }
+
+        $('#environment-editor-form').submit(function() {
+            console.log("Submit stuff");
+            submitEnvironmentEditorForm();
+        });            
+
+        $('.environments-actions-add-submit').on("click", function () {
+            submitEnvironmentEditorForm();
         });
 
         $('.environments-actions-add-back').on("click", function () {

@@ -7,7 +7,7 @@ module.exports = function(grunt) {
         src: ['chrome/js/modules/**/*.js'],
         dest: 'chrome/js/requester.js'
       },
-      html: {
+      requester_html: {
         src: [
         'chrome/html/requester/header.html',
         'chrome/html/requester/sidebar.html',
@@ -50,14 +50,9 @@ module.exports = function(grunt) {
 
       requester_html: {
         files: ['chrome/html/requester/*', 'chrome/html/requester/modals/*'],
-        tasks: ['concat:html']
+        tasks: ['concat:requester_html']
       },
-
-      requester_tester: {
-        files: ['chrome/html/requester/*', 'chrome/html/requester/modals/*'],
-        tasks: ['concat:requester_tester']
-      },
-
+      
       requester_css: {
         files: ['chrome/css/styles.scss'],
         tasks: ['sass']

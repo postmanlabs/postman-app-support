@@ -35,11 +35,13 @@
             </table>
         </div>
         <div id="environment-editor">
-            <input type="text" name="environment-editor-name" id="environment-editor-name" class="clean-input"
-                   placeholder="New environment"/>
-            <input type="hidden" name="environment-editor-id" id="environment-editor-id" value="0" class="clean-input"/>
+            <form id="environment-editor-form">
+                <input type="text" name="environment-editor-name" id="environment-editor-name" class="clean-input"
+                       placeholder="New environment"/>
+                <input type="hidden" name="environment-editor-id" id="environment-editor-id" value="0" class="clean-input"/>
 
-            <div id="environment-keyvaleditor"></div>
+                <div id="environment-keyvaleditor"></div>
+            </form>
         </div>
         <div id="environment-importer">
             <p>Select environment files from your desktop</p>
@@ -51,7 +53,9 @@
         <div id="globals-editor">
             <p>Globals are common values across all environments.</p>
 
-            <div id="globals-keyvaleditor"></div>
+            <form id="globals-editor-form">
+                <div id="globals-keyvaleditor"></div>
+            </form>
         </div>
         <div class="modal-footer">
             <a class="btn btn-primary environments-actions-add-submit">Submit</a>
