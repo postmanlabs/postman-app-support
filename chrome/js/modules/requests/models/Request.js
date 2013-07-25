@@ -5,6 +5,7 @@ var Request = Backbone.Model.extend({
             urlParams:{},
             name:"",
             description:"",
+            descriptionFormat:"html",
             bodyParams:{},
             headers:[],
             method:"GET",
@@ -46,8 +47,8 @@ var Request = Backbone.Model.extend({
     },
 
     // TODO Either text or arraybuffer
-    onSend: function(type) {
-        this.send(type);
+    onSend: function(type, action) {
+        this.send(type, action);
     },
 
     // Fixed
@@ -522,9 +523,11 @@ var Request = Backbone.Model.extend({
         return body.get("dataAsPreview");
     },
 
-    send:function (responseRawDataType) {
+    send:function (responseRawDataType, action) {
+        console.log("Request type and action ", responseRawDataType, action);
+        this.set("action", action);
+        
         var model = this;
-
         var body = this.get("body");
         var response = this.get("response");
 
@@ -625,6 +628,8 @@ var Request = Backbone.Model.extend({
     },
 
     stripScriptTag:function (text) {
+        if (!text) return text;
+
         var re = /<script\b[^>]*>([\s\S]*?)<\/script>/gm;
         text = text.replace(re, "");
         return text;

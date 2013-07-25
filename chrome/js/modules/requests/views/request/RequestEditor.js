@@ -58,7 +58,11 @@ var RequestEditor = Backbone.View.extend({
         });
 
         $("#submit-request").on("click", function () {
-            view.trigger("send", view);
+            view.trigger("send", "text");
+        });
+
+        $("#submit-request-download").on("click", function () {            
+            view.trigger("send", "arraybuffer", "download");
         });
 
         $("#preview-request").on("click", function () {
@@ -87,9 +91,7 @@ var RequestEditor = Backbone.View.extend({
                 return;
             }
 
-            console.log("Triggering send");
-
-            view.trigger("send", view);
+            view.trigger("send", "text");
             return false;
         });
 
@@ -136,9 +138,19 @@ var RequestEditor = Backbone.View.extend({
         this.requestBodyEditor.updateModel();
     },
 
-    onSend: function() {
+    onSend: function(type, action) {
+        if (!type) {
+            type = "text";
+        }
+
+        if (!action) {
+            action = "display";
+        }
+
+        console.log("Event type is ", type, action);
+
         this.updateModel();
-        this.model.trigger("send", "text");
+        this.model.trigger("send", type, action);
     },
 
     onPreview: function() {

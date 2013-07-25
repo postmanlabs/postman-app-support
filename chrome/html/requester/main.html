@@ -413,10 +413,18 @@
 
     <div id="request-actions" class="clearfix">
         <div id="request-actions-primary">
-            <button class="btn btn-primary" data-loading-text="Fetching data..." type="button"
-                    data-complete-text="Send request" id="submit-request" tabindex="5">
-                Send
-            </button>
+            <div class="btn-group">
+                <button class="btn btn-primary" data-loading-text="Fetching data..." type="button"
+                        data-complete-text="Send request" id="submit-request" tabindex="5">
+                    Send
+                </button>
+                <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a id="submit-request-download">Send and download</a></li>
+                </ul>
+            </div>
             <button class="btn"
                     id="update-request-in-collection">Save
             </button>

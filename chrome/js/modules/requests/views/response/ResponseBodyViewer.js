@@ -12,6 +12,34 @@ var ResponseBodyViewer = Backbone.View.extend({
         this.responseBodyPDFViewer = new ResponseBodyPDFViewer({model: this.model});
     },
 
+    downloadBody: function(response) {
+        var previewType = response.get("previewType");
+        var responseRawDataType = response.get("rawDataType");
+
+        console.log(previewType, responseRawDataType);
+        
+        var filedata;
+        var type = previewType;
+        var filename = "response" + "." + previewType;
+
+        if (responseRawDataType === "arraybuffer") {
+            filedata = response.get("responseData");
+        }
+        else {
+            filedata = text;
+        }
+
+        pm.filesystem.saveAndOpenFile(filename, filedata, type, function () {
+            noty(
+                {
+                    type:'success',
+                    text:'Saved response to disk',
+                    layout:'topCenter',
+                    timeout:750
+                });
+        });
+    },
+
     load: function() {
         var model = this.model;
         var request = model;
@@ -22,38 +50,46 @@ var ResponseBodyViewer = Backbone.View.extend({
         var language = response.get("language");
         var text = response.get("text");        
 
-        if (model.get("method") !== "HEAD") {
-            $('#response-data-container').css("display", "block");    
+        var action = model.get("action");
+
+        if (action === "download") {
+            $('#response-data-container').css("display", "none");            
+            this.downloadBody(response);
         }
-        
-        if (previewType === "image") {
-            $('#response-as-code').css("display", "none");
-            $('#response-as-text').css("display", "none");                        
-
-            $('#response-formatting').css("display", "none");
-            $('#response-actions').css("display", "none");
-            $("#response-language").css("display", "none");
-            $("#response-as-preview").css("display", "none");
-            $("#response-copy-container").css("display", "none");
-            $("#response-pretty-modifiers").css("display", "none");
-        }        
-        else if (previewType === "pdf" && responseRawDataType === "arraybuffer") {           
-            // Hide everything else
-            $('#response-as-code').css("display", "none");
-            $('#response-as-text').css("display", "none");
-            $('#response-as-image').css("display", "none");
-
-            $('#response-formatting').css("display", "none");
-            $('#response-actions').css("display", "none");
-            $("#response-language").css("display", "none");
-            $("#response-copy-container").css("display", "none");            
-            $("#response-pretty-modifiers").css("display", "none");
-        }       
-        else if (previewType === "pdf" && responseRawDataType === "text") {                                   
-        } 
         else {
-            this.displayTextResponse(language, text, presetPreviewType, true);
-        }
+            if (model.get("method") !== "HEAD") {
+                $('#response-data-container').css("display", "block");    
+            }
+            
+            if (previewType === "image") {
+                $('#response-as-code').css("display", "none");
+                $('#response-as-text').css("display", "none");                        
+
+                $('#response-formatting').css("display", "none");
+                $('#response-actions').css("display", "none");
+                $("#response-language").css("display", "none");
+                $("#response-as-preview").css("display", "none");
+                $("#response-copy-container").css("display", "none");
+                $("#response-pretty-modifiers").css("display", "none");
+            }        
+            else if (previewType === "pdf" && responseRawDataType === "arraybuffer") {           
+                // Hide everything else
+                $('#response-as-code').css("display", "none");
+                $('#response-as-text').css("display", "none");
+                $('#response-as-image').css("display", "none");
+
+                $('#response-formatting').css("display", "none");
+                $('#response-actions').css("display", "none");
+                $("#response-language").css("display", "none");
+                $("#response-copy-container").css("display", "none");            
+                $("#response-pretty-modifiers").css("display", "none");
+            }       
+            else if (previewType === "pdf" && responseRawDataType === "text") {                                   
+            } 
+            else {
+                this.displayTextResponse(language, text, presetPreviewType, true);
+            }
+        }        
     },
     
     displayTextResponse:function (language, response, format, forceCreate) {    

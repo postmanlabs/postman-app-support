@@ -80,7 +80,8 @@ var AddCollectionRequestModal = Backbone.View.extend({
         collectionRequest.dataMode = body.get("dataMode");
         collectionRequest.name = newRequestName;
         collectionRequest.description = newRequestDescription;
-        collectionRequest.time = new Date().getTime();
+        collectionRequest.descriptionFormat = "html";
+        collectionRequest.time = new Date().getTime();        
         collectionRequest.version = 2;
 
         collectionRequest.responses = [];

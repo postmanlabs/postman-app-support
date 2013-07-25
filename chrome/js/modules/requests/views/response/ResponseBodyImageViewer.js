@@ -31,7 +31,7 @@ var ResponseBodyImageViewer = Backbone.View.extend({
 
     	if (previewType === "image" && responseRawDataType === "text") {
     		$('#response-as-image').css("display", "block");
-            model.trigger("send", "arraybuffer")
+            model.trigger("send", "arraybuffer");
         }
         else if (previewType === "image" && responseRawDataType === "arraybuffer") {
             var responseData = response.get("responseData");

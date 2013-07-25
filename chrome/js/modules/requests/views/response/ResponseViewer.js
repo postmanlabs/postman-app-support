@@ -89,7 +89,7 @@ var ResponseViewer = Backbone.View.extend({
         var responseData = response.get("responseData");
         var text = response.get("text");
         var method = request.get("method");
-
+        var action = model.get("action");        
         var presetPreviewType = pm.settings.getSetting("previewType");
         
         this.showScreen("success");        
@@ -97,14 +97,19 @@ var ResponseViewer = Backbone.View.extend({
         $('#response').css("display", "block");
         $("#response-data").css("display", "block");                
         
-        if (method === "HEAD") {
-            console.log("Show headers");
+        if (action === "download") {
             this.showHeaders();
         }
         else {
-            this.showBody();
+            if (method === "HEAD") {
+                this.showHeaders();
+            }
+            else {
+                this.showBody();
+            }
+    
         }
-
+        
         if (request.get("isFromCollection") === true) {
             $("#response-collection-request-actions").css("display", "block");
         }
