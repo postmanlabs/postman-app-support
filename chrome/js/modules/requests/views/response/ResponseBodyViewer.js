@@ -14,10 +14,7 @@ var ResponseBodyViewer = Backbone.View.extend({
 
     downloadBody: function(response) {
         var previewType = response.get("previewType");
-        var responseRawDataType = response.get("rawDataType");
-
-        console.log(previewType, responseRawDataType);
-        
+        var responseRawDataType = response.get("rawDataType");        
         var filedata;
         var type = previewType;
         var filename = "response" + "." + previewType;

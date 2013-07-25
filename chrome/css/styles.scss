@@ -1146,6 +1146,13 @@ input[type="file"] {
     }
 }
 
+#body-data-binary-container {
+    display: none;
+    margin: 10px 0 10px 0;
+    padding: 5px;
+    border-bottom: solid thin #ccc;
+}
+
 #formdata-keyvaleditor .keyvalueeditor-delete img {
     margin-top: 5px;
     vertical-align: top;

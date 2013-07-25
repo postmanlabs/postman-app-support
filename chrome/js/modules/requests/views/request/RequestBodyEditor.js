@@ -12,6 +12,7 @@ var RequestBodyEditor = Backbone.View.extend({
         this.bodyFormDataEditor = new RequestBodyFormDataEditor({model: this.model});
         this.bodyURLEncodedEditor = new RequestBodyURLEncodedEditor({model: this.model});
         this.bodyRawEditor = new RequestBodyRawEditor({model: this.model});
+        this.bodyBinaryEditor = new RequestBodyBinaryEditor({model: this.model});
 
         $('#data-mode-selector').on("click", "a", function () {
             var mode = $(this).attr("data-mode");
@@ -91,7 +92,7 @@ var RequestBodyEditor = Backbone.View.extend({
 
     getRequestBodyToBeSent: function() {
         var model = this.model;
-        var body = model.get("body");        
+        var body = model.get("body");
 
         var dataMode = body.get("dataMode");        
 
@@ -117,6 +118,10 @@ var RequestBodyEditor = Backbone.View.extend({
             else {
                 return false;
             }
+        }
+        else if (dataMode === 'binary') {
+            var binaryBody = this.bodyBinaryEditor.getBinaryBody();
+            return binaryBody;
         }
     },
 
@@ -267,6 +272,7 @@ var RequestBodyEditor = Backbone.View.extend({
             view.openFormDataEditor();
             view.closeUrlEncodedEditor();
             $('#body-data-container').css("display", "none");
+            $('#body-data-binary-container').css("display", "none");
         }
         else if (mode === "raw") {
             view.closeUrlEncodedEditor();
@@ -283,11 +289,19 @@ var RequestBodyEditor = Backbone.View.extend({
             }
 
             $("#body-editor-mode-selector").css("display", "block");
+            $('#body-data-binary-container').css("display", "none");
         }
         else if (mode === "urlencoded") {
             view.closeFormDataEditor();
             view.openUrlEncodedEditor();
             $('#body-data-container').css("display", "none");
+            $('#body-data-binary-container').css("display", "none");
+        }
+        else if (mode === "binary") {
+            view.closeFormDataEditor();
+            view.closeUrlEncodedEditor();
+            $('#body-data-container').css("display", "none");
+            $('#body-data-binary-container').css("display", "block");
         }
     },
 });

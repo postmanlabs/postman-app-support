@@ -356,6 +356,7 @@
                         <a class="btn" data-mode="params">form-data</a>
                         <a class="btn" data-mode="urlencoded">x-www-form-urlencoded</a>
                         <a class="btn" data-mode="raw">raw</a>
+                        <a class="btn" data-mode="binary">binary</a>
                     </div>
                     <div id="body-editor-mode-selector">
                         <div class="btn-group">
@@ -370,7 +371,7 @@
                                 <li><a data-editor-mode="javascript" data-language="text/json">JSON (text/json)</a></li>                            
                                 <li><a data-editor-mode="xml" data-language="application/xml">XML (application/xml)</a></li>
                                 <li><a data-editor-mode="xml" data-language="text/xml">XML (text/xml)</a></li>
-                                <li><a data-editor-mode="xml" data-language="text/html">HTML (text/html)</a></li>
+                                <li><a data-editor-mode="xml" data-language="text/html">HTML (text/html)</a></li>                                
                             </ul>                
                         </div>                    
                     </div>
@@ -391,6 +392,10 @@
                         <div id="body-data-container-textarea">
                             <textarea name="data" id="body-textarea" tabindex="4" class="inputText"></textarea>
                         </div>
+                    </div>
+                    <div id="body-data-binary-container">
+                        <input type="file" id="body-data-binary"
+                               name="binaryFile"/>
                     </div>
                 </div>
             </div>    
