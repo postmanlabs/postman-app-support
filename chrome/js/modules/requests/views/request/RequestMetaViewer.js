@@ -41,6 +41,8 @@ var RequestMetaViewer = Backbone.View.extend({
     },
 
     render: function() {
+        console.log("Render RequestMetaViewer");
+
         var request = this.model;
         var isFromCollection = this.model.get("isFromCollection");
 
@@ -49,6 +51,12 @@ var RequestMetaViewer = Backbone.View.extend({
 
             var name = request.get("name");
             var description = request.get("description");
+
+            var descriptionFormat = request.get("descriptionFormat");
+
+            if(descriptionFormat === "markdown") {
+                description = markdown.toHTML(description);
+            }
             
             if (typeof name !== "undefined") {
                 $('#request-meta').css("display", "block");

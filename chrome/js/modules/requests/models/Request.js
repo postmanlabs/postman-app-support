@@ -5,7 +5,7 @@ var Request = Backbone.Model.extend({
             urlParams:{},
             name:"",
             description:"",
-            descriptionFormat:"html",
+            descriptionFormat:"markdown",
             bodyParams:{},
             headers:[],
             method:"GET",
@@ -526,7 +526,7 @@ var Request = Backbone.Model.extend({
     send:function (responseRawDataType, action) {
         console.log("Request type and action ", responseRawDataType, action);
         this.set("action", action);
-        
+
         var model = this;
         var body = this.get("body");
         var response = this.get("response");
@@ -636,8 +636,8 @@ var Request = Backbone.Model.extend({
     },
 
     checkIfCurrentRequestIsUpdated: function(request) {
-        var id = this.get("id");
-        if(id === request.id) {
+        var id = this.get("collectionRequestId");        
+        if(id === request.id) {            
             this.set("name", request.name);
             this.set("description", request.description);
         }
