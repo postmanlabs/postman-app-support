@@ -25,11 +25,15 @@ var Storage = Backbone.Model.extend({
                 }
             }
 
-            callback();
+            if (callback) {
+                callback();    
+            }            
         }
         else if (pm.target === pm.targets.CHROME_PACKAGED_APP) {
             chrome.storage.local.set(kvpair, function() {
-                callback();
+                if (callback) {
+                    callback();
+                }                
             });
         }
     }
