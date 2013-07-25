@@ -1246,6 +1246,9 @@ input[type="file"] {
 #edit-collection-drive-actions {
   margin-top: 10px; }
 
+#collection-request-description-container {
+  border: solid thin #efefef; }
+
 /* End collections */
 /*Environments*/
 #environment-quicklook-wrapper {

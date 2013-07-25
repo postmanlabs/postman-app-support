@@ -22,6 +22,10 @@ var AddCollectionRequestModal = Backbone.View.extend({
         $("#modal-add-to-collection").on("shown", function () {
             $("#select-collection").focus();
             pm.app.onModalOpen("#modal-add-to-collection");
+
+            if (!view.editor) {
+                view.initializeEditor();    
+            }            
         });
 
         $("#modal-add-to-collection").on("hidden", function () {
@@ -42,11 +46,24 @@ var AddCollectionRequestModal = Backbone.View.extend({
             });
 
             $('#modal-add-to-collection').modal('show');
-
-            $('#new-request-name').val("");
-            $('#new-request-description').val("");
             return false;
         });
+    },
+
+    initializeEditor: function() {
+        if (this.editor) {
+            return;
+        }
+
+        this.editor = CodeMirror.fromTextArea(document.getElementById("new-request-description"), {
+            mode: 'markdown',
+            theme: "eclipse",
+            lineWrapping: true,
+            lineNumbers:true,
+            extraKeys: {"Enter": "newlineAndIndentContinueMarkdownList"}
+        });
+
+        this.editor.refresh();
     },
 
     add: function(model, pmCollection) {
@@ -62,7 +79,7 @@ var AddCollectionRequestModal = Backbone.View.extend({
         var existingCollectionId = $('#select-collection').val();
         var newCollection = $("#new-collection").val();
         var newRequestName = $('#new-request-name').val();
-        var newRequestDescription = $('#new-request-description').val();        
+        var newRequestDescription = this.editor.getValue();
         var model = pm.request;
         var body = model.get("body");
 

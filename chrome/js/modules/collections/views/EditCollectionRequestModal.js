@@ -4,10 +4,12 @@ var EditCollectionRequestModal = Backbone.View.extend({
 
         model.on("editCollectionRequest", this.render, this);
 
+        var view = this;        
+                                            
         $('#form-edit-collection-request').submit(function() {
             var id = $('#form-edit-collection-request .collection-request-id').val();
             var name = $('#form-edit-collection-request .collection-request-name').val();
-            var description = $('#form-edit-collection-request .collection-request-description').val();
+            var description = view.editor.getValue();
             model.updateCollectionRequestMeta(id, name, description);
             return false;
         });
@@ -15,7 +17,8 @@ var EditCollectionRequestModal = Backbone.View.extend({
         $('#modal-edit-collection-request .btn-primary').click(function () {
             var id = $('#form-edit-collection-request .collection-request-id').val();
             var name = $('#form-edit-collection-request .collection-request-name').val();
-            var description = $('#form-edit-collection-request .collection-request-description').val();
+            var description = view.editor.getValue();
+            console.log("Update with", description);
             model.updateCollectionRequestMeta(id, name, description);
             $('#modal-edit-collection-request').modal('hide');
         });
@@ -30,10 +33,41 @@ var EditCollectionRequestModal = Backbone.View.extend({
         });
     },
 
+    initializeEditor: function() {
+        if (this.editor) {
+            return;
+        }
+
+        this.editor = CodeMirror.fromTextArea(document.getElementById("collection-request-description"), {
+            mode: 'markdown',
+            theme: "eclipse",
+            lineWrapping: true,
+            lineNumbers:true,
+            extraKeys: {"Enter": "newlineAndIndentContinueMarkdownList"}
+        });
+
+        this.editor.refresh();
+    },
+
     render: function(request) {
+        console.log("Render EditCollectionRequestModal", request);
+
         $('#form-edit-collection-request .collection-request-id').val(request.id);
         $('#form-edit-collection-request .collection-request-name').val(request.name);
-        $('#form-edit-collection-request .collection-request-description').html(request.description);
         $('#modal-edit-collection-request').modal('show');
+
+        if (!this.editor) {
+            this.initializeEditor();
+        }
+
+        var view = this;
+
+        setTimeout(function() {
+            view.editor.setValue(request.description);
+            view.editor.refresh();
+
+            CodeMirror.commands["goDocStart"](view.editor);
+        }, 750);        
+        
     }
 });

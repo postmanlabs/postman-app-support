@@ -50,7 +50,7 @@ var RequestMetaViewer = Backbone.View.extend({
             this.show();
 
             var name = request.get("name");
-            var description = request.get("description");
+            var description = _.clone(request.get("description"));
 
             var descriptionFormat = request.get("descriptionFormat");
 
