@@ -17,7 +17,7 @@ var RequestHeaderEditor = Backbone.View.extend({
                     source:pm.headerPresets.getPresetsForAutoComplete(),
                     delay:50,
                     select:function (event, item) {
-                        console.log("Cat complete is on");
+                        console.log("Cat complete is on", event, item);
                         view.onHeaderAutoCompleteItemSelect(item.item);
                     }
                 });
@@ -34,7 +34,8 @@ var RequestHeaderEditor = Backbone.View.extend({
                     source:pm.headerPresets.getPresetsForAutoComplete(),
                     delay:50,
                     select:function (event, item) {
-                        view.onHeaderAutoCompleteItemSelect(item.item);
+                        console.log("Cat complete is on", event, item);
+                        _.bind(view.onHeaderAutoCompleteItemSelect, view)(item.item);
                     }
                 });
             },
@@ -44,6 +45,7 @@ var RequestHeaderEditor = Backbone.View.extend({
                     source:pm.headerPresets.getPresetsForAutoComplete(),
                     delay:50,
                     select:function (event, item) {
+                        console.log("Cat complete is on", event, item);
                         view.onHeaderAutoCompleteItemSelect(item.item);
                     }
                 });
@@ -166,12 +168,14 @@ var RequestHeaderEditor = Backbone.View.extend({
         return newHeaders;
     },
 
-    onHeaderAutoCompleteItemSelect:function(item) {
+    onHeaderAutoCompleteItemSelect:function(item) {        
         if(item.type === "preset") {
             var preset = pm.headerPresets.getHeaderPreset(item.id);
             if("headers" in preset) {
                 var headers = $('#headers-keyvaleditor').keyvalueeditor('getValues');
                 var loc = -1;
+
+                // Takes care of removing the preset value
                 for(var i = 0; i < headers.length; i++) {
                     if(headers[i].key === item.label) {
                         loc = i;
