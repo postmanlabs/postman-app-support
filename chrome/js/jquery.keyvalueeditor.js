@@ -166,7 +166,7 @@
 
         rowFocusEventHandler:function (event) {
             var data = event.data;
-            data.settings.onFocusElement();
+            data.settings.onFocusElement(event);
         },
 
         blurEventHandler:function (event) {

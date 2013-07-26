@@ -144,6 +144,7 @@ var CollectionSidebar = Backbone.View.extend({
 
         collectionSidebarListPosition = arrayObjectIndexOf(collections, collection.id, "id");
 
+        // TODO Detecting insertionType: Move to a different function or simplify
         //Does this exist already?
         if (currentEl.length) {
             //Find current element list position
@@ -250,6 +251,7 @@ var CollectionSidebar = Backbone.View.extend({
                 $(targetElement).append(Handlebars.templates.collection_sidebar({"items":requests}));
 
 
+                // TODO Move this to a different function
                 $(targetElement).sortable({
                     update:function (event, ui) {
                         var target_parent = $(event.target).parents(".sidebar-collection-requests");

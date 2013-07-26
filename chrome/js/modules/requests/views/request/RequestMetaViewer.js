@@ -41,8 +41,6 @@ var RequestMetaViewer = Backbone.View.extend({
     },
 
     render: function() {
-        console.log("Render RequestMetaViewer");
-
         var request = this.model;
         var isFromCollection = this.model.get("isFromCollection");
 

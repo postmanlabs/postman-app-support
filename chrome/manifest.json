@@ -35,6 +35,7 @@
     "permissions":[
         "http://*/*",
         "https://*/*",
+        "contextMenus",
         "unlimitedStorage",
         "storage",
         "fileSystem",
