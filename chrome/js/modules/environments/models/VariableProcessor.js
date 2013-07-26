@@ -15,7 +15,7 @@ var VariableProcessor = Backbone.Model.extend({
         this.get("environments").on("remove", this.setCurrentEnvironment, this);
 
         this.set("selectedEnvironmentId", pm.settings.getSetting("selectedEnvironmentId"));
-        this.set("selectedEnv", this.get("environments").get("selectedEnvironmentId"));
+        this.set("selectedEnv", this.get("environments").get(pm.settings.getSetting("selectedEnvironmentId")));
     },
 
     setCurrentEnvironment: function() {
@@ -48,6 +48,8 @@ var VariableProcessor = Backbone.Model.extend({
     },
 
     processString:function (string, values) {
+        if (!values) return string;
+
         var count = values.length;
         var finalString = string;
         var patString;
@@ -61,14 +63,6 @@ var VariableProcessor = Backbone.Model.extend({
             patString = startDelimiter + values[i].key + endDelimiter;
             pattern = new RegExp(patString, 'g');
             finalString = finalString.replace(patString, values[i].value);
-        }
-
-        var globals = this.get("globals");
-        count = globals.length;
-        for (i = 0; i < count; i++) {
-            patString = startDelimiter + globals[i].key + endDelimiter;
-            pattern = new RegExp(patString, 'g');
-            finalString = finalString.replace(patString, globals[i].value);
         }
 
         if (this.containsVariable(finalString, values)) {
@@ -92,7 +86,11 @@ var VariableProcessor = Backbone.Model.extend({
         }
 
         var globals = this.get("globals").get("globals");
-        var values = _.union(envValues, globals);
+        var values;
+
+        if (globals) {
+            values = _.union(envValues, globals);    
+        }
 
         if (string) {
             return this.processString(string, values);
