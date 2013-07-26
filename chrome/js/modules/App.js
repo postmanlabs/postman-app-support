@@ -53,16 +53,7 @@ var App = Backbone.View.extend({
 
 	createContextMenu: function(environment, globals) {
 		var view = this;
-		var contextMenuIds = view.contextMenuIds;		
-
-		
-		if (view.isCreatingMenu) {
-			console.log("isCreatingMenu");
-			return;
-		};
-
-		view.isCreatingMenu = true;
-
+		var contextMenuIds = view.contextMenuIds;
 		var i;
 		var count;
 		var id;			
@@ -166,8 +157,6 @@ var App = Backbone.View.extend({
 				
 			}
 		}
-
-		view.isCreatingMenu = false;					
 	},
 
 	renderContextMenu: function() {
@@ -176,7 +165,11 @@ var App = Backbone.View.extend({
 		var environment = variableProcessor.get("selectedEnv");		
 		var view = this;		
 
-		_.bind(view.createContextMenu, view)(environment, globals);		
+		chrome.contextMenus.removeAll(function() {
+			view.contextMenuIds = {};
+			_.bind(view.createContextMenu, view)(environment, globals);		
+		});
+		
 
 		chrome.contextMenus.onClicked.addListener(function(info) {
 			if (!document.hasFocus()) {
@@ -189,6 +182,27 @@ var App = Backbone.View.extend({
 			var variable = menuItemParts[2];
 			_.bind(view.updateVariableFromContextMenu, view)(category, variable, info.selectionText);			
 		});		
+	},
+
+	updateEnvironmentVariableFromContextMenu: function(variable, selectionText) {
+		var variableProcessor = this.model.get("variableProcessor");
+		var environments = this.model.get("environments");
+		var selectedEnv = variableProcessor.get("selectedEnv");
+
+		if (selectedEnv) {			
+			var values = _.clone(selectedEnv.get("values"));
+			var count = values.length;
+			for(var i = 0; i < count; i++) {
+				value = values[i];
+				if (value.key === variable) {
+					value.value = selectionText;
+					break;
+				}
+			}
+			var id = selectedEnv.get("id");
+			var name = selectedEnv.get("name");
+			environments.updateEnvironment(id, name, values);
+		}
 	},
 
 	updateGlobalVariableFromContextMenu: function(variable, selectionText) {		
@@ -216,7 +230,7 @@ var App = Backbone.View.extend({
 			this.updateGlobalVariableFromContextMenu(variable, selectionText);			
 		}
 		else if (category === "environment") {
-
+			this.updateEnvironmentVariableFromContextMenu(variable, selectionText);
 		}
 	},
 
