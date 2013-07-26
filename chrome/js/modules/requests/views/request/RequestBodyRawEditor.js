@@ -31,7 +31,7 @@ var RequestBodyRawEditor = Backbone.View.extend({
             }
             else {
                 editorMode = 'text';
-                language = contentType;
+                language = 'text';
             }    
         }
         

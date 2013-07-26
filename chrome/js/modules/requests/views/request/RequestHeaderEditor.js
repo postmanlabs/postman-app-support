@@ -5,6 +5,10 @@ var RequestHeaderEditor = Backbone.View.extend({
         model.on("change:headers", this.onChangeHeaders, this);
         model.on("customHeaderUpdate", this.onCustomHeaderUpdate, this);
 
+        var contentTypes = [
+            "application/json"
+        ];
+
         var params = {
             placeHolderKey:"Header",
             placeHolderValue:"Value",
@@ -31,7 +35,20 @@ var RequestHeaderEditor = Backbone.View.extend({
             onFocusElement:function (event) {
                 view.currentFocusedRow = $(event.currentTarget).parent()[0];
 
-                //TODO Check if this is not being added multiple times
+                var thisInputIsAValue = $(event.currentTarget).attr("class").search("keyvalueeditor-value") >= 0;
+
+                if(thisInputIsAValue) {
+                    var parent = view.currentFocusedRow;
+                    var keyInput = $(parent).children(".keyvalueeditor-key")[0];
+                    var keyValue = $(keyInput).val().toLowerCase();
+                    if (keyValue === "content-type") {
+                        $(event.currentTarget).autocomplete({
+                            source: mediatypes,
+                            delay: 50
+                        });
+                    }
+                }
+
                 $("#headers-keyvaleditor .keyvalueeditor-key").catcomplete({
                     source:pm.headerPresets.getPresetsForAutoComplete(),
                     delay:50,
