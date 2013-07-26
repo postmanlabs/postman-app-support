@@ -6,6 +6,7 @@ var SearchForm = Backbone.View.extend({
     	var model = this.model;
 
     	$("#sidebar-search").on("keyup", function(event) {
+            $("#sidebar-search-cancel").css("display", "block");
     		clearTimeout(wait);
     		wait = setTimeout(function() {
     			var searchTerm = $("#sidebar-search").val();
@@ -13,34 +14,21 @@ var SearchForm = Backbone.View.extend({
     			if (searchTerm !== model.get("term")) {
     				model.set("term", searchTerm);    				    				    				
     			}
+
+                if (searchTerm === "") {
+                    $("#sidebar-search-cancel").css("display", "none");
+                }
     		}, 250);
     	});
 
     	$("#sidebar-search-cancel").on("click", function() {
     		$("#sidebar-search").val("");
-
-    		//TODO Trigger revert event in model
     		view.revertSidebar();
     	});
     },
 
-    filterSidebar: function(term) {
-    	var model = this.model;
-    	var view = this;
-
-    	if (term === "") {
-    		view.revertSidebar();
-    	}
-    	else {
-    		var filteredHistoryItems = pm.history.filter(term);
-    		var filteredCollectionItems = pm.collections.filter(term);
-
-    		view.toggleHistoryItemsVisibility(filteredHistoryItems);
-    		view.toggleCollectionItemsVisibility(filteredCollectionItems);
-    	}
-    },
-
     revertSidebar: function() {
+        $("#sidebar-search-cancel").css("display", "none");
     	var history = this.model.get("history");
     	var collections = this.model.get("collections");
     	history.revert();
