@@ -7,6 +7,8 @@ var App = Backbone.View.extend({
 		globals.on('change', this.renderContextMenu, this);
 
 		var view = this;
+		view.menuIdPrefix = guid();
+		view.contextMenuIds = {};
 
 	    $('a[rel="tooltip"]').tooltip();	    
 	    $('input[rel="popover"]').popover();
@@ -51,72 +53,130 @@ var App = Backbone.View.extend({
 
 	createContextMenu: function(environment, globals) {
 		var view = this;
+		var contextMenuIds = view.contextMenuIds;		
 
-		chrome.contextMenus.removeAll(function() {
-			try {
-				view.menuIdPrefix = guid();
+		
+		if (view.isCreatingMenu) {
+			console.log("isCreatingMenu");
+			return;
+		};
 
-				if (environment) {
-					chrome.contextMenus.create({
-						title: "Set: " + environment.get("name"),		      
-						id: view.menuIdPrefix + "postman_current_environment",
-						contexts: ['selection']
-					});
+		view.isCreatingMenu = true;
 
+		var i;
+		var count;
+		var id;			
+		var targetId;
+		var value;
+		var values;
 
-					var values = environment.get("values");
-					var count = values.length;
-					var value;
+		if (environment) {
+			targetId = view.menuIdPrefix + "/postman_current_environment";
 
-					for(var i = 0; i < count; i++) {
-						value = values[i];
-						chrome.contextMenus.create({
-							title: value.key,
-							id: view.menuIdPrefix + "/environment/" + value.key,
-							parentId: view.menuIdPrefix + "postman_current_environment",
-							contexts: ['selection']
-						});
-					}
-				}
-
-				if (globals) {
-					chrome.contextMenus.create({
-						title: "Set: Globals",
-						id: view.menuIdPrefix + "postman_globals",
-						contexts: ['selection']
-					});
-
-					var values = globals.get("globals");		
-					var count = values.length;
-					var value;
-
-					for(var i = 0; i < count; i++) {
-						value = values[i];
-						chrome.contextMenus.create({
-							title: value.key,
-							id: view.menuIdPrefix + "/globals/" + value.key,
-							parentId: view.menuIdPrefix + "postman_globals",
-							contexts: ['selection']
-						});
-					}
-				}
+			if (contextMenuIds[targetId]) {
+				id = chrome.contextMenus.update(targetId,
+				{
+					title: "Set: " + environment.get("name"),						
+					contexts: ['selection']
+				});
 			}
-			catch(e) {
-				console.log(e);
+			else {
+				id = chrome.contextMenus.create({
+					title: "Set: " + environment.get("name"),		      
+					id: targetId,
+					contexts: ['selection']
+				});
+
+				contextMenuIds[id] = true;	
 			}
 			
-		});					
+
+			values = environment.get("values");
+			count = values.length;				
+
+			for(i = 0; i < count; i++) {
+				value = values[i];
+				targetId = view.menuIdPrefix + "/environment/" + value.key;
+
+				if (contextMenuIds[targetId]) {
+					chrome.contextMenus.update(targetId,
+					{
+						title: value.key,							
+						parentId: view.menuIdPrefix + "/postman_current_environment",
+						contexts: ['selection']
+					});
+				}
+				else {
+					id = chrome.contextMenus.create({
+						title: value.key,
+						id: targetId,
+						parentId: view.menuIdPrefix + "/postman_current_environment",
+						contexts: ['selection']
+					});
+
+					contextMenuIds[id] = true;	
+				}
+				
+			}
+		}
+
+		if (globals) {
+			targetId = view.menuIdPrefix + "/postman_globals";			
+			if(contextMenuIds[targetId]) {
+				chrome.contextMenus.update(targetId,
+				{
+					title: "Set: Globals",						
+					contexts: ['selection']
+				});
+			}
+			else {
+				id = chrome.contextMenus.create({
+					title: "Set: Globals",
+					id: targetId,
+					contexts: ['selection']
+				});
+
+				contextMenuIds[id] = true;
+			}				
+
+			values = globals.get("globals");		
+			count = values.length;		
+
+			for(i = 0; i < count; i++) {
+				value = values[i];
+				targetId = view.menuIdPrefix + "/globals/" + value.key;
+				if(contextMenuIds[targetId]) {
+					chrome.contextMenus.update(targetId,
+					{
+						title: value.key,							
+						parentId: view.menuIdPrefix + "/postman_globals",
+						contexts: ['selection']
+					});
+				}
+				else {
+					id = chrome.contextMenus.create({
+						title: value.key,
+						id: targetId,
+						parentId: view.menuIdPrefix + "/postman_globals",
+						contexts: ['selection']
+					});
+
+					contextMenuIds[id] = true;
+				}
+				
+			}
+		}
+
+		view.isCreatingMenu = false;					
 	},
 
 	renderContextMenu: function() {
 		var variableProcessor = this.model.get("variableProcessor");
 		var globals = this.model.get("globals");
 		var environment = variableProcessor.get("selectedEnv");		
-		var view = this;
+		var view = this;		
 
-		chrome.contextMenus.removeAll(function() {			
-			_.bind(view.createContextMenu, view)(environment, globals);
-		});
+		_.bind(view.createContextMenu, view)(environment, globals);		
 
 		chrome.contextMenus.onClicked.addListener(function(info) {
 			if (!document.hasFocus()) {
@@ -127,7 +187,6 @@ var App = Backbone.View.extend({
 			var menuItemParts = info.menuItemId.split("/");
 			var category = menuItemParts[1];
 			var variable = menuItemParts[2];
-
 			_.bind(view.updateVariableFromContextMenu, view)(category, variable, info.selectionText);			
 		});		
 	},
@@ -149,7 +208,7 @@ var App = Backbone.View.extend({
 		}
 
 		globals.saveGlobals(globalValues);
-		globals.trigger("change");
+		globals.trigger("change:globals");
 	},
 
 	updateVariableFromContextMenu: function(category, variable, selectionText) {

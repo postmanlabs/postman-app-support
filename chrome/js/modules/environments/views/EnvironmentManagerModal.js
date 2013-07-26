@@ -12,7 +12,7 @@ var EnvironmentManagerModal = Backbone.View.extend({
         this.environments.on('remove', this.render, this);
         this.environments.on("importedEnvironment", this.onImportedEnvironment, this);
 
-        this.globals.on('change', this.render, this);
+        this.globals.on('change:globals', this.render, this);
 
         var environments = this.environments;
         var globals = this.globals;
@@ -195,9 +195,7 @@ var EnvironmentManagerModal = Backbone.View.extend({
         $('#modal-environments .modal-footer').css("display", "block");
     },
 
-    render: function() {
-        console.log("Render EnvironmentManagerModal");
-        
+    render: function() {        
         $('#environments-list tbody').html("");
         $('#environments-list tbody').append(Handlebars.templates.environment_list({"items":this.environments.toJSON()}));
         $('#globals-keyvaleditor').keyvalueeditor('reset', this.globals.get("globals"));
