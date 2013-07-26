@@ -140,6 +140,17 @@ pm.init = function () {
         });
 
         pm.envManager = variableProcessor;
+
+        var appState = new AppState({
+            "globals": globals,
+            "environments": environments,
+            "variableProcessor": variableProcessor
+        });
+
+        var appView = new App({model: appState});
+
+        pm.app = appView;
+
     }
 
     function initializeHeaderPresets() {
@@ -170,13 +181,6 @@ pm.init = function () {
         var sidebar = new Sidebar({ model: sidebarState });        
     }
 
-    function initializeAppView() {
-        var appState = new AppState();
-        var appView = new App({model: appState});
-
-        pm.app = appView;
-    }
-
     initializeStorage();
 
     pm.settings = new Settings();
@@ -188,9 +192,7 @@ pm.init = function () {
             initializeRequester();
             initializeHelpers();
             initializeHistory();
-            initializeCollections();            
-
-            initializeAppView();                            
+            initializeCollections();
 
             initializeEnvironments();
             initializeHeaderPresets();

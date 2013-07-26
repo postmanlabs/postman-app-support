@@ -9,7 +9,7 @@ var QuickLookPopOver = Backbone.View.extend({
         this.environments.on('change', this.render, this);
         this.variableProcessor.on('change:selectedEnv', this.render, this);
 
-        this.globals.on('change', this.render, this);
+        this.globals.on('change:globals', this.render, this);
 
         $('#environment-quicklook').on("mouseenter", function () {
             $('#environment-quicklook-content').css("display", "block");

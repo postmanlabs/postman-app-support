@@ -1,5 +1,11 @@
 var App = Backbone.View.extend({
 	initialize:function () {
+		var variableProcessor = this.model.get("variableProcessor");
+		var globals = this.model.get("globals");
+
+		variableProcessor.on('change:selectedEnv', this.renderContextMenu, this);
+		globals.on('change', this.renderContextMenu, this);
+
 		var view = this;
 
 	    $('a[rel="tooltip"]').tooltip();	    
@@ -39,7 +45,120 @@ var App = Backbone.View.extend({
 	        }
 	    });
 
+	    this.renderContextMenu();
 	    this.setLayout();
+	},
+
+	createContextMenu: function(environment, globals) {
+		var view = this;
+
+		chrome.contextMenus.removeAll(function() {
+			try {
+				view.menuIdPrefix = guid();
+
+				if (environment) {
+					chrome.contextMenus.create({
+						title: "Set: " + environment.get("name"),		      
+						id: view.menuIdPrefix + "postman_current_environment",
+						contexts: ['selection']
+					});
+
+
+					var values = environment.get("values");
+					var count = values.length;
+					var value;
+
+					for(var i = 0; i < count; i++) {
+						value = values[i];
+						chrome.contextMenus.create({
+							title: value.key,
+							id: view.menuIdPrefix + "/environment/" + value.key,
+							parentId: view.menuIdPrefix + "postman_current_environment",
+							contexts: ['selection']
+						});
+					}
+				}
+
+				if (globals) {
+					chrome.contextMenus.create({
+						title: "Set: Globals",
+						id: view.menuIdPrefix + "postman_globals",
+						contexts: ['selection']
+					});
+
+					var values = globals.get("globals");		
+					var count = values.length;
+					var value;
+
+					for(var i = 0; i < count; i++) {
+						value = values[i];
+						chrome.contextMenus.create({
+							title: value.key,
+							id: view.menuIdPrefix + "/globals/" + value.key,
+							parentId: view.menuIdPrefix + "postman_globals",
+							contexts: ['selection']
+						});
+					}
+				}
+			}
+			catch(e) {
+				console.log(e);
+			}
+			
+		});					
+	},
+
+	renderContextMenu: function() {
+		var variableProcessor = this.model.get("variableProcessor");
+		var globals = this.model.get("globals");
+		var environment = variableProcessor.get("selectedEnv");		
+		var view = this;
+
+		chrome.contextMenus.removeAll(function() {			
+			_.bind(view.createContextMenu, view)(environment, globals);
+		});
+
+		chrome.contextMenus.onClicked.addListener(function(info) {
+			if (!document.hasFocus()) {
+				console.log('Ignoring context menu click that happened in another window');
+				return;
+			}
+
+			var menuItemParts = info.menuItemId.split("/");
+			var category = menuItemParts[1];
+			var variable = menuItemParts[2];
+
+			_.bind(view.updateVariableFromContextMenu, view)(category, variable, info.selectionText);			
+		});		
+	},
+
+	updateGlobalVariableFromContextMenu: function(variable, selectionText) {		
+		var variableProcessor = this.model.get("variableProcessor");
+		var globals = this.model.get("globals");
+		var globalValues = _.clone(globals.get("globals"));
+
+		var count = globalValues.length;
+		var value;
+
+		for(var i = 0; i < count; i++) {
+			value = globalValues[i];
+			if (value.key === variable) {
+				value.value = selectionText;
+				break;
+			}
+		}
+
+		globals.saveGlobals(globalValues);
+		globals.trigger("change");
+	},
+
+	updateVariableFromContextMenu: function(category, variable, selectionText) {
+		if (category === "globals") {
+			this.updateGlobalVariableFromContextMenu(variable, selectionText);			
+		}
+		else if (category === "environment") {
+
+		}
 	},
 
 	onModalOpen:function (activeModal) {

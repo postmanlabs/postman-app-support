@@ -89,8 +89,7 @@ var EnvironmentManagerModal = Backbone.View.extend({
             view.showSelector();
         }
 
-        $('#environment-editor-form').submit(function() {
-            console.log("Submit stuff");
+        $('#environment-editor-form').submit(function() {            
             submitEnvironmentEditorForm();
         });            
 
@@ -99,7 +98,8 @@ var EnvironmentManagerModal = Backbone.View.extend({
         });
 
         $('.environments-actions-add-back').on("click", function () {
-            globals.saveGlobals();
+            var values = $('#globals-keyvaleditor').keyvalueeditor('getValues');
+            globals.saveGlobals(values);
             view.showSelector();
             $('#environment-editor-name').val("");
             $('#environment-keyvaleditor').keyvalueeditor('reset', []);
@@ -196,6 +196,8 @@ var EnvironmentManagerModal = Backbone.View.extend({
     },
 
     render: function() {
+        console.log("Render EnvironmentManagerModal");
+        
         $('#environments-list tbody').html("");
         $('#environments-list tbody').append(Handlebars.templates.environment_list({"items":this.environments.toJSON()}));
         $('#globals-keyvaleditor').keyvalueeditor('reset', this.globals.get("globals"));

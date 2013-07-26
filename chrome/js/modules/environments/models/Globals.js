@@ -20,8 +20,8 @@ var Globals = Backbone.Model.extend({
         });
     },
 
-    saveGlobals:function () {
-        var globals = $('#globals-keyvaleditor').keyvalueeditor('getValues');
+    saveGlobals:function (globals) {        
+        console.log("Setting globals", globals, this.toJSON());
         this.set({"globals": globals});
 
         var o = {'globals': JSON.stringify(globals)};
