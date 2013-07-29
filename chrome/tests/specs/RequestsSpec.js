@@ -149,6 +149,62 @@ describe("Postman requester", function() {
 		});
 	});	
 
+	describe("can handle URLs", function() {
+		beforeEach(function() {
+			pm.tester.resetRequest();
+		});
+
+		afterEach(function() {
+			pm.tester.resetRequest();
+		});
+
+		it("can send a URL with a semicolon", function() {
+			var responseLoaded = false;
+			runs(function() {
+				pm.tester.setUrl("http://localhost:5000/get?some=start;val");
+				pm.tester.setMethod("GET");
+				pm.tester.submitRequest();						
+
+				var response = pm.request.get("response");
+				response.on("loadResponse", function() {					
+					responseLoaded = true;
+				});
+			});
+
+			waitsFor(function() {
+				return responseLoaded === true;
+			}, "Could not get response", waitTime);
+
+			runs(function() {				
+				var foundString = pm.tester.prettyBodyHasString("some=start;val");				
+				expect(foundString).toBe(true);		
+			});
+		});
+
+		it("can send an odata URL", function() {
+			var responseLoaded = false;
+			runs(function() {
+				pm.tester.setUrl("http://localhost:5000/get?Resource(code1='1',code2='1')");
+				pm.tester.setMethod("GET");
+				pm.tester.submitRequest();						
+
+				var response = pm.request.get("response");
+				response.on("loadResponse", function() {					
+					responseLoaded = true;
+				});
+			});
+
+			waitsFor(function() {
+				return responseLoaded === true;
+			}, "Could not get response", waitTime);
+
+			runs(function() {				
+				expect(pm.tester.prettyBodyHasString("Resource")).toBe(true);
+				expect(pm.tester.prettyBodyHasString("code1")).toBe(true);
+			});
+		});
+	});
+
 	describe("can send POST requests", function() {
 		beforeEach(function() {
 			pm.tester.resetRequest();
