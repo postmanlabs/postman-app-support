@@ -8,7 +8,7 @@ describe("Postman Environment models: ", function() {
     var environments;    
 
     beforeEach(function() {      
-        settings = getSettingsMock();
+        var settings = getSettingsMock();
         var environments = getEnvironmentsMock();
         var globals = getGlobalsMock();
 

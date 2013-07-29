@@ -9,6 +9,33 @@ var Settings = Backbone.Model.extend({
         };
     },
 
+    resetSettings: function() {
+        this.setSetting("historyCount", 100);
+        this.setSetting("autoSaveRequest", true);
+        this.setSetting("selectedEnvironmentId", true);
+        this.setSetting("lineWrapping", true);
+        this.setSetting("previewType", "parsed");
+        this.setSetting("retainLinkHeaders", false);
+        this.setSetting("sendNoCacheHeader", true);
+        this.setSetting("sendPostmanTokenHeader", true);
+        this.setSetting("usePostmanProxy", false);
+        this.setSetting("proxyURL", "");
+        this.setSetting("lastRequest", "");
+        this.setSetting("launcherNotificationCount", 0);
+        this.setSetting("variableDelimiter", "{{...}}");
+        this.setSetting("languageDetection", "auto");
+        this.setSetting("haveDonated", false);
+
+        this.setSetting("requestBodyEditorContainerType", "editor");
+
+        //Google Drive related
+        this.setSetting("driveSyncConnectionStatus", "not_connected"); //notconnected, connected, disabled
+        this.setSetting("driveSyncEnabled", false);
+        this.setSetting("driveStartChangeId", 0);
+        this.setSetting("driveAppDataFolderId", 0);
+        this.setSetting("lastDriveChangeTime", "");
+    },
+
     initValues: function(callback) {
         this.set({"items": {}});
 

@@ -472,6 +472,7 @@
                         <a class="btn" data-mode="params">form-data</a>
                         <a class="btn" data-mode="urlencoded">x-www-form-urlencoded</a>
                         <a class="btn" data-mode="raw">raw</a>
+                        <a class="btn" data-mode="binary">binary</a>
                     </div>
                     <div id="body-editor-mode-selector">
                         <div class="btn-group">
@@ -480,13 +481,13 @@
                                 <span class="caret" style="margin-top: 8px;"></span>
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a data-editor-mode="text" data-language="text">Text (No Content-Type header)</a></li>
+                                <li><a data-editor-mode="text" data-language="text">Text</a></li>
                                 <li><a data-editor-mode="text" data-language="text/plain">Text (text/plain)</a></li>
                                 <li><a data-editor-mode="javascript" data-language="application/json">JSON (application/json)</a></li>
-                                <li><a data-editor-mode="javascript" data-language="text/json">JSON (text/json)</a></li>                            
+                                <li><a data-editor-mode="javascript" data-language="application/javascript">Javascript (application/javascript)</a></li>                            
                                 <li><a data-editor-mode="xml" data-language="application/xml">XML (application/xml)</a></li>
                                 <li><a data-editor-mode="xml" data-language="text/xml">XML (text/xml)</a></li>
-                                <li><a data-editor-mode="xml" data-language="text/html">HTML (text/html)</a></li>
+                                <li><a data-editor-mode="xml" data-language="text/html">HTML (text/html)</a></li>                                
                             </ul>                
                         </div>                    
                     </div>
@@ -507,6 +508,10 @@
                         <div id="body-data-container-textarea">
                             <textarea name="data" id="body-textarea" tabindex="4" class="inputText"></textarea>
                         </div>
+                    </div>
+                    <div id="body-data-binary-container">
+                        <input type="file" id="body-data-binary"
+                               name="binaryFile"/>
                     </div>
                 </div>
             </div>    
@@ -529,10 +534,18 @@
 
     <div id="request-actions" class="clearfix">
         <div id="request-actions-primary">
-            <button class="btn btn-primary" data-loading-text="Fetching data..." type="button"
-                    data-complete-text="Send request" id="submit-request" tabindex="5">
-                Send
-            </button>
+            <div class="btn-group">
+                <button class="btn btn-primary" data-loading-text="Fetching data..." type="button"
+                        data-complete-text="Send request" id="submit-request" tabindex="5">
+                    Send
+                </button>
+                <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a id="submit-request-download">Send and download</a></li>
+                </ul>
+            </div>
             <button class="btn"
                     id="update-request-in-collection">Save
             </button>
@@ -867,8 +880,9 @@
                 <label class="control-label" for="new-collection">Request description</label>
 
                 <div class="controls">
-                    <div class="input">
-                        <textarea class="medium collection-request-description" data-tabindex="2"></textarea>
+                    <div class="input" id="collection-request-description-container">
+                        <textarea id="collection-request-description"
+                                class="medium collection-request-description" data-tabindex="2"></textarea>
                     </div>
                 </div>
             </div>             
@@ -1097,6 +1111,7 @@
             <li><a href="#settings-shortcuts" data-toggle="tab">Shortcuts</a></li>
             <li><a href="#settings-data" data-toggle="tab">Data</a></li>            
             <li><a href="#settings-add-ons" data-toggle="tab">Add-ons</a></li>            
+            <li><a href="#settings-links" data-toggle="tab">Links</a></li>
         </ul>
         <div class="tab-content">
             <div class="tab-pane active" id="settings-settings">
@@ -1313,6 +1328,12 @@
                     <a target="_blank" href="https://github.com/a85/POSTMan-Chrome-Extension/wiki/Postman-Proxy">Postman Proxy</a>
                     <p>Postman Proxy allows you to bypass Chrome’s XMLHttpRequest restrictions. You can send headers not allowed by Chrome as well as receive and inspect responses which have a Location header set. For setting up the proxy you would require Python and Twisted.</p>
                 </div>
+            </div>
+            <div class="tab-pane" id="settings-links">                
+                <div class="add-on">
+                    <a target="_blank" href="http://en.wikipedia.org/wiki/List_of_HTTP_status_codes">HTTP Status Codes</a>           
+                    <p>Wikipedia reference for HTTP status codes</p>
+                </div>
             </div>            
         </div>        
     </div>    
@@ -1450,14 +1471,19 @@
 <script type="text/javascript" src="codemirror/lib/util/foldcode.js"></script>
 <script type="text/javascript" src="codemirror/mode/xmlpure/xmlpure.js"></script>
 <script type="text/javascript" src="codemirror/mode/javascript/javascript.js"></script>
+<script type="text/javascript" src="codemirror/mode/markdown/markdown.js"></script>
 <script type="text/javascript" src="codemirror/mode/xml/xml.js"></script>
 <script type="text/javascript" src="codemirror/mode/htmlmixed/htmlmixed.js"></script>
 <script type="text/javascript" src="js/codemirror.overlayParser.js"></script>
+
+<!-- Markdown-js -->
+<script type="text/javascript" src="js/markdown/markdown.js"></script>
 
 <!-- Postman -->
 <script type="text/javascript" src="js/util.js"></script>
 <script type="text/javascript" src="js/httpstatuscodes.js"></script>
 <script type="text/javascript" src="js/httpheaders.js"></script>
+<script type="text/javascript" src="js/mediatypes.js"></script>
 <script type="text/javascript" src="js/templates.js"></script>
 <script type="text/javascript" src="js/requester.js"></script>
 
@@ -1465,8 +1491,12 @@
 </body>
 </html>
 <!-- Tester HTML here -->
-<link rel="stylesheet" type="text/css" href="js/jasmine-1.3.1/jasmine.css">
-<link rel="stylesheet" type="text/css" href="tests/tests.css">
-<script type="text/javascript" src="js/jasmine-1.3.1/jasmine.js"></script>
-<script type="text/javascript" src="js/jasmine-1.3.1/jasmine-html.js"></script>
-<script type="text/javascript" src="tests/tests.js"></script>
+<link rel="stylesheet" type="text/css" href="tests/libs/jasmine-1.3.1/jasmine.css">
+<link rel="stylesheet" type="text/css" href="tests/libs/sinon-1.7.3.js">
+<link rel="stylesheet" type="text/css" href="tests/css/tests.css">
+<script type="text/javascript" src="tests/libs/jasmine-1.3.1/jasmine.js"></script>
+<script type="text/javascript" src="tests/libs/jasmine-1.3.1/jasmine-html.js"></script>
+<script type="text/javascript" src="tests/mocks/mocks.js"></script>
+<script type="text/javascript" src="tests/init.js"></script>
+<script type="text/javascript" src="tests/specs/RequestsSpec.js"></script>
+<script type="text/javascript" src="tests/specs/UtilSpec.js"></script>

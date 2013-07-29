@@ -3,10 +3,12 @@
 	font-family: Monaco, "Lucida Console", monospace;
 	line-height: 14px;
 	color: #333333;
-	position: fixed;
+	position: absolute;
 	top: 0;
 	z-index: 1000;
 	width: 100%;
 	background: white;
 	opacity: 0.9;
+	height: 600px;
+	overflow: scroll;
 }

@@ -15,7 +15,7 @@ pm.indexedDB = {
 
     open_v21:function (callback) {
 
-        var request = indexedDB.open("postman", "POSTman request history");
+        var request = indexedDB.open(pm.databaseName, "POSTman request history");
         request.onsuccess = function (e) {
             var v = "0.7.4";
             pm.indexedDB.db = e.target.result;
@@ -96,7 +96,7 @@ pm.indexedDB = {
 
     open_latest:function (callback) {
         var v = 20;
-        var request = indexedDB.open("postman", v);
+        var request = indexedDB.open(pm.databaseName, v);
         request.onupgradeneeded = function (e) {
             console.log("Upgrade DB");
             var db = e.target.result;
@@ -167,6 +167,37 @@ pm.indexedDB = {
         }
         else {
             pm.indexedDB.open_latest(callback);
+        }
+    },
+
+    clearAllObjectStores: function(callback) {
+        console.log("Clearing all object stores");
+        //Make sure we are testing and the database is not postman
+        if (pm.isTesting && pm.databaseName !== "postman") {
+            console.log("Correct database");
+
+            var stores = [
+                "requests", "collections", "header_presets",
+                pm.indexedDB.TABLE_HELPERS,
+                pm.indexedDB.TABLE_DRIVE_FILES,
+                pm.indexedDB.TABLE_DRIVE_CHANGES
+            ];
+
+            var db = pm.indexedDB.db;
+            var transaction = db.transaction(stores, "readwrite");
+            transaction.objectStore("requests").clear();
+            transaction.objectStore("collections").clear();
+            transaction.objectStore("header_presets").clear();
+            transaction.objectStore(pm.indexedDB.TABLE_HELPERS).clear();
+            transaction.objectStore(pm.indexedDB.TABLE_DRIVE_FILES).clear();
+            transaction.objectStore(pm.indexedDB.TABLE_DRIVE_CHANGES).clear();
+
+            transaction.oncomplete = function(event) {
+                console.log("Cleared the database");
+                if (callback) {
+                    callback();
+                }
+            };
         }
     },
 

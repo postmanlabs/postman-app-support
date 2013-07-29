@@ -27,6 +27,16 @@ pm.targets = {
 
 pm.target = pm.targets.CHROME_PACKAGED_APP;
 
+pm.isTesting = true;
+
+if (pm.isTesting) {
+    pm.databaseName = "postman_test";
+}
+else {
+    pm.databaseName = "postman";    
+}
+
+
 pm.debug = true;
 
 pm.indexedDB = {};
@@ -37,8 +47,10 @@ pm.indexedDB.modes = {
 };
 
 pm.fs = {};
+pm.hasPostmanInitialized = false;
 
-pm.webUrl = "http://getpostman.com";
+// pm.webUrl = "http://getpostman.com";
+pm.webUrl = "http://localhost/postman/html";
 pm.bannedHeaders = [
     'accept-charset',
     'accept-encoding',
@@ -205,6 +217,9 @@ pm.init = function () {
 
             pm.drive.setupUiHandlers();
             pm.broadcasts.init();
+
+            pm.hasPostmanInitialized = true;
+            console.log("Set hasPostmanInitialized to true");
         });
     });
 };
