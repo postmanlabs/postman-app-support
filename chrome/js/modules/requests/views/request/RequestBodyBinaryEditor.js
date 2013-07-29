@@ -13,7 +13,6 @@ var RequestBodyBinaryEditor = Backbone.View.extend({
     },
 
     onStartNew: function() {
-        console.log("Refresh");
     },
 
     readFile: function(f) {

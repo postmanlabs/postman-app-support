@@ -167,8 +167,7 @@ var RequestHeaderEditor = Backbone.View.extend({
 
     updateModel: function() {
         this.model.set("headers", this.getHeaderEditorParams(), {silent: true});        
-        var headers = this.model.get("headers");
-        console.log("Headers are", headers);
+        var headers = this.model.get("headers");        
         $('#headers-keyvaleditor-actions-open .headers-count').html(headers.length);
     },
 

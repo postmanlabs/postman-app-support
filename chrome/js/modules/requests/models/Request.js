@@ -524,7 +524,6 @@ var Request = Backbone.Model.extend({
     },
 
     send:function (responseRawDataType, action) {
-        console.log("Request type and action ", responseRawDataType, action);
         this.set("action", action);
 
         var model = this;

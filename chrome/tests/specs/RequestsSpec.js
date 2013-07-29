@@ -16,14 +16,14 @@ describe("Postman requester", function() {
 				pm.tester.setUrl("http://localhost:5000/get");
 				pm.tester.setMethod("GET");
 				pm.tester.submitRequest();						
-			});
 
-			waitsFor(function() {				
 				var response = pm.request.get("response");
 				response.on("loadResponse", function() {					
 					responseLoaded = true;
 				});
+			});
 
+			waitsFor(function() {
 				return responseLoaded === true;
 			}, "Could not get response", waitTime);
 
@@ -38,15 +38,15 @@ describe("Postman requester", function() {
 			runs(function() {
 				pm.tester.setUrl("http://localhost:5000/get?start");
 				pm.tester.setMethod("GET");
-				pm.tester.submitRequest();								
-			});
+				pm.tester.submitRequest();
 
-			waitsFor(function() {				
 				var response = pm.request.get("response");
 				response.on("loadResponse", function() {					
 					responseLoaded = true;
 				});
+			});
 
+			waitsFor(function() {								
 				return responseLoaded === true;
 			}, "Could not get response", waitTime);
 
@@ -61,15 +61,16 @@ describe("Postman requester", function() {
 			runs(function() {
 				pm.tester.setUrl("http://localhost:5000/delete");
 				pm.tester.setMethod("DELETE");
-				pm.tester.submitRequest();								
-			});
+				pm.tester.submitRequest();	
 
-			waitsFor(function() {				
 				var response = pm.request.get("response");
 				response.on("loadResponse", function() {		
 					responseLoaded = true;
-				});
+					console.log("Triggered loadResponse for DELETE");
+				});							
+			});
 
+			waitsFor(function() {
 				return responseLoaded === true;
 			}, "loadResponse not triggered", waitTime);
 
@@ -84,15 +85,15 @@ describe("Postman requester", function() {
 			runs(function() {
 				pm.tester.setUrl("http://localhost:5000/head");
 				pm.tester.setMethod("HEAD");
-				pm.tester.submitRequest();								
-			});
+				pm.tester.submitRequest();		
 
-			waitsFor(function() {				
 				var response = pm.request.get("response");
 				response.on("loadResponse", function() {					
 					responseLoaded = true;
-				});
+				});						
+			});
 
+			waitsFor(function() {
 				return responseLoaded === true;
 			}, "Could not load the response", waitTime);
 
@@ -107,15 +108,15 @@ describe("Postman requester", function() {
 			runs(function() {
 				pm.tester.setUrl("http://localhost:5000/html");
 				pm.tester.setMethod("OPTIONS");
-				pm.tester.submitRequest();								
-			});
+				pm.tester.submitRequest();	
 
-			waitsFor(function() {				
 				var response = pm.request.get("response");
 				response.on("loadResponse", function() {					
 					responseLoaded = true;
-				});
+				});							
+			});
 
+			waitsFor(function() {
 				return responseLoaded === true;
 			}, "Could not load the response", waitTime);
 
@@ -130,15 +131,16 @@ describe("Postman requester", function() {
 			runs(function() {
 				pm.tester.setUrl("http://localhost:5000/put");
 				pm.tester.setMethod("PUT");
-				pm.tester.submitRequest();								
-			});
+				pm.tester.submitRequest();	
 
-			waitsFor(function() {				
 				var response = pm.request.get("response");
 				response.on("loadResponse", function() {					
 					responseLoaded = true;
-				});
+					console.log("Triggered loadResponse for PUT");
+				});							
+			});
 
+			waitsFor(function() {
 				return responseLoaded === true;
 			}, "Could not load the response", waitTime);
 
@@ -164,14 +166,14 @@ describe("Postman requester", function() {
 				pm.tester.setUrl("http://localhost:5000/post");
 				pm.tester.setMethod("POST");
 				pm.tester.submitRequest();								
-			});
 
-			waitsFor(function() {				
 				var response = pm.request.get("response");
 				response.on("loadResponse", function() {					
 					responseLoaded = true;
 				});
+			});
 
+			waitsFor(function() {
 				return responseLoaded === true;
 			}, "Could not load the response", waitTime);
 
@@ -193,15 +195,15 @@ describe("Postman requester", function() {
 				];
 
 				pm.tester.setFormDataParams(params);
-				pm.tester.submitRequest();								
-			});
+				pm.tester.submitRequest();		
 
-			waitsFor(function() {				
 				var response = pm.request.get("response");
 				response.on("loadResponse", function() {					
 					responseLoaded = true;
-				});
+				});						
+			});
 
+			waitsFor(function() {
 				return responseLoaded === true;
 			}, "Could not load the response", waitTime);
 
@@ -225,15 +227,15 @@ describe("Postman requester", function() {
 
 				pm.tester.setBodyType("urlencoded");
 				pm.tester.setURLEncodedParams(params);
-				pm.tester.submitRequest();								
-			});
+				pm.tester.submitRequest();		
 
-			waitsFor(function() {				
 				var response = pm.request.get("response");
 				response.on("loadResponse", function() {					
 					responseLoaded = true;
-				});
+				});						
+			});
 
+			waitsFor(function() {
 				return responseLoaded === true;
 			}, "Could not load the response", waitTime);
 

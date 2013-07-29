@@ -6,9 +6,13 @@ pm.indexedDB = {
 
     onTransactionComplete: function(callback) {        
         if (pm.isTesting) {
-            pm.indexedDB.clearAllObjectStores();
+            pm.indexedDB.clearAllObjectStores(function() {
+                callback();
+            });
+        }        
+        else {
+            callback();
         }
-        callback();
     },
 
     onerror:function (event, callback) {

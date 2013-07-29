@@ -147,8 +147,6 @@ var RequestEditor = Backbone.View.extend({
             action = "display";
         }
 
-        console.log("Event type is ", type, action);
-
         this.updateModel();
         this.model.trigger("send", type, action);
     },
@@ -160,7 +158,6 @@ var RequestEditor = Backbone.View.extend({
     },
 
     onSentRequest: function() {
-        console.log("Set button as loading");
         $('#submit-request').button("loading");
     },
 
@@ -214,8 +211,6 @@ var RequestEditor = Backbone.View.extend({
         else {
             $('#data').css("display", "none");
         }
-
-        console.log("Should load body data at this point");
     },
 
     showRequestBuilder: function() {
