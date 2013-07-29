@@ -4,7 +4,10 @@ pm.indexedDB = {
     TABLE_DRIVE_FILES: "drive_files",
     TABLE_DRIVE_CHANGES: "drive_changes",
 
-    onTransactionComplete: function(callback) {
+    onTransactionComplete: function(callback) {        
+        if (pm.isTesting) {
+            pm.indexedDB.clearAllObjectStores();
+        }
         callback();
     },
 
@@ -101,6 +104,7 @@ pm.indexedDB = {
             console.log("Upgrade DB");
             var db = e.target.result;
             pm.indexedDB.db = db;
+
             if (!db.objectStoreNames.contains("requests")) {
                 var requestStore = db.createObjectStore("requests", {keyPath:"id"});
                 requestStore.createIndex("timestamp", "timestamp", { unique:false});

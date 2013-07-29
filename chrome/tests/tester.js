@@ -1,0 +1,51 @@
+pm.tester = {
+	setUrl: function(url) {
+		$("#url").val(url);
+	},
+
+	setMethod: function(method) {
+		$("#request-method-selector").val(method);
+		$("#request-method-selector").trigger("change");
+	},
+
+	submitRequest: function() {
+		$("#submit-request").click();
+	},
+
+	resetRequest: function() {
+		$("#request-actions-reset").click();
+	},
+
+	isResponseVisible: function() {
+		var display = $("#response-as-code .CodeMirror").css("display") === "block";
+		return display;
+	},
+
+	getPrettyBody: function() {
+		return $("#response-as-code").html();
+	},
+
+	prettyBodyHasString: function(term) {
+		var body = pm.tester.getPrettyBody();			
+		var found = body.search(term) >= 0;		
+		return found;
+	},
+
+	areHeadersVisible: function() {
+		var display = $("#response-headers-container").css("display") === "block";
+		return display;
+	},
+
+	setBodyType: function(type) {
+		$("#data-mode-selector a[data-mode='" + type + "']").click();
+	},
+
+	setFormDataParams: function(params) {
+		$("#formdata-keyvaleditor").keyvalueeditor("reset", params);
+	},
+
+	setURLEncodedParams: function(params) {
+		$("#urlencoded-keyvaleditor").keyvalueeditor("reset", params);
+	}
+
+};

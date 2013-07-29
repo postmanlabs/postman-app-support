@@ -1,32 +1,13 @@
-describe("Postman base.js", function() {
-	var clearedData = false;
-
+describe("Postman base.js", function() {	
 	beforeEach(function() {				
-
 		waitsFor(function() {
 			return pm.hasPostmanInitialized === true;
 		}, "hasPostmanInitialized", 500);
 
-		runs(function() {
-			pm.indexedDB.clearAllObjectStores(function() {
-				clearedData = true;
-				console.log("Cleared all object data");
-			});
-		}, "clear all data from indexedDB and settings");
-
-		waitsFor(function() {
-			return clearedData === true;
-		}, "has cleared all data", 500);
-
-		runs(function() {
-			pm.settings.resetSettings();
-		}, "reset settings");
-
 	});
 
 	it("has initialized Postman", function() {		
-		expect(pm.hasPostmanInitialized).toBe(true);
-		expect(clearedData).toBe(true);
+		expect(pm.hasPostmanInitialized).toBe(true);		
 	});
 });
 
