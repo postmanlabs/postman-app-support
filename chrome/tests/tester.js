@@ -46,6 +46,10 @@ pm.tester = {
 
 	setURLEncodedParams: function(params) {
 		$("#urlencoded-keyvaleditor").keyvalueeditor("reset", params);
-	}
+	},
 
+	setRawData: function(data) {
+		var body = pm.request.get("body");
+		body.loadData("raw", data, false);
+	}
 };

@@ -66,7 +66,6 @@ describe("Postman requester", function() {
 				var response = pm.request.get("response");
 				response.on("loadResponse", function() {		
 					responseLoaded = true;
-					console.log("Triggered loadResponse for DELETE");
 				});							
 			});
 
@@ -136,7 +135,6 @@ describe("Postman requester", function() {
 				var response = pm.request.get("response");
 				response.on("loadResponse", function() {					
 					responseLoaded = true;
-					console.log("Triggered loadResponse for PUT");
 				});							
 			});
 
@@ -243,6 +241,34 @@ describe("Postman requester", function() {
 				expect(pm.tester.prettyBodyHasString("/post")).toBe(true);
 				expect(pm.tester.prettyBodyHasString("urlencoded")).toBe(true);
 				expect(pm.tester.prettyBodyHasString("Damn")).toBe(true);
+			});
+		});
+
+		it("can send a raw request", function() {
+			var responseLoaded = false;
+			runs(function() {
+				pm.tester.setUrl("http://localhost:5000/post");
+				pm.tester.setMethod("POST");
+
+				var data = "blahblahblah";
+
+				pm.tester.setBodyType("raw");
+				pm.tester.setRawData(data);
+				pm.tester.submitRequest();		
+
+				var response = pm.request.get("response");
+				response.on("loadResponse", function() {					
+					responseLoaded = true;
+				});						
+			});
+
+			waitsFor(function() {
+				return responseLoaded === true;
+			}, "Could not load the response", waitTime);
+
+			runs(function() {				
+				expect(pm.tester.prettyBodyHasString("/post")).toBe(true);
+				expect(pm.tester.prettyBodyHasString("blahblahblah")).toBe(true);
 			});
 		});
 	});
