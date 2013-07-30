@@ -51,5 +51,13 @@ pm.tester = {
 	setRawData: function(data) {
 		var body = pm.request.get("body");
 		body.loadData("raw", data, false);
+	},
+
+	setHeaders: function(headers) {
+		$("#headers-keyvaleditor").keyvalueeditor("reset", headers);
+	},
+
+	toggleHeadersEditor: function() {
+		$("#headers-keyvaleditor-actions-open").click();
 	}
 };

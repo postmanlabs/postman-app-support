@@ -205,6 +205,20 @@ describe("Postman requester", function() {
 		});
 	});
 
+	describe("can send GET requests", function() {
+		beforeEach(function() {
+			pm.tester.resetRequest();
+		});
+
+		afterEach(function() {
+			pm.tester.resetRequest();
+		});
+
+		it("can edit and send URL params", function() {
+
+		});
+	});
+
 	describe("can send POST requests", function() {
 		beforeEach(function() {
 			pm.tester.resetRequest();
@@ -325,6 +339,137 @@ describe("Postman requester", function() {
 			runs(function() {				
 				expect(pm.tester.prettyBodyHasString("/post")).toBe(true);
 				expect(pm.tester.prettyBodyHasString("blahblahblah")).toBe(true);
+			});
+		});
+
+		it("can send a raw application/json request", function() {
+			var responseLoaded = false;
+			runs(function() {
+				pm.tester.setUrl("http://localhost:5000/post");
+				pm.tester.setMethod("POST");
+
+				var data = "blahblahblah";
+
+				pm.tester.setBodyType("raw");
+				pm.tester.setRawData(data);
+				var headers = [
+					{ key: "Content-Type", value: "application/json" }
+				];
+
+				pm.tester.setHeaders(headers);
+				pm.tester.submitRequest();		
+
+				var response = pm.request.get("response");
+				response.on("loadResponse", function() {					
+					responseLoaded = true;
+				});						
+			});
+
+			waitsFor(function() {
+				return responseLoaded === true;
+			}, "Could not load the response", waitTime);
+
+			runs(function() {				
+				expect(pm.tester.prettyBodyHasString("/post")).toBe(true);
+				expect(pm.tester.prettyBodyHasString("blahblahblah")).toBe(true);
+				expect(pm.tester.prettyBodyHasString("application\/json")).toBe(true);
+			});
+		});
+	});
+
+	describe("can add extra headers", function() {
+		it("can send a no-cache header", function() {
+			var responseLoaded = false;
+			runs(function() {
+				pm.tester.setUrl("http://localhost:5000/get");
+				pm.tester.setMethod("GET");
+				pm.tester.submitRequest();						
+
+				var response = pm.request.get("response");
+				response.on("loadResponse", function() {					
+					responseLoaded = true;
+				});
+			});
+
+			waitsFor(function() {
+				return responseLoaded === true;
+			}, "Could not get response", waitTime);
+
+			runs(function() {				
+				var foundString = pm.tester.prettyBodyHasString("no-cache");				
+				expect(foundString).toBe(true);		
+			});
+		});	
+
+		it("can disable no-cache header", function() {
+			var responseLoaded = false;
+			runs(function() {
+				pm.settings.setSetting("sendNoCacheHeader", false);
+				pm.tester.setUrl("http://localhost:5000/get");
+				pm.tester.setMethod("GET");
+				pm.tester.submitRequest();						
+
+				var response = pm.request.get("response");
+				response.on("loadResponse", function() {					
+					responseLoaded = true;
+				});
+			});
+
+			waitsFor(function() {
+				return responseLoaded === true;
+			}, "Could not get response", waitTime);
+
+			runs(function() {				
+				var foundString = pm.tester.prettyBodyHasString("no-cache");				
+				expect(foundString).toBe(false);		
+			});
+		});	
+
+		it("can send postman-token header", function() {
+			var responseLoaded = false;
+			runs(function() {
+				pm.settings.setSetting("sendPostmanTokenHeader", true);
+				pm.tester.setUrl("http://localhost:5000/get");
+				pm.tester.setMethod("GET");
+				pm.tester.submitRequest();						
+
+				var response = pm.request.get("response");
+				response.on("loadResponse", function() {					
+					responseLoaded = true;
+				});
+			});
+
+			waitsFor(function() {
+				return responseLoaded === true;
+			}, "Could not get response", waitTime);
+
+			runs(function() {				
+				var foundString = pm.tester.prettyBodyHasString("Postman-Token");				
+				expect(foundString).toBe(true);		
+			});
+		});
+
+		it("can disable postman-token header", function() {
+			var responseLoaded = false;
+			runs(function() {
+				pm.settings.setSetting("sendPostmanTokenHeader", false);
+				pm.tester.setUrl("http://localhost:5000/get");
+				pm.tester.setMethod("GET");
+				pm.tester.submitRequest();						
+
+				var response = pm.request.get("response");
+				response.on("loadResponse", function() {					
+					responseLoaded = true;
+				});
+			});
+
+			waitsFor(function() {
+				return responseLoaded === true;
+			}, "Could not get response", waitTime);
+
+			runs(function() {				
+				var foundString = pm.tester.prettyBodyHasString("Postman-Token");				
+				expect(foundString).toBe(false);		
 			});
 		});
 	});
