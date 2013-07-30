@@ -150,5 +150,39 @@ pm.tester = {
 		];
 
 		globals.saveGlobals(values);
+	},
+
+	setBasicAuthParams: function(params) {
+		$("#request-helper-tabs li[data-id='basicAuth']").click();
+		$("#request-helper-basicAuth-username").val(params.username);
+		$("#request-helper-basicAuth-password").val(params.password);
+		$("#request-helper-basicAuth .request-helper-submit").click();
+	},
+
+	setOAuth1Params: function(params) {
+		$("#request-helper-oauth1-consumerKey").val(params.consumer_key);
+		$("#request-helper-oauth1-consumerSecret").val(params.consumer_secret);
+		$("#request-helper-oauth1-token").val(params.token);
+		$("#request-helper-oauth1-tokenSecret").val(params.token_secret);
+		$("#request-helper-oauth1-signatureMethod").val(params.signature_method);
+		$("#request-helper-oauth1-timestamp").val(params.timestamp);
+		$("#request-helper-oauth1-nonce").val(params.nonce);
+		$("#request-helper-oauth1-version").val(params.version);
+		$("#request-helper-oauth1-realm").val(params.realm);
+
+		$("#request-helper-oauth1-header").prop("checked", params.header);
+		$("#request-helper-oauth1-auto").prop("checked", params.auto);		
+	},
+
+	setDigestAuthParams: function(params) {
+		$("#request-helper-digestAuth-username").val(params.username);
+		$("#request-helper-digestAuth-realm").val(params.realm);
+		$("#request-helper-digestAuth-password").val(params.password);
+		$("#request-helper-digestAuth-nonce").val(params.nonce);
+		$("#request-helper-digestAuth-algorithm").val(params.algorithm);
+		$("#request-helper-digestAuth-qop").val(params.qop);
+		$("#request-helper-digestAuth-nonceCount").val(params.nonce_count);
+		$("#request-helper-digestAuth-clientNonce").val(params.client_nonce);
+		$("#request-helper-digestAuth-opaque").val(params.opaque);
 	}
 };

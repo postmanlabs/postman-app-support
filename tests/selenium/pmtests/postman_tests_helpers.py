@@ -730,74 +730,7 @@ class PostmanTestsHelpers(PostmanTests):
         if found_digest_response is True:
             return True
         else:
-            return False
-
-    def test_9_digest_get_headers(self):
-        self.reset_request()
-
-        method_select = self.browser.find_element_by_id("request-method-selector")    
-        Select(method_select).select_by_value("GET")
-
-        # Example from the Python requests library
-        self.set_url_field(self.browser, "http://httpbin.org/digest-auth/auth/user/pass")
-
-        digest_selector = self.browser.find_element_by_css_selector("#request-types .request-helper-tabs li:nth-of-type(3)")
-        digest_selector.click()
-
-        username = self.browser.find_element_by_id("request-helper-digestAuth-username")      
-        realm = self.browser.find_element_by_id("request-helper-digestAuth-realm")
-        password = self.browser.find_element_by_id("request-helper-digestAuth-password")
-        nonce = self.browser.find_element_by_id("request-helper-digestAuth-nonce")
-        algorithm = self.browser.find_element_by_id("request-helper-digestAuth-algorithm")
-        qop = self.browser.find_element_by_id("request-helper-digestAuth-qop")
-        nonce_count = self.browser.find_element_by_id("request-helper-digestAuth-nonceCount")
-        client_nonce = self.browser.find_element_by_id("request-helper-digestAuth-clientNonce")
-        opaque = self.browser.find_element_by_id("request-helper-digestAuth-opaque")
-
-        username.clear()
-        realm.clear()
-        password.clear()
-        nonce.clear()
-        algorithm.clear()
-        qop.clear()
-        nonce_count.clear()
-        client_nonce.clear()
-        opaque.clear()
-
-        username.send_keys("user")
-        realm.send_keys("me@kennethreitz.com")
-        password.send_keys("pass")
-        nonce.send_keys("59c177ca4c8aa616a0e0007717a2225d")
-        algorithm.send_keys("MD5")
-        qop.send_keys("auth")
-        nonce_count.send_keys("00000002")
-        client_nonce.send_keys("a621deed62b2ff96")
-        opaque.send_keys("c68f9b6d2ccdf56c49945e0788fd1017")
-        
-        refresh_headers = self.browser.find_element_by_css_selector("#request-helper-digestAuth .request-helper-submit")
-        refresh_headers.click()
-
-        input_elements = self.browser.find_elements_by_css_selector("#headers-keyvaleditor .keyvalueeditor-row")
-        
-        found_digest_response = False
-        for element in input_elements:
-            value = self.browser.execute_script("return arguments[0].innerHTML", element)            
-
-            if value.find("response") > 0:
-                found_digest_response = True
-                if value.find("bf0ed74d6a422565ba9aae6d0e36f7b9") > 0:
-                    if value.find("realm") > 0:
-                        found_digest_response = True
-                    else:
-                        found_digest_response = False
-                else:
-                    found_digest_response = False
-    
-
-        if found_digest_response is True:
-            return True
-        else:
-            return False
+            return False    
         
     def test_10_digest_post_environment(self):
         self.reset_request()

@@ -34,8 +34,6 @@ var Settings = Backbone.Model.extend({
         this.setSetting("driveStartChangeId", 0);
         this.setSetting("driveAppDataFolderId", 0);
         this.setSetting("lastDriveChangeTime", "");
-
-        console.log("Reset all settings");
     },
 
     initValues: function(callback) {

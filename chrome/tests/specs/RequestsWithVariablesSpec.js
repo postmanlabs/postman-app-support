@@ -1,4 +1,4 @@
-describe("Postman requests with variables", function() {
+xdescribe("Postman requests with variables", function() {
 	var waitTime = 100;
 
 	beforeEach(function() {
@@ -8,12 +8,12 @@ describe("Postman requests with variables", function() {
 
 		runs(function() {
 			pm.settings.resetSettings();
-			// pm.tester.resetRequest();
+			pm.tester.resetRequest();
 		});		
 	});
 
 	afterEach(function() {
-		// pm.tester.resetRequest();
+		pm.tester.resetRequest();
 	});
 
 	it("has initialized Postman", function() {		

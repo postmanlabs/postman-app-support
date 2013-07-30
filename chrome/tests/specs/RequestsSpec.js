@@ -1,4 +1,4 @@
-describe("Postman requester", function() {
+xdescribe("Postman requester", function() {
 	var waitTime = 100;
 
 	beforeEach(function() {
@@ -322,6 +322,7 @@ describe("Postman requester", function() {
 
 				pm.tester.setBodyType("raw");
 				pm.tester.setRawData(data);
+				
 				var headers = [
 					{ key: "Content-Type", value: "application/json" }
 				];
