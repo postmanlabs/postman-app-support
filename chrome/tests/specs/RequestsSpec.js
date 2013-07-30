@@ -1,15 +1,15 @@
 describe("Postman requester", function() {
-	var waitTime = 500;
+	var waitTime = 100;
 
-	describe("can send basic requests", function() {
-		beforeEach(function() {
-			pm.tester.resetRequest();
-		});
+	beforeEach(function() {
+		pm.tester.resetRequest();
+	});
 
-		afterEach(function() {
-			pm.tester.resetRequest();
-		});
+	afterEach(function() {
+		// pm.tester.resetRequest();
+	});
 
+	describe("can send requests without a body", function() {
 		it("can send a basic GET request", function() {
 			var responseLoaded = false;
 			runs(function() {
@@ -149,15 +149,7 @@ describe("Postman requester", function() {
 		});
 	});	
 
-	describe("can handle URLs", function() {
-		beforeEach(function() {
-			pm.tester.resetRequest();
-		});
-
-		afterEach(function() {
-			pm.tester.resetRequest();
-		});
-
+	describe("can handle different URLs", function() {
 		it("can send a URL with a semicolon", function() {
 			var responseLoaded = false;
 			runs(function() {
@@ -205,29 +197,7 @@ describe("Postman requester", function() {
 		});
 	});
 
-	describe("can send GET requests", function() {
-		beforeEach(function() {
-			pm.tester.resetRequest();
-		});
-
-		afterEach(function() {
-			pm.tester.resetRequest();
-		});
-
-		it("can edit and send URL params", function() {
-
-		});
-	});
-
 	describe("can send POST requests", function() {
-		beforeEach(function() {
-			pm.tester.resetRequest();
-		});
-
-		afterEach(function() {
-			pm.tester.resetRequest();
-		});
-
 		it("can send a basic POST request", function() {
 			var responseLoaded = false;
 			runs(function() {
@@ -473,4 +443,59 @@ describe("Postman requester", function() {
 			});
 		});
 	});
+
+	describe("URL params editor", function() {		
+		it("can edit and send URL params", function() {
+			var responseLoaded = false;
+			var haveSetParams = false;
+			runs(function() {
+				pm.tester.setUrl("http://localhost:5000/post");
+				pm.tester.setMethod("POST");
+				pm.tester.toggleURLParams();
+
+				var urlParams = [
+					{ key: "Foo", value: "bar" },
+					{ key: "Test", value: "This" },
+					{ key: "Damn", value: "Thing" }
+				];
+
+				pm.tester.setURLParams(urlParams);		
+
+				setTimeout(function() {
+					haveSetParams = true;
+				}, 100);		
+			});
+
+			waitsFor(function() {
+				return haveSetParams === true;
+			}, "could not set URL params", 150);
+
+			runs(function() {								
+				pm.tester.submitRequest();								
+
+				console.log(pm.request.get("url"));
+
+				var response = pm.request.get("response");
+				response.on("loadResponse", function() {					
+					responseLoaded = true;
+				});
+			});
+
+			waitsFor(function() {
+				return responseLoaded === true;
+			}, "Could not load the response", waitTime);
+
+			runs(function() {				
+				var found = pm.tester.prettyBodyHasString("/post");				
+				expect(found).toBe(true);
+				expect(pm.tester.prettyBodyHasString("Foo")).toBe(true);
+				expect(pm.tester.prettyBodyHasString("Test")).toBe(true);
+				expect(pm.tester.prettyBodyHasString("Damn")).toBe(true);
+				expect(pm.tester.prettyBodyHasString("bar")).toBe(true);
+				expect(pm.tester.prettyBodyHasString("This")).toBe(true);
+				expect(pm.tester.prettyBodyHasString("Thing")).toBe(true);
+			});
+		});
+	});
+
 });

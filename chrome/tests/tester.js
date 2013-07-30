@@ -40,6 +40,20 @@ pm.tester = {
 		$("#data-mode-selector a[data-mode='" + type + "']").click();
 	},
 
+	toggleURLParams: function() {
+		$("#url-keyvaleditor-actions-open").click();
+	},
+
+	getURLParamsLength: function() {
+		return $("#url-keyvaleditor").keyvalueeditor("getValues").length;
+	},
+
+	setURLParams: function(urlParams) {		
+		console.log("Reset params", urlParams);
+		$("#url-keyvaleditor").keyvalueeditor("reset", urlParams);
+		console.log($("#url-keyvaleditor").keyvalueeditor("getValues"));
+	},
+
 	setFormDataParams: function(params) {
 		$("#formdata-keyvaleditor").keyvalueeditor("reset", params);
 	},

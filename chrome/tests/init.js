@@ -1,3 +1,7 @@
+function hideTests() {
+	$("#HTMLReporter").css("display", "none");
+}
+
 describe("Postman base.js", function() {	
 	beforeEach(function() {				
 		waitsFor(function() {
