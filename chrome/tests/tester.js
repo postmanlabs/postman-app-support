@@ -48,6 +48,21 @@ pm.tester = {
 		return false;
 	},
 
+	kvpairExistsInArray: function(params, pair) {
+		for(var i = 0; i < params.length; i++) {
+			if(params[i].key === pair.key) {
+				if (params[i].value === pair.value) {
+					return true;
+				}
+				else {
+					return false;
+				}
+			}
+		}
+
+		return false;
+	},
+
 	setBodyType: function(type) {
 		$("#data-mode-selector a[data-mode='" + type + "']").click();
 	},
@@ -64,12 +79,24 @@ pm.tester = {
 		$("#url-keyvaleditor").keyvalueeditor("reset", urlParams);
 	},
 
+	getURLParams: function() {
+		return $("#url-keyvaleditor").keyvalueeditor("getValues");
+	},
+
 	setFormDataParams: function(params) {
 		$("#formdata-keyvaleditor").keyvalueeditor("reset", params);
 	},
 
+	getFormDataParams: function() {
+		return $("#formdata-keyvaleditor").keyvalueeditor("getValues");
+	},
+
 	setURLEncodedParams: function(params) {
 		$("#urlencoded-keyvaleditor").keyvalueeditor("reset", params);
+	},
+
+	getURLEncodedParams: function(params) {
+		return $("#urlencoded-keyvaleditor").keyvalueeditor("getValues");
 	},
 
 	setRawData: function(data) {
@@ -123,12 +150,15 @@ pm.tester = {
 		environments.addEnvironment("test_basic_env", values_basic_test_env);
 
 		var values_oauth_test_env = [
+			{key: "url", value: "http://photos.example.net/photos"},
 			{key: "consumer_key", value:  "dpf43f3p2l4k3l03"},
 			{key: "consumer_secret", value:  "kd94hf93k423kf44"},
 			{key: "token", value:  "nnch734d00sl2jdk"},
 			{key: "token_secret", value:  "pfkkdhi9sl3r4s00"},
 			{key: "nonce", value:  "kllo9940pd9333jh"},
 			{key: "timestamp", value:  "1191242096"},
+			{key: "signature_method", value: "HMAC-SHA1"},
+			{key: "version", value: "1.0"},
 			{key: "url", value:  "http://photos.example.net/photos"},
 			{key: "file", value:  "vacation.jpg"},
 			{key: "size", value:  "original"}
@@ -172,6 +202,8 @@ pm.tester = {
 	},
 
 	setOAuth1Params: function(params) {
+		$("#request-helper-tabs li[data-id='oAuth1']").click();
+
 		$("#request-helper-oauth1-consumerKey").val(params.consumer_key);
 		$("#request-helper-oauth1-consumerSecret").val(params.consumer_secret);
 		$("#request-helper-oauth1-token").val(params.token);
@@ -183,7 +215,9 @@ pm.tester = {
 		$("#request-helper-oauth1-realm").val(params.realm);
 
 		$("#request-helper-oauth1-header").prop("checked", params.header);
-		$("#request-helper-oauth1-auto").prop("checked", params.auto);		
+		$("#request-helper-oauth1-auto").prop("checked", params.auto);
+
+		$("#request-helper-oAuth1 .request-helper-submit").click();	
 	},
 
 	setDigestAuthParams: function(params) {

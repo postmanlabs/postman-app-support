@@ -93,6 +93,8 @@ var OAuth1Processor = Backbone.Model.extend({
 
         processedUrl = ensureProperUrl(processedUrl);
 
+        console.log(processedUrl);
+
         if (processedUrl.indexOf('?') > 0) {
             processedUrl = processedUrl.split("?")[0];
         }
@@ -118,8 +120,6 @@ var OAuth1Processor = Backbone.Model.extend({
         var bodyParams = requestBody.get("dataAsObjects");
 
         var params = _.union(urlParams, bodyParams);
-
-        console.log("URL params are", params);
 
         for (var i = 0; i < params.length; i++) {
             var param = params[i];
@@ -205,7 +205,7 @@ var OAuth1Processor = Backbone.Model.extend({
             params[i].value = pm.envManager.getCurrentValue(params[i].value);
         }
 
-        for (j = 0, length = oAuthParams.length; i < length; i++) {
+        for (i = 0, length = oAuthParams.length; i < length; i++) {
             oAuthParams[i].value = pm.envManager.getCurrentValue(oAuthParams[i].value);
         }
 
@@ -240,6 +240,7 @@ var OAuth1Processor = Backbone.Model.extend({
 
             rawString = rawString.substring(0, rawString.length - 1);
             request.setHeader(authHeaderKey, rawString);
+            console.log(authHeaderKey, rawString);
             request.trigger("customHeaderUpdate");
         } else {            
             params = params.concat(oAuthParams);
@@ -249,13 +250,13 @@ var OAuth1Processor = Backbone.Model.extend({
                 request.trigger("customURLParamUpdate");
             } else {                
                 if (dataMode === 'urlencoded') {
-                    body.loadData("urlencoded", oAuthParams, true);
+                    body.loadData("urlencoded", params, true);
                 }
                 else if (dataMode === 'params') {
-                    body.loadData("params", oAuthParams, true);
+                    body.loadData("params", params, true);
                 }
                 else if (dataMode === 'raw') {
-                    request.setUrlParamString(oAuthParams);                    
+                    request.setUrlParamString(params);                    
                     request.trigger("customURLParamUpdate");
                 }
             }
