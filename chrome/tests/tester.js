@@ -123,9 +123,7 @@ pm.tester = {
 		}
 	},
 
-	addTestEnvironments: function() {
-		console.log(pm, pm.envManager);
-
+	addTestEnvironments: function() {		
 		var environments = pm.envManager.get("environments");
 		
 		var values = [
