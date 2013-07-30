@@ -36,6 +36,18 @@ pm.tester = {
 		return display;
 	},
 
+	getHeaderValue: function(key) {
+		var kvpairs = $("#headers-keyvaleditor").keyvalueeditor("getValues");
+		for(var i = 0; i < kvpairs.length; i++) {
+			var pair = kvpairs[i];
+			if(pair.key === key) {
+				return pair.value;
+			}
+		}
+
+		return false;
+	},
+
 	setBodyType: function(type) {
 		$("#data-mode-selector a[data-mode='" + type + "']").click();
 	},
@@ -125,7 +137,7 @@ pm.tester = {
 		environments.addEnvironment("test_oauth_env", values_oauth_test_env);
 
 		var values_digest_test_env = [
-			{key: "user", value:  "user"},
+			{key: "username", value:  "user"},
 			{key: "realm", value:  "me@kennethreitz.com"},
 			{key: "password", value:  "pass"},
 			{key: "nonce", value:  "59c177ca4c8aa616a0e0007717a2225d"},
@@ -175,6 +187,7 @@ pm.tester = {
 	},
 
 	setDigestAuthParams: function(params) {
+		$("#request-helper-tabs li[data-id='digestAuth']").click();
 		$("#request-helper-digestAuth-username").val(params.username);
 		$("#request-helper-digestAuth-realm").val(params.realm);
 		$("#request-helper-digestAuth-password").val(params.password);
@@ -184,5 +197,6 @@ pm.tester = {
 		$("#request-helper-digestAuth-nonceCount").val(params.nonce_count);
 		$("#request-helper-digestAuth-clientNonce").val(params.client_nonce);
 		$("#request-helper-digestAuth-opaque").val(params.opaque);
+		$("#request-helper-digestAuth .request-helper-submit").click();
 	}
 };
