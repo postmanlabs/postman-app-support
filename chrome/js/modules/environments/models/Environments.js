@@ -20,9 +20,12 @@ var Environments = Backbone.Collection.extend({
             timestamp:new Date().getTime()
         };
 
-        pm.indexedDB.environments.addEnvironment(environment, function () {
-            var envModel = new Environment(environment);
-            collection.add(envModel);
+        console.log("Added environment", environment);
+        
+        var envModel = new Environment(environment);
+        collection.add(envModel);
+
+        pm.indexedDB.environments.addEnvironment(environment, function () {                        
 
             //TODO: Drive syncing here
             //pm.envManager.drive.queueEnvironmentPost(environment);

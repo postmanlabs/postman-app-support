@@ -6,7 +6,7 @@ describe("Postman requester", function() {
 	});
 
 	afterEach(function() {
-		// pm.tester.resetRequest();
+		pm.tester.resetRequest();
 	});
 
 	describe("can send requests without a body", function() {
@@ -31,30 +31,7 @@ describe("Postman requester", function() {
 				var foundString = pm.tester.prettyBodyHasString("/get");				
 				expect(foundString).toBe(true);		
 			});
-		});
-
-		it("can send a basic GET request where the URL has just one key", function() {
-			var responseLoaded = false;
-			runs(function() {
-				pm.tester.setUrl("http://localhost:5000/get?start");
-				pm.tester.setMethod("GET");
-				pm.tester.submitRequest();
-
-				var response = pm.request.get("response");
-				response.on("loadResponse", function() {					
-					responseLoaded = true;
-				});
-			});
-
-			waitsFor(function() {								
-				return responseLoaded === true;
-			}, "Could not get response", waitTime);
-
-			runs(function() {				
-				var found = pm.tester.prettyBodyHasString("/get\\?start");				
-				expect(found).toBe(true);		
-			});
-		});
+		});		
 
 		it("can send a basic DELETE request", function() {
 			var responseLoaded = false;
@@ -150,6 +127,29 @@ describe("Postman requester", function() {
 	});	
 
 	describe("can handle different URLs", function() {
+		it("can send a request where the URL has just one key", function() {
+			var responseLoaded = false;
+			runs(function() {
+				pm.tester.setUrl("http://localhost:5000/get?start");
+				pm.tester.setMethod("GET");
+				pm.tester.submitRequest();
+
+				var response = pm.request.get("response");
+				response.on("loadResponse", function() {					
+					responseLoaded = true;
+				});
+			});
+
+			waitsFor(function() {								
+				return responseLoaded === true;
+			}, "Could not get response", waitTime);
+
+			runs(function() {				
+				var found = pm.tester.prettyBodyHasString("/get\\?start");				
+				expect(found).toBe(true);		
+			});
+		});
+
 		it("can send a URL with a semicolon", function() {
 			var responseLoaded = false;
 			runs(function() {
@@ -197,7 +197,7 @@ describe("Postman requester", function() {
 		});
 	});
 
-	describe("can send POST requests", function() {
+	describe("can send requests with a body", function() {
 		it("can send a basic POST request", function() {
 			var responseLoaded = false;
 			runs(function() {

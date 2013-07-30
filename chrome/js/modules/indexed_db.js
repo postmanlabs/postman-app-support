@@ -186,6 +186,7 @@ pm.indexedDB = {
 
             var stores = [
                 "requests", "collections", "header_presets",
+                "collection_requests", "environments",
                 pm.indexedDB.TABLE_HELPERS,
                 pm.indexedDB.TABLE_DRIVE_FILES,
                 pm.indexedDB.TABLE_DRIVE_CHANGES
@@ -195,6 +196,8 @@ pm.indexedDB = {
             var transaction = db.transaction(stores, "readwrite");
             transaction.objectStore("requests").clear();
             transaction.objectStore("collections").clear();
+            transaction.objectStore("collection_requests").clear();
+            transaction.objectStore("environments").clear();
             transaction.objectStore("header_presets").clear();
             transaction.objectStore(pm.indexedDB.TABLE_HELPERS).clear();
             transaction.objectStore(pm.indexedDB.TABLE_DRIVE_FILES).clear();

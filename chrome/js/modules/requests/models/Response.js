@@ -177,8 +177,6 @@ var Response = Backbone.Model.extend({
                 model.set("previewType", responsePreviewType);
                 model.set("rawDataType", response.responseType);
                 model.set("state", {size: "normal"});
-
-                console.log("Triggering loadResponse for ", this.toJSON());
                 model.trigger("loadResponse", model);
             }                
         }

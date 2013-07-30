@@ -20,8 +20,7 @@ var VariableProcessor = Backbone.Model.extend({
 
     setCurrentEnvironment: function() {        
         this.set("selectedEnvironmentId", pm.settings.getSetting("selectedEnvironmentId"));
-        this.set("selectedEnv", this.get("environments").get(pm.settings.getSetting("selectedEnvironmentId")));
-        console.log("Setting current environment");
+        this.set("selectedEnv", this.get("environments").get(pm.settings.getSetting("selectedEnvironmentId")));        
     },
 
     containsVariable:function (string, values) {
