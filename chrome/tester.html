@@ -747,8 +747,12 @@
                 <div class="controls">
                     <div class="input">
                         <textarea class="medium" id="new-request-description"></textarea>
+
+                        <p class="help-block">
+                            Request descriptions support Markdown.
+                        </p>
                     </div>
-                </div>
+                </div>                
             </div>
         </form>
     </div>
@@ -883,7 +887,11 @@
                     <div class="input" id="collection-request-description-container">
                         <textarea id="collection-request-description"
                                 class="medium collection-request-description" data-tabindex="2"></textarea>
-                    </div>
+
+                        <p class="help-block">
+                            Request descriptions support Markdown.
+                        </p>
+                    </div>                    
                 </div>
             </div>             
         </form>
@@ -1313,15 +1321,7 @@
                     <div class="control-group">
                         <input type="file" id="import-all-data-files-input" name="files"/>
                     </div>
-                </div>
-
-                <div style="margin-top: 20px;">
-                    <h4>Clear local file cache</h4>
-                    <p>Image files are written to the HTML5 filesystem so that they can be displayed in Postman.</p>                        
-                    <div class="control-group">
-                        <a id="clear-local-cache" class="btn">Clear files</a>
-                    </div>
-                </div>
+                </div>                
             </div>
             <div class="tab-pane" id="settings-add-ons">                
                 <div class="add-on">
