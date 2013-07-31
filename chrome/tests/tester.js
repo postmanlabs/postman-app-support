@@ -16,6 +16,12 @@ pm.tester = {
 		$("#request-actions-reset").click();
 	},
 
+	checkStatus: function(term) {
+		var content = $(".response-code .data").html();
+		var found = content.search(term) >= 0;		
+		return found;
+	},
+
 	isResponseVisible: function() {
 		var display = $("#response-as-code .CodeMirror").css("display") === "block";
 		return display;

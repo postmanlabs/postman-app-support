@@ -124,6 +124,29 @@ describe("Postman requester", function() {
 				expect(found).toBe(true);		
 			});
 		});
+
+		it("can send receive invalid status code", function() {
+			var responseLoaded = false;
+			runs(function() {
+				pm.tester.setUrl("http://localhost:5000/status/3");
+				pm.tester.setMethod("GET");
+				pm.tester.submitRequest();	
+
+				var response = pm.request.get("response");
+				response.on("loadResponse", function() {					
+					responseLoaded = true;
+				});							
+			});
+
+			waitsFor(function() {
+				return responseLoaded === true;
+			}, "Could not load the response", waitTime);
+
+			runs(function() {				
+				var foundStatus = pm.tester.checkStatus("3 UNKNOWN");
+				expect(foundStatus).toBe(true);		
+			});
+		});
 	});	
 
 	describe("can handle different URLs", function() {
@@ -495,6 +518,48 @@ describe("Postman requester", function() {
 				expect(pm.tester.prettyBodyHasString("bar")).toBe(true);
 				expect(pm.tester.prettyBodyHasString("This")).toBe(true);
 				expect(pm.tester.prettyBodyHasString("Thing")).toBe(true);
+			});
+		});
+	});
+
+	describe("Postman proxy", function() {		
+		it("can send restricted headers", function() {
+			var responseLoaded = false;
+			runs(function() {
+				pm.settings.setSetting("usePostmanProxy", true);
+				pm.tester.setUrl("http://localhost:5000/post");
+				pm.tester.setMethod("POST");
+
+				var data = "blahblahblah";
+
+				pm.tester.setBodyType("raw");
+				pm.tester.setRawData(data);
+				
+				var headers = [
+					{ key: "Content-Type", value: "application/json" },
+					{ key: "User-Agent", value: "PostmanTester" }
+				];
+
+				pm.tester.setHeaders(headers);
+				pm.tester.submitRequest();		
+
+				var response = pm.request.get("response");
+				response.on("loadResponse", function() {					
+					responseLoaded = true;
+				});						
+			});
+
+			waitsFor(function() {
+				return responseLoaded === true;
+			}, "Could not load the response", waitTime);
+
+			runs(function() {				
+				expect(pm.tester.prettyBodyHasString("/post")).toBe(true);
+				expect(pm.tester.prettyBodyHasString("blahblahblah")).toBe(true);
+				expect(pm.tester.prettyBodyHasString("application\/json")).toBe(true);
+				expect(pm.tester.prettyBodyHasString("Postman-User-Agent")).toBe(true);
+				expect(pm.tester.prettyBodyHasString("PostmanTester")).toBe(true);
+				pm.settings.setSetting("usePostmanProxy", false);
 			});
 		});
 	});
