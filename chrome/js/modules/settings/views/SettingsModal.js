@@ -109,7 +109,7 @@ var SettingsModal = Backbone.View.extend({
                 {
                     type:'success',
                     text:'Saved the data dump',
-                    layout:'topRight',
+                    layout:'topCenter',
                     timeout:750
                 });
             });
@@ -123,18 +123,10 @@ var SettingsModal = Backbone.View.extend({
                 noty(
                 {
                     type:'success',
-                    text:'Imported the data dump',
-                    layout:'topRight',
+                    text:'Imported all data',
+                    layout:'topCenter',
                     timeout:750
                 });
-            });
-        });
-
-        $("#clear-local-cache").on("click", function(event) {
-            console.log("Clear local cache files");
-            //Write code to clear RAL files
-            RAL.FileSystem.removeDir('cache', function() {
-                console.log("All clear");
             });
         });
 

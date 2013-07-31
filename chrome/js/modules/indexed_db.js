@@ -1056,7 +1056,7 @@ pm.indexedDB = {
         }
 
         var onFinishExportingCollections = function(c) {
-            globals = pm.envManager.globals;
+            globals = pm.envManager.get("globals").get("globals");
 
             //Get environments
             pm.indexedDB.environments.getAllEnvironments(function (e) {
@@ -1111,8 +1111,7 @@ pm.indexedDB = {
         });
     },
 
-    importAllData: function(files, callback) {
-        console.log(files, callback);
+    importAllData: function(files, callback) {        
         if (files.length !== 1) {
             return;
         }
@@ -1138,20 +1137,22 @@ pm.indexedDB = {
     importDataForVersion: function(version, data, callback) {
         if (version === 1) {
             console.log(version, data, callback);
+            var environments = pm.envManager.get("environments");
+            var globals = pm.envManager.get("globals");
 
             if ("collections" in data) {
                 console.log("Import collections");
                 pm.collections.mergeCollections(data.collections);
             }
 
-            if ("environments" in data) {
+            if ("environments" in data) {                
                 console.log("Import environments");
-                pm.envManager.mergeEnvironments(data.environments);
+                environments.mergeEnvironments(data.environments);
             }
 
             if ("globals" in data) {
                 console.log("Import globals");
-                pm.envManager.mergeGlobals(data.globals);
+                globals.mergeGlobals(data.globals);
             }
 
             if ("headerPresets" in data) {
