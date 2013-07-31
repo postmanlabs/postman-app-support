@@ -438,6 +438,9 @@ var PmCollections = Backbone.Collection.extend({
                     request.name = request.url;
                 }
 
+                var c = pmCollection.get(collectionRequest.collectionId);
+                c.updateRequest(collectionRequest);
+
                 pmCollection.trigger("updateCollectionRequest", request);
 
                 //TODO: Drive syncing will be done later
@@ -559,7 +562,10 @@ var PmCollections = Backbone.Collection.extend({
         pm.indexedDB.getCollectionRequest(id, function (req) {
             req.name = name;
             req.description = description;
-            pm.indexedDB.updateCollectionRequest(req, function (newRequest) {
+            pm.indexedDB.updateCollectionRequest(req, function (newRequest) {                
+                var c = pmCollection.get(newRequest.collectionId);
+                c.updateRequest(newRequest);
+                
                 pmCollection.trigger("updateCollectionRequest", newRequest);
                 pm.collections.drive.queueUpdateFromId(req.collectionId);
             });
