@@ -77,6 +77,7 @@ module.exports = function(grunt) {
         jQuery: true
       }
     },
+
     handlebars: {
       compile: {
         options: {
@@ -98,12 +99,24 @@ module.exports = function(grunt) {
         }
       }
     },
+
     sass: {
       dist: {
         files: {
           'chrome/css/styles.css': 'chrome/css/styles.scss'
         }
       }
+    },
+
+    compress: {
+      main: {
+          options: {
+            archive: 'chrome.zip'
+          },
+          files: [
+            {src: ['chrome/**', '!chrome/tests/**', '!chrome/manifest_key.json', '!chrome/tester.html'], dest: '/'}, // includes files in path and its subdirs            
+          ]
+        }
     }
   });
 
@@ -114,8 +127,10 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-mindirect');
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-sass');
+  grunt.loadNpmTasks('grunt-contrib-compress');
 
   // Default task.
   grunt.registerTask('default', ['jshint', 'concat']);
+  grunt.registerTask('package', ['concat', 'handlebars', 'sass', 'compress']);
 
 };
