@@ -69,18 +69,23 @@ var OAuth1Processor = Backbone.Model.extend({
         //Make sure the URL is urlencoded properly
         //Set the URL keyval editor as well. Other get params disappear when you click on URL params again
         var request = this.get("request");
-
+        var i;
         var url = request.get("url");
         if (url === '') {
-            $('#request-helpers').css("display", "block");
-            alert('Please enter the URL first.');
+            noty(
+                {
+                    type:'success',
+                    text:'Please enter a URL first',
+                    layout:'topCenter',
+                    timeout:750
+                });
+
             return null;
         }
 
         var processedUrl;
 
-        var realm = $('#request-helper-oauth1-realm').val();
-
+        var realm = this.get("realm");        
         var method = request.get("method");
         var requestBody = request.get("body");
 
@@ -93,8 +98,6 @@ var OAuth1Processor = Backbone.Model.extend({
 
         processedUrl = ensureProperUrl(processedUrl);
 
-        console.log(processedUrl);
-
         if (processedUrl.indexOf('?') > 0) {
             processedUrl = processedUrl.split("?")[0];
         }
@@ -105,14 +108,20 @@ var OAuth1Processor = Backbone.Model.extend({
             parameters: []
         };
 
-        //all the fields defined by oauth
-        $('input.signatureParam').each(function () {
-            if ($(this).val() !=='') {
-                var val = $(this).val();
-                val = pm.envManager.getCurrentValue(val);
-                message.parameters.push([$(this).attr('key'), val]);
-            }
-        });
+        var signatureParams = [
+            {key: "oauth_consumer_key", value: this.get("consumerKey")},
+            {key: "oauth_token", value: this.get("token")},
+            {key: "oauth_signature_method", value: this.get("signatureMethod")},
+            {key: "oauth_timestamp", value: this.get("timestamp")},
+            {key: "oauth_nonce", value: this.get("nonce")},
+            {key: "oauth_version", value: this.get("version")}
+        ];
+
+        for(i = 0; i < signatureParams.length; i++) {
+            var param = signatureParams[i];
+            param.value = pm.envManager.getCurrentValue(param.value);
+            message.parameters.push([param.key, param.value]);
+        }
 
         //Get parameters
         var urlParams = request.getUrlParams();
@@ -121,7 +130,7 @@ var OAuth1Processor = Backbone.Model.extend({
 
         var params = _.union(urlParams, bodyParams);
 
-        for (var i = 0; i < params.length; i++) {
+        for (i = 0; i < params.length; i++) {
             var param = params[i];
             if (param.key) {
                 param.value = pm.envManager.getCurrentValue(param.value);
@@ -130,12 +139,12 @@ var OAuth1Processor = Backbone.Model.extend({
         }
 
         var accessor = {};
-        if ($('input[key="oauth_consumer_secret"]').val() !=='') {
-            accessor.consumerSecret = $('input[key="oauth_consumer_secret"]').val();
+        if (this.get("consumerSecret") !=='') {
+            accessor.consumerSecret = this.get("consumerSecret");
             accessor.consumerSecret = pm.envManager.getCurrentValue(accessor.consumerSecret);
         }
-        if ($('input[key="oauth_token_secret"]').val() !=='') {
-            accessor.tokenSecret = $('input[key="oauth_token_secret"]').val();
+        if (this.get("tokenSecret") !=='') {
+            accessor.tokenSecret = this.get("tokenSecret");
             accessor.tokenSecret = pm.envManager.getCurrentValue(accessor.tokenSecret);
         }
 
@@ -193,20 +202,24 @@ var OAuth1Processor = Backbone.Model.extend({
 
         var oAuthParams = [];
 
-        $('input.signatureParam').each(function () {
-            if ($(this).val() !=='') {
-                var val = $(this).val();
-                oAuthParams.push({key: $(this).attr('key'), value: val});
-            }
-        });
+        var signatureParams = [
+            {key: "oauth_consumer_key", value: this.get("consumerKey")},
+            {key: "oauth_token", value: this.get("token")},
+            {key: "oauth_signature_method", value: this.get("signatureMethod")},
+            {key: "oauth_timestamp", value: this.get("timestamp")},
+            {key: "oauth_nonce", value: this.get("nonce")},
+            {key: "oauth_version", value: this.get("version")}
+        ];
+
+        for(i = 0; i < signatureParams.length; i++) {
+            var param = signatureParams[i];
+            param.value = pm.envManager.getCurrentValue(param.value);
+            oAuthParams.push(param);
+        }
 
         //Convert environment values
         for (i = 0, length = params.length; i < length; i++) {
             params[i].value = pm.envManager.getCurrentValue(params[i].value);
-        }
-
-        for (i = 0, length = oAuthParams.length; i < length; i++) {
-            oAuthParams[i].value = pm.envManager.getCurrentValue(oAuthParams[i].value);
         }
 
         var signature = this.generateSignature();
@@ -217,10 +230,10 @@ var OAuth1Processor = Backbone.Model.extend({
 
         oAuthParams.push({key: signatureKey, value: signature});
 
-        var addToHeader = $('#request-helper-oauth1-header').attr('checked') ? true : false;
+        var addToHeader = this.get("header");
 
         if (addToHeader) {
-            var realm = $('#request-helper-oauth1-realm').val();
+            var realm = this.get("realm");
 
             if (realm === '') {
                 realm = pm.envManager.getCurrentValue(url.trim());
@@ -239,8 +252,7 @@ var OAuth1Processor = Backbone.Model.extend({
             }
 
             rawString = rawString.substring(0, rawString.length - 1);
-            request.setHeader(authHeaderKey, rawString);
-            console.log(authHeaderKey, rawString);
+            request.setHeader(authHeaderKey, rawString);            
             request.trigger("customHeaderUpdate");
         } else {            
             params = params.concat(oAuthParams);
