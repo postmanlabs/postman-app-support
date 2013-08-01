@@ -67,7 +67,7 @@ var Environments = Backbone.Collection.extend({
 
         var name = environment.get("name") + ".postman_environment";
         var type = "application/json";
-        var filedata = environment.toJSON();
+        var filedata = JSON.stringify(environment.toJSON());
         pm.filesystem.saveAndOpenFile(name, filedata, type, function () {
             noty(
                 {

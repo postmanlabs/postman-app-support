@@ -30,10 +30,12 @@ pm.target = pm.targets.CHROME_PACKAGED_APP;
 pm.isTesting = false;
 
 if (pm.isTesting) {
-    pm.databaseName = "postman_test";
+    pm.databaseName = "postman_test";    
+    pm.webUrl = "http://localhost/postman/html";
 }
 else {
     pm.databaseName = "postman";    
+    pm.webUrl = "http://getpostman.com";
 }
 
 
@@ -49,8 +51,6 @@ pm.indexedDB.modes = {
 pm.fs = {};
 pm.hasPostmanInitialized = false;
 
-// pm.webUrl = "http://getpostman.com";
-pm.webUrl = "http://localhost/postman/html";
 pm.bannedHeaders = [
     'accept-charset',
     'accept-encoding',
