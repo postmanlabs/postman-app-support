@@ -334,9 +334,12 @@ li .right {
   width: 340px;
   height: 95%;
   position: fixed;
-  overflow-y: scroll;
+  overflow-y: hidden;
   overflow-x: hidden;
   border-top: solid thin #ccc; }
+
+#sidebar:hover {
+  overflow-y: scroll; }
 
 #sidebar:focus,
 #main:focus {
