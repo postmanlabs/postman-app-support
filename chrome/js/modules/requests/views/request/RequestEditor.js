@@ -183,6 +183,8 @@ var RequestEditor = Backbone.View.extend({
         var isFromSample = model.get("isFromSample");
         var isFromCollection = model.get("isFromCollection");
         
+        this.showRequestBuilder();
+
         if (isFromCollection) {
             $('#update-request-in-collection').css("display", "inline-block");
         }

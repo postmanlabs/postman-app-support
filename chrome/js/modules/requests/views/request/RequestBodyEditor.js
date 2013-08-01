@@ -67,11 +67,12 @@ var RequestBodyEditor = Backbone.View.extend({
 
         if (dataMode === 'raw') {
             var rawBodyData = body.get("data");
+            rawBodyData = htmlEncode(rawBodyData);
             rawBodyData = pm.envManager.getCurrentValue(rawBodyData);
             return rawBodyData;
         }
         else if (dataMode === 'params') {
-            var formDataBody = this.bodyFormDataEditor.getFormDataPreview();
+            var formDataBody = this.bodyFormDataEditor.getFormDataPreview();            
             if(formDataBody !== false) {
                 return formDataBody;
             }
@@ -80,7 +81,7 @@ var RequestBodyEditor = Backbone.View.extend({
             }
         }
         else if (dataMode === 'urlencoded') {
-            var urlEncodedBodyData = this.bodyURLEncodedEditor.getUrlEncodedBody();
+            var urlEncodedBodyData = this.bodyURLEncodedEditor.getUrlEncodedBody();            
             if(urlEncodedBodyData !== false) {
                 return urlEncodedBodyData;
             }
