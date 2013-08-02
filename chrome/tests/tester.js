@@ -12,6 +12,10 @@ pm.tester = {
 		$("#submit-request").click();
 	},
 
+	resetHistory: function() {
+		pm.history.clear();
+	},
+
 	resetRequest: function() {
 		$("#request-actions-reset").click();
 	},
@@ -236,5 +240,34 @@ pm.tester = {
 		$("#request-helper-digestAuth-clientNonce").val(params.client_nonce);
 		$("#request-helper-digestAuth-opaque").val(params.opaque);
 		$("#request-helper-digestAuth .request-helper-submit").click();
+	},
+
+	historyHasString: function(string) {
+		var content = $("#history-items").html();
+		var found = content.search(string) >= 0;		
+		return found;		
+	},
+
+	selectHistoryItem: function(index) {		
+		$("#history-items li:nth-child(" + index + ") .request").click();
+	},	
+
+	deleteHistoryItem: function(index) {
+		$("#history-items li:nth-child(" + index + ") .request-actions-delete").click();
+	},
+
+	urlHasString: function(string) {
+		var content = $("#url").val();
+		var found = content.search(string) >= 0;		
+		return found;			
+	},
+
+	bodyTypeIs: function(type) {
+		var classes = $("#data-mode-selector a[data-mode='" + type + "']").attr("class");
+		return classes.search("active") >= 0;
+	},
+
+	methodIs: function(method) {
+		return $("#request-method-selector").val() === method;
 	}
 };

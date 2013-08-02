@@ -1,4 +1,4 @@
-describe("Postman requester", function() {
+xdescribe("Postman requester", function() {
 	var waitTime = 100;
 
 	beforeEach(function() {

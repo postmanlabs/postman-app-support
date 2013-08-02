@@ -425,6 +425,8 @@ var Request = Backbone.Model.extend({
         
         response.trigger("clearResponse");
         this.trigger("loadRequest", this);
+
+        console.log("loadRequest triggered");
     },
 
     prepareForSending: function() {
