@@ -295,6 +295,60 @@ pm.tester = {
 
 	cancelNewCollectionModal: function() {
 		$("#modal-new-collection .btn-secondary").click();
+	},
+
+	openAddRequestToCollectionModal: function() {
+		$("#add-to-collection").click();
+	},
+
+	addDataToAddRequestToCollectionModal: function(params) {
+		if (params.existingCollectionId) {
+			$("#select-collection").val(params.existingCollectionId);
+		}
+
+		if (params.newCollectionName) {
+			$("#new-collection").val(params.newCollectionName);
+		}
+
+		if (params.requestName) {
+			$("#new-request-name").val(params.requestName);
+		}
+
+		if (params.requestDescription) {
+			$("#new-request-description").val(params.requestDescription);
+		}
+	},
+
+	submitAddRequestToCollectionModal: function() {
+		$("#modal-add-to-collection .btn-primary").click();
+	},
+
+	activeSidebarTab: function() {
+		return $("#sidebar-selectors .active").attr("data-id");
+	},
+
+	saveButtonIsVisible: function() {
+		return $("#update-request-in-collection").css("display") !== "none";
+	},
+
+	requestMetaSectionVisibility: function() {
+		return $("#request-meta").css("display");
+	},
+
+	requestMetaNameHas: function(term) {
+		var content = $("#request-name").html();
+		var found = content.search(term) >= 0;		
+		return found;
+	},
+
+	requestMetaDescriptionHas: function(term) {
+		var content = $("#request-description").html();
+		var found = content.search(term) >= 0;		
+		return found;
+	},
+
+	collectionListIsOpen: function(index) {
+		return $($("#collection-items .sidebar-collection-requests")[index - 1]).css("display") === "block";
 	}
 
 };

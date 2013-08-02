@@ -1,6 +1,8 @@
 describe("Collections", function() {
 	var modalWaitTime = 500;
+	var codeMirrorModalWaitTime = 2000;
 	var waitTime = modalWaitTime + 50;
+	var codeMirrorWaitTime = codeMirrorModalWaitTime + 50;
 
 	beforeEach(function() {
 		waitsFor(function() {
@@ -83,7 +85,57 @@ describe("Collections", function() {
 	});
 
 	describe("add request to collection", function() {
+		it("can add a GET request to new collection", function() {			
+			var isOpen = false;
+			var isSubmitted = false;
 
+			runs(function() {
+				pm.tester.setUrl("http://localhost:5000/get");
+				pm.tester.setMethod("GET");	
+
+				var params = {
+					"newCollectionName": "Doom 3",
+					"requestName": "GET me some monsters",
+					"requestDescription": "I need some monsters!"
+				};
+
+				pm.tester.addDataToAddRequestToCollectionModal(params);	
+
+				pm.tester.openAddRequestToCollectionModal();
+
+				setTimeout(function() {
+					isOpen = true;
+				}, codeMirrorModalWaitTime);
+			});
+			
+			waitsFor(function() {
+				return isOpen === true;
+			}, "Could not open add collection modal", codeMirrorWaitTime);
+
+			runs(function() {				
+				pm.tester.submitAddRequestToCollectionModal();			
+
+				setTimeout(function() {
+					isSubmitted = true;
+				}, modalWaitTime);
+			});
+
+			waitsFor(function() {
+				return isSubmitted === true;
+			}, "Could not submit modal", codeMirrorWaitTime);
+
+			runs(function() {
+				expect(pm.tester.activeSidebarTab()).toBe("collections");
+				expect(pm.tester.collectionSidebarHasString("Doom 3")).toBe(true);
+				expect(pm.tester.collectionSidebarHasString("GET me some")).toBe(true);				
+				expect(pm.tester.requestMetaSectionVisibility()).toBe("block");
+				expect(pm.tester.requestMetaNameHas("GET me some monsters")).toBe(true);
+				expect(pm.tester.requestMetaDescriptionHas("I need some monsters")).toBe(true);
+				expect(pm.tester.saveButtonIsVisible()).toBe(true);
+				expect(pm.tester.collectionListIsOpen(1)).toBe(true);
+			});
+
+		});
 	});
 
 	describe("delete collection modal", function() {
