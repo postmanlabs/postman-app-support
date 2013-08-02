@@ -269,5 +269,32 @@ pm.tester = {
 
 	methodIs: function(method) {
 		return $("#request-method-selector").val() === method;
+	},
+
+	selectSidebarTab: function(tab) {
+		$("#sidebar-selectors-" + tab).click();
+	},
+
+	collectionSidebarHasString: function(string) {
+		var content = $("#collection-items").html();		
+		var found = content.search(string) >= 0;		
+		return found;		
+	},
+
+	openNewCollectionModal: function() {
+		$("#collections-options a:nth-child(1)").click();
+	},
+
+	setNewCollectionModalName: function(name) {
+		$("#new-collection-blank").val(name);
+	},
+
+	submitNewCollectionModal: function() {
+		$("#modal-new-collection .btn-primary").click();
+	},
+
+	cancelNewCollectionModal: function() {
+		$("#modal-new-collection .btn-secondary").click();
 	}
+
 };

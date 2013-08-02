@@ -1,5 +1,6 @@
-xdescribe("Collections", function() {
-	var waitTime = 100;
+describe("Collections", function() {
+	var modalWaitTime = 500;
+	var waitTime = modalWaitTime + 50;
 
 	beforeEach(function() {
 		waitsFor(function() {
@@ -13,7 +14,7 @@ xdescribe("Collections", function() {
 	});
 
 	afterEach(function() {
-		// pm.tester.resetRequest();
+		pm.tester.resetRequest();
 	});
 
 	it("has initialized Postman", function() {		
@@ -21,11 +22,64 @@ xdescribe("Collections", function() {
 	});  
 
 	it("switch to collections tab", function() {
-
+		pm.tester.selectSidebarTab("collections");
+		expect(pm.tester.collectionSidebarHasString("Collections let you group")).toBe(true);
 	});
 
 	describe("new collection", function() {
+		it("can add new collection", function() {
+			var isOpen = false;
+			var foundCollection = false;
+			runs(function() {
+				pm.tester.openNewCollectionModal();
+				setTimeout(function() {
+					isOpen = true;
+				}, modalWaitTime);
+			});
 
+			waitsFor(function() {
+				return isOpen === true;
+			}, "Could not open new collection modal", waitTime);
+
+			runs(function() {
+				pm.tester.setNewCollectionModalName("Test new collection");
+				pm.tester.submitNewCollectionModal();
+				setTimeout(function() {
+					foundCollection = pm.tester.collectionSidebarHasString("Test new collection");
+				}, modalWaitTime);
+			});
+
+			waitsFor(function() {
+				return foundCollection === true;
+			}, "Could not add new collection", waitTime);			
+		});
+
+		it("can cancel new collection modal", function() {
+			var isOpen = false;
+			var foundCollection;
+			runs(function() {
+				pm.tester.openNewCollectionModal();
+				setTimeout(function() {
+					isOpen = true;
+				}, modalWaitTime);
+			});
+
+			waitsFor(function() {
+				return isOpen === true;
+			}, "Could not open new collection modal", waitTime);
+
+			runs(function() {
+				pm.tester.setNewCollectionModalName("Not needed");
+				pm.tester.cancelNewCollectionModal();
+				setTimeout(function() {
+					foundCollection = pm.tester.collectionSidebarHasString("Not needed");
+				}, modalWaitTime);
+			});
+
+			waitsFor(function() {
+				return foundCollection === false;
+			}, "Could not add new collection", waitTime);
+		});
 	});
 
 	describe("add request to collection", function() {
