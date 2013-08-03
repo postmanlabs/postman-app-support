@@ -82,6 +82,39 @@ describe("Collections", function() {
 				return foundCollection === false;
 			}, "Could not add new collection", waitTime);
 		});
+
+		it("can delete a collection", function() {
+			var isOpen = false;
+			var isSubmitted = false;
+
+			runs(function() {
+				// Open delete collection modal for first index
+				pm.tester.openDeleteCollectionModalForIndex(1);
+				setTimeout(function() {
+					isOpen = true;
+				}, modalWaitTime);
+			});
+
+			waitsFor(function() {
+				return isOpen === true;
+			}, "could not open modal", modalWaitTime);
+
+			runs(function() {
+				pm.tester.submitDeleteCollectionModal();
+				setTimeout(function() {
+					isSubmitted = true;
+				}, modalWaitTime);
+			});
+
+			waitsFor(function() {
+				return isSubmitted === true;
+			}, "could not submit", modalWaitTime);
+
+			runs(function() {
+				//Check if the collection is gone
+				expect(pm.tester.collectionSidebarHasString("Test new collection")).toBe(false);
+			});
+		});
 	});
 
 	describe("add request to collection", function() {
@@ -139,38 +172,7 @@ describe("Collections", function() {
 
 	// Deleting collection created above
 	describe("delete collection modal", function() {
-		it("can delete a collection", function() {
-			var isOpen = false;
-			var isSubmitted = false;
-
-			runs(function() {
-				// Open delete collection modal for first index
-				pm.tester.openDeleteCollectionModalForIndex(1);
-				setTimeout(function() {
-					isOpen = true;
-				}, modalWaitTime);
-			});
-
-			waitsFor(function() {
-				return isOpen === true;
-			}, "could not open modal", modalWaitTime);
-
-			runs(function() {
-				pm.tester.submitDeleteCollectionModal();
-				setTimeout(function() {
-					isSubmitted = true;
-				}, modalWaitTime);
-			});
-
-			waitsFor(function() {
-				return isSubmitted === true;
-			}, "could not submit", modalWaitTime);
-
-			runs(function() {
-				//Check if the collection is gone
-				expect(pm.tester.collectionSidebarHasString("Doom 3")).toBe(false);
-			});
-		});
+		
 	});	
 
 	describe("edit collection", function() {
@@ -379,17 +381,46 @@ describe("Collections", function() {
 		});
 
 		it("can delete a collection request", function() {
+			var isOpen = false;
+			var isSubmitted = false;
 
+			runs(function() {
+				// Open delete collection modal for first index
+				pm.tester.openDeleteCollectionRequestModalForIndex(1, 2);
+				setTimeout(function() {
+					isOpen = true;
+				}, modalWaitTime);
+			});
+
+			waitsFor(function() {
+				return isOpen === true;
+			}, "could not open modal", modalWaitTime);
+
+			runs(function() {
+				pm.tester.submitDeleteCollectionRequestModal();
+				setTimeout(function() {
+					isSubmitted = true;
+				}, modalWaitTime);
+			});
+
+			waitsFor(function() {
+				return isSubmitted === true;
+			}, "could not submit", modalWaitTime);
+
+			runs(function() {
+				//Check if the collection is gone
+				expect(pm.tester.collectionSidebarHasString("DELETE all of this")).toBe(false);
+			});
 		});
 	});
 
-	describe("load collection request in editor", function() {
+	xdescribe("load collection request in editor", function() {
 		it("can load a GET request in editor", function() {
 
 		});
 	});
 
-	describe("import collection", function() {
+	xdescribe("import collection", function() {
 		it("can overwrite collections", function() {
 
 		});
@@ -403,11 +434,11 @@ describe("Collections", function() {
 		});
 	});
 
-	describe("share a collection", function() {
+	xdescribe("share a collection", function() {
 		//TODO Use a spy here and ensure that the collection function was called
 	});
 
-	describe("search within collections", function() {
+	xdescribe("search within collections", function() {
 
 	});
 });

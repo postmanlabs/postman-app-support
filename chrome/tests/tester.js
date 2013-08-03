@@ -405,4 +405,12 @@ pm.tester = {
 		$("#modal-edit-collection-request .btn-primary").click();
 	},
 
+	openDeleteCollectionRequestModalForIndex: function(collectionIndex, requestIndex) {
+		var itemId = $($($("#collection-items .sidebar-collection-requests")[collectionIndex - 1]).children()[requestIndex - 1]).attr("id")
+		$("#" + itemId + " .request-actions-delete").click();
+	},
+
+	submitDeleteCollectionRequestModal: function() {
+		$("#modal-delete-collection-request .btn-danger").click();
+	}
 };
