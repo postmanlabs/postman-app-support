@@ -1,5 +1,5 @@
-xdescribe("History ", function() {
-	var waitTime = 100;
+describe("History ", function() {
+	var waitTime = 200;
 
 	beforeEach(function() {
 		waitsFor(function() {

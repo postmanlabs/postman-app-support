@@ -308,6 +308,8 @@ var PmCollections = Backbone.Collection.extend({
     },
 
     importCollectionData:function (collection) {
+        console.log(JSON.stringify(collection));
+
         var originalCollection = this.findWhere({name: collection.name});
 
         if (originalCollection) {
@@ -576,6 +578,11 @@ var PmCollections = Backbone.Collection.extend({
         this.remove(id);
 
         pm.indexedDB.deleteCollection(id, function () {
+            if (callback) {
+                callback();    
+            }
+            
+
             //TODO: Drive syncing will be done later
             if(toSyncWithDrive) {
                 pm.collections.drive.queueDelete(id);

@@ -170,11 +170,6 @@ describe("Collections", function() {
 		});
 	});
 
-	// Deleting collection created above
-	describe("delete collection modal", function() {
-		
-	});	
-
 	describe("edit collection", function() {
 		it("can add and edit a collection", function() {
 			var isOpen = false;
@@ -414,13 +409,106 @@ describe("Collections", function() {
 		});
 	});
 
-	xdescribe("load collection request in editor", function() {
-		it("can load a GET request in editor", function() {
+	describe("load collection request in editor", function() {
+		beforeEach(function() {
+			
+		});
 
+		afterEach(function() {
+			// var isDataRemoved = false;
+
+			// runs(function() {
+			// 	var collection = mockCollection;
+			// 	pm.collections.deleteCollection(collection.id, false, function() {
+			// 		isDataRemoved = true;
+			// 	});
+			// });
+
+			// waitsFor(function() {
+			// 	return isDataRemoved === true;
+			// }, "Could not remove collection", waitTime);
+		});
+
+		it("can load a POST formdata request in editor", function() {
+			var isDataAdded = false;
+			var collectionItemLoaded = false;
+
+			runs(function() {
+				var collection = mockCollection;				
+				pm.collections.addCollectionDataToDB(collection, false);
+				setTimeout(function() {
+					isDataAdded = true;
+				}, 100);
+			});
+			
+			waitsFor(function() {
+				return isDataAdded === true;
+			}, "Could not add data", waitTime);					
+
+			runs(function() {				
+				pm.tester.selectCollectionRequest(3, 1);		
+				setTimeout(function() {
+					collectionItemLoaded = true;
+				}, 250);
+			});
+
+			waitsFor(function() {
+				return collectionItemLoaded === true;
+			}, "Collection item not loaded", waitTime);
+
+			runs(function() {
+				expect(pm.tester.urlHasString("http://localhost:5000/post")).toBe(true);
+				expect(pm.tester.methodIs("POST"));
+				expect(pm.tester.bodyTypeIs("params")).toBe(true);
+			});
+		});
+
+		it("can load a POST urlencoded request in editor", function() {
+			var collectionItemLoaded = false;
+
+			runs(function() {				
+				pm.tester.selectCollectionRequest(3, 2);		
+
+				setTimeout(function() {
+					collectionItemLoaded = true;
+				}, 250);	
+			});
+
+			waitsFor(function() {
+				return collectionItemLoaded === true;
+			}, "URLEncoded collection item not loaded", waitTime);
+
+			runs(function() {
+				expect(pm.tester.urlHasString("http://localhost:5000/post")).toBe(true);
+				expect(pm.tester.methodIs("POST"));
+				expect(pm.tester.bodyTypeIs("urlencoded")).toBe(true);
+			});
+		});
+
+		it("can load a POST raw request in editor", function() {
+			var collectionItemLoaded = false;
+
+			runs(function() {				
+				pm.tester.selectCollectionRequest(3, 3);		
+
+				setTimeout(function() {
+					collectionItemLoaded = true;
+				}, 250);	
+			});
+
+			waitsFor(function() {
+				return collectionItemLoaded === true;
+			}, "Raw collection item not loaded", waitTime);
+
+			runs(function() {
+				expect(pm.tester.urlHasString("http://localhost:5000/post")).toBe(true);
+				expect(pm.tester.methodIs("POST"));
+				expect(pm.tester.bodyTypeIs("raw")).toBe(true);
+			});
 		});
 	});
 
-	xdescribe("import collection", function() {
+	describe("import collection", function() {
 		it("can overwrite collections", function() {
 
 		});
@@ -434,11 +522,11 @@ describe("Collections", function() {
 		});
 	});
 
-	xdescribe("share a collection", function() {
+	describe("share a collection", function() {
 		//TODO Use a spy here and ensure that the collection function was called
 	});
 
-	xdescribe("search within collections", function() {
+	describe("search within collections", function() {
 
 	});
 });

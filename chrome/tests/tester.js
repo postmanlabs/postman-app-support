@@ -387,7 +387,7 @@ pm.tester = {
 	},
 
 	openEditCollectionRequestModal: function(collectionIndex, requestIndex) {
-		var itemId = $($($("#collection-items .sidebar-collection-requests")[collectionIndex - 1]).children()[requestIndex - 1]).attr("id")
+		var itemId = $($($("#collection-items .sidebar-collection-requests")[collectionIndex - 1]).children()[requestIndex - 1]).attr("id");
 		$("#" + itemId + " .request-actions-edit").click();
 	},
 
@@ -406,11 +406,16 @@ pm.tester = {
 	},
 
 	openDeleteCollectionRequestModalForIndex: function(collectionIndex, requestIndex) {
-		var itemId = $($($("#collection-items .sidebar-collection-requests")[collectionIndex - 1]).children()[requestIndex - 1]).attr("id")
+		var itemId = $($($("#collection-items .sidebar-collection-requests")[collectionIndex - 1]).children()[requestIndex - 1]).attr("id");
 		$("#" + itemId + " .request-actions-delete").click();
 	},
 
 	submitDeleteCollectionRequestModal: function() {
 		$("#modal-delete-collection-request .btn-danger").click();
-	}
+	},
+
+	selectCollectionRequest: function(collectionIndex, requestIndex) {
+		var itemId = $($($("#collection-items .sidebar-collection-requests")[collectionIndex - 1]).children()[requestIndex - 1]).attr("id");
+		$("#" + itemId + " .request-actions-load").click();
+	},
 };
