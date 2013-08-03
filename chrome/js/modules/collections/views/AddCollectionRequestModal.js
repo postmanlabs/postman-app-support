@@ -63,6 +63,9 @@ var AddCollectionRequestModal = Backbone.View.extend({
             extraKeys: {"Enter": "newlineAndIndentContinueMarkdownList"}
         });
 
+        //TODO Fix this
+        pm.addRequestToCollectionEditor = this.editor;
+
         this.editor.refresh();
     },
 

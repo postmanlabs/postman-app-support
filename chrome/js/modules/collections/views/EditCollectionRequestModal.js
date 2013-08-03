@@ -46,6 +46,9 @@ var EditCollectionRequestModal = Backbone.View.extend({
             extraKeys: {"Enter": "newlineAndIndentContinueMarkdownList"}
         });
 
+        //TODO Will be changed to something else later
+        pm.editCollectionRequestEditor = this.editor;
+
         this.editor.refresh();
     },
 

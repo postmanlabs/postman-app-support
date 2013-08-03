@@ -302,8 +302,18 @@ pm.tester = {
 	},
 
 	addDataToAddRequestToCollectionModal: function(params) {
-		if (params.existingCollectionId) {
-			$("#select-collection").val(params.existingCollectionId);
+		if (params.existingCollectionName) {
+			var options = $("#select-collection option");
+			var id;
+			for(var i = 0; i < options.length; i++) {
+				var name = $(options[i]).html();
+				if(name === params.existingCollectionName) {
+					id = $(options[i]).attr("value");
+					break;
+				}
+			}
+
+			$("#select-collection").val(id);
 		}
 
 		if (params.newCollectionName) {
@@ -315,7 +325,12 @@ pm.tester = {
 		}
 
 		if (params.requestDescription) {
-			$("#new-request-description").val(params.requestDescription);
+			if(pm.addRequestToCollectionEditor) {
+				pm.addRequestToCollectionEditor.setValue(params.requestDescription);
+			}
+			else {
+				$("#new-request-description").val(params.requestDescription);
+			}			
 		}
 	},
 
@@ -349,6 +364,45 @@ pm.tester = {
 
 	collectionListIsOpen: function(index) {
 		return $($("#collection-items .sidebar-collection-requests")[index - 1]).css("display") === "block";
-	}
+	},
+
+	openDeleteCollectionModalForIndex: function(index) {
+		$($("#collection-items .collection-actions-delete")[index - 1]).click();
+	},
+
+	submitDeleteCollectionModal: function() {
+		$("#modal-delete-collection .btn-danger").click();
+	},
+
+	openEditCollectionModal: function(index) {
+		$($("#collection-items .collection-actions-edit")[index - 1]).click();
+	},
+
+	setEditCollectionModalName: function(name) {
+		$("#modal-edit-collection .collection-name").val(name);
+	},
+
+	submitEditCollectionModal: function() {
+		$("#modal-edit-collection .btn-primary").click();
+	},
+
+	openEditCollectionRequestModal: function(collectionIndex, requestIndex) {
+		var itemId = $($($("#collection-items .sidebar-collection-requests")[collectionIndex - 1]).children()[requestIndex - 1]).attr("id")
+		$("#" + itemId + " .request-actions-edit").click();
+	},
+
+	addDataToEditRequestCollectionModal: function(params) {
+		if(params.requestName) {
+			$("#modal-edit-collection-request .collection-request-name").val(params.requestName);
+		}
+
+		if(params.requestDescription) {
+			pm.editCollectionRequestEditor.setValue(params.requestDescription);
+		}
+	},
+
+	submitEditCollectionRequestModal: function() {
+		$("#modal-edit-collection-request .btn-primary").click();
+	},
 
 };
