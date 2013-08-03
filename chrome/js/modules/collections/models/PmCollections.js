@@ -308,8 +308,6 @@ var PmCollections = Backbone.Collection.extend({
     },
 
     importCollectionData:function (collection) {
-        console.log(JSON.stringify(collection));
-
         var originalCollection = this.findWhere({name: collection.name});
 
         if (originalCollection) {
