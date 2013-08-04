@@ -530,9 +530,24 @@ var PmCollections = Backbone.Collection.extend({
         });
     },
 
+    updateCollection: function(collection) {
+        var pmCollection = this;
+
+        pm.indexedDB.updateCollection(collection, function (collection) {
+            pmCollection.add(collection, {merge: true});
+            var collectionModel = pmCollection.get(collection.id);
+            pmCollection.trigger("updateCollection", collectionModel, pmCollection);
+            //TODO: Drive syncing will be done later
+            // pm.collections.drive.queueUpdateFromId(collection.id);
+        });
+    },
+
     updateCollectionOrder: function(id, order) {
+        var pmCollection = this;
+        
         pm.indexedDB.getCollection(id, function (collection) {
             collection["order"] = order;
+            pmCollection.add(collection, {merge: true});
             pm.indexedDB.updateCollection(collection, function (collection) {
                 //TODO: Drive syncing will be done later
                 pm.collections.drive.queueUpdateFromId(collection.id);
@@ -587,6 +602,30 @@ var PmCollections = Backbone.Collection.extend({
             }
         });
     },
+
+    addSubCollection: function(parentId, subCollectionName) {
+        var collection = this.get(parentId);
+
+        var newSubCollection = {
+            "id": guid(),
+            "name": subCollectionName,
+            "description": "",
+            "order": []
+        };
+
+        var subCollections;
+
+        if(collection.get("sub_collections")) {
+            subCollections = collection.get("sub_collections");
+        }
+        else {
+            subCollections = [];
+        }
+
+        subCollections.push(newSubCollection);
+        collection.set("sub_collections", subCollections);
+        this.updateCollection(collection.toJSON());
+    },  
 
     //TODO Fix this later
     saveResponseAsSample:function (response) {

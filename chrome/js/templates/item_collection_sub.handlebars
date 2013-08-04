@@ -1,0 +1,29 @@
+    <li id="sub-collection-{{id}}" class="sub-collection clearfix">
+        <div class="sub-collection-head">
+            <div class="sub-collection-head-actions">
+                <a
+                   data-placement="bottom"
+                   rel="tooltip" data-original-title="Edit"
+                   ref="#modal-edit-sub-collection" data-toggle="modal"
+                   class="sub-collection-actions-edit" data-id="{{id}}" data-name="{{name}}">
+                    <img src="img/edit.png" style="vertical-align: middle;"/></a>            
+                <a rel="tooltip" data-original-title="Delete collection"
+                   data-name="{{name}}"
+                   data-placement="bottom"
+                   href="#modal-delete-sub-collection" data-toggle="modal"
+                   class="sub-collection-actions-delete" data-id="{{id}}">
+                    <img src="img/delete.png" style="vertical-align: middle;"/></a>
+            </div>
+            <div class="sub-collection-head-name" data-id="{{id}}">
+                <span class="sub-collection-head-dt">
+                    <img src="img/dt.png"/>
+                </span>
+                {{name}}
+            </div>
+        </div>
+        <ul id="sub-collection-requests-{{id}}" class="sub-collection-requests">
+            {{#each requests}}
+                {{> item_collection_sidebar_request}}
+            {{/each}}
+        </ul>
+    </li>

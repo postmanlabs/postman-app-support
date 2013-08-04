@@ -36,7 +36,6 @@ var EditCollectionModal = Backbone.View.extend({
     },
 
     render: function(c) {
-        console.log(event, c);
         var collection = c.toJSON();
 
         $('#form-edit-collection .collection-id').val(collection.id);

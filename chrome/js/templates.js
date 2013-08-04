@@ -45,9 +45,19 @@ function program1(depth0,data) {
 this["Handlebars"]["templates"]["collection_sidebar"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); partials = this.merge(partials, Handlebars.partials); data = data || {};
-  var stack1, self=this;
+  var buffer = "", stack1, self=this;
 
 function program1(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n    ";
+  stack1 = self.invokePartial(partials.item_collection_sub, 'item_collection_sub', depth0, helpers, partials, data);
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n";
+  return buffer;
+  }
+
+function program3(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n    ";
@@ -57,9 +67,12 @@ function program1(depth0,data) {
   return buffer;
   }
 
-  stack1 = helpers.each.call(depth0, depth0.items, {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
-  if(stack1 || stack1 === 0) { return stack1; }
-  else { return ''; }
+  stack1 = helpers.each.call(depth0, depth0.sub_collections, {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n";
+  stack1 = helpers.each.call(depth0, depth0.items, {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  return buffer;
   });
 
 this["Handlebars"]["templates"]["environment_list"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
@@ -237,7 +250,15 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   if (stack1 = helpers.id) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.id; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "\" class=\"sidebar-collection\">\n    <div class=\"sidebar-collection-head\">\n        <div class=\"collection-head-actions\">\n            <a\n               data-placement=\"bottom\"\n               rel=\"tooltip\" data-original-title=\"Edit collection\"\n               ref=\"#modal-edit-collection\" data-toggle=\"modal\"\n               class=\"collection-actions-edit\" data-id=\"";
+    + "\" class=\"sidebar-collection\">\n    <div class=\"sidebar-collection-head\">\n        <div class=\"collection-head-actions\">\n            <a\n               data-placement=\"bottom\"\n               rel=\"tooltip\" data-original-title=\"Add sub-collection\"\n               ref=\"#modal-add-sub-collection\" data-toggle=\"modal\"\n               class=\"collection-actions-add-sub\" data-id=\"";
+  if (stack1 = helpers.id) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.id; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "\" data-name=\"";
+  if (stack1 = helpers.name) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.name; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "\">\n                <img src=\"img/folder_plus.png\" style=\"vertical-align: middle;\"/></a>\n            <a\n               data-placement=\"bottom\"\n               rel=\"tooltip\" data-original-title=\"Edit collection\"\n               ref=\"#modal-edit-collection\" data-toggle=\"modal\"\n               class=\"collection-actions-edit\" data-id=\"";
   if (stack1 = helpers.id) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.id; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
@@ -308,6 +329,60 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   else { stack1 = depth0.name; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n                </span>\n            </a>\n        </div>\n    </li>";
+  return buffer;
+  });
+
+this["Handlebars"]["templates"]["item_collection_sub"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); partials = this.merge(partials, Handlebars.partials); data = data || {};
+  var buffer = "", stack1, self=this, functionType="function", escapeExpression=this.escapeExpression;
+
+function program1(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n                ";
+  stack1 = self.invokePartial(partials.item_collection_sidebar_request, 'item_collection_sidebar_request', depth0, helpers, partials, data);
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n            ";
+  return buffer;
+  }
+
+  buffer += "    <li id=\"sub-collection-";
+  if (stack1 = helpers.id) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.id; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "\" class=\"sub-collection clearfix\">\n        <div class=\"sub-collection-head\">\n            <div class=\"sub-collection-head-actions\">\n                <a\n                   data-placement=\"bottom\"\n                   rel=\"tooltip\" data-original-title=\"Edit\"\n                   ref=\"#modal-edit-sub-collection\" data-toggle=\"modal\"\n                   class=\"sub-collection-actions-edit\" data-id=\"";
+  if (stack1 = helpers.id) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.id; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "\" data-name=\"";
+  if (stack1 = helpers.name) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.name; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "\">\n                    <img src=\"img/edit.png\" style=\"vertical-align: middle;\"/></a>            \n                <a rel=\"tooltip\" data-original-title=\"Delete collection\"\n                   data-name=\"";
+  if (stack1 = helpers.name) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.name; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "\"\n                   data-placement=\"bottom\"\n                   href=\"#modal-delete-sub-collection\" data-toggle=\"modal\"\n                   class=\"sub-collection-actions-delete\" data-id=\"";
+  if (stack1 = helpers.id) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.id; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "\">\n                    <img src=\"img/delete.png\" style=\"vertical-align: middle;\"/></a>\n            </div>\n            <div class=\"sub-collection-head-name\" data-id=\"";
+  if (stack1 = helpers.id) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.id; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "\">\n                <span class=\"sub-collection-head-dt\">\n                    <img src=\"img/dt.png\"/>\n                </span>\n                ";
+  if (stack1 = helpers.name) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.name; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "\n            </div>\n        </div>\n        <ul id=\"sub-collection-requests-";
+  if (stack1 = helpers.id) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.id; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "\" class=\"sub-collection-requests\">\n            ";
+  stack1 = helpers.each.call(depth0, depth0.requests, {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n        </ul>\n    </li>";
   return buffer;
   });
 
