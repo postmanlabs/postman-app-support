@@ -729,6 +729,29 @@
         <a data-dismiss="modal" class="btn btn-secondary">Cancel</a>
     </div>
 </div>
+<div id="modal-add-folder" class="modal fade">
+    <div class="modal-header">
+        <a class="close" data-dismiss="modal">×</a>
+
+        <h3 id="add-folder-header">Add a folder</h3>
+    </div>
+    <div class="modal-body">
+        <form class="form form-horizontal" id="form-add-folder">
+            <div class="control-group" id="add-folder-container">
+                <label class="control-label">Collection name</label>
+
+                <div class="controls">
+                    <input type="text" class="medium clean-input" name="add-folder-name" id="add-folder-name"/>
+                    <input type="hidden" id="add-folder-parent-id"/>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <a class="btn btn-primary">Create</a>
+        <a data-dismiss="modal" class="btn btn-secondary">Cancel</a>
+    </div>
+</div>
 <div id="modal-add-to-collection" class="modal fade" data-keyboard="true">
     <div class="modal-header">
         <a class="close" data-dismiss="modal">×</a>

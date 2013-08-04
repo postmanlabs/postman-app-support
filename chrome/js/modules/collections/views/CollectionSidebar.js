@@ -32,13 +32,13 @@ var CollectionSidebar = Backbone.View.extend({
             actionsEl.css('display', 'none');
         });
 
-        $collection_items.on("mouseenter", ".sub-collection .sub-collection-head", function () {
-            var actionsEl = jQuery('.sub-collection-head-actions', this);
+        $collection_items.on("mouseenter", ".folder .folder-head", function () {
+            var actionsEl = jQuery('.folder-head-actions', this);
             actionsEl.css('display', 'block');
         });
 
-        $collection_items.on("mouseleave", ".sub-collection .sub-collection-head", function () {
-            var actionsEl = jQuery('.sub-collection-head-actions', this);
+        $collection_items.on("mouseleave", ".folder .folder-head", function () {
+            var actionsEl = jQuery('.folder-head-actions', this);
             actionsEl.css('display', 'none');
         });
 
@@ -47,7 +47,7 @@ var CollectionSidebar = Backbone.View.extend({
             view.toggleRequestList(id);
         });
 
-        $collection_items.on("click", ".sub-collection-head-name", function () {            
+        $collection_items.on("click", ".folder-head-name", function () {            
             var id = $(this).attr('data-id');
             view.toggleSubRequestList(id);
         });
@@ -57,11 +57,10 @@ var CollectionSidebar = Backbone.View.extend({
             view.toggleRequestList(id);
         });
 
-        $collection_items.on("click", ".collection-actions-add-sub", function () {            
+        $collection_items.on("click", ".collection-actions-add-folder", function () {            
             var id = $(this).attr('data-id');
             var c = model.get(id);
-            model.trigger("showAddSubModal", c);
-            console.log("Open the add-sub collection modal", c);
+            model.trigger("showAddFolderModal", c);
         });
 
         $collection_items.on("click", ".collection-actions-edit", function () {
@@ -169,7 +168,7 @@ var CollectionSidebar = Backbone.View.extend({
         var model = this.model;
         var view = this;
         var collections = this.model.toJSON();
-        var subCollections = [];
+        var folders = [];
 
         collectionSidebarListPosition = arrayObjectIndexOf(collections, collection.id, "id");
 
@@ -233,17 +232,17 @@ var CollectionSidebar = Backbone.View.extend({
             drop: _.bind(this.handleRequestDropOnCollection, this)
         });
 
-        // console.log($('#collection-' + collection.id + " .sub-collection-head"));        
+        // console.log($('#collection-' + collection.id + " .folder-head"));        
 
-        if("sub_collections" in collection) {
-            subCollections = collection["sub_collections"];
-            var subCollectionContainer = "#sub-collections-" + collection.id;
-            $(subCollectionContainer).append(Handlebars.templates.collection_sidebar_sub_collections({"sub_collections": subCollections}));
+        if("folders" in collection) {
+            folders = collection["folders"];
+            var folderContainer = "#folders-" + collection.id;
+            $(folderContainer).append(Handlebars.templates.collection_sidebar_folders({"folders": folders}));
 
-            $('#collection-' + collection.id + " .sub-collection-head").droppable({
+            $('#collection-' + collection.id + " .folder-head").droppable({
                 accept: ".sidebar-collection-request",
                 hoverClass: "ui-state-hover",
-                drop: _.bind(this.handleRequestDropOnSubCollection, this)
+                drop: _.bind(this.handleRequestDropOnFolder, this)
             });
         }
 
@@ -292,7 +291,7 @@ var CollectionSidebar = Backbone.View.extend({
                 }
 
                 //Add requests to the DOM
-                $(targetElement).append(Handlebars.templates.collection_sidebar_requests({"items":requests, "sub_collections": subCollections}));
+                $(targetElement).append(Handlebars.templates.collection_sidebar_requests({"items":requests, "folders": folders}));
 
 
                 // TODO Move this to a different function
@@ -397,7 +396,7 @@ var CollectionSidebar = Backbone.View.extend({
     },
 
     openCollection:function (id) {
-        var target = "#collection-requests-" + id;
+        var target = "#collection-children-" + id;
         $("#collection-" + id + " .sidebar-collection-head-dt").removeClass("disclosure-triangle-close");
         $("#collection-" + id + " .sidebar-collection-head-dt").addClass("disclosure-triangle-open");
 
@@ -425,18 +424,18 @@ var CollectionSidebar = Backbone.View.extend({
     },
 
     toggleSubRequestList: function(id) {
-        var target = "#sub-collection-requests-" + id;        
+        var target = "#folder-requests-" + id;        
 
         if ($(target).css("display") === "none") {
-            $("#sub-collection-" + id + " .sub-collection-head-dt").removeClass("disclosure-triangle-close");
-            $("#sub-collection-" + id + " .sub-collection-head-dt").addClass("disclosure-triangle-open");
+            $("#folder-" + id + " .folder-head-dt").removeClass("disclosure-triangle-close");
+            $("#folder-" + id + " .folder-head-dt").addClass("disclosure-triangle-open");
 
             $(target).slideDown(100, function () {
             });
         }
         else {
-            $("#sub-collection-" + id + " .sub-collection-head-dt").removeClass("disclosure-triangle-open");
-            $("#sub-collection-" + id + " .sub-collection-head-dt").addClass("disclosure-triangle-close");
+            $("#folder-" + id + " .folder-head-dt").removeClass("disclosure-triangle-open");
+            $("#folder-" + id + " .folder-head-dt").addClass("disclosure-triangle-close");
             $(target).slideUp(100, function () {
             });
         }
@@ -449,12 +448,12 @@ var CollectionSidebar = Backbone.View.extend({
         this.model.moveRequestToCollection(requestId, targetCollectionId);
     },
 
-    handleRequestDropOnSubCollection: function(event, ui) {
+    handleRequestDropOnFolder: function(event, ui) {
         var id = ui.draggable.context.id;
         var requestId = $('#' + id + ' .request').attr("data-id");
-        var targetSubCollectionId = $($(event.target).find('.sub-collection-head-name')[0]).attr('data-id');
-        console.log(requestId, targetSubCollectionId);
-        this.model.moveRequestToSubCollection(requestId, targetSubCollectionId);
+        var targetFolderId = $($(event.target).find('.folder-head-name')[0]).attr('data-id');
+        console.log(requestId, targetFolderId);
+        this.model.moveRequestToFolder(requestId, targetFolderId);
     },
 
     onFilter: function(filteredCollectionItems) {

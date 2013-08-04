@@ -73,17 +73,17 @@ var PmCollections = Backbone.Collection.extend({
         return null;
     },
 
-    getCollectionForSubCollectionId: function(id) {
-        function existingSubCollectionFinder(r) {
+    getFolderById: function(id) {
+        function existingFolderFinder(r) {
             return r.id === id;
         }
 
         for(var i = 0; i < this.length; i++) {
             var collection = this.models[i];
-            var subCollections = collection.get("sub_collections");
-            var subCollection = _.find(subCollections, existingSubCollectionFinder);
-            if (subCollection) {
-                return collection;
+            var folders = collection.get("folders");
+            var folder = _.find(folders, existingFolderFinder);
+            if (folder) {
+                return folder;
             }
         }
 
@@ -530,13 +530,14 @@ var PmCollections = Backbone.Collection.extend({
                 pm.indexedDB.getCollection(request.collectionId, function (collection) {
                     //If the collection still exists
                     if (collection) {
+                        // TODO Check if request exists in "order" or one of the "folders"
+                        // TODO Change the collection Backbone model
                         if ("order" in collection) {
                             var order = collection["order"];
                             var index = order.indexOf(id);
                             order.splice(index, 1);
                             collection["order"] = order;
                             pm.indexedDB.updateCollection(collection, function (collection) {
-
                                 // TODO: Drive syncing will be done later
                                 // pm.collections.drive.queueUpdateFromId(collection.id);
                             });
@@ -620,27 +621,27 @@ var PmCollections = Backbone.Collection.extend({
         });
     },
 
-    addSubCollection: function(parentId, subCollectionName) {
+    addFolder: function(parentId, folderName) {
         var collection = this.get(parentId);
 
-        var newSubCollection = {
+        var newFolder = {
             "id": guid(),
-            "name": subCollectionName,
+            "name": folderName,
             "description": "",
             "order": []
         };
 
-        var subCollections;
+        var folders;
 
-        if(collection.get("sub_collections")) {
-            subCollections = collection.get("sub_collections");
+        if(collection.get("folders")) {
+            folders = collection.get("folders");
         }
         else {
-            subCollections = [];
+            folders = [];
         }
 
-        subCollections.push(newSubCollection);
-        collection.set("sub_collections", subCollections);
+        folders.push(newFolder);
+        collection.set("folders", folders);
         this.updateCollection(collection.toJSON());
     },  
 
@@ -767,9 +768,12 @@ var PmCollections = Backbone.Collection.extend({
         });
     },
 
-    moveRequestToSubCollection: function(requestId, targetSubCollectionId) {
+    moveRequestToFolder: function(requestId, targetFolderId) {
         var pmCollection = this;
-        console.log("Called dropRequestOnSubCollection", requestId, targetSubCollectionId, this.getCollectionForSubCollectionId(targetSubCollectionId));
+        var request = this.getRequestById(requestId);
+        var folder = this.getFolderById(targetFolderId);        
+
+        console.log("Called dropRequestOnFolder", requestId, targetFolderId, this.getCollectionForFolderId(targetFolderId));
     },
 
     drive: {

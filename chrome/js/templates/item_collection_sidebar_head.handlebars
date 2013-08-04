@@ -3,9 +3,9 @@
         <div class="collection-head-actions">
             <a
                data-placement="bottom"
-               rel="tooltip" data-original-title="Add sub-collection"
-               ref="#modal-add-sub-collection" data-toggle="modal"
-               class="collection-actions-add-sub" data-id="{{id}}" data-name="{{name}}">
+               rel="tooltip" data-original-title="Add folder"
+               ref="#modal-add-folder" data-toggle="modal"
+               class="collection-actions-add-folder" data-id="{{id}}" data-name="{{name}}">
                 <img src="img/folder_plus.png" style="vertical-align: middle;"/></a>
             <a
                data-placement="bottom"
@@ -33,7 +33,7 @@
         </div>
     </div>
     <div id="collection-children-{{id}}" class="collection-children">
-      <ul id="sub-collections-{{id}}" class="sub-collections"></ul>
+      <ul id="folders-{{id}}" class="folders"></ul>
       <ul id="collection-requests-{{id}}" class="sidebar-collection-requests"></ul>
     </div>
 </li>

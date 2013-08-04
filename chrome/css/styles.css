@@ -438,15 +438,15 @@ li .right {
   background-color: #DEDEDE; }
 
 .sidebar-collection-head-name,
-.sub-collection-head-name {
+.folder-head-name {
   cursor: pointer;
   padding: 5px; }
 
-.sub-collection-head-name {
+.folder-head-name {
   margin-left: 25px; }
 
 .sidebar-collection-head-dt,
-.sub-collection-head-dt {
+.folder-head-dt {
   -webkit-transition: all 0.2s; }
 
 .disclosure-triangle-open {
@@ -460,11 +460,11 @@ li .right {
 .collection-children {
   display: none; }
 
-.sub-collection-requests {
+.folder-requests {
   display: none; }
 
 .collection-head-actions span,
-.sub-collection-head-actions span {
+.folder-head-actions span {
   display: block;
   float: left;
   width: 25px;
@@ -472,11 +472,11 @@ li .right {
   margin-right: 5px;
   cursor: pointer; }
 
-.sub-collection-head {
+.folder-head {
   font-weight: bold;
   padding-bottom: 5px; }
 
-.sub-collection-head:hover {
+.folder-head:hover {
   background-color: #DEDEDE; }
 
 .sidebar-collection-request a,
@@ -487,24 +487,24 @@ li .right {
   text-decoration: none; }
 
 .collection-head-actions,
-.sub-collection-head-actions {
+.folder-head-actions {
   position: absolute;
   margin-left: 238px;
   z-index: 10;
   display: none;
   padding-top: 4px; }
 
-.sub-collection-head-actions {
+.folder-head-actions {
   margin-left: 294px; }
 
 .collection-head-actions img,
-.sub-collection-head-actions img {
+.folder-head-actions img {
   opacity: 0.5;
   width: 18px;
   height: 18px; }
 
 .collection-head-actions img:hover,
-.sub-collection-head-actions img:hover {
+.folder-head-actions img:hover {
   opacity: 1; }
 
 #history-items .request-actions {

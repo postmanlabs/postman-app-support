@@ -93,7 +93,7 @@ pm.init = function () {
         var pmCollections = new PmCollections();
         
         var addCollectionModal = new AddCollectionModal({model: pmCollections});
-        var addSubCollectionModal = new AddSubCollectionModal({model: pmCollections});
+        var addFolderModal = new AddFolderModal({model: pmCollections});
         var editCollectionModal = new EditCollectionModal({model: pmCollections});
         var deleteCollectionModal = new DeleteCollectionModal({model: pmCollections});
         var importCollectionModal = new ImportCollectionModal({model: pmCollections});

@@ -3,6 +3,7 @@ var PmCollection = Backbone.Model.extend({
         return {
             "id": "",
             "order": [],
+            "folders": [],
             "requests": [],
             "timestamp": 0
         };
@@ -50,5 +51,15 @@ var PmCollection = Backbone.Model.extend({
     	if (location !== -1) {
     		requests.splice(location, 1, newRequest);
     	}
+    },
+
+    getAsJSON: function() {
+        return {
+            "id": this.get("id"),
+            "order": this.get("order"),
+            "folders": this.get("folders"),
+            "timestamp": this.get("timestamp")
+        }
     }
+
 });
