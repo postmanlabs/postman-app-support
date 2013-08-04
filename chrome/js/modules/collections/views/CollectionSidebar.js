@@ -232,8 +232,16 @@ var CollectionSidebar = Backbone.View.extend({
             drop: _.bind(this.handleRequestDropOnCollection, this)
         });
 
+        $('#collection-' + collection.id + " .sub-collection-head").droppable({
+            accept: ".sidebar-collection-request",
+            hoverClass: "ui-state-hover",
+            drop: _.bind(this.handleRequestDropOnSubCollection, this)
+        });
+
         if("sub_collections" in collection) {
             subCollections = collection["sub_collections"];
+            var subCollectionContainer = "#sub-collections-" + collection.id;
+            $(subCollectionContainer).append(Handlebars.templates.collection_sidebar_sub_collections({"sub_collections": subCollections}));
         }
 
         if ("requests" in collection) {
@@ -281,7 +289,7 @@ var CollectionSidebar = Backbone.View.extend({
                 }
 
                 //Add requests to the DOM
-                $(targetElement).append(Handlebars.templates.collection_sidebar({"items":requests, "sub_collections": subCollections}));
+                $(targetElement).append(Handlebars.templates.collection_sidebar_requests({"items":requests, "sub_collections": subCollections}));
 
 
                 // TODO Move this to a different function
@@ -351,6 +359,7 @@ var CollectionSidebar = Backbone.View.extend({
         request.isFromCollection = true;
         request.collectionRequestId = request.id;
         
+        //TODO Is this needed?
         $('#collection-' + request.collectionId + " .sidebar-collection-head").droppable({
             accept: ".sidebar-collection-request",
             hoverClass: "ui-state-hover",
@@ -393,7 +402,7 @@ var CollectionSidebar = Backbone.View.extend({
     },
 
     toggleRequestList:function (id) {
-        var target = "#collection-requests-" + id;
+        var target = "#collection-children-" + id;
         if ($(target).css("display") === "none") {
             $("#collection-" + id + " .sidebar-collection-head-dt").removeClass("disclosure-triangle-close");
             $("#collection-" + id + " .sidebar-collection-head-dt").addClass("disclosure-triangle-open");
@@ -410,8 +419,7 @@ var CollectionSidebar = Backbone.View.extend({
     },
 
     toggleSubRequestList: function(id) {
-        var target = "#sub-collection-requests-" + id;
-        console.log(target, $(target));
+        var target = "#sub-collection-requests-" + id;        
 
         if ($(target).css("display") === "none") {
             $("#sub-collection-" + id + " .sub-collection-head-dt").removeClass("disclosure-triangle-close");
@@ -433,6 +441,14 @@ var CollectionSidebar = Backbone.View.extend({
         var requestId = $('#' + id + ' .request').attr("data-id");
         var targetCollectionId = $($(event.target).find('.sidebar-collection-head-name')[0]).attr('data-id');
         this.model.dropRequestOnCollection(requestId, targetCollectionId);
+    },
+
+    handleRequestDropOnSubCollection: function(event, ui) {
+        var id = ui.draggable.context.id;
+        var requestId = $('#' + id + ' .request').attr("data-id");
+        var targetSubCollectionId = $($(event.target).find('.sub-collection-head-name')[0]).attr('data-id');
+        console.log(requestId, targetSubCollectionId);
+        this.model.dropRequestOnSubCollection(requestId, targetSubCollectionId);
     },
 
     onFilter: function(filteredCollectionItems) {

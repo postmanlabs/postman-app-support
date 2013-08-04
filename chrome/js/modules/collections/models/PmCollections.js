@@ -73,6 +73,23 @@ var PmCollections = Backbone.Collection.extend({
         return null;
     },
 
+    getCollectionForSubCollectionId: function(id) {
+        function existingSubCollectionFinder(r) {
+            return r.id === id;
+        }
+
+        for(var i = 0; i < this.length; i++) {
+            var collection = this.models[i];
+            var requests = collection.get("sub_collections");
+            var subCollection = _.find(requests, existingSubCollectionFinder);
+            if (subCollections) {
+                return collection;
+            }
+        }
+
+        return null;
+    },
+
     getCollectionData:function (id, callback) {
         pm.indexedDB.getCollection(id, function (data) {
             var collection = data;
@@ -748,6 +765,11 @@ var PmCollections = Backbone.Collection.extend({
                 });
             });
         });
+    },
+
+    dropRequestOnSubCollection: function(requestId, targetSubCollectionId) {
+        var pmCollection = this;
+        console.log("Called dropRequestOnSubCollection", requestId, targetSubCollectionId, this.getCollectionForSubCollectionId(targetSubCollectionId));
     },
 
     drive: {

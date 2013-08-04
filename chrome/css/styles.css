@@ -457,10 +457,10 @@ li .right {
   display: inline-block;
   -webkit-transform: rotate(0deg); }
 
-.sub-collection-requests {
+.collection-children {
   display: none; }
 
-.sidebar-collection-requests {
+.sub-collection-requests {
   display: none; }
 
 .collection-head-actions span,
