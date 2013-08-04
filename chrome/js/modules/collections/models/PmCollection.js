@@ -11,36 +11,8 @@ var PmCollection = Backbone.Model.extend({
     },
 
     setRequests: function(requests) {
-        this.set("requests", requests);
-        this.orderRequests();
-    },
-
-    // Order requests or put them in folders when initialized
-    orderRequests: function() {
-        var order = this.get("order");
-        var requests = _.clone(this.get("requests"));
-
-        function requestFinder(request) {
-            return request.id === order[j]
-        }
-
-        if (order.length === 0) {
-            requests.sort(sortAlphabetical);
-        }
-        else {                                        
-            var orderedRequests = [];
-            for (var j = 0, len = order.length; j < len; j++) {
-                var element = _.find(requests, requestFinder);
-                if(typeof element !== "undefined") {
-                    orderedRequests.push(element);    
-                }                
-            }
-
-            requests = orderedRequests;            
-        }
-
-        this.set("requests", requests);
-    },
+        this.set("requests", requests);        
+    },    
 
     getRequestIndex: function(newRequest) {
     	var requests = this.get("requests");
@@ -136,8 +108,6 @@ var PmCollection = Backbone.Model.extend({
         var order = _.clone(this.get("order"));
         var folders = _.clone(this.get("folders"));
 
-        console.log(order, requestId);
-
         var indexInOrder = order.indexOf(requestId);
         if (indexInOrder >= 0) {
             order.splice(indexInOrder, 1);
@@ -157,7 +127,5 @@ var PmCollection = Backbone.Model.extend({
                 this.set("folders", folders);
             }
         }
-
     }
-
 });

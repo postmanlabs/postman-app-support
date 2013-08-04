@@ -163,17 +163,99 @@ var CollectionSidebar = Backbone.View.extend({
         }
     },
 
-    //TODO Split this into smaller functions
+    organizeRequestsInFolders: function(collection) {
+        if(!("folders" in collection)) {
+            return collection;
+        }
+
+        if(!("requests" in collection)) {
+            return collection;
+        }
+
+        var folders = collection["folders"];
+        var requests = collection["requests"];
+
+        var folderCount = folders.length;
+        var folder;
+        var folderOrder;
+        var id;
+        var existsInOrder;
+        var folderRequests;
+
+        for(var i = 0; i < folderCount; i++) {
+            folder = folders[i];
+            folderOrder = folder.order;
+            folderRequests = [];
+
+            for(var j = 0; j < folderOrder.length; j++) {
+                id = folderOrder[j];
+
+                var index = arrayObjectIndexOf(requests, id, "id");
+                console.log("Index is ", index);
+                if(index >= 0) {
+                    folderRequests.push(requests[index]);
+                    requests.splice(index, 1);
+                }
+            }
+
+            folder["requests"] = folderRequests;
+        }
+
+        console.log("Processed collection is ", collection);
+        return collection;
+    },
+
+    orderRequests: function(collection) {
+        var order = collection.order;
+        var requests = collection.requests;        
+
+        function requestFinder(request) {
+            return request.id === order[j];
+        }
+
+        if (order.length === 0) {
+            requests.sort(sortAlphabetical);
+        }
+        else {                                        
+            var orderedRequests = [];
+            for (var j = 0, len = order.length; j < len; j++) {
+                var element = _.find(requests, requestFinder);
+                if(element) {
+                    orderedRequests.push(element);    
+                }                
+            }
+
+            requests = orderedRequests;            
+        }
+
+        collection.requests = requests;
+
+        return collection;
+    },
+
     renderOneCollection:function (model, pmCollection) {
         var folders = [];
         var wasOpen = false;
         var collection = model.toJSON();
 
+        collection = this.organizeRequestsInFolders(collection);
+
         $('#sidebar-section-collections .empty-message').css("display", "none");
 
+        var currentEl = $("#collection-" + collection.id + " .sidebar-collection-head-dt");
+        if (currentEl.length) {
+            var currentClass = currentEl.attr("class");
+            wasOpen = currentClass.search("open") >= 0;    
+        }
+        
+
         this.renderCollectionContainerInSidebar(collection);
-        this.renderFolderInSidebar(collection);
-        this.renderRequestsInSidebar(collection);
+        this.renderFoldersInSidebar(collection);
+
+        var requests = collection.requests;
+        var targetElement = "#collection-requests-" + collection.id;
+
+        this.renderRequestsInSidebar(targetElement, requests);
         
         if (wasOpen) {
             this.openCollection(collection.id, false);
@@ -193,10 +275,7 @@ var CollectionSidebar = Backbone.View.extend({
 
         collectionSidebarListPosition = arrayObjectIndexOf(collections, collection.id, "id");
 
-        // TODO Detecting insertionType: Move to a different function or simplify
-        //Does this exist already?
-        if (currentEl.length) {
-            //Find current element list position
+        if (currentEl.length) {            
             if (collectionSidebarListPosition === 0) {
                 insertionType = "before";
                 insertTarget = $('#collection-' + collections[collectionSidebarListPosition + 1].id);                
@@ -206,14 +285,7 @@ var CollectionSidebar = Backbone.View.extend({
                 insertTarget = $('#collection-' + collections[collectionSidebarListPosition - 1].id);
             }
 
-            var currentClass = $("#collection-" + collection.id + " .sidebar-collection-head-dt").attr("class");
-            wasOpen = currentClass.search("open") >= 0;
-
-            //Found element
             currentEl.remove();
-
-            //TODO Will be added inside AddCollectionRequestModal
-            // $('#select-collection option[value="' + collection.id + '"]').remove();
         }
         else {
             //New element
@@ -257,12 +329,15 @@ var CollectionSidebar = Backbone.View.extend({
         });
     },
 
-    renderFolderInSidebar: function(collection) {
+    renderFoldersInSidebar: function(collection) {
         var folders;
+        var targetElement;
+        var folderContainer;
+        var i;
 
         if("folders" in collection) {
             folders = collection["folders"];
-            var folderContainer = "#folders-" + collection.id;
+            folderContainer = "#folders-" + collection.id;
             $(folderContainer).append(Handlebars.templates.collection_sidebar_folders({"folders": folders}));
 
             $('#collection-' + collection.id + " .folder-head").droppable({
@@ -270,34 +345,38 @@ var CollectionSidebar = Backbone.View.extend({
                 hoverClass: "ui-state-hover",
                 drop: _.bind(this.handleRequestDropOnFolder, this)
             });
+
+            for(i = 0; i < folders.length; i++) {
+                targetElement = "#folder-requests-" + folders[i].id;                             
+                this.renderRequestsInSidebar(targetElement, folders[i].requests);
+            }
         }
     },
 
-    renderRequestsInSidebar: function(collection) {
+    renderRequestsInSidebar: function(targetElement, requests) {
+        if (!requests) return;
+
         var view = this;
+                 
+        var count = requests.length;
+        var requestTargetElement;
 
-        if ("requests" in collection) {
-            var id = collection.id;
-            var requests = collection.requests;
-            var targetElement = "#collection-requests-" + id;
-            var count = requests.length;
-            var requestTargetElement;
-
-            if (count > 0) {                
-                for (var i = 0; i < count; i++) {                    
-                    if (typeof requests[i].name === "undefined") {
-                        requests[i].name = requests[i].url;
-                    }
-                    requests[i].name = limitStringLineWidth(requests[i].name, 40);
-                    requestTargetElement = "#sidebar-request-" + requests[i].id;
-                    $(requestTargetElement).draggable({});
+        if (count > 0) {                
+            for (var i = 0; i < count; i++) {                    
+                if (typeof requests[i].name === "undefined") {
+                    requests[i].name = requests[i].url;
                 }
-
-                $(targetElement).append(Handlebars.templates.collection_sidebar_requests({"items":requests}));
-                $(targetElement).sortable({
-                    update: _.bind(view.onUpdateSortableCollectionRequestList, view)
-                });
+                requests[i].name = limitStringLineWidth(requests[i].name, 40);
+                requestTargetElement = "#sidebar-request-" + requests[i].id;
+                $(requestTargetElement).draggable({});
             }
+
+            $(targetElement).html("");
+
+            $(targetElement).append(Handlebars.templates.collection_sidebar_requests({"items":requests}));
+            $(targetElement).sortable({
+                update: _.bind(view.onUpdateSortableCollectionRequestList, view)
+            });
         }
     },
 

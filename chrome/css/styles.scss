@@ -473,6 +473,7 @@ li {
 
     ul {
         margin-left: -10px;
+        margin-bottom: 5px;
     }
 }
 
@@ -518,6 +519,14 @@ li {
 
 .sidebar-collection-request-active {
     background-color: #DFEAF0;
+}
+
+.folder-requests .sidebar-collection-request {
+    padding-left: 25px;
+}
+
+.folder-requests .request-actions {
+    margin-left: 255px !important;
 }
 
 .sidebar-collection-head {

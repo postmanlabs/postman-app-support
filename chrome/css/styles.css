@@ -394,7 +394,8 @@ li .right {
   margin-bottom: 50px;
   margin-top: 45px; }
   #sidebar-section-data ul {
-    margin-left: -10px; }
+    margin-left: -10px;
+    margin-bottom: 5px; }
 
 #sidebar-sections .pills {
   margin-left: -4px; }
@@ -429,6 +430,12 @@ li .right {
 
 .sidebar-collection-request-active {
   background-color: #DFEAF0; }
+
+.folder-requests .sidebar-collection-request {
+  padding-left: 25px; }
+
+.folder-requests .request-actions {
+  margin-left: 255px !important; }
 
 .sidebar-collection-head {
   font-weight: bold;
