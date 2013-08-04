@@ -286,6 +286,11 @@ var PmCollections = Backbone.Collection.extend({
 
     addCollectionDataToDB:function(collection, toSyncWithDrive) {
         var pmCollection = this;
+        var folders;
+        var folder;
+        var order;
+        var j, count;
+        var idHashTable = {};
 
         var dbCollection = _.clone(collection);
         dbCollection["requests"] = [];
@@ -313,17 +318,17 @@ var PmCollections = Backbone.Collection.extend({
                 request.collectionId = collection.id;
 
                 var newId = guid();
-
+                idHashTable[request.id] = newId;
+                
                 if (ordered) {
                     var currentId = request.id;
                     var loc = _.indexOf(collection["order"], currentId);
                     dbCollection["order"][loc] = newId;
-                }
+                }                
 
                 request.id = newId;
 
-                if ("responses" in request) {
-                    var j, count;
+                if ("responses" in request) {                    
                     for (j = 0, count = request["responses"].length; j < count; j++) {
                         request["responses"][j].id = guid();
                         request["responses"][j].collectionRequestId = newId;
@@ -332,6 +337,18 @@ var PmCollections = Backbone.Collection.extend({
 
                 pm.indexedDB.addCollectionRequest(request, onAddCollectionRequest);
                 requests.push(request);
+            }
+
+            if ("folders" in collection) {
+                folders = collection["folders"];
+
+                for(i = 0; i < folders.length; i++) {
+                    order = folders[i].order;
+                    for(j = 0; j < order.length; j++) {
+                        order[j] = idHashTable[order[j]];
+                    }
+
+                }
             }
 
             pm.indexedDB.updateCollection(dbCollection, function() {});

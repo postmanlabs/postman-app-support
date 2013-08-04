@@ -75,7 +75,7 @@ var PmCollection = Backbone.Model.extend({
         var folders = _.clone(this.get("folders"));
         var index = arrayObjectIndexOf(folders, "id", id);
         folders.splice(index, 1, folder);
-        console.log("Edited folders are", folders);
+        
         this.set("folders", folders);
     },
 
