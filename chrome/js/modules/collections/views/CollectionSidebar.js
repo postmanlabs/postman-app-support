@@ -252,8 +252,7 @@ var CollectionSidebar = Backbone.View.extend({
         if (currentEl.length) {
             var currentClass = currentEl.attr("class");
             wasOpen = currentClass.search("open") >= 0;    
-        }
-        
+        }        
 
         this.renderCollectionContainerInSidebar(collection);
         this.renderFoldersInSidebar(collection);

@@ -104,6 +104,12 @@ var PmCollection = Backbone.Model.extend({
         this.set("folders", folders);
     },
 
+    addRequestIdToOrder: function(requestId) {
+        var order = _.clone(this.get("order"));
+        order.push(requestId);
+        this.set("order", order);
+    },
+
     removeRequestIdFromOrderOrFolder: function(requestId) {
         var order = _.clone(this.get("order"));
         var folders = _.clone(this.get("folders"));
@@ -114,16 +120,16 @@ var PmCollection = Backbone.Model.extend({
             this.set("order", order);
         }
         else {
-            var indexInSubFolder;
+            var indexInFolder;
             for(var i = 0; i < folders.length; i++) {
                 indexInFolder = folders[i].order.indexOf(requestId);
-                if(indexInSubFolder >= 0) {
+                if(indexInFolder >= 0) {
                     break;
                 }
             }
 
-            if(indexInSubFolder >= 0) {
-                folders[i].requests.splice(indexInFolder, 1);
+            if(indexInFolder >= 0) {
+                folders[i].order.splice(indexInFolder, 1);
                 this.set("folders", folders);
             }
         }
