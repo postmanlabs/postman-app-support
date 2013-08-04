@@ -543,19 +543,23 @@ var PmCollections = Backbone.Collection.extend({
 
     deleteCollectionRequest:function (id) {
         var pmCollection = this;
+        console.log("deleteCollectionRequest");
         pm.indexedDB.getCollectionRequest(id, function(request) {
             pm.indexedDB.deleteCollectionRequest(id, function () {
+                console.log("trigger removeCollectionRequest");
                 pmCollection.trigger("removeCollectionRequest", request);
 
                 //Update order
                 pm.indexedDB.getCollection(request.collectionId, function (collection) {
                     //If the collection still exists
                     if (collection) {
+                        console.log("Updating order for the collection");
                         var collectionModel = pmCollection.get(collection.id);
                         collectionModel.deleteRequest(request.id);
-                        collection = collectionModel.getAsJSON();
+                        collection = collectionModel.getAsJSON();                        
 
                         pm.indexedDB.updateCollection(collection, function (collection) {
+                            console.log("Updated collection");
                             // TODO: Drive syncing will be done later
                             // pm.collections.drive.queueUpdateFromId(collection.id);
                         });

@@ -283,9 +283,7 @@ var CollectionSidebar = Backbone.View.extend({
             var count = requests.length;
             var requestTargetElement;
 
-            if (count > 0) {
-                console.log(requests);
-                
+            if (count > 0) {                
                 for (var i = 0; i < count; i++) {                    
                     if (typeof requests[i].name === "undefined") {
                         requests[i].name = requests[i].url;

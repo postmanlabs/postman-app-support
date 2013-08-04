@@ -70,13 +70,16 @@ var PmCollection = Backbone.Model.extend({
     	this.get("requests").push(newRequest);
     },
 
-    deleteRequest: function(request) {
-    	var location = this.getRequestIndex(request);
-    	var requests = this.get("requests");
+    deleteRequest: function(requestId) {        
+        var requests = this.get("requests");
+    	var location = arrayObjectIndexOf(requests, requestId, "id");    
     	if (location !== -1) {
     		requests.splice(location, 1);
-            this.removeRequestIdFromOrderOrFolder(request);
+            this.removeRequestIdFromOrderOrFolder(requestId);
     	}
+        else {
+            console.log("Could not find request");
+        }
     },
 
     updateRequest: function(newRequest) {
@@ -132,6 +135,8 @@ var PmCollection = Backbone.Model.extend({
     removeRequestIdFromOrderOrFolder: function(requestId) {
         var order = _.clone(this.get("order"));
         var folders = _.clone(this.get("folders"));
+
+        console.log(order, requestId);
 
         var indexInOrder = order.indexOf(requestId);
         if (indexInOrder >= 0) {
