@@ -120,6 +120,7 @@ var CollectionSidebar = Backbone.View.extend({
         $collection_items.on("click", ".request-actions-delete", function () {
             var id = $(this).attr('data-id');
             var request = model.getRequestById(id);
+            console.log("Request is ", request);
             model.trigger("deleteCollectionRequest", request);
         });
 

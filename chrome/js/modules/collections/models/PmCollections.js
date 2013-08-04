@@ -547,18 +547,14 @@ var PmCollections = Backbone.Collection.extend({
                 pm.indexedDB.getCollection(request.collectionId, function (collection) {
                     //If the collection still exists
                     if (collection) {
-                        // TODO Check if request exists in "order" or one of the "folders"
-                        // TODO Change the collection Backbone model
-                        if ("order" in collection) {
-                            var order = collection["order"];
-                            var index = order.indexOf(id);
-                            order.splice(index, 1);
-                            collection["order"] = order;
-                            pm.indexedDB.updateCollection(collection, function (collection) {
-                                // TODO: Drive syncing will be done later
-                                // pm.collections.drive.queueUpdateFromId(collection.id);
-                            });
-                        }
+                        var collectionModel = pmCollection.get(collection.id);
+                        collectionModel.deleteRequest(request.id);
+                        collection = collectionModel.getAsJSON();
+
+                        pm.indexedDB.updateCollection(collection, function (collection) {
+                            // TODO: Drive syncing will be done later
+                            // pm.collections.drive.queueUpdateFromId(collection.id);
+                        });
                     }
                 });
             });
@@ -660,7 +656,7 @@ var PmCollections = Backbone.Collection.extend({
         var folder = this.getFolderById(id);
         folder.name = name;
         var collection = this.getCollectionForFolderId(id);
-        collection.updateFolder(folder);
+        collection.editFolder(folder);
         this.updateCollection(collection.getAsJSON());
     },
 
