@@ -165,16 +165,22 @@ var CollectionSidebar = Backbone.View.extend({
 
     //TODO Split this into smaller functions
     renderOneCollection:function (model, pmCollection) {
-        console.log(model, pmCollection);
-
+        var folders = [];
+        var wasOpen = false;
         var collection = model.toJSON();
-
-        function requestFinder(request) {
-            return request.id === collection["order"][j]
-        }
 
         $('#sidebar-section-collections .empty-message').css("display", "none");
 
+        this.renderCollectionContainerInSidebar(collection);
+        this.renderFolderInSidebar(collection);
+        this.renderRequestsInSidebar(collection);
+        
+        if (wasOpen) {
+            this.openCollection(collection.id, false);
+        }
+    },
+
+    renderCollectionContainerInSidebar: function(collection) {
         var currentEl = $('#collection-' + collection.id);
 
         var collectionSidebarListPosition = -1;
@@ -183,9 +189,7 @@ var CollectionSidebar = Backbone.View.extend({
 
         var model = this.model;
         var view = this;
-        var collections = this.model.toJSON();
-        var folders = [];
-        var wasOpen = false;
+        var collections = this.model.toJSON();        
 
         collectionSidebarListPosition = arrayObjectIndexOf(collections, collection.id, "id");
 
@@ -209,7 +213,7 @@ var CollectionSidebar = Backbone.View.extend({
             currentEl.remove();
 
             //TODO Will be added inside AddCollectionRequestModal
-            $('#select-collection option[value="' + collection.id + '"]').remove();
+            // $('#select-collection option[value="' + collection.id + '"]').remove();
         }
         else {
             //New element
@@ -243,7 +247,7 @@ var CollectionSidebar = Backbone.View.extend({
             $("#collection-items").append(Handlebars.templates.item_collection_sidebar_head(collection));
         }
 
-        //TODO Is this needed?
+        // TODO Need a better way to initialize these tooltips
         $('a[rel="tooltip"]').tooltip();
 
         $('#collection-' + collection.id + " .sidebar-collection-head").droppable({
@@ -251,8 +255,10 @@ var CollectionSidebar = Backbone.View.extend({
             hoverClass: "ui-state-hover",
             drop: _.bind(this.handleRequestDropOnCollection, this)
         });
+    },
 
-        // console.log($('#collection-' + collection.id + " .folder-head"));        
+    renderFolderInSidebar: function(collection) {
+        var folders;
 
         if("folders" in collection) {
             folders = collection["folders"];
@@ -265,6 +271,10 @@ var CollectionSidebar = Backbone.View.extend({
                 drop: _.bind(this.handleRequestDropOnFolder, this)
             });
         }
+    },
+
+    renderRequestsInSidebar: function(collection) {
+        var view = this;
 
         if ("requests" in collection) {
             var id = collection.id;
@@ -274,55 +284,22 @@ var CollectionSidebar = Backbone.View.extend({
             var requestTargetElement;
 
             if (count > 0) {
-                for (var i = 0; i < count; i++) {
-                    //TODO Move this to the model
-                    pm.urlCache.addUrl(requests[i].url);
-
+                console.log(requests);
+                
+                for (var i = 0; i < count; i++) {                    
                     if (typeof requests[i].name === "undefined") {
                         requests[i].name = requests[i].url;
                     }
-
                     requests[i].name = limitStringLineWidth(requests[i].name, 40);
-
-                    //Make requests draggable for moving to a different collection
                     requestTargetElement = "#sidebar-request-" + requests[i].id;
                     $(requestTargetElement).draggable({});
                 }
 
-                //Sort requests as A-Z order
-                // TODO This needs to be handled in the model
-                var hasOrder = "order" in collection;
-                if (hasOrder) {
-                    hasOrder = collection.order.length !== 0;
-                }
-
-                if (!hasOrder) {
-                    requests.sort(sortAlphabetical);
-                }
-                else {                    
-                    if(collection["order"].length === requests.length) {
-                        var orderedRequests = [];
-                        for (var j = 0, len = collection["order"].length; j < len; j++) {
-                            var element = _.find(requests, requestFinder);
-                            orderedRequests.push(element);
-                        }
-                        requests = orderedRequests;
-                    }
-                }
-
-                //Add requests to the DOM
-                $(targetElement).append(Handlebars.templates.collection_sidebar_requests({"items":requests, "folders": folders}));
-
-
-                // TODO Move this to a different function
+                $(targetElement).append(Handlebars.templates.collection_sidebar_requests({"items":requests}));
                 $(targetElement).sortable({
                     update: _.bind(view.onUpdateSortableCollectionRequestList, view)
                 });
             }
-        }
-
-        if (wasOpen) {
-            this.openCollection(collection.id, false);
         }
     },
 

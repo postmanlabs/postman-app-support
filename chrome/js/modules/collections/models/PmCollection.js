@@ -10,6 +10,38 @@ var PmCollection = Backbone.Model.extend({
         };
     },
 
+    setRequests: function(requests) {
+        this.set("requests", requests);
+        this.orderRequests();
+    },
+
+    // Order requests or put them in folders when initialized
+    orderRequests: function() {
+        var order = this.get("order");
+        var requests = _.clone(this.get("requests"));
+
+        function requestFinder(request) {
+            return request.id === order[j]
+        }
+
+        if (order.length === 0) {
+            requests.sort(sortAlphabetical);
+        }
+        else {                                        
+            var orderedRequests = [];
+            for (var j = 0, len = order.length; j < len; j++) {
+                var element = _.find(requests, requestFinder);
+                if(typeof element !== "undefined") {
+                    orderedRequests.push(element);    
+                }                
+            }
+
+            requests = orderedRequests;            
+        }
+
+        this.set("requests", requests);
+    },
+
     getRequestIndex: function(newRequest) {
     	var requests = this.get("requests");
     	var count = requests.length;
@@ -73,14 +105,9 @@ var PmCollection = Backbone.Model.extend({
         this.set("folders", folders);
     },
 
-    deleteFolder: function(id) {
-        function existingFolderFinder(f) {
-            return f.id === id;
-        }
-
+    deleteFolder: function(id) {        
         var folders = _.clone(this.get("folders"));
-        var index = arrayObjectIndexOf(folders, id, "id");
-        console.log("Location is ", index);
+        var index = arrayObjectIndexOf(folders, id, "id");        
         folders.splice(index, 1);
         this.set("folders", folders);
     },
@@ -95,19 +122,26 @@ var PmCollection = Backbone.Model.extend({
         }
     },
 
-    removeRequestIdFromOrderOrFolder: function(request) {
-        var orders = _.clone(this.get("orders"));
+    addRequestIdToFolder: function(id, requestId) {
+        var folders = _.clone(this.get("folders"));
+        var index = arrayObjectIndexOf(folders, id, "id");        
+        folders[index].order.push(requestId);
+        this.set("folders", folders);
+    },
+
+    removeRequestIdFromOrderOrFolder: function(requestId) {
+        var order = _.clone(this.get("order"));
         var folders = _.clone(this.get("folders"));
 
-        var indexInOrder = orders.indexOf(request.id);
+        var indexInOrder = order.indexOf(requestId);
         if (indexInOrder >= 0) {
-            orders.splice(indexInOrder, 1);
-            this.set("orders", orders);
+            order.splice(indexInOrder, 1);
+            this.set("order", order);
         }
         else {
             var indexInSubFolder;
             for(var i = 0; i < folders.length; i++) {
-                indexInFolder = folders.order.indexOf(request.id);
+                indexInFolder = folders[i].order.indexOf(requestId);
                 if(indexInSubFolder >= 0) {
                     break;
                 }

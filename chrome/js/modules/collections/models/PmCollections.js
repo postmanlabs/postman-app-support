@@ -43,8 +43,12 @@ var PmCollections = Backbone.Collection.extend({
 
             function onGetAllRequestsInCollection(collection, requests) {
                 var c = new PmCollection(collection);
-                c.set("requests", requests);
+                c.setRequests(requests);
                 pmCollection.add(c);
+
+                for(var i = 0; i < requests.length; i++) {
+                    pm.urlCache.addUrl(requests[i].url);
+                }
             }
 
             for (var i = 0; i < itemsLength; i++) {
@@ -330,7 +334,7 @@ var PmCollections = Backbone.Collection.extend({
             pm.indexedDB.updateCollection(dbCollection, function() {});
 
             var c = new PmCollection(dbCollection);
-            c.set("requests", requests);
+            c.setRequests(requests);
             pmCollection.add(c, {merge: true});
 
             if (toSyncWithDrive) {
@@ -567,7 +571,7 @@ var PmCollections = Backbone.Collection.extend({
         pm.indexedDB.updateCollection(collection, function (collection) {
             function onGetAllRequestsInCollection(collection, requests) {                
                 var c = new PmCollection(collection);
-                c.set("requests", requests);
+                c.setRequests(requests);
                 pmCollection.add(c, {merge: true});
                 pmCollection.trigger("updateCollection", c, pmCollection);                
                 pm.collections.drive.queueUpdateFromId(c.id);
@@ -794,8 +798,31 @@ var PmCollections = Backbone.Collection.extend({
         var pmCollection = this;
         var request = this.getRequestById(requestId);
         var folder = this.getFolderById(targetFolderId);        
+        var targetCollection = this.getCollectionForFolderId(targetFolderId);
 
-        console.log("Called dropRequestOnFolder", requestId, targetFolderId, this.getCollectionForFolderId(targetFolderId));
+        if(targetCollection.id === request.collectionId) {
+            // Same collection
+
+            targetCollection.removeRequestIdFromOrderOrFolder(request.id);
+            targetCollection.addRequestIdToFolder(folder.id, request.id);
+            this.trigger("updateCollection", targetCollection);            
+        }
+        else {
+            // Different collection
+            
+            this.deleteCollectionRequest(requestId);            
+            request.id = guid();
+            request.collectionId = targetCollection.get("id");
+
+            pm.indexedDB.addCollectionRequest(request, function (req) {
+                targetCollection.addRequestIdToFolder(folder.id, req.id);
+
+                pm.indexedDB.updateCollection(collection, function() {                    
+                    targetCollection.get("requests").push(req);                    
+                    pmCollection.trigger("updateCollection", targetCollection);
+                });
+            });
+        }        
     },
 
     drive: {
