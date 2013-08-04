@@ -80,9 +80,9 @@ var PmCollections = Backbone.Collection.extend({
 
         for(var i = 0; i < this.length; i++) {
             var collection = this.models[i];
-            var requests = collection.get("sub_collections");
-            var subCollection = _.find(requests, existingSubCollectionFinder);
-            if (subCollections) {
+            var subCollections = collection.get("sub_collections");
+            var subCollection = _.find(subCollections, existingSubCollectionFinder);
+            if (subCollection) {
                 return collection;
             }
         }

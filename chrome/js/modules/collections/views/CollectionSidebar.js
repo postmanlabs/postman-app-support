@@ -224,6 +224,7 @@ var CollectionSidebar = Backbone.View.extend({
             $("#collection-items").append(Handlebars.templates.item_collection_sidebar_head(collection));
         }
 
+        //TODO Is this needed?
         $('a[rel="tooltip"]').tooltip();
 
         $('#collection-' + collection.id + " .sidebar-collection-head").droppable({
@@ -232,16 +233,18 @@ var CollectionSidebar = Backbone.View.extend({
             drop: _.bind(this.handleRequestDropOnCollection, this)
         });
 
-        $('#collection-' + collection.id + " .sub-collection-head").droppable({
-            accept: ".sidebar-collection-request",
-            hoverClass: "ui-state-hover",
-            drop: _.bind(this.handleRequestDropOnSubCollection, this)
-        });
+        // console.log($('#collection-' + collection.id + " .sub-collection-head"));        
 
         if("sub_collections" in collection) {
             subCollections = collection["sub_collections"];
             var subCollectionContainer = "#sub-collections-" + collection.id;
             $(subCollectionContainer).append(Handlebars.templates.collection_sidebar_sub_collections({"sub_collections": subCollections}));
+            
+            $('#collection-' + collection.id + " .sub-collection-head").droppable({
+                accept: ".sidebar-collection-request",
+                hoverClass: "ui-state-hover",
+                drop: _.bind(this.handleRequestDropOnSubCollection, this)
+            });
         }
 
         if ("requests" in collection) {
@@ -360,11 +363,11 @@ var CollectionSidebar = Backbone.View.extend({
         request.collectionRequestId = request.id;
         
         //TODO Is this needed?
-        $('#collection-' + request.collectionId + " .sidebar-collection-head").droppable({
-            accept: ".sidebar-collection-request",
-            hoverClass: "ui-state-hover",
-            drop: _.bind(this.handleRequestDropOnCollection, this)
-        });
+        // $('#collection-' + request.collectionId + " .sidebar-collection-head").droppable({
+        //     accept: ".sidebar-collection-request",
+        //     hoverClass: "ui-state-hover",
+        //     drop: _.bind(this.handleRequestDropOnCollection, this)
+        // });
 
         this.openCollection(request.collectionId);
 
