@@ -206,6 +206,8 @@ var CollectionSidebar = Backbone.View.extend({
 
         collection.requests = requests;
 
+        collection = this.orderRequests(collection);
+
         return collection;
     },
 
@@ -281,8 +283,13 @@ var CollectionSidebar = Backbone.View.extend({
 
         if (currentEl.length) {            
             if (collectionSidebarListPosition === 0) {
-                insertionType = "before";
-                insertTarget = $('#collection-' + collections[collectionSidebarListPosition + 1].id);                
+                if(collections[collectionSidebarListPosition + 1]) {
+                    insertionType = "before";
+                    insertTarget = $('#collection-' + collections[collectionSidebarListPosition + 1].id);                    
+                }
+                else {
+                    insertionType = "none";
+                }                
             }
             else {
                 insertionType = "after";
