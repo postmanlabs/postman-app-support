@@ -35,6 +35,14 @@ var VariableProcessor = Backbone.Model.extend({
                 }                
             },
 
+            "$randomInt": {
+                run: function(min, max) {
+                    if (!min) min = 0;
+                    if (!max) max = 1000;
+                    return getRandomInt(min, max);
+                }
+            },
+
             "\\$random [0-9]+,[0-9]+": {
                 run: function(min, max) {
                     if (!min) min = 0;
@@ -92,8 +100,6 @@ var VariableProcessor = Backbone.Model.extend({
         for (var i = 0; i < count; i++) {
             patString = startDelimiter + values[i].key + endDelimiter;
             pattern = new RegExp(patString, 'g');
-
-            console.log(values[i].key, patString);
 
             if(typeof values[i].value === "object") {       
                 var result = values[i].value.run();                
