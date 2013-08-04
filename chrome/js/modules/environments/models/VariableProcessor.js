@@ -3,6 +3,7 @@ var VariableProcessor = Backbone.Model.extend({
         return {
             environments: null,
             globals: null,
+            functions: {},
             selectedEnv:null,
             selectedEnvironmentId:""
         };
@@ -16,6 +17,35 @@ var VariableProcessor = Backbone.Model.extend({
 
         this.set("selectedEnvironmentId", pm.settings.getSetting("selectedEnvironmentId"));
         this.set("selectedEnv", this.get("environments").get(pm.settings.getSetting("selectedEnvironmentId")));
+
+        this.initializeFunctions();
+    },
+
+    initializeFunctions: function() {
+        var functions = {
+            "$guid": {
+                run: function() {
+                    return guid();
+                }
+            },
+
+            "$timestamp": {
+                run: function() {
+                    return Math.round(new Date().getTime() / 1000);    
+                }                
+            },
+
+            "\\$random [0-9]+,[0-9]+": {
+                run: function(min, max) {
+                    if (!min) min = 0;
+                    if (!max) max = 1000;
+
+                    return getRandomArbitrary(min, max);
+                }
+            }
+        };
+
+        this.set("functions", functions);
     },
 
     setCurrentEnvironment: function() {        
@@ -62,7 +92,17 @@ var VariableProcessor = Backbone.Model.extend({
         for (var i = 0; i < count; i++) {
             patString = startDelimiter + values[i].key + endDelimiter;
             pattern = new RegExp(patString, 'g');
-            finalString = finalString.replace(patString, values[i].value);
+
+            console.log(values[i].key, patString);
+
+            if(typeof values[i].value === "object") {       
+                var result = values[i].value.run();                
+                finalString = finalString.replace(patString, result);
+            }
+            else {
+                finalString = finalString.replace(patString, values[i].value);    
+            }
+            
         }
 
         if (this.containsVariable(finalString, values)) {
@@ -91,6 +131,21 @@ var VariableProcessor = Backbone.Model.extend({
         if (globals) {
             values = _.union(envValues, globals);    
         }
+
+        var functions = this.get("functions");
+        var fs = [];
+        for(f in functions) {
+            if(functions.hasOwnProperty(f)) {
+                var kvpair = {
+                    "key": f,
+                    "value": functions[f]                    
+                };
+
+                fs.push(kvpair);
+            }
+        }
+
+        values = _.union(values, fs);
 
         if (string) {
             return this.processString(string, values);
