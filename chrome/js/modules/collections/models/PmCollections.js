@@ -729,7 +729,7 @@ var PmCollections = Backbone.Collection.extend({
         this.trigger("revertFilter");
     },
 
-    dropRequestOnCollection: function(requestId, targetCollectionId) {
+    moveRequestToCollection: function(requestId, targetCollectionId) {
         var pmCollection = this;
 
         pm.indexedDB.getCollection(targetCollectionId, function(collection) {
@@ -767,7 +767,7 @@ var PmCollections = Backbone.Collection.extend({
         });
     },
 
-    dropRequestOnSubCollection: function(requestId, targetSubCollectionId) {
+    moveRequestToSubCollection: function(requestId, targetSubCollectionId) {
         var pmCollection = this;
         console.log("Called dropRequestOnSubCollection", requestId, targetSubCollectionId, this.getCollectionForSubCollectionId(targetSubCollectionId));
     },

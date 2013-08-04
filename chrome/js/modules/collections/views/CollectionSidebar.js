@@ -239,7 +239,7 @@ var CollectionSidebar = Backbone.View.extend({
             subCollections = collection["sub_collections"];
             var subCollectionContainer = "#sub-collections-" + collection.id;
             $(subCollectionContainer).append(Handlebars.templates.collection_sidebar_sub_collections({"sub_collections": subCollections}));
-            
+
             $('#collection-' + collection.id + " .sub-collection-head").droppable({
                 accept: ".sidebar-collection-request",
                 hoverClass: "ui-state-hover",
@@ -343,6 +343,8 @@ var CollectionSidebar = Backbone.View.extend({
     },
 
     addCollectionRequest: function(request) {
+        console.log("Called add collection request");
+
         $('.sidebar-collection-request').removeClass('sidebar-collection-request-active');
         var targetElement = "#collection-requests-" + request.collectionId;
         $('#sidebar-request-' + request.id).addClass('sidebar-collection-request-active');
@@ -371,6 +373,7 @@ var CollectionSidebar = Backbone.View.extend({
 
         this.openCollection(request.collectionId);
 
+        //TODO Refactor this
         pm.request.loadRequestInEditor(request);
     },
 
@@ -443,7 +446,7 @@ var CollectionSidebar = Backbone.View.extend({
         var id = ui.draggable.context.id;
         var requestId = $('#' + id + ' .request').attr("data-id");
         var targetCollectionId = $($(event.target).find('.sidebar-collection-head-name')[0]).attr('data-id');
-        this.model.dropRequestOnCollection(requestId, targetCollectionId);
+        this.model.moveRequestToCollection(requestId, targetCollectionId);
     },
 
     handleRequestDropOnSubCollection: function(event, ui) {
@@ -451,7 +454,7 @@ var CollectionSidebar = Backbone.View.extend({
         var requestId = $('#' + id + ' .request').attr("data-id");
         var targetSubCollectionId = $($(event.target).find('.sub-collection-head-name')[0]).attr('data-id');
         console.log(requestId, targetSubCollectionId);
-        this.model.dropRequestOnSubCollection(requestId, targetSubCollectionId);
+        this.model.moveRequestToSubCollection(requestId, targetSubCollectionId);
     },
 
     onFilter: function(filteredCollectionItems) {
