@@ -2,6 +2,7 @@ var PmCollection = Backbone.Model.extend({
     defaults: function() {
         return {
             "id": "",
+            "name": "",
             "order": [],
             "folders": [],
             "requests": [],
@@ -53,9 +54,39 @@ var PmCollection = Backbone.Model.extend({
     	}
     },
 
+    addFolder: function(folder) {
+        var folders = _.clone(this.get("folders"));
+        folders.push(folder);
+        this.set("folders", folders);
+    },
+
+    editFolder: function(folder) {
+        function existingFolderFinder(f) {
+            return f.id === id;
+        }
+
+        var folders = _.clone(this.get("folders"));
+        var index = arrayObjectIndexOf(folders, "id", id);
+        folders.splice(index, 1, folder);
+        this.set("folders", folders);
+    },
+
+    deleteFolder: function(id) {
+        function existingFolderFinder(f) {
+            return f.id === id;
+        }
+
+        var folders = _.clone(this.get("folders"));
+        var index = arrayObjectIndexOf(folders, id, "id");
+        console.log("Location is ", index);
+        folders.splice(index, 1);
+        this.set("folders", folders);
+    },
+
     getAsJSON: function() {
         return {
             "id": this.get("id"),
+            "name": this.get("name"),
             "order": this.get("order"),
             "folders": this.get("folders"),
             "timestamp": this.get("timestamp")

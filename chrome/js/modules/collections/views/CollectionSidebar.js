@@ -77,6 +77,21 @@ var CollectionSidebar = Backbone.View.extend({
             $('#modal-delete-collection-name').html(name);            
         });
 
+        $collection_items.on("click", ".folder-actions-edit", function () {
+            var id = $(this).attr('data-id');
+            var folder = model.getFolderById(id);
+            console.log("trigger action", folder);
+            model.trigger("showEditFolderModal", folder);
+        });
+
+        $collection_items.on("click", ".folder-actions-delete", function () {
+            var id = $(this).attr('data-id');
+            var name = $(this).attr('data-name');
+
+            $('#modal-delete-folder-yes').attr('data-id', id);
+            $('#modal-delete-folder-name').html(name);            
+        });
+
         $collection_items.on("click", ".collection-actions-download", function () {
             var id = $(this).attr('data-id');
 
@@ -169,6 +184,7 @@ var CollectionSidebar = Backbone.View.extend({
         var view = this;
         var collections = this.model.toJSON();
         var folders = [];
+        var wasOpen = false;
 
         collectionSidebarListPosition = arrayObjectIndexOf(collections, collection.id, "id");
 
@@ -184,6 +200,9 @@ var CollectionSidebar = Backbone.View.extend({
                 insertionType = "after";
                 insertTarget = $('#collection-' + collections[collectionSidebarListPosition - 1].id);
             }
+
+            var currentClass = $("#collection-" + collection.id + " .sidebar-collection-head-dt").attr("class");
+            wasOpen = currentClass.search("open") >= 0;
 
             //Found element
             currentEl.remove();
@@ -299,7 +318,10 @@ var CollectionSidebar = Backbone.View.extend({
                     update: _.bind(view.onUpdateSortableCollectionRequestList, view)
                 });
             }
+        }
 
+        if (wasOpen) {
+            this.openCollection(collection.id, false);
         }
     },
 
@@ -395,14 +417,19 @@ var CollectionSidebar = Backbone.View.extend({
         });
     },
 
-    openCollection:function (id) {
+    openCollection:function (id, toAnimate) {
         var target = "#collection-children-" + id;
         $("#collection-" + id + " .sidebar-collection-head-dt").removeClass("disclosure-triangle-close");
         $("#collection-" + id + " .sidebar-collection-head-dt").addClass("disclosure-triangle-open");
 
         if ($(target).css("display") === "none") {
-            $(target).slideDown(100, function () {
-            });
+            if(toAnimate === false) {
+                $(target).css("display", "block");
+            }
+            else {
+                $(target).slideDown(100, function () {
+                });
+            }            
         }
     },
 

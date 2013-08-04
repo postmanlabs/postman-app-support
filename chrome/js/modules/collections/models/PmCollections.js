@@ -73,6 +73,23 @@ var PmCollections = Backbone.Collection.extend({
         return null;
     },
 
+    getCollectionForFolderId: function(id) {
+        function existingFolderFinder(r) {
+            return r.id === id;
+        }
+
+        for(var i = 0; i < this.length; i++) {
+            var collection = this.models[i];
+            var folders = collection.get("folders");
+            var folder = _.find(folders, existingFolderFinder);
+            if (folder) {
+                return collection;
+            }
+        }
+
+        return null;
+    },
+
     getFolderById: function(id) {
         function existingFolderFinder(r) {
             return r.id === id;
@@ -552,11 +569,15 @@ var PmCollections = Backbone.Collection.extend({
         var pmCollection = this;
 
         pm.indexedDB.updateCollection(collection, function (collection) {
-            pmCollection.add(collection, {merge: true});
-            var collectionModel = pmCollection.get(collection.id);
-            pmCollection.trigger("updateCollection", collectionModel, pmCollection);
-            //TODO: Drive syncing will be done later
-            // pm.collections.drive.queueUpdateFromId(collection.id);
+            function onGetAllRequestsInCollection(collection, requests) {                
+                var c = new PmCollection(collection);
+                c.set("requests", requests);
+                pmCollection.add(c, {merge: true});
+                pmCollection.trigger("updateCollection", c, pmCollection);                
+                pm.collections.drive.queueUpdateFromId(c.id);
+            }
+
+            pm.indexedDB.getAllRequestsInCollection(collection, onGetAllRequestsInCollection);            
         });
     },
 
@@ -631,19 +652,24 @@ var PmCollections = Backbone.Collection.extend({
             "order": []
         };
 
-        var folders;
+        collection.addFolder(newFolder);
+        this.updateCollection(collection.getAsJSON());
+    },
 
-        if(collection.get("folders")) {
-            folders = collection.get("folders");
-        }
-        else {
-            folders = [];
-        }
+    updateFolderMeta: function(id, name) {
+        var folder = this.getFolderById(id);
+        folder.name = name;
+        var collection = this.getCollectionForFolderId(id);
+        collection.updateFolder(folder);
+        this.updateCollection(collection.getAsJSON());
+    },
 
-        folders.push(newFolder);
-        collection.set("folders", folders);
-        this.updateCollection(collection.toJSON());
-    },  
+    deleteFolder: function(id) {
+        var collection = this.getCollectionForFolderId(id);
+        collection.deleteFolder(id);
+        console.log("Deleted folder with id", id);
+        this.updateCollection(collection.getAsJSON());
+    },
 
     //TODO Fix this later
     saveResponseAsSample:function (response) {
