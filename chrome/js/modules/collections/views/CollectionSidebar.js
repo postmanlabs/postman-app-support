@@ -172,8 +172,11 @@ var CollectionSidebar = Backbone.View.extend({
             return collection;
         }
 
-        var folders = collection["folders"];
-        var requests = collection["requests"];
+        var folders = _.clone(collection["folders"]);
+        var requests = _.clone(collection["requests"]);
+
+        console.log("Folders = ", folders);
+        console.log("Requests = ", requests);
 
         var folderCount = folders.length;
         var folder;
@@ -201,13 +204,14 @@ var CollectionSidebar = Backbone.View.extend({
             folder["requests"] = folderRequests;
         }
 
-        console.log("Processed collection is ", collection);
+        collection.requests = requests;
+
         return collection;
     },
 
     orderRequests: function(collection) {
         var order = collection.order;
-        var requests = collection.requests;        
+        var requests = _.clone(collection.requests);        
 
         function requestFinder(request) {
             return request.id === order[j];
@@ -236,7 +240,7 @@ var CollectionSidebar = Backbone.View.extend({
     renderOneCollection:function (model, pmCollection) {
         var folders = [];
         var wasOpen = false;
-        var collection = model.toJSON();
+        var collection = _.clone(model.toJSON());
 
         collection = this.organizeRequestsInFolders(collection);
 
