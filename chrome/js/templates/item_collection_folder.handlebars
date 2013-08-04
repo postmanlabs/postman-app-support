@@ -21,7 +21,7 @@
                 {{name}}
             </div>
         </div>
-        <ul id="folder-requests-{{id}}" class="folder-requests">
+        <ul id="folder-requests-{{id}}" class="folder-requests" data-id="{{id}}">
             {{#each requests}}
                 {{> item_collection_sidebar_request}}
             {{/each}}

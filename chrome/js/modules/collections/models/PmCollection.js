@@ -43,15 +43,13 @@ var PmCollection = Backbone.Model.extend({
     },
 
     deleteRequest: function(requestId) {        
-        var requests = this.get("requests");
+        var requests = _.clone(this.get("requests"));
     	var location = arrayObjectIndexOf(requests, requestId, "id");    
-    	if (location !== -1) {
-    		requests.splice(location, 1);
+    	if (location !== -1) {            
             this.removeRequestIdFromOrderOrFolder(requestId);
+    		requests.splice(location, 1);           
+            this.set("requests", requests); 
     	}
-        else {
-            console.log("Could not find request");
-        }
     },
 
     updateRequest: function(newRequest) {
@@ -77,6 +75,7 @@ var PmCollection = Backbone.Model.extend({
         var folders = _.clone(this.get("folders"));
         var index = arrayObjectIndexOf(folders, "id", id);
         folders.splice(index, 1, folder);
+        console.log("Edited folders are", folders);
         this.set("folders", folders);
     },
 
@@ -98,6 +97,8 @@ var PmCollection = Backbone.Model.extend({
     },
 
     addRequestIdToFolder: function(id, requestId) {
+        this.removeRequestIdFromOrderOrFolder(requestId);
+
         var folders = _.clone(this.get("folders"));
         var index = arrayObjectIndexOf(folders, id, "id");        
         folders[index].order.push(requestId);
@@ -105,6 +106,8 @@ var PmCollection = Backbone.Model.extend({
     },
 
     addRequestIdToOrder: function(requestId) {
+        this.removeRequestIdFromOrderOrFolder(requestId);
+
         var order = _.clone(this.get("order"));
         order.push(requestId);
         this.set("order", order);
@@ -112,26 +115,27 @@ var PmCollection = Backbone.Model.extend({
 
     removeRequestIdFromOrderOrFolder: function(requestId) {
         var order = _.clone(this.get("order"));
+        var indexInFolder;
         var folders = _.clone(this.get("folders"));
 
         var indexInOrder = order.indexOf(requestId);
+        
         if (indexInOrder >= 0) {
             order.splice(indexInOrder, 1);
             this.set("order", order);
         }
-        else {
-            var indexInFolder;
-            for(var i = 0; i < folders.length; i++) {
-                indexInFolder = folders[i].order.indexOf(requestId);
-                if(indexInFolder >= 0) {
-                    break;
-                }
-            }
-
+                
+        for(var i = 0; i < folders.length; i++) {
+            indexInFolder = folders[i].order.indexOf(requestId);
             if(indexInFolder >= 0) {
-                folders[i].order.splice(indexInFolder, 1);
-                this.set("folders", folders);
+                break;
             }
         }
+
+        if(indexInFolder >= 0) {
+            folders[i].order.splice(indexInFolder, 1);
+            this.set("folders", folders);
+        }
+    
     }
 });

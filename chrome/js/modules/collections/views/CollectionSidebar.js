@@ -175,9 +175,6 @@ var CollectionSidebar = Backbone.View.extend({
         var folders = _.clone(collection["folders"]);
         var requests = _.clone(collection["requests"]);
 
-        console.log("Folders = ", folders);
-        console.log("Requests = ", requests);
-
         var folderCount = folders.length;
         var folder;
         var folderOrder;
@@ -185,8 +182,10 @@ var CollectionSidebar = Backbone.View.extend({
         var existsInOrder;
         var folderRequests;
 
+        var newFolders = [];
+
         for(var i = 0; i < folderCount; i++) {
-            folder = folders[i];
+            folder = _.clone(folders[i]);
             folderOrder = folder.order;
             folderRequests = [];
 
@@ -194,16 +193,18 @@ var CollectionSidebar = Backbone.View.extend({
                 id = folderOrder[j];
 
                 var index = arrayObjectIndexOf(requests, id, "id");
-                console.log("Index is ", index);
+                
                 if(index >= 0) {
                     folderRequests.push(requests[index]);
                     requests.splice(index, 1);
                 }
             }
 
-            folder["requests"] = folderRequests;
+            folder["requests"] = folderRequests;     
+            newFolders.push(folder);       
         }
 
+        collection.folders = newFolders;
         collection.requests = requests;
 
         collection = this.orderRequests(collection);
@@ -393,21 +394,46 @@ var CollectionSidebar = Backbone.View.extend({
     onUpdateSortableCollectionRequestList: function(event, ui) {
         var pmCollection = this.model;
 
-        var target_parent = $(event.target).parents(".sidebar-collection-requests");
-        var target_parent_collection = $(event.target).parents(".sidebar-collection");
-        var collection_id = $(target_parent_collection).attr("data-id");
-        var ul_id = $(target_parent.context).attr("id");
-        var collection_requests = $(target_parent.context).children("li");
-        var count = collection_requests.length;
-        var order = [];
+        var isInFolder = $(event.target).attr("class").search("folder-requests") >= 0;        
 
-        for (var i = 0; i < count; i++) {
-            var li_id = $(collection_requests[i]).attr("id");
-            var request_id = $("#" + li_id + " .request").attr("data-id");
-            order.push(request_id);
-        }
+        if(isInFolder) {
+            var folder_id = $(event.target).attr("data-id");
+            var target_parent = $(event.target).parent(".folder-requests");            
+            var target_parent_collection = $(event.target).parents(".sidebar-collection");
+            var collection_id = $(target_parent_collection).attr("data-id");
+            var ul_id = $(target_parent.context).attr("id");
+            var collection_requests = $(target_parent.context).children("li");
+            var count = collection_requests.length;
+            var order = [];
 
-        pmCollection.updateCollectionOrder(collection_id, order);
+            for (var i = 0; i < count; i++) {
+                var li_id = $(collection_requests[i]).attr("id");
+                var request_id = $("#" + li_id + " .request").attr("data-id");
+                order.push(request_id);
+            }
+
+            console.log(collection_id, folder_id, order, pmCollection.getFolderById(folder_id));
+
+            // pmCollection.updateFolderOrder(collection_id, folder_id, order);
+        }   
+        else {
+            console.log("Inside collection list");
+            var target_parent = $(event.target).parents(".sidebar-collection-requests");
+            var target_parent_collection = $(event.target).parents(".sidebar-collection");
+            var collection_id = $(target_parent_collection).attr("data-id");
+            var ul_id = $(target_parent.context).attr("id");
+            var collection_requests = $(target_parent.context).children("li");
+            var count = collection_requests.length;
+            var order = [];
+
+            for (var i = 0; i < count; i++) {
+                var li_id = $(collection_requests[i]).attr("id");
+                var request_id = $("#" + li_id + " .request").attr("data-id");
+                order.push(request_id);
+            }
+
+            pmCollection.updateCollectionOrder(collection_id, order);
+        }            
     },
 
     updateCollectionMeta: function(collection) {
@@ -429,8 +455,6 @@ var CollectionSidebar = Backbone.View.extend({
     },
 
     addCollectionRequest: function(request) {
-        console.log("Called add collection request");
-
         $('.sidebar-collection-request').removeClass('sidebar-collection-request-active');
         var targetElement = "#collection-requests-" + request.collectionId;
         $('#sidebar-request-' + request.id).addClass('sidebar-collection-request-active');
@@ -449,13 +473,12 @@ var CollectionSidebar = Backbone.View.extend({
 
         request.isFromCollection = true;
         request.collectionRequestId = request.id;
-        
-        //TODO Is this needed?
-        // $('#collection-' + request.collectionId + " .sidebar-collection-head").droppable({
-        //     accept: ".sidebar-collection-request",
-        //     hoverClass: "ui-state-hover",
-        //     drop: _.bind(this.handleRequestDropOnCollection, this)
-        // });
+
+        $('#collection-' + request.collectionId + " .sidebar-collection-head").droppable({
+            accept: ".sidebar-collection-request",
+            hoverClass: "ui-state-hover",
+            drop: _.bind(this.handleRequestDropOnCollection, this)
+        });
 
         this.openCollection(request.collectionId);
 
