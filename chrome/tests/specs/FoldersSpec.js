@@ -85,8 +85,7 @@ describe("Folders", function() {
 		});
 
 		it("can add another folder", function() {
-			var isAddFolderOpen = false;
-			var foundFolder = false;
+			var isAddFolderOpen = false;			
 			var isAddFolderClosed = false;
 
 			runs(function() {
@@ -111,7 +110,7 @@ describe("Folders", function() {
 
 			waitsFor(function() {
 				return isAddFolderClosed === true;
-			});
+			}, "could not close add folder", waitTime);
 
 			runs(function() {
 				expect(pm.tester.collectionHasFolderName(1, "Wolfenstein")).toBe(true);
@@ -120,11 +119,68 @@ describe("Folders", function() {
 		});
 
 		it("can change folder name", function() {
+			var isEditFolderOpen = false;
+			var isEditFolderClosed = false;
 
+			runs(function() {
+				pm.tester.openEditFolderModal(1, 1);
+				setTimeout(function() {
+					isEditFolderOpen = true;
+				}, modalToggleWaitTime);
+			});
+
+			waitsFor(function() {
+				return isEditFolderOpen === true;
+			}, "could not open edit folder modal", waitTime);
+
+			runs(function() {
+				pm.tester.setEditFolderName("Commander Keen");
+				pm.tester.submitEditFolderModal();
+
+				setTimeout(function() {
+					isEditFolderClosed = true;
+				}, modalToggleWaitTime);
+			});
+
+			waitsFor(function() {
+				return isEditFolderClosed === true;
+			}, "could not close edit folder modal", waitTime);
+
+			runs(function() {
+				expect(pm.tester.collectionHasFolderName(1, "Commander Keen")).toBe(true);
+			});
 		});
 
 		it("can delete folder", function() {
+			var isDeleteFolderOpen = false;
+			var isDeleteFolderClosed = false;
 
+			runs(function() {
+				pm.tester.openDeleteFolderModal(1, 1);
+				setTimeout(function() {
+					isDeleteFolderOpen = true;
+				}, modalToggleWaitTime);
+			});
+
+			waitsFor(function() {
+				return isDeleteFolderOpen === true;
+			}, "could not open edit folder modal", waitTime);
+
+			runs(function() {
+				pm.tester.submitDeleteFolderModal();
+
+				setTimeout(function() {
+					isDeleteFolderClosed = true;
+				}, modalToggleWaitTime);
+			});
+
+			waitsFor(function() {
+				return isDeleteFolderClosed === true;
+			}, "could not close edit folder modal", waitTime);
+
+			runs(function() {
+				expect(pm.tester.collectionHasFolderName(1, "Commander Keen")).toBe(false);
+			});
 		});				
 	});
 

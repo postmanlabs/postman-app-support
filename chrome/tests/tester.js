@@ -1,3 +1,9 @@
+function changeValueAfterTime(variable, value, time) {
+	setTimeout(function() {
+		variable.val = value;
+	}, time);
+}
+
 pm.tester = {
 	setUrl: function(url) {
 		$("#url").val(url);
@@ -435,5 +441,27 @@ pm.tester = {
 
 	collectionHasFolderName: function(collectionIndex, name) {
 		return $($("#collection-items .sidebar-collection")[collectionIndex - 1]).html().search(name) >= 0;
-	}
+	},
+
+	openEditFolderModal: function(collectionIndex, folderIndex) {
+		var itemId = $($($("#collection-items .folders")[collectionIndex - 1]).children()[folderIndex - 1]).attr("id");
+		$("#" + itemId + " .folder-actions-edit").click();
+	},
+
+	setEditFolderName: function(name) {
+		$("#edit-folder-name").val(name);
+	},
+
+	submitEditFolderModal: function() {
+		$("#modal-edit-folder .btn-primary").click();
+	},
+
+	openDeleteFolderModal: function(collectionIndex, folderIndex) {
+		var itemId = $($($("#collection-items .folders")[collectionIndex - 1]).children()[folderIndex - 1]).attr("id");
+		$("#" + itemId + " .folder-actions-delete").click();
+	},
+
+	submitDeleteFolderModal: function() {
+		$("#modal-delete-folder .btn-danger").click();
+	},
 };
