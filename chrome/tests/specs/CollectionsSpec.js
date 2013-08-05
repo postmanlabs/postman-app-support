@@ -1,4 +1,4 @@
-xdescribe("Collections", function() {
+describe("Collections", function() {
 	var modalWaitTime = 500;
 	var codeMirrorModalWaitTime = 2000;
 	var waitTime = modalWaitTime + 50;

@@ -1,4 +1,4 @@
-xdescribe("History ", function() {
+describe("History ", function() {
 	var waitTime = 200;
 
 	beforeEach(function() {

@@ -1,4 +1,4 @@
-xdescribe("Postman requests with variables", function() {
+describe("Postman requests with variables", function() {
 	var waitTime = 100;
 
 	beforeEach(function() {

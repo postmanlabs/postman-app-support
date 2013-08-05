@@ -473,8 +473,54 @@ pm.tester = {
 		$("#modal-delete-folder .btn-danger").click();
 	},
 
+	collectionHasRequest: function(collectionIndex, name) {
+		collectionIndex += 1;
+
+		var selector = "#collection-items .sidebar-collection:nth-child(" + collectionIndex + ") .sidebar-collection-requests";
+		var requestsHtml = $(selector).html()
+		return requestsHtml.search(name) >= 0;		
+	},
+
 	collectionFolderHasRequest: function(collectionIndex, folderIndex, name) {
 		var requestsHtml = $($($("#collection-items .sidebar-collection .folders")[collectionIndex - 1]).find(".folder-requests")[folderIndex - 1]).html()
 		return requestsHtml.search(name) >= 0;		
+	},
+
+	getIDOfRequestInFolder: function(collectionIndex, folderIndex, requestIndex) {
+		//DOM has one extra element
+		collectionIndex += 1;		
+
+		var selector = "#collection-items .sidebar-collection:nth-child(" + collectionIndex + ") ";
+		selector += ".folders .folder:nth-child(" + folderIndex + ") ";
+		selector += ".sidebar-request:nth-child(" + requestIndex + ") ";
+		selector += " .request";
+
+		return $(selector).attr("data-id");
+	},
+
+	getIDOfRequestInCollection: function(collectionIndex, requestIndex) {
+		collectionIndex += 1;		
+
+		var selector = "#collection-items .sidebar-collection:nth-child(" + collectionIndex + ") .sidebar-collection-requests ";		
+		selector += ".sidebar-collection-request:nth-child(" + requestIndex + ") ";
+		selector += " .request";
+
+		return $(selector).attr("data-id");
+	},
+
+	getIDOfFolderInCollection: function(collectionIndex, folderIndex) {
+		collectionIndex += 1;
+
+		var selector = "#collection-items .sidebar-collection:nth-child(" + collectionIndex + ") ";
+		selector += ".folders .folder:nth-child(" + folderIndex + ")";
+
+		return $(selector).attr("data-id");
+	},
+
+	getIDOfCollection: function(collectionIndex) {
+		collectionIndex += 1;
+
+		var selector = "#collection-items .sidebar-collection:nth-child(" + collectionIndex + ") ";
+		return $(selector).attr("data-id");
 	}
 };
