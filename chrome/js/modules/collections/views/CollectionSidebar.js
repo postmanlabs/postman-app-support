@@ -499,6 +499,8 @@ var CollectionSidebar = Backbone.View.extend({
     },
 
     addRequestToList: function(targetElement, request) {
+        var view = this;
+        
         $('#sidebar-request-' + request.id).draggable({});
 
         // TODO Move this to the model
@@ -514,6 +516,10 @@ var CollectionSidebar = Backbone.View.extend({
 
         request.isFromCollection = true;
         request.collectionRequestId = request.id;
+
+        $(targetElement).sortable({
+            update: _.bind(view.onUpdateSortableCollectionRequestList, view)
+        });
 
         $('#collection-' + request.collectionId + " .sidebar-collection-head").droppable({
             accept: ".sidebar-collection-request",
