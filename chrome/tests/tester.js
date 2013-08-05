@@ -440,7 +440,15 @@ pm.tester = {
 	},
 
 	collectionHasFolderName: function(collectionIndex, name) {
-		return $($("#collection-items .sidebar-collection")[collectionIndex - 1]).html().search(name) >= 0;
+		var folders = $($("#collection-items .sidebar-collection .folders")[collectionIndex - 1]).find(".folder-head-name");
+		var found = false;
+
+		for(var i = 0; i < folders.length; i++) {
+			found = $(folders[i]).html().search(name) >= 0;
+			if (found) break;
+		}
+
+		return found;
 	},
 
 	openEditFolderModal: function(collectionIndex, folderIndex) {
@@ -464,4 +472,9 @@ pm.tester = {
 	submitDeleteFolderModal: function() {
 		$("#modal-delete-folder .btn-danger").click();
 	},
+
+	collectionFolderHasRequest: function(collectionIndex, folderIndex, name) {
+		var requestsHtml = $($($("#collection-items .sidebar-collection .folders")[collectionIndex - 1]).find(".folder-requests")[folderIndex - 1]).html()
+		return requestsHtml.search(name) >= 0;		
+	}
 };

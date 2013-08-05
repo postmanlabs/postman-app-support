@@ -207,16 +207,29 @@ describe("Folders", function() {
 			});
 		});
 
-		it("load collection with requests", function() {
-
-		});
-
-		it("load collection with only folders", function() {
-
-		});
-
 		it("load collection with folders and requests", function() {
+			var isDataAdded = false;
 
+			runs(function() {
+				var collection = mockCollections["withFoldersAndRequests"];
+				pm.collections.addCollectionDataToDB(collection, false);
+				setTimeout(function() {
+					isDataAdded = true;
+				}, 100);
+			});
+			
+			waitsFor(function() {
+				return isDataAdded === true;
+			}, "Could not add data", waitTime);
+
+			runs(function() {
+				expect(pm.tester.collectionHasFolderName(2, "POST")).toBe(true);
+				expect(pm.tester.collectionHasFolderName(2, "Others")).toBe(true);
+				expect(pm.tester.collectionFolderHasRequest(2, 1, "Delete")).toBe(true);
+				expect(pm.tester.collectionFolderHasRequest(2, 2, "POST - application")).toBe(true);
+
+				expect(pm.tester.collectionSidebarHasString("GET request with params")).toBe(true);				
+			});
 		});
 	});
 
