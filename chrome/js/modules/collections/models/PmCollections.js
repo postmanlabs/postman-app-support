@@ -65,7 +65,7 @@ var PmCollections = Backbone.Collection.extend({
             return r.id === id;
         }
 
-        for(var i = 0; i < this.length; i++) {
+        for(var i = 0; i < this.models.length; i++) {
             var collection = this.models[i];
 
             var requests = collection.get("requests");
@@ -512,7 +512,7 @@ var PmCollections = Backbone.Collection.extend({
 
     addRequestToFolder: function(collectionRequest, collectionId, folderId) {
         var pmCollection = this;
-        
+
         var collection = this.get(collectionId);
         collectionRequest.collectionId = collectionId;
 
@@ -745,44 +745,88 @@ var PmCollections = Backbone.Collection.extend({
         var collectionCount = collections.length;
         var filteredCollections = [];
         var name;
+        var requests;
+        var requestsCount;
+        var i, j, k, c, r, f;
+        var folders;
+        var folderOrder;
+        var visibleRequestHash = {};
 
-        for(var i = 0; i < collectionCount; i++) {
-            var c = {
+        for(i = 0; i < collectionCount; i++) {
+            c = {
                 id: collections[i].id,
                 name: collections[i].name,
                 requests: [],
+                folders: [],
                 toShow: false,
             };
 
             name = collections[i].name.toLowerCase();
 
-            if (name.indexOf(term) >= 0) {
+            if (name.search(term) >= 0) {
                 c.toShow = true;
             }
 
-            var requests = collections[i].requests;
+            requests = collections[i].requests;            
 
             if (requests) {
-                var requestsCount = requests.length;
+                requestsCount = requests.length;
 
-                for(var j = 0; j < requestsCount; j++) {
-                    var r = {
+                for(j = 0; j < requestsCount; j++) {
+                    r = {
                         id: requests[j].id,
                         name: requests[j].name,
                         toShow: false
-                    };
-
-                    c.requests.push(r);
+                    };                    
 
                     name = requests[j].name.toLowerCase();
 
-                    if (name.indexOf(term) >= 0) {
+                    if (name.search(term) >= 0) {
                         r.toShow = true;
                         c.toShow = true;
+                        visibleRequestHash[r.id] = true;                        
                     }
                     else {
                         r.toShow = false;
+                        visibleRequestHash[r.id] = false;
                     }
+
+                    c.requests.push(r);
+
+                    console.log("Request", r);
+                }
+            }
+
+            if("folders" in collections[i]) {
+                folders = collections[i].folders;
+                for (j = 0; j < folders.length; j++) {
+                    f = {
+                        id: folders[j].id,
+                        name: folders[j].name,
+                        toShow: false
+                    };                    
+
+                    name = folders[j].name.toLowerCase();
+
+                    if (name.search(term) >= 0) {
+                        f.toShow = true;
+                        c.toShow = true;                        
+                    }
+                    
+                    folderOrder = folders[j].order;
+
+                    // Check if any requests are to be shown
+                    for(k = 0; k < folderOrder.length; k++) {
+                        if (visibleRequestHash[folderOrder[k]] === true) {
+                            f.toShow = true;
+                            c.toShow = true;
+                            break;
+                        }
+                    }
+
+                    c.folders.push(f);
+
+                    console.log("Folder", f);                    
                 }
             }
 

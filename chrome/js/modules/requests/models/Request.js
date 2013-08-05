@@ -345,6 +345,7 @@ var Request = Backbone.Model.extend({
         }
     },
 
+    // TODO This should just be called loadRequest
     loadRequestInEditor:function (request, isFromCollection, isFromSample) {
         var body = this.get("body");
         var response = this.get("response");
@@ -425,8 +426,6 @@ var Request = Backbone.Model.extend({
         
         response.trigger("clearResponse");
         this.trigger("loadRequest", this);
-
-        console.log("loadRequest triggered");
     },
 
     prepareForSending: function() {

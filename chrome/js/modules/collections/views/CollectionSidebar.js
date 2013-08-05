@@ -632,19 +632,24 @@ var CollectionSidebar = Backbone.View.extend({
 
     onFilter: function(filteredCollectionItems) {
         var collectionsCount = filteredCollectionItems.length;
+        console.log(filteredCollectionItems);
+
         for(var i = 0; i < collectionsCount; i++) {
             var c = filteredCollectionItems[i];
             var collectionDomId = "#collection-" + c.id;
-            var collectionRequestsDomId = "#collection-requests-" + c.id;
+            var collectionFoldersDomId = "#folders-" + c.id;
+            var collectionChildrenDomId = "#collection-children-" + c.id;
             var dtDomId = "#collection-" + c.id + " .sidebar-collection-head-dt";
 
-            if(c.toShow) {
+            if(c.toShow) {                
                 $(collectionDomId).css("display", "block");
-                $(collectionRequestsDomId).css("display", "block");
+                $(collectionChildrenDomId).css("display", "block");
+
                 $(dtDomId).removeClass("disclosure-triangle-close");
                 $(dtDomId).addClass("disclosure-triangle-open");
 
                 var requests = c.requests;
+
                 if(requests) {
                     var requestsCount = requests.length;
                     for(var j = 0; j < requestsCount; j++) {
@@ -658,10 +663,32 @@ var CollectionSidebar = Backbone.View.extend({
                         }
                     }
                 }
+
+                if("folders" in c) {
+                    var folders = c["folders"];
+                    for(var k = 0; k < folders.length; k++) {
+                        var folderDomId = "#folder-" + folders[k].id;
+                        var folderRequestsDomId = folderDomId + " .folder-requests";
+                        var dtFolderDomId = folderDomId + " .folder-head .folder-head-dt";
+
+                        if(folders[k].toShow) {                            
+                            $(folderDomId).css("display", "block");
+                            $(folderRequestsDomId).css("display", "block");
+                            $(dtFolderDomId).removeClass("disclosure-triangle-close");
+                            $(dtFolderDomId).addClass("disclosure-triangle-open");
+                        }
+                        else {
+                            $(folderDomId).css("display", "none");
+                            $(folderRequestsDomId).css("display", "none");
+                            $(dtFolderDomId).addClass("disclosure-triangle-close");
+                            $(dtFolderDomId).removeClass("disclosure-triangle-open");
+                        }
+                    }
+                }
             }
             else {
-                $(collectionDomId).css("display", "none");
-                $(collectionRequestsDomId).css("display", "none");
+                $(collectionDomId).css("display", "none");                
+                $(collectionChildrenDomId).css("display", "none");
                 $(dtDomId).removeClass("disclosure-triangle-open");
                 $(dtDomId).addClass("disclosure-triangle-close");
             }
@@ -670,6 +697,7 @@ var CollectionSidebar = Backbone.View.extend({
 
     onRevertFilter: function() {
         $(".sidebar-collection").css("display", "block");
+        $(".folder").css("display", "block");
         $(".sidebar-collection-request").css("display", "block");        
     }
 });
