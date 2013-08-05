@@ -552,7 +552,9 @@ pm.indexedDB = {
             }
 
             var request = result.value;
-            pm.collections.deleteCollectionRequest(request.id);
+            pm.indexedDB.deleteCollectionRequest(request.id, function() {
+                console.log("Deleted from DB");
+            });
             result['continue']();
         };
         cursorRequest.onerror = pm.indexedDB.onerror;

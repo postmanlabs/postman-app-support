@@ -414,7 +414,7 @@ li .right {
   border-radius: 3px; }
 
 .sidebar-collection-request div {
-  padding: 8px;
+  padding: 6px;
   padding-left: 25px; }
 
 .sidebar-history-request div {
@@ -452,7 +452,8 @@ li .right {
 .folder-head-name {
   color: #777;
   font-weight: normal;
-  margin-left: 20px; }
+  margin-left: 20px;
+  padding: 4px !important; }
 
 .sidebar-collection-head-dt,
 .folder-head-dt {

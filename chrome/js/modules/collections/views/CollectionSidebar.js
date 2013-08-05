@@ -500,12 +500,9 @@ var CollectionSidebar = Backbone.View.extend({
 
     addRequestToList: function(targetElement, request) {
         var view = this;
-        
+
         $('#sidebar-request-' + request.id).draggable({});
-
-        // TODO Move this to the model
-        pm.urlCache.addUrl(request.url);
-
+        
         if (typeof request.name === "undefined") {
             request.name = request.url;
         }

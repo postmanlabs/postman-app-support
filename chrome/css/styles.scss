@@ -499,7 +499,7 @@ li {
 }
 
 .sidebar-collection-request div {
-    padding: 8px;
+    padding: 6px;
     padding-left: 25px;
 }
 
@@ -544,10 +544,11 @@ li {
     padding: 5px;
 }
 
-.folder-head-name {
+.folder-head-name {    
     color: #777;
     font-weight: normal;
     margin-left: 20px;    
+    padding: 4px !important;
 }
 
 .sidebar-collection-head-dt,

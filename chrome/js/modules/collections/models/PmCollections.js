@@ -542,9 +542,7 @@ var PmCollections = Backbone.Collection.extend({
             pm.indexedDB.addCollectionRequest(collectionRequest, function (req) {                
                 pm.indexedDB.getCollection(collection.id, function(newCollection) {
                     pmCollection.getCollectionRequest(req.id);
-
-                    pmCollection.add(newCollection, {merge: true});
-
+                    
                     var c = pmCollection.get(newCollection.id);
                     c.get("requests").push(req);
 
@@ -616,6 +614,7 @@ var PmCollections = Backbone.Collection.extend({
 
         var targetCollection = pmCollection.get(id);
         targetCollection.set("order", order);
+
         pm.indexedDB.updateCollection(targetCollection.getAsJSON(), function (collection) {
             //TODO: Drive syncing will be done later
             pm.collections.drive.queueUpdateFromId(collection.id);
@@ -655,9 +654,11 @@ var PmCollections = Backbone.Collection.extend({
     },
 
     deleteCollection:function (id, toSyncWithDrive, callback) {
-        this.remove(id);
+        var pmCollection = this;
 
         pm.indexedDB.deleteCollection(id, function () {
+            pmCollection.remove(id);
+
             if (callback) {
                 callback();    
             }
