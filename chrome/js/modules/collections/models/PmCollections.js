@@ -126,9 +126,7 @@ var PmCollections = Backbone.Collection.extend({
                 //Get all collection requests with one call
                 collection['requests'] = data;
                 var name = collection['name'] + ".json";
-                var type = "application/json";
-                
-                console.log(collection);
+                var type = "application/json";                
 
                 var filedata = JSON.stringify(collection);
                 callback(name, type, filedata);
@@ -542,7 +540,7 @@ var PmCollections = Backbone.Collection.extend({
             pm.indexedDB.addCollectionRequest(collectionRequest, function (req) {                
                 pm.indexedDB.getCollection(collection.id, function(newCollection) {
                     pmCollection.getCollectionRequest(req.id);
-                    
+
                     var c = pmCollection.get(newCollection.id);
                     c.get("requests").push(req);
 
@@ -689,9 +687,7 @@ var PmCollections = Backbone.Collection.extend({
         var folder = this.getFolderById(id);
         folder.name = name;
         var collection = this.getCollectionForFolderId(id);
-        console.log("Collection before editing", collection.toJSON());
-        collection.editFolder(folder);
-        console.log("Collection after editing", collection.toJSON());
+        collection.editFolder(folder);        
         this.trigger("updateFolder", collection, folder);
         this.updateCollection(collection.getAsJSON());
     },

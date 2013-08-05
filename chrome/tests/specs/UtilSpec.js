@@ -1,4 +1,4 @@
-describe("Postman utility functions", function() {
+xdescribe("Postman utility functions", function() {
 
   beforeEach(function() {
   });

@@ -1,9 +1,10 @@
-describe("Collections", function() {
+xdescribe("Collections", function() {
 	var modalWaitTime = 500;
 	var codeMirrorModalWaitTime = 2000;
 	var waitTime = modalWaitTime + 50;
 	var codeMirrorWaitTime = codeMirrorModalWaitTime + 50;
 
+	// TODO Delete all collections after this has run
 	beforeEach(function() {
 		waitsFor(function() {
 			return pm.hasPostmanInitialized === true;
@@ -53,7 +54,7 @@ describe("Collections", function() {
 
 			waitsFor(function() {
 				return foundCollection === true;
-			}, "Could not add new collection", waitTime);			
+			}, "Could not add new collection", waitTime);
 		});
 
 		it("can cancel new collection modal", function() {

@@ -418,4 +418,22 @@ pm.tester = {
 		var itemId = $($($("#collection-items .sidebar-collection-requests")[collectionIndex - 1]).children()[requestIndex - 1]).attr("id");
 		$("#" + itemId + " .request-actions-load").click();
 	},
+
+	/*Folders*/
+
+	openAddFolderModal: function(collectionIndex) {
+		$($("#collection-items .collection-actions-add-folder")[collectionIndex - 1]).click();
+	},
+
+	setNewFolderName: function(name) {
+		$("#add-folder-name").val(name);
+	},
+
+	submitNewFolderModal: function() {
+		$("#modal-add-folder .btn-primary").click();
+	},
+
+	collectionHasFolderName: function(collectionIndex, name) {
+		return $($("#collection-items .sidebar-collection")[collectionIndex - 1]).html().search(name) >= 0;
+	}
 };
