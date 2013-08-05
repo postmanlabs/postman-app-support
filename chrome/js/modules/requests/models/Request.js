@@ -345,7 +345,7 @@ var Request = Backbone.Model.extend({
         }
     },
 
-    // TODO This should just be called loadRequest
+    // TODO This should just be called
     loadRequestInEditor:function (request, isFromCollection, isFromSample) {
         var body = this.get("body");
         var response = this.get("response");
@@ -541,6 +541,8 @@ var Request = Backbone.Model.extend({
 
         var url = this.encodeUrl(this.get("url"));
         url = pm.envManager.getCurrentValue(url);
+        url = ensureProperUrl(url);
+        
         var method = this.get("method").toUpperCase();
 
         //Start setting up XHR

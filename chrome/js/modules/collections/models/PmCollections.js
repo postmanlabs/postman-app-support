@@ -534,7 +534,9 @@ var PmCollections = Backbone.Collection.extend({
                 pmCollection.add(newCollection, {merge: true});
                 collectionRequest.collectionId = newCollection.id;
 
-                pm.indexedDB.addCollectionRequest(collectionRequest, function (req) {                                                                                
+                pm.indexedDB.addCollectionRequest(collectionRequest, function (req) {                    
+                    pm.urlCache.addUrl(req.url);
+
                     var c = pmCollection.get(collection.id);
                     c.get("requests").push(req);
                     pmCollection.trigger("addCollectionRequest", req);
@@ -549,8 +551,10 @@ var PmCollections = Backbone.Collection.extend({
         }
         else {
             collectionRequest.collectionId = collection.id;
-            pm.indexedDB.addCollectionRequest(collectionRequest, function (req) {                
-                pm.indexedDB.getCollection(collection.id, function(newCollection) {
+            pm.indexedDB.addCollectionRequest(collectionRequest, function (req) {  
+                pm.urlCache.addUrl(req.url);
+
+                pm.indexedDB.getCollection(collection.id, function(newCollection) {                    
                     //TODO Fix this
                     pmCollection.loadCollectionRequest(req.id);
 
@@ -792,8 +796,6 @@ var PmCollections = Backbone.Collection.extend({
                     }
 
                     c.requests.push(r);
-
-                    console.log("Request", r);
                 }
             }
 
@@ -825,8 +827,6 @@ var PmCollections = Backbone.Collection.extend({
                     }
 
                     c.folders.push(f);
-
-                    console.log("Folder", f);                    
                 }
             }
 

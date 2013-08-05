@@ -150,6 +150,29 @@ describe("Postman requester", function() {
 	});	
 
 	describe("can handle different URLs", function() {
+		it("can send a request where the URL has no http/https", function() {
+			var responseLoaded = false;
+			runs(function() {
+				pm.tester.setUrl("localhost:5000/get");
+				pm.tester.setMethod("GET");
+				pm.tester.submitRequest();
+
+				var response = pm.request.get("response");
+				response.on("loadResponse", function() {					
+					responseLoaded = true;
+				});
+			});
+
+			waitsFor(function() {								
+				return responseLoaded === true;
+			}, "Could not get response", waitTime);
+
+			runs(function() {				
+				var found = pm.tester.prettyBodyHasString("/get");				
+				expect(found).toBe(true);		
+			});
+		});
+
 		it("can send a request where the URL has just one key", function() {
 			var responseLoaded = false;
 			runs(function() {
