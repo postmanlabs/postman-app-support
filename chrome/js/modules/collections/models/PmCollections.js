@@ -156,6 +156,7 @@ var PmCollections = Backbone.Collection.extend({
     saveCollection:function (id) {
         this.getCollectionData(id, function (name, type, filedata) {
             var filename = name + ".postman_collection";
+            console.log(filedata);
             pm.filesystem.saveAndOpenFile(filename, filedata, type, function () {
                 noty(
                     {

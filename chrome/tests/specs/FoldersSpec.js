@@ -23,7 +23,7 @@ describe("Folders", function() {
 		expect(pm.hasPostmanInitialized).toBe(true);
 	});
 
-	describe("basic Folder actions", function() {
+	xdescribe("basic Folder actions", function() {
 		it("can add a collection and a folder", function() {
 			var isOpen = false;
 			var foundCollection = false;
@@ -186,7 +186,25 @@ describe("Folders", function() {
 
 	describe("render imported collection properly", function() {
 		it("load collection without any request", function() {
+			var isDataAdded = false;
 
+			runs(function() {
+				var collection = mockCollections["noRequests"];
+				pm.collections.addCollectionDataToDB(collection, false);
+				setTimeout(function() {
+					isDataAdded = true;
+				}, 100);
+			});
+			
+			waitsFor(function() {
+				return isDataAdded === true;
+			}, "Could not add data", waitTime);
+
+			runs(function() {
+				expect(pm.tester.collectionHasFolderName(1, "Half Life")).toBe(true);
+				expect(pm.tester.collectionHasFolderName(1, "Fear")).toBe(true);
+				expect(pm.tester.collectionHasFolderName(1, "Serious Sam")).toBe(true);
+			});
 		});
 
 		it("load collection with requests", function() {
