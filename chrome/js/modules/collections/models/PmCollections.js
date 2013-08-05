@@ -75,8 +75,6 @@ var PmCollections = Backbone.Collection.extend({
             }
         }
 
-        console.log("Could not find request", id, this.toJSON());
-
         return null;
     },
 
@@ -426,7 +424,7 @@ var PmCollections = Backbone.Collection.extend({
         }
     },
 
-    getCollectionRequest:function (id) {
+    loadCollectionRequest:function (id) {
         var pmCollection = this;
         
         pm.indexedDB.getCollectionRequest(id, function (request) {
@@ -478,7 +476,7 @@ var PmCollections = Backbone.Collection.extend({
             collection.id = guid();
             collection.name = name;
             collection.order = [];
-            pm.indexedDB.addCollection(collection, function (collection) {
+            pm.indexedDB.addCollection(collection, function (collection) {                
                 pmCollection.add(collection, {merge: true});
                 //TODO: Drive syncing will be done later
                 // pm.collections.drive.queuePostFromCollection(collection);
@@ -510,7 +508,19 @@ var PmCollections = Backbone.Collection.extend({
                 pm.collections.drive.queueUpdateFromId(collectionRequest.collectionId);
             });
         });
+    },
 
+    addRequestToFolder: function(collectionRequest, collectionId, folderId) {
+        var pmCollection = this;
+        
+        var collection = this.get(collectionId);
+        collectionRequest.collectionId = collectionId;
+
+        pm.indexedDB.addCollectionRequest(collectionRequest, function (req) {
+            collection.get("requests").push(req);
+            pmCollection.moveRequestToFolder(req.id, folderId);
+            pmCollection.loadCollectionRequest(req.id);
+        });
     },
 
     addRequestToCollection:function (collectionRequest, collection) {
@@ -529,7 +539,8 @@ var PmCollections = Backbone.Collection.extend({
                     c.get("requests").push(req);
                     pmCollection.trigger("addCollectionRequest", req);
 
-                    pmCollection.getCollectionRequest(req.id);
+                    //TODO Fix this
+                    pmCollection.loadCollectionRequest(req.id);
 
                     pm.collections.drive.queuePost(collectionRequest.collectionId);
                 });
@@ -540,7 +551,8 @@ var PmCollections = Backbone.Collection.extend({
             collectionRequest.collectionId = collection.id;
             pm.indexedDB.addCollectionRequest(collectionRequest, function (req) {                
                 pm.indexedDB.getCollection(collection.id, function(newCollection) {
-                    pmCollection.getCollectionRequest(req.id);
+                    //TODO Fix this
+                    pmCollection.loadCollectionRequest(req.id);
 
                     var c = pmCollection.get(newCollection.id);
                     c.get("requests").push(req);

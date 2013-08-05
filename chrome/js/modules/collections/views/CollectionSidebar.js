@@ -121,7 +121,7 @@ var CollectionSidebar = Backbone.View.extend({
 
         $collection_items.on("click", ".request-actions-load", function () {
             var id = $(this).attr('data-id');            
-            model.getCollectionRequest(id);
+            model.loadCollectionRequest(id);
         });
 
         $collection_items.on("click", ".request-actions-delete", function () {

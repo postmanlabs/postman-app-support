@@ -2,8 +2,16 @@ var AddCollectionRequestModal = Backbone.View.extend({
     initialize: function() {
         var model = this.model;
 
-        this.model.on("add", this.add, this);
-        this.model.on("remove", this.remove, this);
+        this.model.on("add", this.onChanged, this);
+        this.model.on("remove", this.onChanged, this);
+        this.model.on("change", this.onChanged, this);
+
+        model.on("updateCollection", this.onChanged, this);
+        model.on("updateCollectionMeta", this.onChanged, this);
+
+        model.on("addFolder", this.onChanged, this);
+        model.on("updateFolder", this.onChanged, this);
+        model.on("deleteFolder", this.onChanged, this);
 
         var view = this;
 
@@ -32,8 +40,7 @@ var AddCollectionRequestModal = Backbone.View.extend({
             pm.app.onModalClose();
         });
 
-        //Initialize select-collection options
-        $('#select-collection').html("<option>Select</option>");
+        //Initialize select-collection options        
 
         $(document).bind('keydown', 'a', function () {
             if(pm.app.isModalOpen()) {
@@ -78,11 +85,59 @@ var AddCollectionRequestModal = Backbone.View.extend({
         $('#select-collection option[value="' + collection.id + '"]').remove();
     },
 
+    onChanged: function() {
+        var items = _.clone(this.model.toJSON());
+        var folders;
+
+        for(var i = 0; i < items.length; i++) {
+            if("folders" in items[i]) {
+                folders = items[i].folders;
+
+                folders.sort(sortAlphabetical);
+
+                for(var j = 0; j < folders.length; j++) {
+                    folders[j].collection_name = items[i].name;
+                    folders[j].collection_id = items[i].id;
+                }
+            }            
+        }
+
+        $('#select-collection').html("<option>Select</option>");
+        $('#select-collection').append(Handlebars.templates.collection_selector_list({items: this.model.toJSON()}));
+    },
+
     addRequestToCollection: function() {
-        var existingCollectionId = $('#select-collection').val();
+        var selectValue = $("#select-collection").val();
+        var $option = $("#select-collection option[value='" + selectValue + "']");
+        var targetType = $option.attr("data-type");
+
+        var collectionId;
+        var folderId;
+
+        if (targetType === "collection") {
+            collectionId = $option.attr("data-collection-id");            
+        }
+        else if (targetType === "folder") {
+            collectionId = $option.attr("data-collection-id");
+            folderId = $option.attr("data-folder-id");
+        }
+
         var newCollection = $("#new-collection").val();
+
+        var collection = {};
+
+        if (newCollection) {
+            targetType = "collection";
+            collection.id = guid();
+            collection.name = newCollection;
+        }
+        else {
+            collection.id = collectionId;
+        }
+
         var newRequestName = $('#new-request-name').val();
         var newRequestDescription = this.editor.getValue();
+
         var model = pm.request;
         var body = model.get("body");
 
@@ -91,32 +146,29 @@ var AddCollectionRequestModal = Backbone.View.extend({
             newRequestName = url;
         }
 
-        var collectionRequest = {};
-        collectionRequest.id = guid();
-        collectionRequest.headers = model.getPackedHeaders();
-        collectionRequest.url = url;
-        collectionRequest.method = model.get("method");
-        collectionRequest.data = body.get("dataAsObjects");
-        collectionRequest.dataMode = body.get("dataMode");
-        collectionRequest.name = newRequestName;
-        collectionRequest.description = newRequestDescription;
-        collectionRequest.descriptionFormat = "html";
-        collectionRequest.time = new Date().getTime();        
-        collectionRequest.version = 2;
-
-        collectionRequest.responses = [];
-
-        var collection = {};
-
-        if (newCollection) {
-            collection.id = guid();
-            collection.name = newCollection;
+        // TODO Get some of this from getAsJson
+        var collectionRequest = {
+            id: guid(),
+            headers: model.getPackedHeaders(),
+            url: url,
+            method: model.get("method"),
+            data: body.get("dataAsObjects"),
+            dataMode: body.get("dataMode"),
+            name: newRequestName,
+            description: newRequestDescription,
+            descriptionFormat: "html",
+            time: new Date().getTime(),        
+            version: 2,
+            responses: []
+        };
+        
+        if (targetType === "folder") {
+            this.model.addRequestToFolder(collectionRequest, collectionId, folderId);
         }
         else {
-            collection.id = existingCollectionId;
+            this.model.addRequestToCollection(collectionRequest, collection);    
         }
-
-        this.model.addRequestToCollection(collectionRequest, collection);
+        
         this.model.trigger("displayCollectionDetails", collectionRequest);
     }
 });
