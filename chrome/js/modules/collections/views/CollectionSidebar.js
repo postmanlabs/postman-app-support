@@ -14,6 +14,13 @@ var CollectionSidebar = Backbone.View.extend({
         model.on("removeCollectionRequest", this.removeCollectionRequest, this);
         model.on("updateCollectionRequest", this.updateCollectionRequest, this);
 
+        model.on("moveRequestToCollection", this.onMoveRequestToCollection, this);
+        model.on("moveRequestToFolder", this.onMoveRequestToFolder, this);
+
+        model.on("addFolder", this.onAddFolder, this);
+        model.on("updateFolder", this.onUpdateFolder, this);
+        model.on("deleteFolder", this.onDeleteFolder, this);
+
         model.on("filter", this.onFilter, this);
         model.on("revertFilter", this.onRevertFilter, this);
 
@@ -348,6 +355,8 @@ var CollectionSidebar = Backbone.View.extend({
 
         if("folders" in collection) {
             folders = collection["folders"];
+            folders.sort(sortAlphabetical);
+
             folderContainer = "#folders-" + collection.id;
             $(folderContainer).append(Handlebars.templates.collection_sidebar_folders({"folders": folders}));
 
@@ -454,13 +463,45 @@ var CollectionSidebar = Backbone.View.extend({
         }
     },
 
-    addCollectionRequest: function(request) {
-        $('.sidebar-collection-request').removeClass('sidebar-collection-request-active');
-        var targetElement = "#collection-requests-" + request.collectionId;
-        $('#sidebar-request-' + request.id).addClass('sidebar-collection-request-active');
+    onAddFolder: function(collection, folder) {
+        console.log("onAddFolder", collection, folder);
 
+        var folderContainer = "#folders-" + collection.id;
+        $(folderContainer).append(Handlebars.templates.item_collection_folder(folder));
+
+        $('#collection-' + collection.id + " .folder-head").droppable({
+            accept: ".sidebar-collection-request",
+            hoverClass: "ui-state-hover",
+            drop: _.bind(this.handleRequestDropOnFolder, this)
+        });
+    },
+
+    onUpdateFolder: function(collection, folder) {
+        console.log("onUpdateFolder", collection, folder);
+        $("#folder-" + folder.id + " .folder-head-name .name").html(folder.name);
+    },
+
+    onDeleteFolder: function(collection, id) {
+        $("#folder-" + id).remove();
+    },
+
+    onMoveRequestToFolder: function(targetCollection, folder, request) {
+        this.removeCollectionRequest(request);
+        var targetElement = $("#folder-requests-" + folder.id);        
+        this.addRequestToFolder(folder, request);
+    },
+
+    onMoveRequestToCollection: function(targetCollection, request) {        
+        this.removeCollectionRequest(request);
+
+        var targetElement = "#collection-requests-" + request.collectionId;
+        this.addRequestToList(targetElement, request);
+    },
+
+    addRequestToList: function(targetElement, request) {
         $('#sidebar-request-' + request.id).draggable({});
 
+        // TODO Move this to the model
         pm.urlCache.addUrl(request.url);
 
         if (typeof request.name === "undefined") {
@@ -479,6 +520,21 @@ var CollectionSidebar = Backbone.View.extend({
             hoverClass: "ui-state-hover",
             drop: _.bind(this.handleRequestDropOnCollection, this)
         });
+    },
+
+    addRequestToFolder: function(folder, request) {
+        var targetElement = "#folder-requests-" + folder.id;
+        this.addRequestToList(targetElement, request);
+    },
+
+    // TODO Needs to be refactored
+    addCollectionRequest: function(request) {
+        var targetElement = "#collection-requests-" + request.collectionId;
+
+        $('.sidebar-collection-request').removeClass('sidebar-collection-request-active');        
+        $('#sidebar-request-' + request.id).addClass('sidebar-collection-request-active');
+
+        this.addRequestToList(targetElement, request);
 
         this.openCollection(request.collectionId);
 

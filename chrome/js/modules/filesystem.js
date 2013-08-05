@@ -95,11 +95,19 @@ pm.filesystem = {
             }
 
             writableFileEntry.createWriter(function(writer) {
+                var truncated = false;
+
                 writer.onerror = function (e) {
                     callback();
                 };
 
                 writer.onwriteend = function(e) {
+                    if (!truncated) {
+                        truncated = true;
+                        this.truncate(this.position);
+                        return;
+                    }
+
                     console.log('write complete');
                     callback();
                 };
@@ -111,7 +119,7 @@ pm.filesystem = {
                 else {
                     blob = new Blob([data], {type:'text/plain'});
                 }
-
+                
                 writer.write(blob);
             }, pm.filesystem.errorHandler);
         });

@@ -73,10 +73,12 @@ var PmCollection = Backbone.Model.extend({
 
         var id = folder.id;
         var folders = _.clone(this.get("folders"));
-        var index = arrayObjectIndexOf(folders, "id", id);
-        folders.splice(index, 1, folder);
-        
-        this.set("folders", folders);
+        var index = arrayObjectIndexOf(folders, id, "id");
+
+        if (index !== -1) {
+            folders.splice(index, 1, folder);            
+            this.set("folders", folders);
+        }     
     },
 
     deleteFolder: function(id) {        

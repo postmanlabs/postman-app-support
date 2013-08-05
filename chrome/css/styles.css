@@ -415,7 +415,7 @@ li .right {
 
 .sidebar-collection-request div {
   padding: 8px;
-  padding-left: 20px; }
+  padding-left: 25px; }
 
 .sidebar-history-request div {
   padding: 8px; }
@@ -432,7 +432,7 @@ li .right {
   background-color: #DFEAF0; }
 
 .folder-requests .sidebar-collection-request {
-  padding-left: 25px; }
+  padding-left: 20px; }
 
 .folder-requests .request-actions {
   margin-left: 255px !important; }
@@ -450,7 +450,9 @@ li .right {
   padding: 5px; }
 
 .folder-head-name {
-  margin-left: 15px; }
+  color: #777;
+  font-weight: normal;
+  margin-left: 20px; }
 
 .sidebar-collection-head-dt,
 .folder-head-dt {
@@ -468,6 +470,9 @@ li .right {
   display: none; }
 
 .folder-requests {
+  border-bottom: solid thin #ddd;
+  padding-bottom: 0 !important;
+  margin-bottom: 0 !important;
   display: none; }
 
 .collection-head-actions span,

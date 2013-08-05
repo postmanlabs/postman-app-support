@@ -127,6 +127,9 @@ var PmCollections = Backbone.Collection.extend({
                 collection['requests'] = data;
                 var name = collection['name'] + ".json";
                 var type = "application/json";
+                
+                console.log(collection);
+
                 var filedata = JSON.stringify(collection);
                 callback(name, type, filedata);
             });
@@ -343,6 +346,7 @@ var PmCollections = Backbone.Collection.extend({
                 folders = collection["folders"];
 
                 for(i = 0; i < folders.length; i++) {
+                    folders[i].id = guid();
                     order = folders[i].order;
                     for(j = 0; j < order.length; j++) {
                         order[j] = idHashTable[order[j]];
@@ -351,10 +355,12 @@ var PmCollections = Backbone.Collection.extend({
                 }
             }
 
-            pm.indexedDB.updateCollection(dbCollection, function() {});
+            pm.indexedDB.updateCollection(dbCollection, function() {});            
 
             var c = new PmCollection(dbCollection);
             c.setRequests(requests);
+
+            console.log("Final imported collection", c.toJSON());
             pmCollection.add(c, {merge: true});
 
             if (toSyncWithDrive) {
@@ -588,8 +594,7 @@ var PmCollections = Backbone.Collection.extend({
             function onGetAllRequestsInCollection(collection, requests) {                
                 var c = new PmCollection(collection);
                 c.setRequests(requests);
-                pmCollection.add(c, {merge: true});
-                pmCollection.trigger("updateCollection", c, pmCollection);                
+                pmCollection.add(c, {merge: true});                
                 pm.collections.drive.queueUpdateFromId(c.id);
             }
 
@@ -602,6 +607,7 @@ var PmCollections = Backbone.Collection.extend({
         folder.order = order;
         var collection = this.get(collectionId);
         collection.editFolder(folder);
+
         this.updateCollection(collection.getAsJSON());        
     },
 
@@ -674,6 +680,7 @@ var PmCollections = Backbone.Collection.extend({
         };
 
         collection.addFolder(newFolder);
+        this.trigger("addFolder", collection, newFolder);
         this.updateCollection(collection.getAsJSON());
     },
 
@@ -681,13 +688,17 @@ var PmCollections = Backbone.Collection.extend({
         var folder = this.getFolderById(id);
         folder.name = name;
         var collection = this.getCollectionForFolderId(id);
+        console.log("Collection before editing", collection.toJSON());
         collection.editFolder(folder);
+        console.log("Collection after editing", collection.toJSON());
+        this.trigger("updateFolder", collection, folder);
         this.updateCollection(collection.getAsJSON());
     },
 
     deleteFolder: function(id) {
         var collection = this.getCollectionForFolderId(id);
         collection.deleteFolder(id);
+        this.trigger("deleteFolder", collection, id);
         this.updateCollection(collection.getAsJSON());
     },
 
@@ -785,7 +796,7 @@ var PmCollections = Backbone.Collection.extend({
             targetCollection.addRequestIdToOrder(request.id);
             
             pm.indexedDB.updateCollection(targetCollection.getAsJSON(), function() {
-                pmCollection.trigger("updateCollection", targetCollection);
+                pmCollection.trigger("moveRequestToCollection", targetCollection, request);
             });
         }
         else {
@@ -798,8 +809,8 @@ var PmCollections = Backbone.Collection.extend({
                 pm.indexedDB.addCollectionRequest(request, function (req) {
                     targetCollection.addRequestIdToOrder(request.id);
                     var collection = targetCollection.getAsJSON();
-                    pm.indexedDB.updateCollection(collection, function() {                    
-                        pmCollection.trigger("updateCollection", targetCollection);
+                    pm.indexedDB.updateCollection(collection, function() {                        
+                        pmCollection.trigger("moveRequestToCollection", targetCollection, request);
                     });
                 });
             });            
@@ -813,12 +824,10 @@ var PmCollections = Backbone.Collection.extend({
         var folder = this.getFolderById(targetFolderId);        
         var targetCollection = this.getCollectionForFolderId(targetFolderId);
 
-        if(targetCollection.id === request.collectionId) {
-            // Same collection
-
+        if(targetCollection.id === request.collectionId) {            
             targetCollection.addRequestIdToFolder(folder.id, request.id);
-            pm.indexedDB.updateCollection(targetCollection.getAsJSON(), function() {
-                pmCollection.trigger("updateCollection", targetCollection);            
+            pm.indexedDB.updateCollection(targetCollection.getAsJSON(), function() {                
+                pmCollection.trigger("moveRequestToFolder", targetCollection, folder, request);                
             });        
         }
         else {
@@ -832,8 +841,8 @@ var PmCollections = Backbone.Collection.extend({
                     targetCollection.addRequestIdToFolder(folder.id, req.id);
                     var collection = targetCollection.getAsJSON();
                     pm.indexedDB.updateCollection(collection, function() {                    
-                        targetCollection.get("requests").push(req);                    
-                        pmCollection.trigger("updateCollection", targetCollection);
+                        targetCollection.get("requests").push(req);                        
+                        pmCollection.trigger("moveRequestToFolder", targetCollection, folder, request);                                        
                     });
                 });
             });            
