@@ -206,22 +206,21 @@ var CollectionSidebar = Backbone.View.extend({
                     requests.splice(index, 1);
                 }
             }
-
-            folder["requests"] = folderRequests;     
+            
+            folder["requests"] = this.orderRequests(folderRequests, folderOrder);            
             newFolders.push(folder);       
         }
 
         collection.folders = newFolders;
         collection.requests = requests;
 
-        collection = this.orderRequests(collection);
+        collection.requests = this.orderRequests(collection.requests, collection.order);
 
         return collection;
     },
 
-    orderRequests: function(collection) {
-        var order = collection.order;
-        var requests = _.clone(collection.requests);        
+    orderRequests: function(inRequests, order) {
+        var requests = _.clone(inRequests);        
 
         function requestFinder(request) {
             return request.id === order[j];
@@ -242,9 +241,7 @@ var CollectionSidebar = Backbone.View.extend({
             requests = orderedRequests;            
         }
 
-        collection.requests = requests;
-
-        return collection;
+        return requests;
     },
 
     renderOneCollection:function (model, pmCollection) {
@@ -420,10 +417,8 @@ var CollectionSidebar = Backbone.View.extend({
                 var request_id = $("#" + li_id + " .request").attr("data-id");
                 order.push(request_id);
             }
-
-            console.log(collection_id, folder_id, order, pmCollection.getFolderById(folder_id));
-
-            // pmCollection.updateFolderOrder(collection_id, folder_id, order);
+            
+            pmCollection.updateFolderOrder(collection_id, folder_id, order);
         }   
         else {
             console.log("Inside collection list");
