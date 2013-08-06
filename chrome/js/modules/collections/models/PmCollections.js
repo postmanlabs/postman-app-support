@@ -89,9 +89,7 @@ var PmCollections = Backbone.Collection.extend({
             collection.name = name;
             collection.order = [];
             pm.indexedDB.addCollection(collection, function (collection) {                
-                pmCollection.add(collection, {merge: true});
-                //TODO: Drive syncing will be done later
-                // pm.collections.drive.queuePostFromCollection(collection);
+                pmCollection.add(collection, {merge: true});                
             });
 
         }
@@ -170,15 +168,7 @@ var PmCollections = Backbone.Collection.extend({
 
             var c = new PmCollection(dbCollection);
             c.setRequests(requests);
-
-            console.log("Final imported collection", c.toJSON());
             pmCollection.add(c, {merge: true});
-
-            if (toSyncWithDrive) {
-                //TODO: Drive syncing will be done later
-                pm.collections.drive.queuePostFromCollection(dbCollection);
-            }
-
         });
     },
 
@@ -204,9 +194,7 @@ var PmCollections = Backbone.Collection.extend({
         var targetCollection = pmCollection.get(id);
         targetCollection.set("order", order);
 
-        pm.indexedDB.updateCollection(targetCollection.getAsJSON(), function (collection) {
-            //TODO: Drive syncing will be done later
-            pm.collections.drive.queueUpdateFromId(collection.id);
+        pm.indexedDB.updateCollection(targetCollection.getAsJSON(), function (collection) {            
         });        
     },
 
@@ -597,9 +585,6 @@ var PmCollections = Backbone.Collection.extend({
                 c.updateRequest(collectionRequest);
 
                 pmCollection.trigger("updateCollectionRequest", request);
-
-                //TODO: Drive syncing will be done later
-                pm.collections.drive.queueUpdateFromId(collectionRequest.collectionId);
             });
         });
     },
