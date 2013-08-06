@@ -207,7 +207,7 @@ var App = Backbone.View.extend({
 	},
 
 	onModalClose:function () {
-		$('a[rel=tooltip]').tooltip('hide')
+		// $('a[rel=tooltip]').tooltip('hide')
 		this.model.set("activeModal", null);
 		this.model.set("isModalOpen", false);	    
 	},
