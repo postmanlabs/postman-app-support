@@ -1,10 +1,12 @@
 var HeaderPresets = Backbone.Model.extend({
     isLoaded: false,
-    initializedSyncing: false,
+    initializedSyncing: false,    
 
     defaults: function() {
         return {
+            "initialized": false,
             "syncFileID": "postman_header_presets",
+            "syncFileType": "header_presets",
             "presets":[],
             "presetsForAutoComplete":[]
         };
@@ -25,8 +27,15 @@ var HeaderPresets = Backbone.Model.extend({
             headerPresets.set({"presets": items});
             headerPresets.refreshAutoCompleteList();
 
-            headerPresets.isLoaded = true;
-            headerPresets.trigger("startSync");
+            if (!headerPresets.get("initialized")) {
+                headerPresets.set("initialized", true);
+                headerPresets.isLoaded = true;
+                headerPresets.trigger("startSync");    
+            }
+            else {
+                headerPresets.addToSyncableFilesystem(headerPresets.get("syncFileID"));
+            }
+            
         });
     },
 
@@ -148,7 +157,7 @@ var HeaderPresets = Backbone.Model.extend({
         var headerPresets = this;
 
         pm.indexedDB.headerPresets.addHeaderPreset(headerPreset, function () {
-            _.bind(headerPresets.loadPresets, headerPresets)();
+            _.bind(headerPresets.loadPresets, headerPresets)();            
         });
     },
 
@@ -173,7 +182,7 @@ var HeaderPresets = Backbone.Model.extend({
         var headerPresets = this;
 
         pm.indexedDB.headerPresets.deleteHeaderPreset(id, function () {
-            _.bind(headerPresets.loadPresets, headerPresets)();            
+            _.bind(headerPresets.loadPresets, headerPresets)();
         });
     },
 
