@@ -34,6 +34,7 @@ var Settings = Backbone.Model.extend({
         this.setSetting("driveStartChangeId", 0);
         this.setSetting("driveAppDataFolderId", 0);
         this.setSetting("lastDriveChangeTime", "");
+        this.setSetting("syncedGlobals", false);
     },
 
     initValues: function(callback) {
@@ -68,6 +69,8 @@ var Settings = Backbone.Model.extend({
             this.create("driveStartChangeId", 0);
             this.create("driveAppDataFolderId", 0);
             this.create("lastDriveChangeTime", "");
+
+            this.create("syncedGlobals", false);
 
             if (pm.isTesting) {
                 this.resetSettings();

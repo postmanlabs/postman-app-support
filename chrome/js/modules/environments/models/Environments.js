@@ -55,8 +55,6 @@ var Environments = Backbone.Collection.extend({
         this.on("startSync", this.startSyncing, this);
     },
 
-    // TODO Refactor this to abstract away all Google Drive specifc stuff
-    // Will be useful in switching adapters
     startSyncing: function() {        
         var i = 0;
         var collection = this;
@@ -90,10 +88,7 @@ var Environments = Backbone.Collection.extend({
                 environment = this.models[i];
                 synced = environment.get("synced");
 
-                if (synced) {
-                    console.log("No need to sync", environment);                    
-                }
-                else {
+                if (!synced) {
                     console.log("Sync", this.getAsSyncableFile(environment.get("id")));
                     this.addToSyncableFilesystem(environment.get("id"));                    
                 }

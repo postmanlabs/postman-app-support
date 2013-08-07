@@ -10,8 +10,6 @@ var HeaderPresets = Backbone.Model.extend({
         this.on("change:presets", this.refreshAutoCompleteList, this);
 
         this.loadPresets();
-        //TODO Disabling Drive for packaged apps
-        //pm.headerPresets.drive.registerHandlers();
     },
 
     loadPresets:function () {
@@ -49,9 +47,6 @@ var HeaderPresets = Backbone.Model.extend({
 
         pm.indexedDB.headerPresets.addHeaderPreset(headerPreset, function () {
             _.bind(headerPresets.loadPresets, headerPresets)();
-
-            //TODO: Drive Sync
-            headerPresets.drive.queueHeaderPresetPost(headerPreset);
         });
     },
 
@@ -68,9 +63,6 @@ var HeaderPresets = Backbone.Model.extend({
 
             pm.indexedDB.headerPresets.updateHeaderPreset(headerPreset, function () {
                 _.bind(headerPresets.loadPresets, headerPresets)();
-
-                //TODO: Drive Sync
-                headerPresets.drive.queueHeaderPresetUpdate(headerPreset);
             });
         });
     },
@@ -79,9 +71,7 @@ var HeaderPresets = Backbone.Model.extend({
         var headerPresets = this;
 
         pm.indexedDB.headerPresets.deleteHeaderPreset(id, function () {
-            _.bind(headerPresets.loadPresets, headerPresets)();
-            //TODO: Drive Sync
-            headerPresets.drive.queueHeaderPresetDelete(id);
+            _.bind(headerPresets.loadPresets, headerPresets)();            
         });
     },
 
