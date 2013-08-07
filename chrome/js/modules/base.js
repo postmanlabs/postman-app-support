@@ -27,7 +27,7 @@ pm.targets = {
 
 pm.target = pm.targets.CHROME_PACKAGED_APP;
 
-pm.isTesting = true;
+pm.isTesting = false;
 
 if (pm.isTesting) {
     pm.databaseName = "postman_test";    
@@ -163,9 +163,7 @@ pm.init = function () {
         });
 
         var appView = new App({model: appState});
-
         pm.app = appView;
-
     }
 
     function initializeHeaderPresets() {
@@ -196,14 +194,15 @@ pm.init = function () {
         var sidebar = new Sidebar({ model: sidebarState });        
     }
 
+    pm.mediator = new Mediator();
+    
     initializeStorage();
-
     pm.settings = new Settings();
 
     pm.settings.init(function() {
         var settingsModal = new SettingsModal({model: pm.settings});
         pm.filesystem.init();
-        pm.indexedDB.open(function() {            
+        pm.indexedDB.open(function() {
             initializeRequester();
             initializeHelpers();
             initializeHistory();
@@ -217,9 +216,10 @@ pm.init = function () {
             pm.collections.on("updateCollectionRequest", function(request) {
                 pm.request.checkIfCurrentRequestIsUpdated(request);
             });
-            
+
             pm.broadcasts.init();
 
+            pm.driveSync = new DriveSync();
             pm.hasPostmanInitialized = true;
             console.log("Set hasPostmanInitialized to true");
         });

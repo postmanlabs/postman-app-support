@@ -4,7 +4,9 @@ var Environment = Backbone.Model.extend({
             "id": "",
             "name": "",
             "values": [],
-            "timestamp": 0
+            "timestamp": 0,
+            "synced": false,
+            "syncedFilename": ""
         };
     }
 });
