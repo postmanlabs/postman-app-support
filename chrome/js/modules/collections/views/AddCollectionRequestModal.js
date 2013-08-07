@@ -2,9 +2,9 @@ var AddCollectionRequestModal = Backbone.View.extend({
     initialize: function() {
         var model = this.model;
 
-        this.model.on("add", this.onChanged, this);
-        this.model.on("remove", this.onChanged, this);
-        this.model.on("change", this.onChanged, this);
+        model.on("add", this.onChanged, this);
+        model.on("remove", this.onChanged, this);
+        model.on("change", this.onChanged, this);
 
         model.on("updateCollection", this.onChanged, this);
         model.on("updateCollectionMeta", this.onChanged, this);
@@ -29,7 +29,7 @@ var AddCollectionRequestModal = Backbone.View.extend({
 
         $("#modal-add-to-collection").on("shown", function () {
             $("#select-collection").focus();
-            pm.app.onModalOpen("#modal-add-to-collection");
+            pm.app.trigger("modalOpen", "#modal-add-to-collection");
 
             if (!view.editor) {
                 view.initializeEditor();    
@@ -37,7 +37,7 @@ var AddCollectionRequestModal = Backbone.View.extend({
         });
 
         $("#modal-add-to-collection").on("hidden", function () {
-            pm.app.onModalClose();
+            pm.app.trigger("modalClose");
         });
 
         //Initialize select-collection options        
@@ -167,8 +167,6 @@ var AddCollectionRequestModal = Backbone.View.extend({
         }
         else {
             this.model.addRequestToCollection(collectionRequest, collection);    
-        }
-        
-        this.model.trigger("displayCollectionDetails", collectionRequest);
+        }        
     }
 });

@@ -21,11 +21,11 @@ var EditFolderModal = Backbone.View.extend({
 
         $("#modal-edit-folder").on("shown", function () {
             $("#modal-edit-folder .folder-name").focus();
-            pm.app.onModalOpen("#modal-edit-folder");
+            pm.app.trigger("modalOpen", "#modal-edit-folder");
         });
 
         $("#modal-edit-folder").on("hidden", function () {
-            pm.app.onModalClose();
+            pm.app.trigger("modalClose");
         });
     },
 

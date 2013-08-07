@@ -9,11 +9,11 @@ var HeaderPresetsModal = Backbone.View.extend({
 
         $("#modal-header-presets").on("shown", function () {
             $(".header-presets-actions-add").focus();
-            pm.app.onModalOpen("#modal-header-presets");
+            pm.app.trigger("modalOpen", "#modal-header-presets");
         });
 
         $("#modal-header-presets").on("hidden", function () {
-            pm.app.onModalClose();
+            pm.app.trigger("modalClose");
         });
 
         $(".header-presets-actions-add").on("click", function () {

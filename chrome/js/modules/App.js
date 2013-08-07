@@ -3,6 +3,9 @@ var App = Backbone.View.extend({
 		var variableProcessor = this.model.get("variableProcessor");
 		var globals = this.model.get("globals");
 
+		this.on("modalClose", this.onModalClose, this);
+		this.on("modalOpen", this.onModalOpen, this);
+
 		variableProcessor.on('change:selectedEnv', this.renderContextMenu, this);
 		globals.on('change', this.renderContextMenu, this);
 

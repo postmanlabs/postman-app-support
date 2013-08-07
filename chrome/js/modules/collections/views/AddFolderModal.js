@@ -24,11 +24,11 @@ var AddFolderModal = Backbone.View.extend({
 
         $("#modal-add-folder").on("shown", function () {
             $("#add-folder-name").focus();
-            pm.app.onModalOpen("#modal-add-folder");
+            pm.app.trigger("modalOpen", "#modal-add-folder");
         });
 
         $("#modal-add-folder").on("hidden", function () {
-            pm.app.onModalClose();
+            pm.app.trigger("modalClose");
         });
     },
 

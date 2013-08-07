@@ -52,9 +52,6 @@ var RequestEditor = Backbone.View.extend({
 
         $('#add-to-collection').on("click", function () {
             view.updateModel();
-            if (pm.collections.areLoaded === false) {
-                pm.collections.getAllCollections();
-            }
         });
 
         $("#submit-request").on("click", function () {

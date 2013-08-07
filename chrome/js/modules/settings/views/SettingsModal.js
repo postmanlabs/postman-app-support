@@ -7,11 +7,11 @@ var SettingsModal = Backbone.View.extend({
 
         $("#modal-settings").on("shown", function () {
             $("#history-count").focus();
-            pm.app.onModalOpen("#modal-settings");
+            pm.app.trigger("modalOpen", "#modal-settings");
         });
 
         $("#modal-settings").on("hidden", function () {
-            pm.app.onModalClose();
+            pm.app.trigger("modalClose");
         });
 
         $('#history-count').change(function () {

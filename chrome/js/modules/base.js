@@ -27,7 +27,7 @@ pm.targets = {
 
 pm.target = pm.targets.CHROME_PACKAGED_APP;
 
-pm.isTesting = false;
+pm.isTesting = true;
 
 if (pm.isTesting) {
     pm.databaseName = "postman_test";    
@@ -217,8 +217,7 @@ pm.init = function () {
             pm.collections.on("updateCollectionRequest", function(request) {
                 pm.request.checkIfCurrentRequestIsUpdated(request);
             });
-
-            pm.drive.setupUiHandlers();
+            
             pm.broadcasts.init();
 
             pm.hasPostmanInitialized = true;

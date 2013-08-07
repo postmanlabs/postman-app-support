@@ -8,11 +8,11 @@ var DeleteFolderModal = Backbone.View.extend({
         });
 
         $("#modal-delete-folder").on("shown", function () {
-            pm.app.onModalOpen("#modal-delete-folder");
+            pm.app.trigger("modalOpen", "#modal-delete-folder");
         });
 
         $("#modal-delete-folder").on("hidden", function () {
-            pm.app.onModalClose();
+            pm.app.trigger("modalClose");
         });
     },
 

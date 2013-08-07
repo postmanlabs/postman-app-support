@@ -20,11 +20,11 @@ var EnvironmentManagerModal = Backbone.View.extend({
 
         $("#modal-environments").on("shown", function () {
             $('.environments-actions-add').focus();
-            pm.app.onModalOpen("#modal-environments");
+            pm.app.trigger("modalOpen", "#modal-environments");
         });
 
         $("#modal-environments").on("hidden", function () {
-            pm.app.onModalClose();
+            pm.app.trigger("modalClose");
         });
 
         $('#environments-list').on("click", ".environment-action-delete", function () {
