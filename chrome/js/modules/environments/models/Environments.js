@@ -35,7 +35,8 @@ var Environments = Backbone.Collection.extend({
         pm.indexedDB.environments.getAllEnvironments(function (environments) {
             collection.set("loaded", true);
             environments.sort(sortAlphabetical);
-            collection.add(environments, {merge: true});            
+            collection.add(environments, {merge: true});
+
             collection.isLoaded = true;
             collection.trigger("startSync");
         })
@@ -51,10 +52,12 @@ var Environments = Backbone.Collection.extend({
             collection.trigger("startSync");
         });
 
-        this.on("startSync", this.startSyncingEnvironments, this);
+        this.on("startSync", this.startSyncing, this);
     },
 
-    startSyncingEnvironments: function() {        
+    // TODO Refactor this to abstract away all Google Drive specifc stuff
+    // Will be useful in switching adapters
+    startSyncing: function() {        
         var i = 0;
         var collection = this;
         var environment;
@@ -64,50 +67,25 @@ var Environments = Backbone.Collection.extend({
         console.log("Start syncing environments");
 
         if (this.isLoaded && this.initializedSyncing) {
-            pm.mediator.on("syncableFileStatusChanged", function(detail) {
-                console.log("File status changed", detail);                
-                var direction = detail.direction;
-                var action = detail.action;
-                var name = detail.fileEntry.name;
-                var status = detail.status;
-                var s = splitSyncableFilename(name);
-
-                var id = s.id;
-                var type = s.type;
-
-                var addReceiver = _.bind(collection.onReceivingSyncableFileData, collection);
-                var updateReceiver = _.bind(collection.onReceivingSyncableFileData, collection);
-                var removeReceiver = _.bind(collection.onRemoveSyncableFile, collection);
-
+            pm.mediator.on("addSyncableFileFromRemote", function(type, data) {
                 if (type === "environment") {
-                    if (status === "synced") {
-                        if (direction === "remote_to_local") {
-                            if (action === "added") {
-                                console.log("Add local file to environment", id);
-                                pm.mediator.trigger("getSyncableFileData", detail.fileEntry, addReceiver);
-                            }
-                            else if (action === "updated") {
-                                console.log("Update local environment", id);
-                                pm.mediator.trigger("getSyncableFileData", detail.fileEntry, updateReceiver);
-                            }
-                            else if (action === "deleted") {
-                                console.log("Delete local environment", id);
-                                removeReceiver(id);
-                            }
-                        }
-                        else {
-                            console.log("direction was local_to_remote");
-                        }
-                    }
-                    else {
-                        console.log("Not synced");
-                    }                    
-                }                
-                else {
-                    console.log("Not environment");
-                }
+                    collection.onReceivingSyncableFileData(data);    
+                }            
             });
 
+            pm.mediator.on("updateSyncableFileFromRemote", function(type, data) {
+                if (type === "environment") {
+                    collection.onReceivingSyncableFileData(data);    
+                }
+            });
+            
+            pm.mediator.on("deleteSyncableFileFromRemote", function(type, id) {
+                if (type === "environment") {
+                    collection.onRemoveSyncableFile(id);    
+                }            
+            });            
+
+            // And this
             for(i = 0; i < this.models.length; i++) {
                 environment = this.models[i];
                 synced = environment.get("synced");
@@ -183,7 +161,6 @@ var Environments = Backbone.Collection.extend({
         collection.add(envModel);
 
         pm.indexedDB.environments.addEnvironment(environment, function () {
-
             if (doNotSync) {
                 console.log("Do not sync this change");
             }
@@ -279,12 +256,12 @@ var Environments = Backbone.Collection.extend({
 
     importEnvironment: function(data, doNotSync) {        
         var collection = this;
-        
+
         var environment = JSON.parse(data);
 
         pm.indexedDB.environments.addEnvironment(environment, function () {                        
             var envModel = new Environment(environment);
-            collection.add(envModel);            
+            collection.add(envModel, {merge: true});            
 
             if (doNotSync) {
                 console.log("Do not sync this");

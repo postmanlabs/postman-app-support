@@ -199,11 +199,51 @@ var DriveSync = Backbone.Model.extend({
     },
 
     startListeningForChanges: function() {
+    	var model = this;
+
     	chrome.syncFileSystem.onFileStatusChanged.addListener(
 			function(detail) {
 				console.log(detail);
-				pm.mediator.trigger("syncableFileStatusChanged", detail);
+				_.bind(model.onSyncableFileStatusChanged, model)(detail);		
 			}
 		);
+    },
+
+    onSyncableFileStatusChanged: function(detail) {
+    	var direction = detail.direction;
+    	var action = detail.action;
+    	var name = detail.fileEntry.name;
+    	var status = detail.status;
+    	var s = splitSyncableFilename(name);
+
+    	var id = s.id;
+    	var type = s.type;
+
+    	if (status === "synced") {
+    	    if (direction === "remote_to_local") {
+    	        if (action === "added") {
+    	            console.log("Add local file", id);
+    	            this.getFile(detail.fileEntry, function(data) {
+    	            	pm.mediator.trigger("addSyncableFileFromRemote", type, data);
+    	            });    	            
+    	        }
+    	        else if (action === "updated") {
+    	        	console.log("Update local file", id);
+    	        	this.getFile(detail.fileEntry, function(data) {
+    	        		pm.mediator.trigger("updateSyncableFileFromRemote", type, data);
+    	        	});    	        	
+    	        }
+    	        else if (action === "deleted") {
+    	            console.log("Delete local data", id);
+    	            pm.mediator.trigger("deleteSyncableFileFromRemote", type, id);    	            
+    	        }
+    	    }
+    	    else {
+    	        console.log("direction was local_to_remote");
+    	    }
+    	}
+    	else {
+    	    console.log("Not synced");
+    	}    	
     }
 });
