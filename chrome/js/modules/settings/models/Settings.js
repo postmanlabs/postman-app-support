@@ -71,6 +71,7 @@ var Settings = Backbone.Model.extend({
             this.create("lastDriveChangeTime", "");
 
             this.create("syncedGlobals", false);
+            this.create("syncedHeaderPresets", false);
 
             if (pm.isTesting) {
                 this.resetSettings();
