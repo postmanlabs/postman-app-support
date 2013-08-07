@@ -45,7 +45,7 @@ a, a:hover {
 ::-webkit-scrollbar {
   height: 16px;
   overflow: visible;
-  width: 10px; }
+  width: 8px; }
 
 ::-webkit-scrollbar-button {
   height: 0;
@@ -731,12 +731,14 @@ input[type="file"] {
 #request-method-selector {
   width: 100px; }
 
+#sidebar-filler {
+  width: 350px;
+  float: left; }
+
 #main {
   background: #fff;
-  float: left;
   padding-bottom: 20px;
-  margin-left: 350px;
-  min-height: 100%; }
+  overflow: scroll; }
 
 .headerText {
   font-weight: bolder;

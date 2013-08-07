@@ -220,10 +220,9 @@ var App = Backbone.View.extend({
 	    this.refreshScrollPanes();
 	},
 
-	refreshScrollPanes:function () {
-	    var newMainWidth = $('#container').width() - $('#sidebar').width() - 10;
-	    var newMainHeight = $(document).height() - 55;
-	    $('#main').width(newMainWidth + "px");
+	refreshScrollPanes:function () {	    
+	    var newMainHeight = $(document).height() - 55;	    
 	    $('#main').height(newMainHeight + "px");
+	    $('#sidebar-filler').height(newMainHeight + "px");
 	}
 });
