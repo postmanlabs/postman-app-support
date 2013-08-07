@@ -390,8 +390,19 @@ describe("Folders", function() {
 				expect(pm.tester.collectionHasRequest(1, "application/xml")).toBe(true);
 			});
 		});
+	});	
+
+	describe("add requests to folders", function() {
+		it("can add a request from add request dialog", function() {
+			
+		});		
 	});
-	
+
+	xdescribe("can search for requests within folders", function() {
+
+	});
+
+
 	describe("can clear all collections", function() {
 		it("cleared collections", function() {
 			var areRemoved = false;
@@ -411,15 +422,4 @@ describe("Folders", function() {
 			}, "could not remove all collections", waitTime)
 		});
 	});
-
-	xdescribe("add requests to folders", function() {
-		it("can add a request from add request dialog", function() {
-
-		});		
-	});
-
-	xdescribe("can search for requests within folders", function() {
-
-	});
-
 });
