@@ -26,7 +26,7 @@ var Environments = Backbone.Collection.extend({
         }
         return 1;
     },
-    
+
     initialize:function () {
         var collection = this;
         
@@ -127,28 +127,11 @@ var Environments = Backbone.Collection.extend({
     },
 
     onReceivingSyncableFileData: function(data) {
-        console.log("Received syncable file data", data);
-
-        var collection = this;
-
-        var environment = JSON.parse(data);
-
-        if (!environment) return;
-
-        pm.indexedDB.environments.addEnvironment(environment, function () {                        
-            console.log("Added data to onRemoveSyncableFileData");            
-            var envModel = new Environment(environment);
-            collection.add(envModel, {merge: true});
-            collection.updateEnvironmentSyncStatus(environment.id, true);
-        });
+        this.importEnvironment(data, true);
     },
 
     onRemoveSyncableFile: function(id) {
-        var collection = this;
-
-        pm.indexedDB.environments.deleteEnvironment(id, function () {
-            collection.remove(id);
-        });
+        this.deleteEnvironment(id, true);
     },
 
     getAsSyncableFile: function(id) {
@@ -183,7 +166,7 @@ var Environments = Backbone.Collection.extend({
         });
     },
 
-    addEnvironment:function (name, values) {
+    addEnvironment:function (name, values, doNotSync) {
         var collection = this;
 
         var environment = {
@@ -200,11 +183,18 @@ var Environments = Backbone.Collection.extend({
         collection.add(envModel);
 
         pm.indexedDB.environments.addEnvironment(environment, function () {
-            collection.addToSyncableFilesystem(environment.id);
+
+            if (doNotSync) {
+                console.log("Do not sync this change");
+            }
+            else {
+                collection.addToSyncableFilesystem(environment.id);    
+            }
+            
         });
     },
 
-    updateEnvironment:function (id, name, values) {
+    updateEnvironment:function (id, name, values, doNotSync) {
         var collection = this;
 
         var environment = {
@@ -217,7 +207,13 @@ var Environments = Backbone.Collection.extend({
         pm.indexedDB.environments.updateEnvironment(environment, function () {
             var envModel = new Environment(environment);
             collection.add(envModel, {merge: true});
-            collection.addToSyncableFilesystem(environment.id);
+
+            if (doNotSync) {
+                console.log("Do not sync this change");
+            }
+            else {
+                collection.addToSyncableFilesystem(environment.id);    
+            }            
         });
     },
 
@@ -235,12 +231,18 @@ var Environments = Backbone.Collection.extend({
         });
     },
 
-    deleteEnvironment:function (id) {
+    deleteEnvironment:function (id, doNotSync) {
         var collection = this;
 
         pm.indexedDB.environments.deleteEnvironment(id, function () {
             collection.remove(id);
-            collection.removeFromSyncableFilesystem(id);
+
+            if (doNotSync) {
+                console.log("Do not sync this");
+            }
+            else {
+                collection.removeFromSyncableFilesystem(id);     
+            }
         });
     },
 
@@ -275,6 +277,26 @@ var Environments = Backbone.Collection.extend({
         });
     },
 
+    importEnvironment: function(data, doNotSync) {        
+        var collection = this;
+        
+        var environment = JSON.parse(data);
+
+        pm.indexedDB.environments.addEnvironment(environment, function () {                        
+            var envModel = new Environment(environment);
+            collection.add(envModel);            
+
+            if (doNotSync) {
+                console.log("Do not sync this");
+            }
+            else {
+                collection.trigger("importedEnvironment", environment);
+                collection.addToSyncableFilesystem(environment.id);                     
+            }
+            
+        });
+    },
+
     importEnvironments:function (files) {
         var collection = this;
 
@@ -286,16 +308,7 @@ var Environments = Backbone.Collection.extend({
             reader.onload = (function (theFile) {
                 return function (e) {
                     // Render thumbnail.
-                    var data = e.currentTarget.result;
-                    var environment = JSON.parse(data);
-
-                    pm.indexedDB.environments.addEnvironment(environment, function () {                        
-                        var envModel = new Environment(environment);
-                        collection.add(envModel);
-                        collection.trigger("importedEnvironment", environment);
-
-                        collection.addToSyncableFilesystem(environment.id);                 
-                    });
+                    collection.importedEnvironment(e.currentTarget.result);
                 };
             })(f);
 
