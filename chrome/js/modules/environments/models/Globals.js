@@ -50,8 +50,6 @@ var Globals = Backbone.Model.extend({
         var synced;
         var syncableFile;
 
-        console.log("Start syncing globals");
-
         if (this.isLoaded && this.initializedSyncing) {
             pm.mediator.on("addSyncableFileFromRemote", function(type, data) {
                 if (type === "globals") {
@@ -72,10 +70,8 @@ var Globals = Backbone.Model.extend({
             });            
 
             synced = pm.settings.getSetting("syncedGlobals");
-                
-            console.log("checking if already synced");
-            if (!synced) {
-                console.log("Sync now!");
+
+            if (!synced) {                
                 this.addToSyncableFilesystem(this.get("syncFileID"));
             }
         }
@@ -110,10 +106,8 @@ var Globals = Backbone.Model.extend({
         var model = this;
 
         var syncableFile = this.getAsSyncableFile(id);
-        console.log("Sync globals. Triggering event", syncableFile);
 
-        pm.mediator.trigger("addSyncableFile", syncableFile, function(result) {
-            console.log("Updated globals sync status");
+        pm.mediator.trigger("addSyncableFile", syncableFile, function(result) {            
             if(result === "success") {
                 model.updateGlobalSyncStatus(id, true);
             }
@@ -123,12 +117,12 @@ var Globals = Backbone.Model.extend({
     removeFromSyncableFilesystem: function(id) {
         var name = id + ".globals";
         pm.mediator.trigger("removeSyncableFile", name, function(result) {
-            console.log("Removed file");
+            model.saveGlobals([]);
         });
     },
 
     updateGlobalSyncStatus: function(id, status) {
-        pm.settings.getSetting("syncedGlobals", status);
+        pm.settings.setSetting("syncedGlobals", status);
     },
 
     saveGlobals:function (globals) {        
