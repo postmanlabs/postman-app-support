@@ -4,6 +4,29 @@ var Environments = Backbone.Collection.extend({
     isLoaded: false,
     initializedSyncing: false,
 
+    comparator: function(a, b) {        
+        var counter;
+
+        var aName = a.get("name");
+        var bName = b.get("name");
+
+        if (aName.length > bName.legnth)
+            counter = bName.length;
+        else
+            counter = aName.length;
+
+        for (var i = 0; i < counter; i++) {
+            if (aName[i] == bName[i]) {
+                continue;
+            } else if (aName[i] > bName[i]) {
+                return 1;
+            } else {
+                return -1;
+            }
+        }
+        return 1;
+    },
+    
     initialize:function () {
         var collection = this;
         
@@ -12,8 +35,7 @@ var Environments = Backbone.Collection.extend({
         pm.indexedDB.environments.getAllEnvironments(function (environments) {
             collection.set("loaded", true);
             environments.sort(sortAlphabetical);
-            collection.add(environments, {merge: true});    
-            console.log("Received environments");            
+            collection.add(environments, {merge: true});            
             collection.isLoaded = true;
             collection.trigger("startSync");
         })
@@ -23,8 +45,6 @@ var Environments = Backbone.Collection.extend({
         var collection = this;
         var isLoaded = collection.isLoaded;
         var initializedSyncing = collection.initializedSyncing;
-
-        console.log("Environments startListeningForFileSystemSyncEvents");
 
         pm.mediator.on("initializedSyncableFileSystem", function() {
             collection.initializedSyncing = true;
@@ -44,8 +64,6 @@ var Environments = Backbone.Collection.extend({
         console.log("Start syncing environments");
 
         if (this.isLoaded && this.initializedSyncing) {
-            console.log("Have environments. Can sync", this.toJSON());
-
             pm.mediator.on("syncableFileStatusChanged", function(detail) {
                 console.log("File status changed", detail);                
                 var direction = detail.direction;
@@ -57,17 +75,24 @@ var Environments = Backbone.Collection.extend({
                 var id = s.id;
                 var type = s.type;
 
+                var addReceiver = _.bind(collection.onReceivingSyncableFileData, collection);
+                var updateReceiver = _.bind(collection.onReceivingSyncableFileData, collection);
+                var removeReceiver = _.bind(collection.onRemoveSyncableFile, collection);
+
                 if (type === "environment") {
                     if (status === "synced") {
                         if (direction === "remote_to_local") {
                             if (action === "added") {
                                 console.log("Add local file to environment", id);
+                                pm.mediator.trigger("getSyncableFileData", detail.fileEntry, addReceiver);
                             }
                             else if (action === "updated") {
                                 console.log("Update local environment", id);
+                                pm.mediator.trigger("getSyncableFileData", detail.fileEntry, updateReceiver);
                             }
                             else if (action === "deleted") {
                                 console.log("Delete local environment", id);
+                                removeReceiver(id);
                             }
                         }
                         else {
@@ -91,14 +116,39 @@ var Environments = Backbone.Collection.extend({
                     console.log("No need to sync", environment);                    
                 }
                 else {
-                    console.log("Sync", this.getAsSyncFile(environment.get("id")));
+                    console.log("Sync", this.getAsSyncableFile(environment.get("id")));
                     this.addToSyncableFilesystem(environment.get("id"));                    
                 }
             }
         }
         else {
-            // Wait for event to be called
+            console.log("Either environment not loaded or not initialized syncing");
         }
+    },
+
+    onReceivingSyncableFileData: function(data) {
+        console.log("Received syncable file data", data);
+
+        var collection = this;
+
+        var environment = JSON.parse(data);
+
+        if (!environment) return;
+
+        pm.indexedDB.environments.addEnvironment(environment, function () {                        
+            console.log("Added data to onRemoveSyncableFileData");            
+            var envModel = new Environment(environment);
+            collection.add(envModel, {merge: true});
+            collection.updateEnvironmentSyncStatus(environment.id, true);
+        });
+    },
+
+    onRemoveSyncableFile: function(id) {
+        var collection = this;
+
+        pm.indexedDB.environments.deleteEnvironment(id, function () {
+            collection.remove(id);
+        });
     },
 
     getAsSyncableFile: function(id) {
@@ -119,8 +169,9 @@ var Environments = Backbone.Collection.extend({
 
         var syncableFile = this.getAsSyncableFile(id);
         pm.mediator.trigger("addSyncableFile", syncableFile, function(result) {
+            console.log("Updated environment sync status");
             if(result === "success") {
-                collection.updateEnvironmentSyncStatus(id, true);        
+                collection.updateEnvironmentSyncStatus(id, true);
             }
         });
     },
@@ -177,8 +228,10 @@ var Environments = Backbone.Collection.extend({
         environment.set("synced", status);
         collection.add(environment, {merge: true});
 
+        console.log("Update environment sync status");
+
         pm.indexedDB.environments.updateEnvironment(environment.toJSON(), function () {            
-            console.log("Updated environment");
+            console.log("Updated environment sync status");
         });
     },
 
