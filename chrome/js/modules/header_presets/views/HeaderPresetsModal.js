@@ -2,7 +2,9 @@ var HeaderPresetsModal = Backbone.View.extend({
     el: $("#modal-header-presets"),
 
     initialize: function() {
-        this.model.on('change:presets', this.render, this);
+        this.model.on('add', this.render, this);
+        this.model.on('remove', this.render, this);
+        this.model.on('change', this.render, this);
 
         var headerPresets = this.model;
         var view = this;
@@ -43,9 +45,9 @@ var HeaderPresetsModal = Backbone.View.extend({
         $("#header-presets-list").on("click", ".header-preset-action-edit", function (event) {
             var id = $(event.currentTarget).attr("data-id");
             var preset = _.bind(headerPresets.getHeaderPreset, headerPresets)(id);
-            $('#header-presets-editor-name').val(preset.name);
-            $('#header-presets-editor-id').val(preset.id);
-            $('#header-presets-keyvaleditor').keyvalueeditor('reset', preset.headers);
+            $('#header-presets-editor-name').val(preset.get("name"));
+            $('#header-presets-editor-id').val(preset.get("id"));
+            $('#header-presets-keyvaleditor').keyvalueeditor('reset', preset.get("headers"));
             view.showEditor();
         });
 
@@ -73,6 +75,6 @@ var HeaderPresetsModal = Backbone.View.extend({
 
     render: function() {
         $('#header-presets-list tbody').html("");
-        $('#header-presets-list tbody').append(Handlebars.templates.header_preset_list({"items":this.model.get("presets")}));
+        $('#header-presets-list tbody').append(Handlebars.templates.header_preset_list({"items":this.model.toJSON()}));
     }
 });

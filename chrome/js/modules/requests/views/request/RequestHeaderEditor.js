@@ -191,18 +191,18 @@ var RequestHeaderEditor = Backbone.View.extend({
             $(this.currentFocusedRow).remove();
 
             var preset = pm.headerPresets.getHeaderPreset(item.id);
-            if("headers" in preset) {
-                var headers = $('#headers-keyvaleditor').keyvalueeditor('getValues');
-                var newHeaders = _.union(headers, preset.headers);
-                $('#headers-keyvaleditor').keyvalueeditor('reset', newHeaders);
+            
+            var headers = $('#headers-keyvaleditor').keyvalueeditor('getValues');
+            var newHeaders = _.union(headers, preset.get("headers"));
+            $('#headers-keyvaleditor').keyvalueeditor('reset', newHeaders);
 
-                //Ensures that the key gets focus
-                var element = $('#headers-keyvaleditor .keyvalueeditor-last input:first-child')[0];
-                $('#headers-keyvaleditor .keyvalueeditor-last input:first-child')[0].focus();
-                setTimeout(function() {
-                    element.focus();
-                }, 10);
-            }
+            //Ensures that the key gets focus
+            var element = $('#headers-keyvaleditor .keyvalueeditor-last input:first-child')[0];
+            $('#headers-keyvaleditor .keyvalueeditor-last input:first-child')[0].focus();
+            setTimeout(function() {
+                element.focus();
+            }, 10);
+            
         }
     }
 });

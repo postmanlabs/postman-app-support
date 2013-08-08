@@ -33,7 +33,7 @@ var Environments = Backbone.Collection.extend({
         this.startListeningForFileSystemSyncEvents();
 
         pm.indexedDB.environments.getAllEnvironments(function (environments) {
-            collection.set("loaded", true);
+            
             environments.sort(sortAlphabetical);
             collection.add(environments, {merge: true});
 
@@ -219,7 +219,8 @@ var Environments = Backbone.Collection.extend({
     },
 
     downloadEnvironment:function (id) {
-        var environment = this.get(id);
+        var environment = _.clone(this.get(id));
+        environment.set("synced", false);
 
         var name = environment.get("name") + ".postman_environment";
         var type = "application/json";

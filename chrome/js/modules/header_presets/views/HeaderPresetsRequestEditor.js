@@ -1,6 +1,7 @@
 var HeaderPresetsRequestEditor = Backbone.View.extend({
     initialize: function() {
-        this.model.on('change:presets', this.render, this);
+        this.model.on('add', this.render, this);
+        this.model.on('remove', this.render, this);
 
         var model = this.model;
 
@@ -23,7 +24,7 @@ var HeaderPresetsRequestEditor = Backbone.View.extend({
             if("headers" in preset) {
                 var headers = $('#headers-keyvaleditor').keyvalueeditor('getValues');
 
-                var newHeaders = _.union(headers, preset.headers);
+                var newHeaders = _.union(headers, preset.get("headers"));
                 $('#headers-keyvaleditor').keyvalueeditor('reset', newHeaders);
             }
         });
@@ -31,6 +32,6 @@ var HeaderPresetsRequestEditor = Backbone.View.extend({
 
     render: function() {
         $('#headers-keyvaleditor-actions-add-preset ul').html("");
-        $('#headers-keyvaleditor-actions-add-preset ul').append(Handlebars.templates.header_preset_dropdown({"items":this.model.get("presets")}));
+        $('#headers-keyvaleditor-actions-add-preset ul').append(Handlebars.templates.header_preset_dropdown({"items":this.model.toJSON()}));
     }
 });

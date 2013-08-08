@@ -1,149 +1,83 @@
-var HeaderPresets = Backbone.Model.extend({
+var HeaderPreset = Backbone.Model.extend({
+    defaults: function() {
+        return {
+            "id": "",
+            "name": "",
+            "headers": [],
+            "timestamp": 0,
+            "synced": false            
+        };
+    }
+});
+
+var HeaderPresets = Backbone.Collection.extend({
+    model: HeaderPreset,
+
     isLoaded: false,
-    initializedSyncing: false,    
+    initializedSyncing: false,
+
+    comparator: function(a, b) {        
+        var counter;
+
+        var aName = a.get("name");
+        var bName = b.get("name");
+
+        if (aName.length > bName.legnth)
+            counter = bName.length;
+        else
+            counter = aName.length;
+
+        for (var i = 0; i < counter; i++) {
+            if (aName[i] == bName[i]) {
+                continue;
+            } else if (aName[i] > bName[i]) {
+                return 1;
+            } else {
+                return -1;
+            }
+        }
+        return 1;
+    },
 
     defaults: function() {
         return {
-            "initialized": false,
-            "syncFileID": "postman_header_presets",
-            "syncFileType": "header_presets",
-            "presets":[],
-            "presetsForAutoComplete":[]
+            presets:[],
+            
         };
     },
 
-    init:function () {
-        this.on("change:presets", this.refreshAutoCompleteList, this);
+    presetsForAutoComplete:[],
 
+    init:function () {
+        this.on("change", this.refreshAutoCompleteList, this);
         this.loadPresets();
     },
 
-    loadPresets:function () {        
-        this.startListeningForFileSystemSyncEvents();
-
-        var headerPresets = this;
+    // Initialize all models
+    loadPresets:function () {
+        var collection = this;
 
         pm.indexedDB.headerPresets.getAllHeaderPresets(function (items) {
-            headerPresets.set({"presets": items});
-            headerPresets.refreshAutoCompleteList();
-
-            if (!headerPresets.get("initialized")) {
-                headerPresets.set("initialized", true);
-                headerPresets.isLoaded = true;
-                headerPresets.trigger("startSync");    
-            }
-            else {
-                headerPresets.addToSyncableFilesystem(headerPresets.get("syncFileID"));
-            }
-            
+            collection.add(items, {merge: true});            
+            collection.refreshAutoCompleteList();
         });
     },
 
-    startListeningForFileSystemSyncEvents: function() {
-        var model = this;
-        var isLoaded = model.isLoaded;
-        var initializedSyncing = model.initializedSyncing;
-
-        pm.mediator.on("initializedSyncableFileSystem", function() {
-            model.initializedSyncing = true;
-            model.trigger("startSync");
-        });
-
-        this.on("startSync", this.startSyncing, this);
-    },
-
-    startSyncing: function() {        
-        var i = 0;
-        var model = this;
-        var presets;
-        var synced;
-        var syncableFile;
-
-        if (this.isLoaded && this.initializedSyncing) {
-            pm.mediator.on("addSyncableFileFromRemote", function(type, data) {
-                if (type === "header_presets") {
-                    model.onReceivingSyncableFileData(data);    
-                }            
-            });
-
-            pm.mediator.on("updateSyncableFileFromRemote", function(type, data) {
-                if (type === "header_presets") {
-                    model.onReceivingSyncableFileData(data);    
-                }
-            });
-            
-            pm.mediator.on("deleteSyncableFileFromRemote", function(type, id) {
-                if (type === "header_presets") {
-                    model.onRemoveSyncableFile(id);    
-                }            
-            });            
-
-            synced = pm.settings.getSetting("syncedHeaderPresets");
-
-            if (!synced) {                
-                this.addToSyncableFilesystem(this.get("syncFileID"));
-            }
-        }
-        else {
-            console.log("Either presets not loaded or not initialized syncing");
-        }
-    },
-
-    onReceivingSyncableFileData: function(data) {
-        var presets = JSON.parse(data);
-        this.mergeHeaderPresets(presets);
-    },
-
-    onRemoveSyncableFile: function(id) {
-        console.log("Do nothing");
-    },
-
-    getAsSyncableFile: function(id) {        
-        var name = id + ".header_presets";
-        var type = "header_presets";
-        var data = JSON.stringify(this.get("presets"));
-
-        return {
-            "name": name,
-            "type": type,
-            "data": data
-        };
-    },
-
-    addToSyncableFilesystem: function(id) {
-        var model = this;
-
-        var syncableFile = this.getAsSyncableFile(id);
-
-        pm.mediator.trigger("addSyncableFile", syncableFile, function(result) {            
-            if(result === "success") {
-                model.updateHeaderPresetSyncStatus(id, true);
-            }
-        });
-    },
-
-    removeFromSyncableFilesystem: function(id) {
-        var name = id + ".header_presets";
-        pm.mediator.trigger("removeSyncableFile", name, function(result) {            
-        });
-    },
-
-    updateHeaderPresetSyncStatus: function(id, status) {
-        pm.settings.setSetting("syncedHeaderPresets", status);
-    },
-
+    // Iterate through models
     getHeaderPreset:function (id) {
-        var presets = this.get("presets");
+        var presets = this.models;
+        var preset;
         for (var i = 0, count = presets.length; i < count; i++) {
-            if (presets[i].id === id) {
+            preset = presets[i];
+            if (preset.get("id") === id) {
                 break;
             }
         }
-
-        var preset = presets[i];
+        
         return preset;
     },
 
+    // Add to models
     addHeaderPreset:function (name, headers) {
         var id = guid();
 
@@ -154,15 +88,16 @@ var HeaderPresets = Backbone.Model.extend({
             "timestamp":new Date().getTime()
         };
 
-        var headerPresets = this;
+        var collection = this;
 
         pm.indexedDB.headerPresets.addHeaderPreset(headerPreset, function () {
-            _.bind(headerPresets.loadPresets, headerPresets)();            
+            collection.add(headerPreset, {merge: true});
         });
     },
 
+    // Update local model
     editHeaderPreset:function (id, name, headers) {
-        var headerPresets = this;
+        var collection = this;
 
         pm.indexedDB.headerPresets.getHeaderPreset(id, function (preset) {
             var headerPreset = {
@@ -173,22 +108,23 @@ var HeaderPresets = Backbone.Model.extend({
             };
 
             pm.indexedDB.headerPresets.updateHeaderPreset(headerPreset, function () {
-                _.bind(headerPresets.loadPresets, headerPresets)();
+                collection.add(headerPreset, {merge: true});
             });
         });
     },
 
+    // Remove from local model
     deleteHeaderPreset:function (id) {
-        var headerPresets = this;
+        var collection = this;
 
         pm.indexedDB.headerPresets.deleteHeaderPreset(id, function () {
-            _.bind(headerPresets.loadPresets, headerPresets)();
+            collection.remove(id);
         });
     },
 
     getPresetsForAutoComplete:function () {
         var list = [];
-        var presets = this.get("presets");
+        var presets = this.toJSON();
 
         for (var i = 0, count = presets.length; i < count; i++) {
             var preset = presets[i];
@@ -209,17 +145,16 @@ var HeaderPresets = Backbone.Model.extend({
 
     refreshAutoCompleteList:function () {
         var presets = this.getPresetsForAutoComplete();
-        this.set({"presetsForAutoComplete": _.union(presets, chromeHeaders)});
+        this.presetsForAutoComplete = presets;        
     },
 
+    // TODO Used in data import. Use editHeaderPreset()
     mergeHeaderPresets: function(hp) {
         var size = hp.length;
-        var headerPresets = this;
+        var collection = this;
 
-        headerPresets.set({"presets": hp});
-
-        function onUpdateHeaderPreset() {
-            console.log("Updated header preset");
+        function onUpdateHeaderPreset(preset) {
+            collection.add(preset, {merge: true});
         }
 
         for(var i = 0; i < size; i++) {
