@@ -8,5 +8,11 @@ var Environment = Backbone.Model.extend({
             "synced": false,
             "syncedFilename": ""
         };
+    },
+
+    toSyncableJSON: function() {
+        var j = this.toJSON();
+        j.synced = true;
+        return j;
     }
 });

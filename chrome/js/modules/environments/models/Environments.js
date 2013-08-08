@@ -4,7 +4,7 @@ var Environments = Backbone.Collection.extend({
     isLoaded: false,
     initializedSyncing: false,
 
-    comparator: function(a, b) {        
+    comparator: function(a, b) {
         var counter;
 
         var aName = a.get("name");
@@ -29,11 +29,11 @@ var Environments = Backbone.Collection.extend({
 
     initialize:function () {
         var collection = this;
-        
+
         this.startListeningForFileSystemSyncEvents();
 
         pm.indexedDB.environments.getAllEnvironments(function (environments) {
-            
+
             environments.sort(sortAlphabetical);
             collection.add(environments, {merge: true});
 
@@ -55,7 +55,7 @@ var Environments = Backbone.Collection.extend({
         this.on("startSync", this.startSyncing, this);
     },
 
-    startSyncing: function() {        
+    startSyncing: function() {
         var i = 0;
         var collection = this;
         var environment;
@@ -67,21 +67,21 @@ var Environments = Backbone.Collection.extend({
         if (this.isLoaded && this.initializedSyncing) {
             pm.mediator.on("addSyncableFileFromRemote", function(type, data) {
                 if (type === "environment") {
-                    collection.onReceivingSyncableFileData(data);    
-                }            
+                    collection.onReceivingSyncableFileData(data);
+                }
             });
 
             pm.mediator.on("updateSyncableFileFromRemote", function(type, data) {
                 if (type === "environment") {
-                    collection.onReceivingSyncableFileData(data);    
+                    collection.onReceivingSyncableFileData(data);
                 }
             });
-            
+
             pm.mediator.on("deleteSyncableFileFromRemote", function(type, id) {
                 if (type === "environment") {
-                    collection.onRemoveSyncableFile(id);    
-                }            
-            });            
+                    collection.onRemoveSyncableFile(id);
+                }
+            });
 
             // And this
             for(i = 0; i < this.models.length; i++) {
@@ -90,7 +90,7 @@ var Environments = Backbone.Collection.extend({
 
                 if (!synced) {
                     console.log("Sync", this.getAsSyncableFile(environment.get("id")));
-                    this.addToSyncableFilesystem(environment.get("id"));                    
+                    this.addToSyncableFilesystem(environment.get("id"));
                 }
             }
         }
@@ -111,7 +111,7 @@ var Environments = Backbone.Collection.extend({
         var environment = this.get(id);
         var name = id + ".environment";
         var type = "environment";
-        var data = JSON.stringify(environment.toJSON());
+        var data = JSON.stringify(environment.toSyncableJSON());
 
         return {
             "name": name,
@@ -147,11 +147,11 @@ var Environments = Backbone.Collection.extend({
             name:name,
             values:values,
             timestamp:new Date().getTime(),
-            synced: false            
+            synced: false
         };
 
         console.log("Added environment", environment);
-        
+
         var envModel = new Environment(environment);
         collection.add(envModel);
 
@@ -160,9 +160,9 @@ var Environments = Backbone.Collection.extend({
                 console.log("Do not sync this change");
             }
             else {
-                collection.addToSyncableFilesystem(environment.id);    
+                collection.addToSyncableFilesystem(environment.id);
             }
-            
+
         });
     },
 
@@ -184,8 +184,8 @@ var Environments = Backbone.Collection.extend({
                 console.log("Do not sync this change");
             }
             else {
-                collection.addToSyncableFilesystem(environment.id);    
-            }            
+                collection.addToSyncableFilesystem(environment.id);
+            }
         });
     },
 
@@ -198,7 +198,7 @@ var Environments = Backbone.Collection.extend({
 
         console.log("Update environment sync status");
 
-        pm.indexedDB.environments.updateEnvironment(environment.toJSON(), function () {            
+        pm.indexedDB.environments.updateEnvironment(environment.toJSON(), function () {
             console.log("Updated environment sync status");
         });
     },
@@ -213,7 +213,7 @@ var Environments = Backbone.Collection.extend({
                 console.log("Do not sync this");
             }
             else {
-                collection.removeFromSyncableFilesystem(id);     
+                collection.removeFromSyncableFilesystem(id);
             }
         });
     },
@@ -243,30 +243,30 @@ var Environments = Backbone.Collection.extend({
 
         var collection = this;
 
-        pm.indexedDB.environments.addEnvironment(environment, function () {            
+        pm.indexedDB.environments.addEnvironment(environment, function () {
             var envModel = new Environment(environment);
             collection.add(envModel);
             collection.addToSyncableFilesystem(environment.id);
         });
     },
 
-    importEnvironment: function(data, doNotSync) {        
+    importEnvironment: function(data, doNotSync) {
         var collection = this;
 
         var environment = JSON.parse(data);
 
-        pm.indexedDB.environments.addEnvironment(environment, function () {                        
+        pm.indexedDB.environments.addEnvironment(environment, function () {
             var envModel = new Environment(environment);
-            collection.add(envModel, {merge: true});            
+            collection.add(envModel, {merge: true});
 
             if (doNotSync) {
                 console.log("Do not sync this");
             }
             else {
                 collection.trigger("importedEnvironment", environment);
-                collection.addToSyncableFilesystem(environment.id);                     
+                collection.addToSyncableFilesystem(environment.id);
             }
-            
+
         });
     },
 

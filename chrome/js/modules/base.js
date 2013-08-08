@@ -30,11 +30,11 @@ pm.target = pm.targets.CHROME_PACKAGED_APP;
 pm.isTesting = false;
 
 if (pm.isTesting) {
-    pm.databaseName = "postman_test";    
+    pm.databaseName = "postman_test";
     pm.webUrl = "http://localhost/postman/html";
 }
 else {
-    pm.databaseName = "postman";    
+    pm.databaseName = "postman";
     pm.webUrl = "http://getpostman.com";
 }
 
@@ -91,7 +91,7 @@ pm.init = function () {
 
     function initializeCollections() {
         var pmCollections = new PmCollections();
-        
+
         var addCollectionModal = new AddCollectionModal({model: pmCollections});
         var addFolderModal = new AddFolderModal({model: pmCollections});
         var editFolderModal = new EditFolderModal({model: pmCollections});
@@ -105,19 +105,19 @@ pm.init = function () {
         var addCollectionRequestModal = new AddCollectionRequestModal({model: pmCollections});
         var editCollectionRequestModal = new EditCollectionRequestModal({model: pmCollections});
         var deleteCollectionRequestModal = new DeleteCollectionRequestModal({model: pmCollections});
-        pm.collections = pmCollections;        
+        pm.collections = pmCollections;
     }
 
     function initializeHistory() {
         var history = new History();
-        pm.history = history;        
+        pm.history = history;
     }
 
     function initializeHelpers() {
         var basicAuthProcessor = new BasicAuthProcessor({request: pm.request});
         var digestAuthProcessor = new DigestAuthProcessor({request: pm.request});
         var oAuth1Processor = new OAuth1Processor({request: pm.request});
-        
+
         var helpers = new Helpers({
             "basicAuth": basicAuthProcessor,
             "digestAuth": digestAuthProcessor,
@@ -168,7 +168,6 @@ pm.init = function () {
 
     function initializeHeaderPresets() {
         pm.headerPresets = new HeaderPresets();
-        pm.headerPresets.init();
 
         var headerPresetsModal = new HeaderPresetsModal({model: pm.headerPresets});
         var headerPresetsRequestEditor = new HeaderPresetsRequestEditor({model: pm.headerPresets});
@@ -177,7 +176,7 @@ pm.init = function () {
     function initializeRequester() {
         var urlCache = new URLCache();
         pm.urlCache = urlCache;
-        
+
         var request = new Request();
         var requestEditor = new RequestEditor({model: request});
         var responseViewer = new ResponseViewer({model: request});
@@ -191,11 +190,11 @@ pm.init = function () {
 
     function initializeSidebar() {
         var sidebarState = new SidebarState({history: pm.history, collections: pm.collections});
-        var sidebar = new Sidebar({ model: sidebarState });        
+        var sidebar = new Sidebar({ model: sidebarState });
     }
 
     pm.mediator = new Mediator();
-    
+
     initializeStorage();
     pm.settings = new Settings();
 
@@ -211,7 +210,7 @@ pm.init = function () {
             initializeEnvironments();
             initializeHeaderPresets();
 
-            initializeSidebar();            
+            initializeSidebar();
 
             pm.collections.on("updateCollectionRequest", function(request) {
                 pm.request.checkIfCurrentRequestIsUpdated(request);

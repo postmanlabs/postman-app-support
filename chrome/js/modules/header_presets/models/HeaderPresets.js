@@ -5,8 +5,14 @@ var HeaderPreset = Backbone.Model.extend({
             "name": "",
             "headers": [],
             "timestamp": 0,
-            "synced": false            
+            "synced": false
         };
+    },
+
+    toSyncableJSON: function() {
+        var j = this.toJSON();
+        j.synced = true;
+        return j;
     }
 });
 
@@ -15,8 +21,9 @@ var HeaderPresets = Backbone.Collection.extend({
 
     isLoaded: false,
     initializedSyncing: false,
+    syncFileType: "header_preset",
 
-    comparator: function(a, b) {        
+    comparator: function(a, b) {
         var counter;
 
         var aName = a.get("name");
@@ -39,16 +46,9 @@ var HeaderPresets = Backbone.Collection.extend({
         return 1;
     },
 
-    defaults: function() {
-        return {
-            presets:[],
-            
-        };
-    },
-
     presetsForAutoComplete:[],
 
-    init:function () {
+    initialize:function () {
         this.on("change", this.refreshAutoCompleteList, this);
         this.loadPresets();
     },
@@ -57,9 +57,119 @@ var HeaderPresets = Backbone.Collection.extend({
     loadPresets:function () {
         var collection = this;
 
+        this.startListeningForFileSystemSyncEvents();
+
         pm.indexedDB.headerPresets.getAllHeaderPresets(function (items) {
-            collection.add(items, {merge: true});            
+            console.log("Loaded header presets");
+
+            collection.add(items, {merge: true});
             collection.refreshAutoCompleteList();
+
+            collection.isLoaded = true;
+            collection.trigger("startSync");
+        });
+    },
+
+    startListeningForFileSystemSyncEvents: function() {
+        var collection = this;
+        var isLoaded = collection.isLoaded;
+        var initializedSyncing = collection.initializedSyncing;
+
+        pm.mediator.on("initializedSyncableFileSystem", function() {
+            collection.initializedSyncing = true;
+            collection.trigger("startSync");
+        });
+
+        this.on("startSync", this.startSyncing, this);
+    },
+
+    startSyncing: function() {
+        var i = 0;
+        var collection = this;
+        var headerPreset;
+        var synced;
+        var syncableFile;
+
+        console.log("Start syncing headerPresets");
+
+        if (this.isLoaded && this.initializedSyncing) {
+            pm.mediator.on("addSyncableFileFromRemote", function(type, data) {
+                if (type === collection.syncFileType) {
+                    console.log("Calling onReceivingSyncableFileData");
+                    collection.onReceivingSyncableFileData(data);
+                }
+            });
+
+            pm.mediator.on("updateSyncableFileFromRemote", function(type, data) {
+                if (type === collection.syncFileType) {
+                    console.log("Calling onReceivingSyncableFileData");
+                    collection.onReceivingSyncableFileData(data);
+                }
+            });
+
+            pm.mediator.on("deleteSyncableFileFromRemote", function(type, id) {
+                if (type === collection.syncFileType) {
+                    collection.onRemoveSyncableFile(id);
+                }
+            });
+
+            // And this
+            for(i = 0; i < this.models.length; i++) {
+                headerPreset = this.models[i];
+                synced = headerPreset.get("synced");
+
+                if (!synced) {
+                    console.log("Sync", this.getAsSyncableFile(headerPreset.get("id")));
+                    this.addToSyncableFilesystem(headerPreset.get("id"));
+                }
+            }
+        }
+        else {
+            console.log("Either headerPreset not loaded or not initialized syncing");
+        }
+    },
+
+    onReceivingSyncableFileData: function(data) {
+        console.log("Add data", JSON.parse(data));
+        this.mergeHeaderPreset(JSON.parse(data), true);
+    },
+
+    onRemoveSyncableFile: function(id) {
+        this.deleteHeaderPreset(id, true);
+    },
+
+    getAsSyncableFile: function(id) {
+        var collection = this;
+        var headerPreset = this.get(id);
+        var name = id + "." + collection.syncFileType;
+        var type = collection.syncFileType;
+        var data = JSON.stringify(headerPreset.toSyncableJSON());
+
+        return {
+            "name": name,
+            "type": type,
+            "data": data
+        };
+    },
+
+    addToSyncableFilesystem: function(id) {
+        var collection = this;
+
+        var syncableFile = this.getAsSyncableFile(id);
+        pm.mediator.trigger("addSyncableFile", syncableFile, function(result) {
+            console.log("Updated headerPreset sync status");
+            if(result === "success") {
+                collection.updateHeaderPresetSyncStatus(id, true);
+            }
+        });
+    },
+
+    removeFromSyncableFilesystem: function(id) {
+        var collection = this;
+
+        var name = id + "." + collection.syncFileType;
+        pm.mediator.trigger("removeSyncableFile", name, function(result) {
+            console.log("Removed file");
         });
     },
 
@@ -73,12 +183,12 @@ var HeaderPresets = Backbone.Collection.extend({
                 break;
             }
         }
-        
+
         return preset;
     },
 
     // Add to models
-    addHeaderPreset:function (name, headers) {
+    addHeaderPreset:function (name, headers, doNotSync) {
         var id = guid();
 
         var headerPreset = {
@@ -92,11 +202,15 @@ var HeaderPresets = Backbone.Collection.extend({
 
         pm.indexedDB.headerPresets.addHeaderPreset(headerPreset, function () {
             collection.add(headerPreset, {merge: true});
+
+            if (!doNotSync) {
+                collection.addToSyncableFilesystem(id);
+            }
         });
     },
 
     // Update local model
-    editHeaderPreset:function (id, name, headers) {
+    editHeaderPreset:function (id, name, headers, doNotSync) {
         var collection = this;
 
         pm.indexedDB.headerPresets.getHeaderPreset(id, function (preset) {
@@ -109,16 +223,38 @@ var HeaderPresets = Backbone.Collection.extend({
 
             pm.indexedDB.headerPresets.updateHeaderPreset(headerPreset, function () {
                 collection.add(headerPreset, {merge: true});
+
+                if (!doNotSync) {
+                    collection.addToSyncableFilesystem(id);
+                }
             });
         });
     },
 
+    updateHeaderPresetSyncStatus: function(id, status) {
+        var collection = this;
+
+        var headerPreset = this.get(id);
+        headerPreset.set("synced", status);
+        collection.add(headerPreset, {merge: true});
+
+        console.log("Update headerPreset sync status");
+
+        pm.indexedDB.headerPresets.updateHeaderPreset(headerPreset.toJSON(), function () {
+            console.log("Updated headerPreset sync status");
+        });
+    },
+
     // Remove from local model
-    deleteHeaderPreset:function (id) {
+    deleteHeaderPreset:function (id, doNotSync) {
         var collection = this;
 
         pm.indexedDB.headerPresets.deleteHeaderPreset(id, function () {
             collection.remove(id);
+
+            if (!doNotSync) {
+                collection.removeFromSyncableFilesystem(id);
+            }
         });
     },
 
@@ -145,21 +281,31 @@ var HeaderPresets = Backbone.Collection.extend({
 
     refreshAutoCompleteList:function () {
         var presets = this.getPresetsForAutoComplete();
-        this.presetsForAutoComplete = presets;        
+        this.presetsForAutoComplete = presets;
     },
 
-    // TODO Used in data import. Use editHeaderPreset()
+    mergeHeaderPreset: function(preset, doNotSync) {
+        var collection = this;
+
+        pm.indexedDB.headerPresets.addHeaderPreset(preset, function(headerPreset) {
+            console.log("Added header preset");
+            collection.add(headerPreset, {merge: true});
+
+            if (!doNotSync) {
+                collection.addToSyncableFilesystem(headerPreset.id);
+            }
+        });
+
+    },
+
     mergeHeaderPresets: function(hp) {
         var size = hp.length;
         var collection = this;
-
-        function onUpdateHeaderPreset(preset) {
-            collection.add(preset, {merge: true});
-        }
+        var headerPreset;
 
         for(var i = 0; i < size; i++) {
-            var headerPreset = hp[i];
-            pm.indexedDB.headerPresets.updateHeaderPreset(headerPreset, onUpdateHeaderPreset);
+            headerPreset = hp[i];
+            collection.mergeHeaderPreset(headerPreset);
         }
     }
 });
