@@ -43,7 +43,7 @@ var Globals = Backbone.Model.extend({
         this.on("startSync", this.startSyncing, this);
     },
 
-    startSyncing: function() {        
+    startSyncing: function() {
         var i = 0;
         var model = this;
         var globals;
@@ -53,25 +53,25 @@ var Globals = Backbone.Model.extend({
         if (this.isLoaded && this.initializedSyncing) {
             pm.mediator.on("addSyncableFileFromRemote", function(type, data) {
                 if (type === "globals") {
-                    model.onReceivingSyncableFileData(data);    
-                }            
+                    model.onReceivingSyncableFileData(data);
+                }
             });
 
             pm.mediator.on("updateSyncableFileFromRemote", function(type, data) {
                 if (type === "globals") {
-                    model.onReceivingSyncableFileData(data);    
+                    model.onReceivingSyncableFileData(data);
                 }
             });
-            
+
             pm.mediator.on("deleteSyncableFileFromRemote", function(type, id) {
                 if (type === "globals") {
-                    model.onRemoveSyncableFile(id);    
-                }            
-            });            
+                    model.onRemoveSyncableFile(id);
+                }
+            });
 
             synced = pm.settings.getSetting("syncedGlobals");
 
-            if (!synced) {                
+            if (!synced) {
                 this.addToSyncableFilesystem(this.get("syncFileID"));
             }
         }
@@ -90,7 +90,7 @@ var Globals = Backbone.Model.extend({
         // this.deleteEnvironment(id, true);
     },
 
-    getAsSyncableFile: function(id) {        
+    getAsSyncableFile: function(id) {
         var name = id + ".globals";
         var type = "globals";
         var data = JSON.stringify(this.get("globals"));
@@ -107,8 +107,9 @@ var Globals = Backbone.Model.extend({
 
         var syncableFile = this.getAsSyncableFile(id);
 
-        pm.mediator.trigger("addSyncableFile", syncableFile, function(result) {            
+        pm.mediator.trigger("addSyncableFile", syncableFile, function(result) {
             if(result === "success") {
+                console.log("Setting global sync status as true");
                 model.updateGlobalSyncStatus(id, true);
             }
         });
@@ -125,7 +126,7 @@ var Globals = Backbone.Model.extend({
         pm.settings.setSetting("syncedGlobals", status);
     },
 
-    saveGlobals:function (globals) {        
+    saveGlobals:function (globals) {
         var model = this;
 
         this.set({"globals": globals});

@@ -4,12 +4,12 @@ pm.indexedDB = {
     TABLE_DRIVE_FILES: "drive_files",
     TABLE_DRIVE_CHANGES: "drive_changes",
 
-    onTransactionComplete: function(callback) {        
+    onTransactionComplete: function(callback) {
         if (pm.isTesting) {
             pm.indexedDB.clearAllObjectStores(function() {
                 callback();
             });
-        }        
+        }
         else {
             callback();
         }
@@ -219,22 +219,7 @@ pm.indexedDB = {
 
         var request;
 
-        if("order" in collection) {
-            request = store.put({
-                "id":collection.id,
-                "name":collection.name,
-                "order":collection.order,
-                "timestamp":new Date().getTime()
-            });
-        }
-        else {
-            request = store.put({
-                "id":collection.id,
-                "name":collection.name,
-                "timestamp":new Date().getTime()
-            });
-        }
-
+        request = store.put(collection);
 
         request.onsuccess = function () {
             callback(collection);
@@ -384,6 +369,7 @@ pm.indexedDB = {
             var result = e.target.result;
 
             if (!result) {
+                console.log("Found requests", collection, requests);
                 callback(collection, requests);
                 return;
             }
@@ -754,7 +740,7 @@ pm.indexedDB = {
                 console.log(e);
             };
         },
-        
+
         getAllHeaderPresets:function (callback) {
             var db = pm.indexedDB.db;
             if (db === null) {
@@ -1113,7 +1099,7 @@ pm.indexedDB = {
         });
     },
 
-    importAllData: function(files, callback) {        
+    importAllData: function(files, callback) {
         if (files.length !== 1) {
             return;
         }
@@ -1147,7 +1133,7 @@ pm.indexedDB = {
                 pm.collections.mergeCollections(data.collections);
             }
 
-            if ("environments" in data) {                
+            if ("environments" in data) {
                 console.log("Import environments");
                 environments.mergeEnvironments(data.environments);
             }

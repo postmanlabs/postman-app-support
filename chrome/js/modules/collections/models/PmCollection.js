@@ -6,13 +6,21 @@ var PmCollection = Backbone.Model.extend({
             "order": [],
             "folders": [],
             "requests": [],
-            "timestamp": 0
+            "timestamp": 0,
+            "synced": false,
+            "syncedFilename": ""
         };
     },
 
+    toSyncableJSON: function() {
+        var j = this.getAsJSON();
+        j.synced = true;
+        return j;
+    },
+
     setRequests: function(requests) {
-        this.set("requests", requests);        
-    },    
+        this.set("requests", requests);
+    },
 
     getRequestIndex: function(newRequest) {
     	var requests = this.get("requests");
@@ -42,13 +50,13 @@ var PmCollection = Backbone.Model.extend({
     	this.get("requests").push(newRequest);
     },
 
-    deleteRequest: function(requestId) {        
+    deleteRequest: function(requestId) {
         var requests = _.clone(this.get("requests"));
-    	var location = arrayObjectIndexOf(requests, requestId, "id");    
-    	if (location !== -1) {            
+    	var location = arrayObjectIndexOf(requests, requestId, "id");
+    	if (location !== -1) {
             this.removeRequestIdFromOrderOrFolder(requestId);
-    		requests.splice(location, 1);           
-            this.set("requests", requests); 
+    		requests.splice(location, 1);
+            this.set("requests", requests);
     	}
     },
 
@@ -76,14 +84,14 @@ var PmCollection = Backbone.Model.extend({
         var index = arrayObjectIndexOf(folders, id, "id");
 
         if (index !== -1) {
-            folders.splice(index, 1, folder);            
+            folders.splice(index, 1, folder);
             this.set("folders", folders);
-        }     
+        }
     },
 
-    deleteFolder: function(id) {        
+    deleteFolder: function(id) {
         var folders = _.clone(this.get("folders"));
-        var index = arrayObjectIndexOf(folders, id, "id");        
+        var index = arrayObjectIndexOf(folders, id, "id");
         folders.splice(index, 1);
         this.set("folders", folders);
     },
@@ -94,7 +102,8 @@ var PmCollection = Backbone.Model.extend({
             "name": this.get("name"),
             "order": this.get("order"),
             "folders": this.get("folders"),
-            "timestamp": this.get("timestamp")
+            "timestamp": this.get("timestamp"),
+            "synced": this.get("synced")
         }
     },
 
@@ -102,7 +111,7 @@ var PmCollection = Backbone.Model.extend({
         this.removeRequestIdFromOrderOrFolder(requestId);
 
         var folders = _.clone(this.get("folders"));
-        var index = arrayObjectIndexOf(folders, id, "id");        
+        var index = arrayObjectIndexOf(folders, id, "id");
         folders[index].order.push(requestId);
         this.set("folders", folders);
     },
@@ -121,12 +130,12 @@ var PmCollection = Backbone.Model.extend({
         var folders = _.clone(this.get("folders"));
 
         var indexInOrder = order.indexOf(requestId);
-        
+
         if (indexInOrder >= 0) {
             order.splice(indexInOrder, 1);
             this.set("order", order);
         }
-                
+
         for(var i = 0; i < folders.length; i++) {
             indexInFolder = folders[i].order.indexOf(requestId);
             if(indexInFolder >= 0) {
@@ -138,6 +147,6 @@ var PmCollection = Backbone.Model.extend({
             folders[i].order.splice(indexInFolder, 1);
             this.set("folders", folders);
         }
-    
+
     }
 });

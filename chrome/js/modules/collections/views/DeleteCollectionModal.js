@@ -4,7 +4,7 @@ var DeleteCollectionModal = Backbone.View.extend({
 
         $('#modal-delete-collection-yes').on("click", function () {
             var id = $(this).attr('data-id');
-            model.deleteCollection(id, true);
+            model.deleteCollection(id);
         });
 
         $("#modal-delete-collection").on("shown", function () {
