@@ -369,7 +369,6 @@ pm.indexedDB = {
             var result = e.target.result;
 
             if (!result) {
-                console.log("Found requests", collection, requests);
                 callback(collection, requests);
                 return;
             }

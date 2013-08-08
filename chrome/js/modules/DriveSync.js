@@ -11,7 +11,7 @@ var DriveSync = Backbone.Model.extend({
     },
 
     initialize: function(options) {
-    	console.log("Initializing syncable file system");
+    	console.log("DriveSync", "Initializing syncable file system");
     	this.openSyncableFileSystem();
     },
 
@@ -39,7 +39,7 @@ var DriveSync = Backbone.Model.extend({
             break;
         }
 
-        console.log('Error: ' + msg);
+        console.log("DriveSync", 'Error: ' + msg);
     },
 
     openSyncableFileSystem: function() {
@@ -51,12 +51,12 @@ var DriveSync = Backbone.Model.extend({
         canSync = true;
 
         if (!canSync) {
-            console.log("Drive sync is disabled");
+            console.log("DriveSync", "Drive sync is disabled");
             return false;
         }
         else {
             chrome.syncFileSystem.requestFileSystem(function (fs) {
-                console.log("Received file system");
+                console.log("DriveSync", "Received file system");
 
                 if (chrome.runtime.lastError) {
                     // TODO Need to handle this in a better way
@@ -79,22 +79,22 @@ var DriveSync = Backbone.Model.extend({
     	var model = this;
 
     	this.set("fileSystem", fs);
-    	console.log('Got FileSystem:', fs);
+    	console.log("DriveSync", 'Got FileSystem:', fs);
     	this.set("initializedSync", true);
     	pm.mediator.trigger("initializedSyncableFileSystem");
 
     	pm.mediator.on("addSyncableFile", function(syncableFile, callback) {
-    		console.log("addSyncableFile", syncableFile);
+    		console.log("DriveSync", "addSyncableFile", syncableFile);
     		model.syncFile(syncableFile, callback);
     	});
 
     	pm.mediator.on("updateSyncableFile", function(syncableFile, callback) {
-    		console.log("updateSyncableFile", syncableFile);
+    		console.log("DriveSync", "updateSyncableFile", syncableFile);
     		model.syncFile(syncableFile, callback);
     	});
 
     	pm.mediator.on("removeSyncableFile", function(name, callback) {
-    		console.log("removeSyncableFile", name);
+    		console.log("DriveSync", "removeSyncableFile", name);
     		model.removeFile(name);
     	});
 
@@ -132,7 +132,7 @@ var DriveSync = Backbone.Model.extend({
 
     // Add/edit file
     syncFile: function(syncableFile, callback) {
-    	console.log("Starting to sync file");
+    	console.log("DriveSync", "Starting to sync file");
 
     	var fileSystem = this.get("fileSystem");
     	var name = syncableFile.name;
@@ -143,31 +143,24 @@ var DriveSync = Backbone.Model.extend({
     	    {create:true},
     	    function (fileEntry) {
     	        if (!fileEntry) {
-    	        	console.log("Could not get fileEntry");
                     return;
                 }
-
-                console.log("Creating writer and writing");
 
                 fileEntry.createWriter(function(writer) {
                     var truncated = false;
 
                     writer.onerror = function (e) {
-                    	console.log("Failed", e);
                     	if (callback) {
                     		callback("failed");
                     	}
                     };
 
                     writer.onwriteend = function(e) {
-                    	console.log("Finished writing", e);
                         if (!truncated) {
                             truncated = true;
                             this.truncate(this.position);
                             return;
                         }
-
-                        console.log('write complete');
 
                         if (callback) {
                         	callback("success");
@@ -175,7 +168,6 @@ var DriveSync = Backbone.Model.extend({
 
                     };
 
-                    console.log("Starting write", writer);
                     blob = new Blob([data], {type:'text/plain'});
 
                     writer.write(blob);
@@ -185,21 +177,16 @@ var DriveSync = Backbone.Model.extend({
     },
 
     getFile: function(fileEntry, callback) {
-    	console.log("Getting file");
 
     	var errorHandler = this.errorHandler;
 
     	fileEntry.file(function(file) {
-    		console.log("Starting to read file");
 
 			var reader = new FileReader();
 			reader.readAsText(file, "utf-8");
 
 			reader.onload = function(ev) {
-				console.log("Finished reading file", ev, ev.target.result);
-
 				if (callback) {
-					console.log("Called callback");
 					callback(ev.target.result);
 				}
 			};
@@ -216,7 +203,6 @@ var DriveSync = Backbone.Model.extend({
 
     	chrome.syncFileSystem.onFileStatusChanged.addListener(
 			function(detail) {
-				console.log(detail);
 				_.bind(model.onSyncableFileStatusChanged, model)(detail);
 			}
 		);
@@ -232,31 +218,33 @@ var DriveSync = Backbone.Model.extend({
     	var id = s.id;
     	var type = s.type;
 
+        console.log("DriveSync", "File status was changed", detail);
+
     	if (status === "synced") {
     	    if (direction === "remote_to_local") {
     	        if (action === "added") {
-    	            console.log("Add local file", id);
+    	            console.log("DriveSync", "Add local file", id);
     	            this.getFile(detail.fileEntry, function(data) {
     	            	pm.mediator.trigger("addSyncableFileFromRemote", type, data);
     	            });
     	        }
     	        else if (action === "updated") {
-    	        	console.log("Update local file", id);
+    	        	console.log("DriveSync", "Update local file", id);
     	        	this.getFile(detail.fileEntry, function(data) {
     	        		pm.mediator.trigger("updateSyncableFileFromRemote", type, data);
     	        	});
     	        }
     	        else if (action === "deleted") {
-    	            console.log("Delete local data", id);
+    	            console.log("DriveSync","Delete local data", id);
     	            pm.mediator.trigger("deleteSyncableFileFromRemote", type, id);
     	        }
     	    }
     	    else {
-    	        console.log("direction was local_to_remote");
+    	        console.log("DriveSync","direction was local_to_remote");
     	    }
     	}
     	else {
-    	    console.log("Not synced");
+    	    console.log("DriveSync","Not synced");
     	}
     }
 });

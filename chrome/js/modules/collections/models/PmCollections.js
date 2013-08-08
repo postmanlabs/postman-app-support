@@ -53,7 +53,7 @@ var PmCollections = Backbone.Collection.extend({
                 c.setRequests(requests);
                 pmCollection.add(c, {merge: true});
 
-                console.log(c.toJSON());
+                console.log("PmCollections", c.toJSON());
 
                 loaded++;
 
@@ -69,7 +69,7 @@ var PmCollections = Backbone.Collection.extend({
 
             for (var i = 0; i < itemsLength; i++) {
                 var collection = items[i];
-                console.log("Stored collection is ",  collection);
+                console.log("PmCollections", "Stored collection is ",  collection);
                 pm.indexedDB.getAllRequestsInCollection(collection, onGetAllRequestsInCollection);
             }
         });
@@ -98,7 +98,7 @@ var PmCollections = Backbone.Collection.extend({
         var synced;
         var syncableFile;
 
-        console.log("Start syncing collections");
+        console.log("PmCollections", "Start syncing collections");
 
         // TODO Add additional checks for collection_request
         if (this.isLoaded && this.initializedSyncing) {
@@ -135,53 +135,57 @@ var PmCollections = Backbone.Collection.extend({
                 synced = collection.get("synced");
 
                 if (!synced) {
+                    console.log("PmCollections", "Collection is not synced");
                     this.addToSyncableFilesystem(collection.get("id"));
                 }
 
                 requests = collection.get("requests");
 
+                console.log("PmCollections", "Collection requests are ", requests);
+
                 for(j = 0; j < requests.length; j++) {
                     var request = requests[j];
 
-                    if ("synced" in request) {
-                        if (!requests.synced) {
+                    if (request.hasOwnProperty("synced")) {
+                        if (!request.synced) {
+                            console.log("PmCollections", "Request is not synced. Synced contained", request);
                             this.addRequestToSyncableFilesystem(request.id);
                         }
                     }
                     else {
+                        console.log("PmCollections", "Request is not synced", request);
                         this.addRequestToSyncableFilesystem(request.id);
                     }
                 }
             }
         }
         else {
-            console.log("Either collection not loaded or not initialized syncing");
+            console.log("PmCollections", "Either collection not loaded or not initialized syncing");
         }
     },
 
     onReceivingSyncableFileData: function(data) {
-        console.log("Received data", data);
         var collection = JSON.parse(data);
-        console.log("Received data. Do something with this", collection);
+        console.log("PmCollections", "PmCollections", "PmCollections", "Received data", collection);
         this.addCollectionFromSyncableFileSystem(collection);
     },
 
     onRemoveSyncableFile: function(id) {
-        console.log("Received deleted id", id);
+        console.log("PmCollections", "PmCollections", "Received deleted id", id);
         this.deleteCollection(id, true);
     },
 
     onReceivingSyncableFileDataForRequests: function(data) {
-        console.log("Received data", data);
+        console.log("PmCollections", "Received data", data);
         var request = JSON.parse(data);
-        console.log("Received data. Do something with this", request);
+        console.log("PmCollections", "Received data. Do something with this", request);
         this.addRequestFromSyncableFileSystem(request);
     },
 
     onRemoveSyncableFileForRequests: function(id) {
-        console.log("Received deleted id", id);
+        console.log("PmCollections", "Received deleted id", id);
         this.deleteCollectionRequest(id, function() {
-            console.log("Deleted collection request");
+            console.log("PmCollections", "Deleted collection request");
         }, true);
     },
 
@@ -190,7 +194,7 @@ var PmCollections = Backbone.Collection.extend({
         var name = id + ".collection";
         var type = "collection";
 
-        console.log("Syncable file is ", collection.toSyncableJSON());
+        console.log("PmCollections", "Syncable file is ", collection.toSyncableJSON());
 
         var data = JSON.stringify(collection.toSyncableJSON());
 
@@ -222,9 +226,9 @@ var PmCollections = Backbone.Collection.extend({
 
         var syncableFile = this.getAsSyncableFile(id);
         pm.mediator.trigger("addSyncableFile", syncableFile, function(result) {
-            console.log("Updated collection sync status");
+            console.log("PmCollections", "Updated collection sync status");
             if(result === "success") {
-                console.log("Update local sync status");
+                console.log("PmCollections", "Update local sync status");
                 pmCollection.updateCollectionSyncStatus(id, true);
             }
         });
@@ -233,7 +237,7 @@ var PmCollections = Backbone.Collection.extend({
     removeFromSyncableFilesystem: function(id) {
         var name = id + ".collection";
         pm.mediator.trigger("removeSyncableFile", name, function(result) {
-            console.log("Removed file");
+            console.log("PmCollections", "Removed file");
         });
     },
 
@@ -242,9 +246,9 @@ var PmCollections = Backbone.Collection.extend({
 
         var syncableFile = this.getRequestAsSyncableFile(id);
         pm.mediator.trigger("addSyncableFile", syncableFile, function(result) {
-            console.log("Updated collection sync status");
+            console.log("PmCollections", "Updated collection sync status");
             if(result === "success") {
-                console.log("Update local sync status");
+                console.log("PmCollections", "Update local sync status");
                 pmCollection.updateCollectionRequestSyncStatus(id, true);
             }
         });
@@ -253,7 +257,7 @@ var PmCollections = Backbone.Collection.extend({
     removeRequestFromSyncableFilesystem: function(id) {
         var name = id + ".collection_request";
         pm.mediator.trigger("removeSyncableFile", name, function(result) {
-            console.log("Removed file");
+            console.log("PmCollections", "Removed file");
         });
     },
 
@@ -300,7 +304,7 @@ var PmCollections = Backbone.Collection.extend({
     },
 
     addCollectionFromSyncableFileSystem:function (collection) {
-        console.log("Received collection from drive sync", collection);
+        console.log("PmCollections", "Received collection from drive sync", collection);
 
         var pmCollection = this;
 
@@ -308,13 +312,14 @@ var PmCollections = Backbone.Collection.extend({
             function onGetAllRequestsInCollection(collection, requests) {
                 var c = new PmCollection(collection);
                 c.setRequests(requests);
+                c.set("syncede", true);
                 pmCollection.add(c, {merge: true});
 
                 for(var i = 0; i < requests.length; i++) {
                     pm.urlCache.addUrl(requests[i].url);
                 }
 
-                console.log("Updated collection is ", collection);
+                console.log("PmCollections", "Updated collection is ", collection);
                 pmCollection.trigger("updateCollection", c);
             }
 
@@ -374,6 +379,7 @@ var PmCollections = Backbone.Collection.extend({
             }
 
             function onAddCollectionRequest(req) {
+                //Add drive sync code
             }
 
             for (var i = 0; i < collection.requests.length; i++) {
@@ -468,7 +474,7 @@ var PmCollections = Backbone.Collection.extend({
         targetCollection.set("synced", status);
 
         pm.indexedDB.updateCollection(targetCollection.getAsJSON(), function (collection) {
-            console.log("Update collection sync status", status);
+            console.log("PmCollections", "Update collection sync status", status);
         });
     },
 
@@ -532,7 +538,7 @@ var PmCollections = Backbone.Collection.extend({
     saveCollection:function (id) {
         this.getCollectionData(id, function (name, type, filedata) {
             var filename = name + ".postman_collection";
-            console.log(filedata);
+            console.log("PmCollections", filedata);
             pm.filesystem.saveAndOpenFile(filename, filedata, type, function () {
                 noty(
                     {
@@ -737,7 +743,7 @@ var PmCollections = Backbone.Collection.extend({
 
             var requests = collection.get("requests");
 
-            console.log(requests, id);
+            console.log("PmCollections", requests, id);
 
             var request = _.find(requests, existingRequestFinder);
             if (request) {
@@ -817,7 +823,7 @@ var PmCollections = Backbone.Collection.extend({
                     pmCollection.trigger("addCollectionRequest", req);
 
                     pm.indexedDB.updateCollection(newCollection, function() {
-                        console.log("Updating collection", newCollection);
+                        console.log("PmCollections", "Updating collection", newCollection);
 
                         if (!doNotSync) {
                             pmCollection.addRequestToSyncableFilesystem(collectionRequest.id);
@@ -910,25 +916,40 @@ var PmCollections = Backbone.Collection.extend({
     deleteCollectionRequest:function (id, callback, doNotSync) {
         var pmCollection = this;
         var request = this.getRequestById(id);
-        var targetCollection = this.get(request.collectionId);
+        var targetCollection;
+
+        if (request) {
+            targetCollection = this.get(request.collectionId);
+        }
 
         pm.indexedDB.deleteCollectionRequest(id, function () {
-            targetCollection.deleteRequest(id);
-            collection = targetCollection.getAsJSON();
-            pm.indexedDB.updateCollection(collection, function (collection) {
-                console.log("Removing collection request");
+            if (targetCollection) {
+                targetCollection.deleteRequest(id);
+                collection = targetCollection.getAsJSON();
+                pm.indexedDB.updateCollection(collection, function (collection) {
+                    console.log("PmCollections", "Removing collection request");
 
-                pmCollection.trigger("removeCollectionRequest", request);
+                    pmCollection.trigger("removeCollectionRequest", request);
 
+                    if (!doNotSync) {
+                        pmCollection.removeRequestFromSyncableFilesystem(request.id);
+                        pmCollection.addToSyncableFilesystem(collection.id);
+                    }
+
+                    if(callback) {
+                        callback();
+                    }
+                });
+            }
+            else {
                 if (!doNotSync) {
                     pmCollection.removeRequestFromSyncableFilesystem(request.id);
-                    pmCollection.addToSyncableFilesystem(collection.id);
                 }
 
                 if(callback) {
                     callback();
                 }
-            });
+            }
         });
     },
 

@@ -109,7 +109,6 @@ var Globals = Backbone.Model.extend({
 
         pm.mediator.trigger("addSyncableFile", syncableFile, function(result) {
             if(result === "success") {
-                console.log("Setting global sync status as true");
                 model.updateGlobalSyncStatus(id, true);
             }
         });
