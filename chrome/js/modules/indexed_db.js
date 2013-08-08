@@ -352,6 +352,36 @@ pm.indexedDB = {
         };
     },
 
+    getAllRequestsForCollectionId:function (id, callback) {
+        var db = pm.indexedDB.db;
+        var trans = db.transaction(["collection_requests"], "readwrite");
+
+        //Get everything in the store
+        var keyRange = IDBKeyRange.only(id);
+        var store = trans.objectStore("collection_requests");
+
+        var index = store.index("collectionId");
+        var cursorRequest = index.openCursor(keyRange);
+
+        var requests = [];
+
+        cursorRequest.onsuccess = function (e) {
+            var result = e.target.result;
+
+            if (!result) {
+                callback(requests);
+                return;
+            }
+
+            var request = result.value;
+            requests.push(request);
+
+            //This wil call onsuccess again and again until no more request is left
+            result['continue']();
+        };
+        cursorRequest.onerror = pm.indexedDB.onerror;
+    },
+
     getAllRequestsInCollection:function (collection, callback) {
         var db = pm.indexedDB.db;
         var trans = db.transaction(["collection_requests"], "readwrite");
@@ -553,7 +583,7 @@ pm.indexedDB = {
         var request = store['delete'](id);
 
         request.onsuccess = function () {
-            pm.indexedDB.deleteAllCollectionRequests(id);
+            // pm.indexedDB.deleteAllCollectionRequests(id);
             callback(id);
         };
 

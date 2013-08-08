@@ -225,12 +225,14 @@ var DriveSync = Backbone.Model.extend({
     	        if (action === "added") {
     	            console.log("DriveSync", "Add local file", id);
     	            this.getFile(detail.fileEntry, function(data) {
+                        console.log("DriveSync", "Received data", data);
     	            	pm.mediator.trigger("addSyncableFileFromRemote", type, data);
     	            });
     	        }
     	        else if (action === "updated") {
     	        	console.log("DriveSync", "Update local file", id);
     	        	this.getFile(detail.fileEntry, function(data) {
+                        console.log("DriveSync", "Received data", data);
     	        		pm.mediator.trigger("updateSyncableFileFromRemote", type, data);
     	        	});
     	        }

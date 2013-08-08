@@ -62,16 +62,25 @@ var PmCollections = Backbone.Collection.extend({
                 }
 
                 if (loaded === itemsLength) {
+                    console.log("PmCollections", "Starting sync");
                     pmCollection.isLoaded = true;
                     pmCollection.trigger("startSync");
                 }
             }
 
-            for (var i = 0; i < itemsLength; i++) {
-                var collection = items[i];
-                console.log("PmCollections", "Stored collection is ",  collection);
-                pm.indexedDB.getAllRequestsInCollection(collection, onGetAllRequestsInCollection);
+            if (itemsLength === 0) {
+                pmCollection.isLoaded = true;
+                pmCollection.trigger("startSync");
             }
+            else {
+                for (var i = 0; i < itemsLength; i++) {
+                    var collection = items[i];
+                    console.log("PmCollections", "Stored collection is ",  collection);
+                    pm.indexedDB.getAllRequestsInCollection(collection, onGetAllRequestsInCollection);
+                }
+            }
+
+
         });
     },
 
@@ -98,11 +107,12 @@ var PmCollections = Backbone.Collection.extend({
         var synced;
         var syncableFile;
 
-        console.log("PmCollections", "Start syncing collections");
-
         // TODO Add additional checks for collection_request
         if (this.isLoaded && this.initializedSyncing) {
+            console.log("PmCollections", "Start syncing collections");
+
             pm.mediator.on("addSyncableFileFromRemote", function(type, data) {
+                console.log("PmCollections", type, data);
                 if (type === "collection") {
                     pmCollection.onReceivingSyncableFileData(data);
                 }
@@ -112,6 +122,7 @@ var PmCollections = Backbone.Collection.extend({
             });
 
             pm.mediator.on("updateSyncableFileFromRemote", function(type, data) {
+                console.log("PmCollections", type, data);
                 if (type === "collection") {
                     pmCollection.onReceivingSyncableFileData(data);
                 }
@@ -166,12 +177,12 @@ var PmCollections = Backbone.Collection.extend({
 
     onReceivingSyncableFileData: function(data) {
         var collection = JSON.parse(data);
-        console.log("PmCollections", "PmCollections", "PmCollections", "Received data", collection);
+        console.log("PmCollections", "Received data", collection);
         this.addCollectionFromSyncableFileSystem(collection);
     },
 
     onRemoveSyncableFile: function(id) {
-        console.log("PmCollections", "PmCollections", "Received deleted id", id);
+        console.log("PmCollections", "Received deleted id", id);
         this.deleteCollection(id, true);
     },
 
@@ -312,7 +323,7 @@ var PmCollections = Backbone.Collection.extend({
             function onGetAllRequestsInCollection(collection, requests) {
                 var c = new PmCollection(collection);
                 c.setRequests(requests);
-                c.set("syncede", true);
+                c.set("synced", true);
                 pmCollection.add(c, {merge: true});
 
                 for(var i = 0; i < requests.length; i++) {
@@ -380,6 +391,9 @@ var PmCollections = Backbone.Collection.extend({
 
             function onAddCollectionRequest(req) {
                 //Add drive sync code
+                if (!doNotSync) {
+                    pmCollection.addRequestToSyncableFilesystem(req.id);
+                }
             }
 
             for (var i = 0; i < collection.requests.length; i++) {
@@ -501,15 +515,56 @@ var PmCollections = Backbone.Collection.extend({
         var pmCollection = this;
 
         pm.indexedDB.deleteCollection(id, function () {
-            pmCollection.remove(id);
+            // Call deleteCollectionRequest
+            function onGetAllRequestsInCollection(requests) {
+                var deleted = 0;
+                var requestCount = requests.length;
+                var request;
 
-            if (!doNotSync) {
-                pmCollection.removeFromSyncableFilesystem(id);
+                if (requestCount > 0) {
+                    for(var i = 0; i < requests.length; i++) {
+                        request = requests[i];
+
+                        pm.indexedDB.deleteCollectionRequest(request.id, function (requestId) {
+                            deleted++;
+
+                            if (!doNotSync) {
+                                pmCollection.removeRequestFromSyncableFilesystem(requestId);
+                            }
+
+                            if (deleted === requestCount) {
+                                pmCollection.remove(id);
+
+                                if (!doNotSync) {
+                                    pmCollection.removeFromSyncableFilesystem(id);
+                                }
+
+                                console.log("All requests removed, now removing collection");
+
+                                if (callback) {
+                                    callback();
+                                }
+                            }
+                        });
+                    }
+                }
+                else {
+                    pmCollection.remove(id);
+
+                    if (!doNotSync) {
+                        pmCollection.removeFromSyncableFilesystem(id);
+                    }
+
+                    console.log("All requests removed, now removing collection");
+
+                    if (callback) {
+                        callback();
+                    }
+                }
+
             }
 
-            if (callback) {
-                callback();
-            }
+            pm.indexedDB.getAllRequestsForCollectionId(id, onGetAllRequestsInCollection);
         });
     },
 
