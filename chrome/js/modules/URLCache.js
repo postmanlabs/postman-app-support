@@ -5,6 +5,14 @@ var URLCache = Backbone.Model.extend({
         }
     },
 
+    initialize: function() {
+        var model = this;
+
+        pm.mediator.on("addToURLCache", function(url) {
+            model.addUrl(url);
+        });
+    },
+
     addUrl:function (url) {
         var urls = this.get("urls");
 

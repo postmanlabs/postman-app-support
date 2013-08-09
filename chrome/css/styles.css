@@ -486,8 +486,7 @@ li .right {
   cursor: pointer; }
 
 .folder-head {
-  font-weight: bold;
-  padding-bottom: 5px; }
+  font-weight: bold; }
 
 .folder-head:hover {
   background-color: #DEDEDE; }

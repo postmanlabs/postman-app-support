@@ -54,7 +54,7 @@ var CollectionSidebar = Backbone.View.extend({
             view.toggleRequestList(id);
         });
 
-        $collection_items.on("click", ".folder-head-name", function () {            
+        $collection_items.on("click", ".folder-head-name", function () {
             var id = $(this).attr('data-id');
             view.toggleSubRequestList(id);
         });
@@ -64,7 +64,7 @@ var CollectionSidebar = Backbone.View.extend({
             view.toggleRequestList(id);
         });
 
-        $collection_items.on("click", ".collection-actions-add-folder", function () {            
+        $collection_items.on("click", ".collection-actions-add-folder", function () {
             var id = $(this).attr('data-id');
             var c = model.get(id);
             model.trigger("showAddFolderModal", c);
@@ -81,7 +81,7 @@ var CollectionSidebar = Backbone.View.extend({
             var name = $(this).attr('data-name');
 
             $('#modal-delete-collection-yes').attr('data-id', id);
-            $('#modal-delete-collection-name').html(name);            
+            $('#modal-delete-collection-name').html(name);
         });
 
         $collection_items.on("click", ".folder-actions-edit", function () {
@@ -96,7 +96,7 @@ var CollectionSidebar = Backbone.View.extend({
             var name = $(this).attr('data-name');
 
             $('#modal-delete-folder-yes').attr('data-id', id);
-            $('#modal-delete-folder-name').html(name);            
+            $('#modal-delete-folder-name').html(name);
         });
 
         $collection_items.on("click", ".collection-actions-download", function () {
@@ -120,7 +120,7 @@ var CollectionSidebar = Backbone.View.extend({
         });
 
         $collection_items.on("click", ".request-actions-load", function () {
-            var id = $(this).attr('data-id');            
+            var id = $(this).attr('data-id');
             model.loadCollectionRequest(id);
         });
 
@@ -133,7 +133,7 @@ var CollectionSidebar = Backbone.View.extend({
 
         $collection_items.on("click", ".request-actions-edit", function () {
             var id = $(this).attr('data-id');
-            var request = model.getRequestById(id);            
+            var request = model.getRequestById(id);
 
             model.trigger("editCollectionRequest", request);
         });
@@ -200,15 +200,15 @@ var CollectionSidebar = Backbone.View.extend({
                 id = folderOrder[j];
 
                 var index = arrayObjectIndexOf(requests, id, "id");
-                
+
                 if(index >= 0) {
                     folderRequests.push(requests[index]);
                     requests.splice(index, 1);
                 }
             }
-            
-            folder["requests"] = this.orderRequests(folderRequests, folderOrder);            
-            newFolders.push(folder);       
+
+            folder["requests"] = this.orderRequests(folderRequests, folderOrder);
+            newFolders.push(folder);
         }
 
         collection.folders = newFolders;
@@ -220,7 +220,7 @@ var CollectionSidebar = Backbone.View.extend({
     },
 
     orderRequests: function(inRequests, order) {
-        var requests = _.clone(inRequests);        
+        var requests = _.clone(inRequests);
 
         function requestFinder(request) {
             return request.id === order[j];
@@ -229,16 +229,16 @@ var CollectionSidebar = Backbone.View.extend({
         if (order.length === 0) {
             requests.sort(sortAlphabetical);
         }
-        else {                                        
+        else {
             var orderedRequests = [];
             for (var j = 0, len = order.length; j < len; j++) {
                 var element = _.find(requests, requestFinder);
                 if(element) {
-                    orderedRequests.push(element);    
-                }                
+                    orderedRequests.push(element);
+                }
             }
 
-            requests = orderedRequests;            
+            requests = orderedRequests;
         }
 
         return requests;
@@ -256,8 +256,8 @@ var CollectionSidebar = Backbone.View.extend({
         var currentEl = $("#collection-" + collection.id + " .sidebar-collection-head-dt");
         if (currentEl.length) {
             var currentClass = currentEl.attr("class");
-            wasOpen = currentClass.search("open") >= 0;    
-        }        
+            wasOpen = currentClass.search("open") >= 0;
+        }
 
         this.renderCollectionContainerInSidebar(collection);
         this.renderFoldersInSidebar(collection);
@@ -266,7 +266,7 @@ var CollectionSidebar = Backbone.View.extend({
         var targetElement = "#collection-requests-" + collection.id;
 
         this.renderRequestsInSidebar(targetElement, requests);
-        
+
         if (wasOpen) {
             this.openCollection(collection.id, false);
         }
@@ -281,19 +281,19 @@ var CollectionSidebar = Backbone.View.extend({
 
         var model = this.model;
         var view = this;
-        var collections = this.model.toJSON();        
+        var collections = this.model.toJSON();
 
         collectionSidebarListPosition = arrayObjectIndexOf(collections, collection.id, "id");
 
-        if (currentEl.length) {            
+        if (currentEl.length) {
             if (collectionSidebarListPosition === 0) {
                 if(collections[collectionSidebarListPosition + 1]) {
                     insertionType = "before";
-                    insertTarget = $('#collection-' + collections[collectionSidebarListPosition + 1].id);                    
+                    insertTarget = $('#collection-' + collections[collectionSidebarListPosition + 1].id);
                 }
                 else {
                     insertionType = "none";
-                }                
+                }
             }
             else {
                 insertionType = "after";
@@ -364,7 +364,7 @@ var CollectionSidebar = Backbone.View.extend({
             });
 
             for(i = 0; i < folders.length; i++) {
-                targetElement = "#folder-requests-" + folders[i].id;                             
+                targetElement = "#folder-requests-" + folders[i].id;
                 this.renderRequestsInSidebar(targetElement, folders[i].requests);
             }
         }
@@ -374,12 +374,12 @@ var CollectionSidebar = Backbone.View.extend({
         if (!requests) return;
 
         var view = this;
-                 
+
         var count = requests.length;
         var requestTargetElement;
 
-        if (count > 0) {                
-            for (var i = 0; i < count; i++) {                    
+        if (count > 0) {
+            for (var i = 0; i < count; i++) {
                 if (typeof requests[i].name === "undefined") {
                     requests[i].name = requests[i].url;
                 }
@@ -400,11 +400,11 @@ var CollectionSidebar = Backbone.View.extend({
     onUpdateSortableCollectionRequestList: function(event, ui) {
         var pmCollection = this.model;
 
-        var isInFolder = $(event.target).attr("class").search("folder-requests") >= 0;        
+        var isInFolder = $(event.target).attr("class").search("folder-requests") >= 0;
 
         if(isInFolder) {
             var folder_id = $(event.target).attr("data-id");
-            var target_parent = $(event.target).parent(".folder-requests");            
+            var target_parent = $(event.target).parent(".folder-requests");
             var target_parent_collection = $(event.target).parents(".sidebar-collection");
             var collection_id = $(target_parent_collection).attr("data-id");
             var ul_id = $(target_parent.context).attr("id");
@@ -417,9 +417,9 @@ var CollectionSidebar = Backbone.View.extend({
                 var request_id = $("#" + li_id + " .request").attr("data-id");
                 order.push(request_id);
             }
-            
+
             pmCollection.updateFolderOrder(collection_id, folder_id, order);
-        }   
+        }
         else {
             console.log("Inside collection list");
             var target_parent = $(event.target).parents(".sidebar-collection-requests");
@@ -437,18 +437,18 @@ var CollectionSidebar = Backbone.View.extend({
             }
 
             pmCollection.updateCollectionOrder(collection_id, order);
-        }            
+        }
     },
 
     updateCollectionMeta: function(collection) {
-        var id = collection.id;
+        var id = collection.get("id");
 
         var currentClass = $("#collection-" + id + " .sidebar-collection-head-dt").attr("class");
         var collectionHeadHtml = '<span class="sidebar-collection-head-dt"><img src="img/dt.png"/></span>';
-        collectionHeadHtml += " " + collection.name;
+        collectionHeadHtml += " " + collection.get("name");
 
         $('#collection-' + collection.id + " .sidebar-collection-head-name").html(collectionHeadHtml);
-        $('#select-collection option[value="' + collection.id + '"]').html(collection.name);
+        $('#select-collection option[value="' + collection.get("id") + '"]').html(collection.get("name"));
 
         if(currentClass.indexOf("open") >= 0) {
             $("#collection-" + id + " .sidebar-collection-head-dt").addClass("disclosure-triangle-open");
@@ -459,8 +459,6 @@ var CollectionSidebar = Backbone.View.extend({
     },
 
     onAddFolder: function(collection, folder) {
-        console.log("onAddFolder", collection, folder);
-
         var folderContainer = "#folders-" + collection.id;
         $(folderContainer).append(Handlebars.templates.item_collection_folder(folder));
 
@@ -481,13 +479,13 @@ var CollectionSidebar = Backbone.View.extend({
     },
 
     onMoveRequestToFolder: function(targetCollection, folder, request) {
-        this.removeCollectionRequest(request);
-        var targetElement = $("#folder-requests-" + folder.id);        
+        this.removeCollectionRequest(request.id);
+        var targetElement = $("#folder-requests-" + folder.id);
         this.addRequestToFolder(folder, request);
     },
 
-    onMoveRequestToCollection: function(targetCollection, request) {        
-        this.removeCollectionRequest(request);
+    onMoveRequestToCollection: function(targetCollection, request) {
+        this.removeCollectionRequest(request.id);
 
         var targetElement = "#collection-requests-" + request.collectionId;
         this.addRequestToList(targetElement, request);
@@ -497,7 +495,7 @@ var CollectionSidebar = Backbone.View.extend({
         var view = this;
 
         $('#sidebar-request-' + request.id).draggable({});
-        
+
         if (typeof request.name === "undefined") {
             request.name = request.url;
         }
@@ -529,7 +527,7 @@ var CollectionSidebar = Backbone.View.extend({
     addCollectionRequest: function(request) {
         var targetElement = "#collection-requests-" + request.collectionId;
 
-        $('.sidebar-collection-request').removeClass('sidebar-collection-request-active');        
+        $('.sidebar-collection-request').removeClass('sidebar-collection-request-active');
         $('#sidebar-request-' + request.id).addClass('sidebar-collection-request-active');
 
         this.addRequestToList(targetElement, request);
@@ -540,8 +538,8 @@ var CollectionSidebar = Backbone.View.extend({
         pm.request.loadRequestInEditor(request);
     },
 
-    removeCollectionRequest: function(request) {
-        $('#sidebar-request-' + request.id).remove();
+    removeCollectionRequest: function(id) {
+        $('#sidebar-request-' + id).remove();
     },
 
     updateCollectionRequest: function(request) {
@@ -571,7 +569,7 @@ var CollectionSidebar = Backbone.View.extend({
             else {
                 $(target).slideDown(100, function () {
                 });
-            }            
+            }
         }
     },
 
@@ -593,7 +591,7 @@ var CollectionSidebar = Backbone.View.extend({
     },
 
     toggleSubRequestList: function(id) {
-        var target = "#folder-requests-" + id;        
+        var target = "#folder-requests-" + id;
 
         if ($(target).css("display") === "none") {
             $("#folder-" + id + " .folder-head-dt").removeClass("disclosure-triangle-close");
@@ -636,7 +634,7 @@ var CollectionSidebar = Backbone.View.extend({
             var collectionChildrenDomId = "#collection-children-" + c.id;
             var dtDomId = "#collection-" + c.id + " .sidebar-collection-head-dt";
 
-            if(c.toShow) {                
+            if(c.toShow) {
                 $(collectionDomId).css("display", "block");
                 $(collectionChildrenDomId).css("display", "block");
 
@@ -666,7 +664,7 @@ var CollectionSidebar = Backbone.View.extend({
                         var folderRequestsDomId = folderDomId + " .folder-requests";
                         var dtFolderDomId = folderDomId + " .folder-head .folder-head-dt";
 
-                        if(folders[k].toShow) {                            
+                        if(folders[k].toShow) {
                             $(folderDomId).css("display", "block");
                             $(folderRequestsDomId).css("display", "block");
                             $(dtFolderDomId).removeClass("disclosure-triangle-close");
@@ -682,7 +680,7 @@ var CollectionSidebar = Backbone.View.extend({
                 }
             }
             else {
-                $(collectionDomId).css("display", "none");                
+                $(collectionDomId).css("display", "none");
                 $(collectionChildrenDomId).css("display", "none");
                 $(dtDomId).removeClass("disclosure-triangle-open");
                 $(dtDomId).addClass("disclosure-triangle-close");
@@ -693,6 +691,6 @@ var CollectionSidebar = Backbone.View.extend({
     onRevertFilter: function() {
         $(".sidebar-collection").css("display", "block");
         $(".folder").css("display", "block");
-        $(".sidebar-collection-request").css("display", "block");        
+        $(".sidebar-collection-request").css("display", "block");
     }
 });

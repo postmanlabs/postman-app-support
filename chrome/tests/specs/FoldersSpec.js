@@ -12,14 +12,14 @@ describe("Folders", function() {
 		runs(function() {
 			pm.settings.resetSettings();
 			pm.tester.resetRequest();
-		});		
+		});
 	});
 
 	afterEach(function() {
 		pm.tester.resetRequest();
 	});
 
-	it("has initialized Postman", function() {		
+	it("has initialized Postman", function() {
 		expect(pm.hasPostmanInitialized).toBe(true);
 	});
 
@@ -30,7 +30,7 @@ describe("Folders", function() {
 
 			var isAddFolderOpen = false;
 			var foundFolder = false;
-			var isAddFolderClosed = false;			
+			var isAddFolderClosed = false;
 
 			runs(function() {
 				pm.tester.openNewCollectionModal();
@@ -85,7 +85,7 @@ describe("Folders", function() {
 		});
 
 		it("can add another folder", function() {
-			var isAddFolderOpen = false;			
+			var isAddFolderOpen = false;
 			var isAddFolderClosed = false;
 
 			runs(function() {
@@ -114,7 +114,7 @@ describe("Folders", function() {
 
 			runs(function() {
 				expect(pm.tester.collectionHasFolderName(1, "Wolfenstein")).toBe(true);
-			});	
+			});
 
 		});
 
@@ -181,7 +181,7 @@ describe("Folders", function() {
 			runs(function() {
 				expect(pm.tester.collectionHasFolderName(1, "Commander Keen")).toBe(false);
 			});
-		});				
+		});
 	});
 
 	describe("render imported collection properly", function() {
@@ -190,12 +190,12 @@ describe("Folders", function() {
 
 			runs(function() {
 				var collection = mockCollections["noRequests"];
-				pm.collections.addCollectionDataToDB(collection, false);
+				pm.collections.addAsNewCollection(collection, false);
 				setTimeout(function() {
 					isDataAdded = true;
 				}, 100);
 			});
-			
+
 			waitsFor(function() {
 				return isDataAdded === true;
 			}, "Could not add data", waitTime);
@@ -212,12 +212,12 @@ describe("Folders", function() {
 
 			runs(function() {
 				var collection = mockCollections["withFoldersAndRequests"];
-				pm.collections.addCollectionDataToDB(collection, false);
+				pm.collections.addAsNewCollection(collection);
 				setTimeout(function() {
 					isDataAdded = true;
-				}, 100);
+				}, 200);
 			});
-			
+
 			waitsFor(function() {
 				return isDataAdded === true;
 			}, "Could not add data", waitTime);
@@ -229,7 +229,7 @@ describe("Folders", function() {
 				expect(pm.tester.collectionFolderHasRequest(2, 1, "Delete")).toBe(true);
 				expect(pm.tester.collectionFolderHasRequest(2, 2, "POST - application")).toBe(true);
 
-				expect(pm.tester.collectionSidebarHasString("GET request with params")).toBe(true);				
+				expect(pm.tester.collectionSidebarHasString("GET request with params")).toBe(true);
 			});
 		});
 	});
@@ -248,7 +248,7 @@ describe("Folders", function() {
 
 				setTimeout(function() {
 					isMoved = true;
-				}, 50);
+				}, 200);
 			});
 
 			waitsFor(function() {
@@ -269,12 +269,12 @@ describe("Folders", function() {
 				//Others folder/Delete to POST folder
 				var requestId = pm.tester.getIDOfRequestInFolder(2, 2, 1);
 				var collectionId = pm.tester.getIDOfCollection(2);
-				
+
 				pm.collections.moveRequestToCollection(requestId, collectionId);
 
 				setTimeout(function() {
 					isMoved = true;
-				}, 50);
+				}, 200);
 			});
 
 			waitsFor(function() {
@@ -295,12 +295,12 @@ describe("Folders", function() {
 				//Others folder/Delete to POST folder
 				var requestId = pm.tester.getIDOfRequestInCollection(2, 1);
 				var folderId = pm.tester.getIDOfFolderInCollection(2, 2);
-				
+
 				pm.collections.moveRequestToFolder(requestId, folderId);
 
 				setTimeout(function() {
 					isMoved = true;
-				}, 50);
+				}, 200);
 			});
 
 			waitsFor(function() {
@@ -309,7 +309,7 @@ describe("Folders", function() {
 
 			runs(function() {
 				expect(pm.tester.collectionHasRequest(2, "GET request with params")).toBe(false);
-				expect(pm.tester.collectionFolderHasRequest(2, 2, "GET request with params")).toBe(true);				
+				expect(pm.tester.collectionFolderHasRequest(2, 2, "GET request with params")).toBe(true);
 			});
 		});
 
@@ -321,12 +321,12 @@ describe("Folders", function() {
 				//Others folder/Delete to POST folder
 				var requestId = pm.tester.getIDOfRequestInFolder(2, 1, 1);
 				var folderId = pm.tester.getIDOfFolderInCollection(1, 2);
-				
+
 				pm.collections.moveRequestToFolder(requestId, folderId);
 
 				setTimeout(function() {
 					isMoved = true;
-				}, 50);
+				}, 200);
 			});
 
 			waitsFor(function() {
@@ -335,7 +335,7 @@ describe("Folders", function() {
 
 			runs(function() {
 				expect(pm.tester.collectionFolderHasRequest(2, 1, "GET")).toBe(false);
-				expect(pm.tester.collectionFolderHasRequest(1, 2, "GET")).toBe(true);				
+				expect(pm.tester.collectionFolderHasRequest(1, 2, "GET")).toBe(true);
 			});
 		});
 
@@ -347,12 +347,12 @@ describe("Folders", function() {
 				//Others folder/Delete to POST folder
 				var requestId = pm.tester.getIDOfRequestInFolder(2, 2, 1);
 				var collectionId = pm.tester.getIDOfCollection(1);
-				
+
 				pm.collections.moveRequestToCollection(requestId, collectionId);
 
 				setTimeout(function() {
 					isMoved = true;
-				}, 50);
+				}, 200);
 			});
 
 			waitsFor(function() {
@@ -373,12 +373,12 @@ describe("Folders", function() {
 				//Others folder/Delete to POST folder
 				var requestId = pm.tester.getIDOfRequestInCollection(2, 1);
 				var collectionId = pm.tester.getIDOfCollection(1);
-				
+
 				pm.collections.moveRequestToCollection(requestId, collectionId);
 
 				setTimeout(function() {
 					isMoved = true;
-				}, 50);
+				}, 200);
 			});
 
 			waitsFor(function() {
@@ -390,12 +390,12 @@ describe("Folders", function() {
 				expect(pm.tester.collectionHasRequest(1, "application/xml")).toBe(true);
 			});
 		});
-	});	
+	});
 
 	describe("add requests to folders", function() {
 		it("can add a request from add request dialog", function() {
-			
-		});		
+
+		});
 	});
 
 	xdescribe("can search for requests within folders", function() {

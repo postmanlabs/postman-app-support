@@ -46,8 +46,6 @@ var DriveSync = Backbone.Model.extend({
     	var model = this;
 
         var canSync = pm.settings.getSetting("driveSyncEnabled");
-
-        // TODO Forcing drive sync to be true
         canSync = true;
 
         if (!canSync) {

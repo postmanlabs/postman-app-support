@@ -13,14 +13,14 @@ describe("Collections", function() {
 		runs(function() {
 			pm.settings.resetSettings();
 			pm.tester.resetRequest();
-		});		
+		});
 	});
 
 	afterEach(function() {
 		pm.tester.resetRequest();
 	});
 
-	it("has initialized Postman", function() {		
+	it("has initialized Postman", function() {
 		expect(pm.hasPostmanInitialized).toBe(true);
 	});
 
@@ -119,13 +119,13 @@ describe("Collections", function() {
 	});
 
 	describe("add request to collection", function() {
-		it("can add a GET request to new collection", function() {			
+		it("can add a GET request to new collection", function() {
 			var isOpen = false;
 			var isSubmitted = false;
 
 			runs(function() {
 				pm.tester.setUrl("http://localhost:5000/get");
-				pm.tester.setMethod("GET");	
+				pm.tester.setMethod("GET");
 
 				var params = {
 					"newCollectionName": "Doom 3",
@@ -133,7 +133,7 @@ describe("Collections", function() {
 					"requestDescription": "I need some monsters!"
 				};
 
-				pm.tester.addDataToAddRequestToCollectionModal(params);	
+				pm.tester.addDataToAddRequestToCollectionModal(params);
 
 				pm.tester.openAddRequestToCollectionModal();
 
@@ -141,13 +141,13 @@ describe("Collections", function() {
 					isOpen = true;
 				}, codeMirrorModalWaitTime);
 			});
-			
+
 			waitsFor(function() {
 				return isOpen === true;
 			}, "Could not open add collection modal", codeMirrorWaitTime);
 
-			runs(function() {				
-				pm.tester.submitAddRequestToCollectionModal();			
+			runs(function() {
+				pm.tester.submitAddRequestToCollectionModal();
 
 				setTimeout(function() {
 					isSubmitted = true;
@@ -161,7 +161,7 @@ describe("Collections", function() {
 			runs(function() {
 				expect(pm.tester.activeSidebarTab()).toBe("collections");
 				expect(pm.tester.collectionSidebarHasString("Doom 3")).toBe(true);
-				expect(pm.tester.collectionSidebarHasString("GET me some")).toBe(true);				
+				expect(pm.tester.collectionSidebarHasString("GET me some")).toBe(true);
 				expect(pm.tester.requestMetaSectionVisibility()).toBe("block");
 				expect(pm.tester.requestMetaNameHas("GET me some monsters")).toBe(true);
 				expect(pm.tester.requestMetaDescriptionHas("I need some monsters")).toBe(true);
@@ -217,7 +217,7 @@ describe("Collections", function() {
 				return isSecondModalOpen === true;
 			}, "could not open modal", modalWaitTime);
 
-			runs(function() {				
+			runs(function() {
 				pm.tester.setEditCollectionModalName("Edited collection");
 				pm.tester.submitEditCollectionModal();
 				setTimeout(function() {
@@ -241,7 +241,7 @@ describe("Collections", function() {
 
 			runs(function() {
 				pm.tester.setUrl("http://localhost:5000/post");
-				pm.tester.setMethod("POST");	
+				pm.tester.setMethod("POST");
 
 				var params = {
 					"existingCollectionName": "Edited collection",
@@ -249,7 +249,7 @@ describe("Collections", function() {
 					"requestDescription": "Blast those monsters!"
 				};
 
-				pm.tester.addDataToAddRequestToCollectionModal(params);	
+				pm.tester.addDataToAddRequestToCollectionModal(params);
 
 				pm.tester.openAddRequestToCollectionModal();
 
@@ -257,13 +257,13 @@ describe("Collections", function() {
 					isOpen = true;
 				}, codeMirrorModalWaitTime);
 			});
-			
+
 			waitsFor(function() {
 				return isOpen === true;
 			}, "Could not open add collection modal", codeMirrorWaitTime);
 
-			runs(function() {				
-				pm.tester.submitAddRequestToCollectionModal();			
+			runs(function() {
+				pm.tester.submitAddRequestToCollectionModal();
 
 				setTimeout(function() {
 					isSubmitted = true;
@@ -278,7 +278,7 @@ describe("Collections", function() {
 				expect(pm.tester.activeSidebarTab()).toBe("collections");
 				expect(pm.tester.methodIs("POST")).toBe(true);
 				expect(pm.tester.collectionSidebarHasString("Edited collection")).toBe(true);
-				expect(pm.tester.collectionSidebarHasString("POST some bullets")).toBe(true);				
+				expect(pm.tester.collectionSidebarHasString("POST some bullets")).toBe(true);
 				expect(pm.tester.requestMetaSectionVisibility()).toBe("block");
 				expect(pm.tester.requestMetaNameHas("POST some bullets")).toBe(true);
 				expect(pm.tester.requestMetaDescriptionHas("Blast those monsters")).toBe(true);
@@ -296,7 +296,7 @@ describe("Collections", function() {
 
 			runs(function() {
 				pm.tester.setUrl("http://localhost:5000/post");
-				pm.tester.setMethod("POST");	
+				pm.tester.setMethod("POST");
 
 				var params = {
 					"existingCollectionName": "Edited collection",
@@ -304,7 +304,7 @@ describe("Collections", function() {
 					"requestDescription": "Delete delete delete!"
 				};
 
-				pm.tester.addDataToAddRequestToCollectionModal(params);	
+				pm.tester.addDataToAddRequestToCollectionModal(params);
 
 				pm.tester.openAddRequestToCollectionModal();
 
@@ -312,13 +312,13 @@ describe("Collections", function() {
 					isOpen = true;
 				}, codeMirrorModalWaitTime);
 			});
-			
+
 			waitsFor(function() {
 				return isOpen === true;
 			}, "Could not open add collection modal", codeMirrorWaitTime);
 
-			runs(function() {				
-				pm.tester.submitAddRequestToCollectionModal();			
+			runs(function() {
+				pm.tester.submitAddRequestToCollectionModal();
 
 				setTimeout(function() {
 					isSubmitted = true;
@@ -362,7 +362,7 @@ describe("Collections", function() {
 				setTimeout(function() {
 					isSecondModalSubmitted = true;
 				}, modalWaitTime);
-			});			
+			});
 
 			waitsFor(function() {
 				return isSecondModalSubmitted === true;
@@ -372,7 +372,7 @@ describe("Collections", function() {
 				expect(pm.tester.collectionSidebarHasString("DELETE all of this")).toBe(true);
 				expect(pm.tester.requestMetaSectionVisibility()).toBe("block");
 				expect(pm.tester.requestMetaNameHas("DELETE all of this")).toBe(true);
-				expect(pm.tester.requestMetaDescriptionHas("An edited delete")).toBe(true);				
+				expect(pm.tester.requestMetaDescriptionHas("An edited delete")).toBe(true);
 			});
 		});
 
@@ -412,7 +412,7 @@ describe("Collections", function() {
 
 	describe("load collection request in editor", function() {
 		beforeEach(function() {
-			
+
 		});
 
 		afterEach(function() {
@@ -435,19 +435,19 @@ describe("Collections", function() {
 			var collectionItemLoaded = false;
 
 			runs(function() {
-				var collection = mockCollection;				
-				pm.collections.addCollectionDataToDB(collection, false);
+				var collection = mockCollection;
+				pm.collections.addAsNewCollection(collection, false);
 				setTimeout(function() {
 					isDataAdded = true;
 				}, 100);
 			});
-			
+
 			waitsFor(function() {
 				return isDataAdded === true;
-			}, "Could not add data", waitTime);					
+			}, "Could not add data", waitTime);
 
-			runs(function() {				
-				pm.tester.selectCollectionRequest(3, 1);		
+			runs(function() {
+				pm.tester.selectCollectionRequest(2, 1);
 				setTimeout(function() {
 					collectionItemLoaded = true;
 				}, 250);
@@ -467,12 +467,12 @@ describe("Collections", function() {
 		it("can load a POST urlencoded request in editor", function() {
 			var collectionItemLoaded = false;
 
-			runs(function() {				
-				pm.tester.selectCollectionRequest(3, 2);		
+			runs(function() {
+				pm.tester.selectCollectionRequest(2, 2);
 
 				setTimeout(function() {
 					collectionItemLoaded = true;
-				}, 250);	
+				}, 250);
 			});
 
 			waitsFor(function() {
@@ -489,12 +489,12 @@ describe("Collections", function() {
 		it("can load a POST raw request in editor", function() {
 			var collectionItemLoaded = false;
 
-			runs(function() {				
-				pm.tester.selectCollectionRequest(3, 3);		
+			runs(function() {
+				pm.tester.selectCollectionRequest(2, 3);
 
 				setTimeout(function() {
 					collectionItemLoaded = true;
-				}, 250);	
+				}, 250);
 			});
 
 			waitsFor(function() {
