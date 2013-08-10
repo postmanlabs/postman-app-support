@@ -14,7 +14,7 @@ Create requests quickly.
 - HATEOS support
 - Image previews
 - Request history
-- Basic Auth and OAuth 1.0 helpers
+- Basic Auth, OAuth 1.0 and WSSE helpers
 - Autocomplete for URL and header values
 - Key/value editors for adding parameters or header values. Works for URL parameters too.
 - Use environment variables to easily shift between settings. Great for testing production, staging or local setups.

@@ -1822,6 +1822,10 @@ pm.request = {
             pm.helpers.oAuth1.process();
         }
 
+        if (pm.helpers.activeHelper == "wsse") {
+            pm.helpers.wsse.process();
+        }
+
         $('#headers-keyvaleditor-actions-open .headers-count').html(pm.request.headers.length);        
         pm.request.url = pm.request.processUrl($('#url').val());
         pm.request.startTime = new Date().getTime();     

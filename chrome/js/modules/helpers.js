@@ -39,6 +39,9 @@ pm.helpers = {
         else if (type === 'digest') {
             this.digest.process();
         }
+        else if (type === 'wsse') {
+            this.wsse.process();
+        }
         return false;
     },
 
@@ -632,5 +635,44 @@ pm.helpers = {
 
             pm.helpers.oAuth1.save();
         }
-    }
+    },
+
+    wsse: {
+        process: function () {
+            var headers = pm.request.headers;
+            var authHeaderKey = "X-WSSE";
+            var pos = findPosition(headers, "key", authHeaderKey);
+
+            var username = $('#request-helper-wsse-username').val();
+            var password = $('#request-helper-wsse-password').val();
+
+            username = pm.envManager.convertString(username);
+            password = pm.envManager.convertString(password);
+
+            var time = (new Date()).toISOString();
+            var nonce = '' + (Math.random() * 1000000000 + 1);
+            var digest = CryptoJS.SHA1(nonce + time + password).toString(CryptoJS.enc.Latin1);
+
+            var encodedString = 'UsernameToken'
+                + ' Username="' + username + '",'
+                + ' PasswordDigest="' + btoa(digest) + '",'
+                + ' Nonce="' + btoa(nonce) + '",'
+                + ' Created="' + time + '"';
+
+            if (pos >= 0) {
+                headers[pos] = {
+                    key: authHeaderKey,
+                    name: authHeaderKey,
+                    value: encodedString
+                };
+            }
+            else {
+                headers.push({key: authHeaderKey, name: authHeaderKey, value: encodedString});
+            }
+
+            pm.request.headers = headers;
+            $('#headers-keyvaleditor').keyvalueeditor('reset', headers);
+            pm.request.openHeaderEditor();
+        }
+    },
 };
