@@ -1,5 +1,4 @@
 var PmCollections = Backbone.Collection.extend({
-    //TODO Needs to be refactored
     originalCollectionId: "",
     toBeImportedCollection:{},
 
@@ -37,7 +36,6 @@ var PmCollections = Backbone.Collection.extend({
         this.loadAllCollections();
     },
 
-    // TODO Add sync related calls
     // Load all collections
     loadAllCollections:function () {
         var pmCollection = this;
@@ -56,11 +54,10 @@ var PmCollections = Backbone.Collection.extend({
                 loaded++;
 
                 for(var i = 0; i < requests.length; i++) {
-                    pm.urlCache.addUrl(requests[i].url);
+                    pm.mediator.trigger("addToURLCache", requests[i].url);
                 }
 
                 if (loaded === itemsLength) {
-                    console.log("Collection and requests", collection, requests);
                     pmCollection.isLoaded = true;
                     pmCollection.trigger("startSync");
                 }
@@ -103,7 +100,6 @@ var PmCollections = Backbone.Collection.extend({
         var synced;
         var syncableFile;
 
-        // TODO Add additional checks for collection_request
         if (this.isLoaded && this.initializedSyncing) {
 
             pm.mediator.on("addSyncableFileFromRemote", function(type, data) {
@@ -145,7 +141,7 @@ var PmCollections = Backbone.Collection.extend({
                 requests = collection.get("requests");
 
                 for(j = 0; j < requests.length; j++) {
-                    var request = requests[j];
+                    request = requests[j];
 
                     if (request.hasOwnProperty("synced")) {
                         if (!request.synced) {
@@ -169,7 +165,6 @@ var PmCollections = Backbone.Collection.extend({
 
     onRemoveSyncableFile: function(id) {
         this.deleteCollectionFromDataStore(id, false, function() {
-            console.log("Deleted collection");
         });
     },
 
@@ -179,8 +174,7 @@ var PmCollections = Backbone.Collection.extend({
     },
 
     onRemoveSyncableFileForRequests: function(id) {
-        this.deleteRequestFromDataStore(id, true, function() {
-            console.log("Deleted request from data store");
+        this.deleteRequestFromDataStore(id, false, function() {
         });
     },
 
@@ -237,7 +231,6 @@ var PmCollections = Backbone.Collection.extend({
         var syncableFile = this.getRequestAsSyncableFile(id);
         pm.mediator.trigger("addSyncableFile", syncableFile, function(result) {
             if(result === "success") {
-                console.log("Updated sync status");
                 pmCollection.updateCollectionRequestSyncStatus(id, true);
             }
         });
@@ -289,13 +282,20 @@ var PmCollections = Backbone.Collection.extend({
         var pmCollection = this;
 
         pm.indexedDB.deleteCollection(id, function () {
-            function onGetAllRequestsInCollection(requests) {
+            pmCollection.remove(id);
+
+            if (sync) {
+                pmCollection.removeFromSyncableFilesystem(id);
+            }
+
+            pm.indexedDB.getAllRequestsForCollectionId(id, function(requests) {
                 var deleted = 0;
                 var requestCount = requests.length;
                 var request;
+                var i;
 
                 if (requestCount > 0) {
-                    for(var i = 0; i < requests.length; i++) {
+                    for(i = 0; i < requestCount; i++) {
                         request = requests[i];
 
                         pm.indexedDB.deleteCollectionRequest(request.id, function (requestId) {
@@ -306,12 +306,6 @@ var PmCollections = Backbone.Collection.extend({
                             }
 
                             if (deleted === requestCount) {
-                                pmCollection.remove(id);
-
-                                if (sync) {
-                                    pmCollection.removeFromSyncableFilesystem(id);
-                                }
-
                                 if (callback) {
                                     callback();
                                 }
@@ -320,29 +314,25 @@ var PmCollections = Backbone.Collection.extend({
                     }
                 }
                 else {
-                    pmCollection.remove(id);
-
-                    if (sync) {
-                        pmCollection.removeFromSyncableFilesystem(id);
-                    }
-
                     if (callback) {
                         callback();
                     }
                 }
-
-            }
-
-            pm.indexedDB.getAllRequestsForCollectionId(id, onGetAllRequestsInCollection);
+            });
         });
     },
 
     addRequestToDataStore: function(request, sync, callback) {
-        console.log("Adding request to data store");
         var pmCollection = this;
 
         pm.indexedDB.addCollectionRequest(request, function (req) {
             pm.mediator.trigger("addToURLCache", request.url);
+
+            var collection = pmCollection.get(request.collectionId);
+
+            if (collection) {
+                collection.addRequest(request);
+            }
 
             if (sync) {
                 pmCollection.addRequestToSyncableFilesystem(request.id);
@@ -367,7 +357,6 @@ var PmCollections = Backbone.Collection.extend({
             if (collection) {
                 collection.updateRequest(request);
             }
-
 
             if (sync) {
                 pmCollection.addRequestToSyncableFilesystem(request.id);
@@ -403,6 +392,7 @@ var PmCollections = Backbone.Collection.extend({
                     callback();
                 }
 
+                // This is called because the request would be deleted from "order"
                 pmCollection.updateCollectionInDataStore(collection, sync, function(c) {
                     console.log("Updated old collection");
                 });
@@ -439,7 +429,6 @@ var PmCollections = Backbone.Collection.extend({
         return null;
     },
 
-    // TODO call to addToSyncableFilesystem
     // Add collection
     addCollection:function (name) {
         var pmCollection = this;
@@ -475,18 +464,15 @@ var PmCollections = Backbone.Collection.extend({
         pmCollection.addRequestToDataStore(request, false, function(r) {
             var collectionModel = pmCollection.get(request.collectionId);
 
+            // TODO Can be improved by triggering another event
             if (collectionModel) {
                 collectionModel.addRequest(request) ;
-            }
-
-            if (collectionModel) {
                 pmCollection.trigger("updateCollection", collectionModel);
             }
 
         });
     },
 
-    // TODO call to addToSyncableFilesystem
     // Add collection data to the database with new IDs
     addAsNewCollection:function(collection) {
         var pmCollection = this;
@@ -500,19 +486,26 @@ var PmCollections = Backbone.Collection.extend({
         dbCollection["requests"] = [];
 
         pmCollection.addCollectionToDataStore(dbCollection, true, function(c) {
-            var collectionModel = pmCollection.get(c.id);
+            var collectionModel;
+            var requets;
+            var ordered;
+            var i;
+            var request;
+            var newId;
+            var currentId;
+            var loc;
 
-            var message = {
-                name:dbCollection.name,
-                action:"added"
-            };
+            collectionModel = pmCollection.get(c.id);
 
             // Shows successs message
-            pmCollection.trigger("importCollection", message);
+            pmCollection.trigger("importCollection", {
+                name:dbCollection.name,
+                action:"added"
+            });
 
-            var requests = [];
+            requests = [];
 
-            var ordered = false;
+            ordered = false;
 
             // Check against legacy collections which do not have an order
             if ("order" in dbCollection) {
@@ -521,16 +514,16 @@ var PmCollections = Backbone.Collection.extend({
 
             // Change ID of request - Also need to change collection order
             // and add request to indexedDB
-            for (var i = 0; i < collection.requests.length; i++) {
-                var request = collection.requests[i];
-                request.collectionId = collection.id;
+            for (i = 0; i < dbCollection.requests.length; i++) {
+                request = dbCollection.requests[i];
+                request.collectionId = dbCollection.id;
 
                 var newId = guid();
                 idHashTable[request.id] = newId;
 
                 if (ordered) {
-                    var currentId = request.id;
-                    var loc = _.indexOf(collection["order"], currentId);
+                    currentId = request.id;
+                    loc = _.indexOf(dbCollection["order"], currentId);
                     dbCollection["order"][loc] = newId;
                 }
 
@@ -547,8 +540,8 @@ var PmCollections = Backbone.Collection.extend({
             }
 
             // Change order inside folders with new IDs
-            if ("folders" in collection) {
-                folders = collection["folders"];
+            if ("folders" in dbCollection) {
+                folders = dbCollection["folders"];
 
                 for(i = 0; i < folders.length; i++) {
                     folders[i].id = guid();
@@ -562,22 +555,22 @@ var PmCollections = Backbone.Collection.extend({
 
             // Add new collection to the database
             pmCollection.updateCollectionInDataStore(dbCollection, true, function() {
+                var i;
+                var request;
+
                 collectionModel.setRequests(requests);
 
-                for (var i = 0; i < requests.length; i++) {
-                    var request = requests[i];
+                for (i = 0; i < requests.length; i++) {
+                    request = requests[i];
                     pmCollection.addRequestToDataStore(request, true, function(r) {
-                        console.log("Added request to data store");
                     });
                 }
 
-                console.log("Updated collection in data store");
                 pmCollection.trigger("updateCollection", collectionModel);
             });
         });
     },
 
-    // TODO call to addToSyncableFilesystem
     updateCollectionOrder: function(id, order) {
         var pmCollection = this;
 
@@ -585,7 +578,6 @@ var PmCollections = Backbone.Collection.extend({
         targetCollection.set("order", order);
 
         pmCollection.updateCollectionInDataStore(targetCollection.getAsJSON(), true, function (collection) {
-            console.log("Updated collection order");
         });
     },
 
@@ -596,7 +588,6 @@ var PmCollections = Backbone.Collection.extend({
         targetCollection.set("synced", status);
 
         pmCollection.updateCollectionInDataStore(targetCollection.getAsJSON(), false, function (collection) {
-            console.log("Updated collection sync status");
         });
     },
 
@@ -607,14 +598,12 @@ var PmCollections = Backbone.Collection.extend({
         targetCollection.set("name", name);
 
         pmCollection.updateCollectionInDataStore(targetCollection.getAsJSON(), true, function (collection) {
-            console.log("Updated collection meta");
             pmCollection.trigger("updateCollectionMeta", targetCollection);
         });
     },
 
     deleteCollection:function (id, sync, callback) {
         this.deleteCollectionFromDataStore(id, true, function() {
-            console.log("Deleted collection");
         });
     },
 
@@ -622,18 +611,24 @@ var PmCollections = Backbone.Collection.extend({
     getCollectionData:function (id, callback) {
         pm.indexedDB.getCollection(id, function (data) {
             var collection = data;
+            var ids;
+            var i;
+            var name;
+            var type;
+            var filedata;
+
             pm.indexedDB.getAllRequestsInCollection(collection, function (collection, data) {
-                var ids = [];
-                for (var i = 0, count = data.length; i < count; i++) {
+                ids = [];
+                for (i = 0, count = data.length; i < count; i++) {
                     ids.push(data[i].id);
                 }
 
                 //Get all collection requests with one call
                 collection['requests'] = data;
-                var name = collection['name'] + ".json";
-                var type = "application/json";
+                name = collection['name'] + ".json";
+                type = "application/json";
 
-                var filedata = JSON.stringify(collection);
+                filedata = JSON.stringify(collection);
                 callback(name, type, filedata);
             });
         });
@@ -684,10 +679,9 @@ var PmCollections = Backbone.Collection.extend({
         this.addAsNewCollection(collection);
     },
 
-    // TODO Refactor this. Just use the default functions
     // Merge collection
     // Being used in IndexedDB bulk import
-    mergeCollection: function(collection, toSyncWithDrive) {
+    mergeCollection: function(collection) {
         var pmCollection = this;
 
         //Update local collection
@@ -696,10 +690,6 @@ var PmCollections = Backbone.Collection.extend({
             name: collection.name,
             timestamp: collection.timestamp
         };
-
-        if ("order" in collection) {
-            newCollection.order = collection.order;
-        }
 
         var targetCollection = pmCollection.get(id);
         targetCollection.set("name", collection.name);
@@ -859,7 +849,6 @@ var PmCollections = Backbone.Collection.extend({
         return null;
     },
 
-    // TODO Fire an event in the mediator
     // Load collection request in the editor
     loadCollectionRequest:function (id) {
         var pmCollection = this;
@@ -872,7 +861,6 @@ var PmCollections = Backbone.Collection.extend({
         });
     },
 
-    // TODO call to addToSyncableFilesystem
     // Add request to collection
     addRequestToCollection:function (collectionRequest, collection) {
         var pmCollection = this;
@@ -911,7 +899,6 @@ var PmCollections = Backbone.Collection.extend({
     },
 
 
-    // TODO call to addToSyncableFilesystem
     // Add request to folder
     addRequestToFolder: function(collectionRequest, collectionId, folderId) {
         var pmCollection = this;
@@ -928,7 +915,7 @@ var PmCollections = Backbone.Collection.extend({
         });
     },
 
-    // TODO call to addToSyncableFilesystem
+
     // Update collection request
     updateCollectionRequest:function (collectionRequest) {
         var pmCollection = this;
@@ -944,7 +931,6 @@ var PmCollections = Backbone.Collection.extend({
         });
     },
 
-    // TODO call to addToSyncableFilesystem
     updateCollectionRequestMeta: function(id, name, description) {
         var pmCollection = this;
 
@@ -969,7 +955,6 @@ var PmCollections = Backbone.Collection.extend({
         });
     },
 
-    // TODO call to removeFromSyncableFilesystem
     // Delete collection request
     deleteCollectionRequest:function (id, callback) {
         var pmCollection = this;
@@ -1105,12 +1090,17 @@ var PmCollections = Backbone.Collection.extend({
     },
 
     deleteFolder: function(id) {
+        var folder = this.getFolderById(id);
+        var folderRequestsIds = _.clone(folder.order);
+
+        for(var i = 0; i < folderRequestsIds.length; i++) {
+            this.deleteRequestFromDataStore(folderRequestsIds[i], false);
+        }
+
         var collection = this.getCollectionForFolderId(id);
         collection.deleteFolder(id);
+
         this.trigger("deleteFolder", collection, id);
-
-        // TODO Remove all requests from folder
-
         this.updateCollectionInDataStore(collection.getAsJSON());
     },
 

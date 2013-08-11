@@ -330,6 +330,45 @@ pm.indexedDB = {
         };
     },
 
+    getAllCollectionRequests:function (callback) {
+        var db = pm.indexedDB.db;
+        if (db === null) {
+            return;
+        }
+
+        var trans = db.transaction(["collection_requests"], "readwrite");
+        var store = trans.objectStore("collection_requests");
+
+        //Get everything in the store
+        var keyRange = IDBKeyRange.lowerBound(0);
+        var index = store.index("timestamp");
+        var cursorRequest = index.openCursor(keyRange);
+        var collectionRequests = [];
+
+        cursorRequest.onsuccess = function (e) {
+            var result = e.target.result;
+
+            if (!result) {
+                if (callback) {
+                    callback(collectionRequests);
+                }
+                else {
+                    console.log(collectionRequests);
+                }
+
+                return;
+            }
+
+            var request = result.value;
+            collectionRequests.push(request);
+
+            //This wil call onsuccess again and again until no more request is left
+            result['continue']();
+        };
+
+        cursorRequest.onerror = pm.indexedDB.onerror;
+    },
+
     getAllRequestsForCollectionId:function (id, callback) {
         var db = pm.indexedDB.db;
         var trans = db.transaction(["collection_requests"], "readwrite");

@@ -47,7 +47,14 @@ var PmCollection = Backbone.Model.extend({
     },
 
     addRequest: function(newRequest) {
-    	this.get("requests").push(newRequest);
+        var location = this.getRequestIndex(newRequest);
+        var requests = this.get("requests");
+        if (location !== -1) {
+            requests.splice(location, 1, newRequest);
+        }
+        else {
+            requests.push(newRequest);
+        }
     },
 
     deleteRequest: function(requestId) {
