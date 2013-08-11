@@ -60,6 +60,7 @@ var PmCollections = Backbone.Collection.extend({
                 }
 
                 if (loaded === itemsLength) {
+                    console.log("Collection and requests", collection, requests);
                     pmCollection.isLoaded = true;
                     pmCollection.trigger("startSync");
                 }
@@ -236,6 +237,7 @@ var PmCollections = Backbone.Collection.extend({
         var syncableFile = this.getRequestAsSyncableFile(id);
         pm.mediator.trigger("addSyncableFile", syncableFile, function(result) {
             if(result === "success") {
+                console.log("Updated sync status");
                 pmCollection.updateCollectionRequestSyncStatus(id, true);
             }
         });
@@ -458,21 +460,29 @@ var PmCollections = Backbone.Collection.extend({
         var pmCollection = this;
 
         pmCollection.addCollectionToDataStore(collection, false, function(c) {
-            var collectionModel = pmCollection.get(c.id);
-            collectionModel.set("synced", true);
-
-            pmCollection.trigger("updateCollection", collectionModel);
+            pm.indexedDB.getAllRequestsInCollection(c, function(c, requests) {
+                var collectionModel = pmCollection.get(c.id);
+                collectionModel.set("synced", true);
+                collectionModel.setRequests(requests);
+                pmCollection.trigger("updateCollection", collectionModel);
+            });
         });
     },
 
     addRequestFromSyncableFileSystem: function(request) {
         var pmCollection = this;
 
-        var collectionModel = pmCollection.get(request.collectionId);
-        collectionModel.addRequest(request);
-
         pmCollection.addRequestToDataStore(request, false, function(r) {
-            pmCollection.trigger("updateCollection", collectionModel);
+            var collectionModel = pmCollection.get(request.collectionId);
+
+            if (collectionModel) {
+                collectionModel.addRequest(request) ;
+            }
+
+            if (collectionModel) {
+                pmCollection.trigger("updateCollection", collectionModel);
+            }
+
         });
     },
 
@@ -948,14 +958,13 @@ var PmCollections = Backbone.Collection.extend({
         });
     },
 
-    updateCollectionRequestSyncStatus: function(id, name, description) {
+    updateCollectionRequestSyncStatus: function(id, status) {
         var pmCollection = this;
 
         pm.indexedDB.getCollectionRequest(id, function (req) {
-            req.synced = true;
+            req.synced = status;
 
             pmCollection.updateRequestInDataStore(req, false, function(request) {
-                pmCollection.trigger("updateCollectionRequest", request);
             });
         });
     },

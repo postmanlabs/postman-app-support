@@ -193,6 +193,11 @@ pm.init = function () {
         var sidebar = new Sidebar({ model: sidebarState });
     }
 
+    function initializeDriveSync() {
+        pm.driveSync = new DriveSync();
+        var driveSyncLogger = new DriveSyncLogger({model: pm.driveSync});
+    }
+
     pm.mediator = new Mediator();
 
     initializeStorage();
@@ -218,7 +223,8 @@ pm.init = function () {
 
             pm.broadcasts.init();
 
-            pm.driveSync = new DriveSync();
+            initializeDriveSync();
+
             pm.hasPostmanInitialized = true;
             console.log("Set hasPostmanInitialized to true");
         });

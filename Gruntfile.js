@@ -12,6 +12,7 @@ module.exports = function(grunt) {
         'chrome/html/requester/header.html',
         'chrome/html/requester/sidebar.html',
         'chrome/html/requester/main.html',
+        'chrome/html/requester/loggers/*.html',
         'chrome/html/requester/modals/*.html',
         'chrome/html/requester/footer.html'
         ],
@@ -23,6 +24,7 @@ module.exports = function(grunt) {
         'chrome/html/requester/sidebar.html',
         'chrome/html/requester/main.html',
         'chrome/html/requester/modals/*.html',
+        'chrome/html/requester/loggers/*.html',
         'chrome/html/requester/footer.html',
         'chrome/html/requester/tester.html'
         ],
@@ -49,10 +51,10 @@ module.exports = function(grunt) {
       },
 
       requester_html: {
-        files: ['chrome/html/requester/*', 'chrome/html/requester/modals/*'],
+        files: ['chrome/html/requester/*', 'chrome/html/requester/modals/*', 'chrome/html/requester/loggers/*'],
         tasks: ['concat:requester_html', 'concat:requester_tester']
       },
-      
+
       requester_css: {
         files: ['chrome/css/styles.scss'],
         tasks: ['sass']
@@ -114,7 +116,7 @@ module.exports = function(grunt) {
             archive: 'v0.9.1/chrome.zip'
           },
           files: [
-            {src: ['chrome/**', '!chrome/tests/**', '!chrome/manifest_key.json', '!chrome/tester.html'], dest: '/'}, // includes files in path and its subdirs            
+            {src: ['chrome/**', '!chrome/tests/**', '!chrome/manifest_key.json', '!chrome/tester.html'], dest: '/'}, // includes files in path and its subdirs
           ]
         }
     }

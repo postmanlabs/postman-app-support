@@ -252,29 +252,7 @@ pm.indexedDB = {
         var trans = db.transaction(["collection_requests"], "readwrite");
         var store = trans.objectStore("collection_requests");
 
-        var version;
-
-        if ("version" in req) {
-            version = req.version;
-        }
-        else {
-            version = 1;
-        }
-
-        var collectionRequest = store.put({
-            "collectionId":req.collectionId,
-            "id":req.id,
-            "name":req.name,
-            "description":req.description,
-            "url":req.url.toString(),
-            "method":req.method.toString(),
-            "headers":req.headers.toString(),
-            "data":req.data,
-            "dataMode":req.dataMode.toString(),
-            "timestamp":req.timestamp,
-            "responses":req.responses,
-            "version":req.version
-        });
+        var collectionRequest = store.put(req);
 
         collectionRequest.onsuccess = function () {
             callback(req);

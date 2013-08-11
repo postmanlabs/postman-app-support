@@ -8,7 +8,7 @@ var Sidebar = Backbone.View.extend({
     	var view = this;
 
     	var searchState = new SearchState({
-    		history: this.model.get("history"), 
+    		history: this.model.get("history"),
     		collections: this.model.get("collections")
     	});
 
@@ -21,21 +21,19 @@ var Sidebar = Backbone.View.extend({
             view.toggleSidebar();
         });
 
-        this.model.set("width", $('#sidebar').width() + 10);      
+        this.model.set("width", $('#sidebar').width() + 10);
 
     	if (activeSidebarSection) {
     	    this.select(activeSidebarSection);
     	}
     	else {
     	    this.select("history");
-    	}                    
+    	}
 
     	$('#sidebar-selectors li').click(function () {
     	    var id = $(this).attr('data-id');
     	    view.select(id);
     	});
-
-    	$(":input:first").focus();
 
         history.on("loadRequest", this.onLoadHistoryRequest, this);
         collections.on("addCollectionRequest", this.onAddCollectionRequest, this);
@@ -70,7 +68,7 @@ var Sidebar = Backbone.View.extend({
     	var animationDuration = model.get("animationDuration");
     	var sidebarWidth = model.get("width");
 
-        $('#sidebar-toggle').animate({left:"350px"}, animationDuration, function () {            
+        $('#sidebar-toggle').animate({left:"350px"}, animationDuration, function () {
         });
 
         $('#sidebar').animate({width:sidebarWidth + "px", marginLeft: "0px"}, animationDuration);
@@ -79,7 +77,7 @@ var Sidebar = Backbone.View.extend({
         $('#sidebar-toggle img').attr('src', 'img/tri_arrow_left.png');
         var newMainWidth = $(document).width() - sidebarWidth - 10;
         var marginLeft = sidebarWidth + 10;
-        $('#main').animate({width:newMainWidth + "px", "margin-left": marginLeft+ "px"}, animationDuration);        
+        $('#main').animate({width:newMainWidth + "px", "margin-left": marginLeft+ "px"}, animationDuration);
     },
 
     toggleSidebar:function () {
@@ -107,7 +105,7 @@ var Sidebar = Backbone.View.extend({
         $('#sidebar-section-' + currentSection).css("display", "none");
         $('#' + currentSection + '-options').css("display", "none");
 
-        this.model.set("currentSection", section);        
+        this.model.set("currentSection", section);
 
         $('#sidebar-section-' + section).css("display", "block");
         $('#' + section + '-options').css("display", "block");

@@ -1988,3 +1988,20 @@ input[type="file"] {
         margin-left: 10px;
     }
 }
+
+/* DriveSync Logger */
+#logger-drivesync {
+    background-color: white;
+    border-bottom: solid thin #ccc;
+    box-shadow: 0px 3px 5px 0px #CCC;
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 50%;
+    width: 100%;
+    z-index: 10000;
+    padding: 0 10px 10px 20px;
+    overflow: scroll;
+    opacity: 0.95;
+}
