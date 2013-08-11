@@ -1608,3 +1608,16 @@ input[type="file"] {
   padding: 0 10px 10px 20px;
   overflow: scroll;
   opacity: 0.95; }
+
+#logger-drivesync ul {
+  padding: 0;
+  margin: 0; }
+
+#logger-drivesync ul li {
+  list-style: none;
+  padding-left: 0;
+  margin-left: 0; }
+
+#logger-drivesync ul .item-logger-time {
+  color: #999;
+  margin-left: 10px; }

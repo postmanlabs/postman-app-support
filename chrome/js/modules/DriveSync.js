@@ -6,12 +6,13 @@ var DriveSync = Backbone.Model.extend({
         	canSync: false,
         	isSyncing: false,
         	fileSystem: null,
-        	queue: []
+        	queue: [],
+            log: null
         };
     },
 
     initialize: function(options) {
-    	console.log("DriveSync", "Initializing syncable file system");
+    	this.get("log").addToLog("Initializing syncable file system");
     	this.openSyncableFileSystem();
     },
 
@@ -39,10 +40,11 @@ var DriveSync = Backbone.Model.extend({
             break;
         }
 
-        console.log("DriveSync", 'Error: ' + msg);
+        this.get("log").addToLog("DriveSync", 'Error: ' + msg);
     },
 
     openSyncableFileSystem: function() {
+        this.get("log").addToLog("Opening syncFileSystem");
     	var model = this;
 
         var canSync = pm.settings.getSetting("driveSyncEnabled");
@@ -54,11 +56,11 @@ var DriveSync = Backbone.Model.extend({
         }
         else {
             chrome.syncFileSystem.requestFileSystem(function (fs) {
-                console.log("DriveSync", "Received file system");
+                model.get("log").addToLog("Opened syncFileSystem");
 
                 if (chrome.runtime.lastError) {
                     // TODO Need to handle this in a better way
-                    error('requestFileSystem: ' + chrome.runtime.lastError.message);
+                    model.errorHandler('requestFileSystem: ' + chrome.runtime.lastError.message);
                     return;
                 }
 
@@ -82,21 +84,22 @@ var DriveSync = Backbone.Model.extend({
     	pm.mediator.trigger("initializedSyncableFileSystem");
 
     	pm.mediator.on("addSyncableFile", function(syncableFile, callback) {
-    		console.log("DriveSync", "addSyncableFile", syncableFile);
+    		model.get("log").logChangeOnDrive("addSyncableFile", syncableFile.name);
     		model.syncFile(syncableFile, callback);
     	});
 
     	pm.mediator.on("updateSyncableFile", function(syncableFile, callback) {
-    		console.log("DriveSync", "updateSyncableFile", syncableFile);
+    		model.get("log").logChangeOnDrive("updateSyncableFile", syncableFile.name);
     		model.syncFile(syncableFile, callback);
     	});
 
     	pm.mediator.on("removeSyncableFile", function(name, callback) {
-    		console.log("DriveSync", "removeSyncableFile", name);
+    		model.get("log").logChangeOnDrive("removeSyncableFile", name);
     		model.removeFile(name);
     	});
 
     	pm.mediator.on("getSyncableFileData", function(fileEntry, callback) {
+            model.get("log").logChangeOnDrive("getSyncableFileData");
     		model.getFile(fileEntry, callback);
     	});
 
@@ -207,6 +210,8 @@ var DriveSync = Backbone.Model.extend({
     },
 
     onSyncableFileStatusChanged: function(detail) {
+        var model = this;
+
     	var direction = detail.direction;
     	var action = detail.action;
     	var name = detail.fileEntry.name;
@@ -221,30 +226,30 @@ var DriveSync = Backbone.Model.extend({
     	if (status === "synced") {
     	    if (direction === "remote_to_local") {
     	        if (action === "added") {
-    	            console.log("DriveSync", "Add local file", id);
+    	            model.get("log").logFileStatusChange("Add file", name);
     	            this.getFile(detail.fileEntry, function(data) {
                         console.log("DriveSync", "Received data", data);
     	            	pm.mediator.trigger("addSyncableFileFromRemote", type, data);
     	            });
     	        }
     	        else if (action === "updated") {
-    	        	console.log("DriveSync", "Update local file", id);
+    	        	model.get("log").logFileStatusChange("Update file", name);
     	        	this.getFile(detail.fileEntry, function(data) {
                         console.log("DriveSync", "Received data", data);
     	        		pm.mediator.trigger("updateSyncableFileFromRemote", type, data);
     	        	});
     	        }
     	        else if (action === "deleted") {
-    	            console.log("DriveSync","Delete local data", id);
+    	            model.get("log").logFileStatusChange("Delete file", name);
     	            pm.mediator.trigger("deleteSyncableFileFromRemote", type, id);
     	        }
     	    }
     	    else {
-    	        console.log("DriveSync","direction was local_to_remote");
+                model.get("log").logFileStatusChange("local_to_remote", name);
     	    }
     	}
     	else {
-    	    console.log("DriveSync","Not synced");
+            model.get("log").logFileStatusChange("Not synced", name);
     	}
     }
 });

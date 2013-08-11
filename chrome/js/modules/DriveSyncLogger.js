@@ -3,9 +3,7 @@ var DriveSyncLogger = Backbone.View.extend({
     	var wait;
 
     	var view = this;
-    	var model = this.model;
-
-        model.on("change:logRows", this.render, this);
+        this.model.on("add", this.render, this);
 
         $(document).bind('keydown', 'alt+g', function () {
             if(pm.app.isModalOpen()) {
@@ -28,7 +26,12 @@ var DriveSyncLogger = Backbone.View.extend({
     },
 
     render: function() {
-        console.log("Render log view");
+        console.log("Change called for logItems");
+
+        var logItems = this.model.toJSON();
+        console.log("LogItems = ", logItems);
+        $('#logger-drivesync-items').html("");
+        $('#logger-drivesync-items').append(Handlebars.templates.logger_drivesync({items: logItems}));
     }
 
 });
