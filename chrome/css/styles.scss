@@ -2026,14 +2026,14 @@ input[type="file"] {
 }
 
 #logger-drivesync-settings {
-    margin: 10px 0 10px 0;
+    margin: 20px 0 10px 0;
 }
 
 #google-drive-toggle {
 }
 
 #logger-drivesync-log-empty-view {
-    margin-top: 50px;
+    margin-top: 40px;
     height: 300px;
     text-align: center;
     opacity: 0.3;
@@ -2041,7 +2041,7 @@ input[type="file"] {
 
 #logger-drivesync-log-container {
     display: none;
-    height: 350px;
+    height: 340px;
     overflow: scroll;
 }
 #logger-drivesync ul {
