@@ -22,7 +22,6 @@ var DriveSync = Backbone.Model.extend({
 
         pm.mediator.on("driveSyncStatusChanged", function() {
             canSync = pm.settings.getSetting("driveSyncEnabled");
-            console.log("Start opening stuff", canSync);
 
             if (canSync) {
                 model.openSyncableFileSystem();
@@ -146,7 +145,6 @@ var DriveSync = Backbone.Model.extend({
 
     // Add/edit file
     syncFile: function(syncableFile, callback) {
-    	console.log("DriveSync", "Starting to sync file");
 
     	var fileSystem = this.get("fileSystem");
     	var name = syncableFile.name;
@@ -234,21 +232,17 @@ var DriveSync = Backbone.Model.extend({
     	var id = s.id;
     	var type = s.type;
 
-        console.log("DriveSync", "File status was changed", detail);
-
     	if (status === "synced") {
     	    if (direction === "remote_to_local") {
     	        if (action === "added") {
     	            model.get("log").logFileStatusChange("Add file", name);
     	            this.getFile(detail.fileEntry, function(data) {
-                        console.log("DriveSync", "Received data", data);
     	            	pm.mediator.trigger("addSyncableFileFromRemote", type, data);
     	            });
     	        }
     	        else if (action === "updated") {
     	        	model.get("log").logFileStatusChange("Update file", name);
     	        	this.getFile(detail.fileEntry, function(data) {
-                        console.log("DriveSync", "Received data", data);
     	        		pm.mediator.trigger("updateSyncableFileFromRemote", type, data);
     	        	});
     	        }

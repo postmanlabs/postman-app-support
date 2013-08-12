@@ -2015,11 +2015,11 @@ input[type="file"] {
     position: fixed;
     top: 0;
     left: 0;
-    height: 50%;
+    height: 400px;
     width: 100%;
     z-index: 10000;
     padding: 0 10px 10px 20px;
-    overflow: scroll;
+    overflow: hidden;
     opacity: 0.95;
     margin-top: $navbar_height;
 }
@@ -2040,6 +2040,8 @@ input[type="file"] {
 
 #logger-drivesync-log-container {
     display: none;
+    height: 350px;
+    overflow: scroll;
 }
 #logger-drivesync ul {
     padding: 0;

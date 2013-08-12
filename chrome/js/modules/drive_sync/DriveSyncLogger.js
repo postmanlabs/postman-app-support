@@ -76,6 +76,7 @@ var DriveSyncLogger = Backbone.View.extend({
         var logItems = this.model.toJSON();
         $('#logger-drivesync-items').html("");
         $('#logger-drivesync-items').append(Handlebars.templates.logger_drivesync({items: logItems}));
+        $('#logger-drivesync-items').scrollTop($('#logger-drivesync-items').height());
     }
 
 });
