@@ -285,7 +285,7 @@ var Environments = Backbone.Collection.extend({
 
         function onUpdateEnvironment(environment) {
             var envModel = new Environment(environment);
-            collection.set(envModel);
+            collection.add(envModel, {merge: true});
 
             collection.addToSyncableFilesystem(environment.id);
         }

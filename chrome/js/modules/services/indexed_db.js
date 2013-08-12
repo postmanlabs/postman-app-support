@@ -176,6 +176,8 @@ pm.indexedDB = {
         else {
             pm.indexedDB.open_latest(callback);
         }
+
+        pm.mediator.on("initiateBackup", pm.indexedDB.downloadAllData);
     },
 
     clearAllObjectStores: function(callback) {
@@ -1069,8 +1071,10 @@ pm.indexedDB = {
         }
     },
 
-
+    // TODO Refactor this. Needs to reduce dependencies
     downloadAllData: function(callback) {
+        console.log("Starting to download all data");
+
         //Get globals
         var totalCount = 0;
         var currentCount = 0;
@@ -1090,6 +1094,8 @@ pm.indexedDB = {
         }
 
         var onFinishExportingCollections = function(c) {
+            console.log(pm.envManager);
+
             globals = pm.envManager.get("globals").get("globals");
 
             //Get environments
@@ -1120,7 +1126,9 @@ pm.indexedDB = {
             var filedata = JSON.stringify(dump);
             var type = "application/json";
             pm.filesystem.saveAndOpenFile(name, filedata, type, function () {
-                callback();
+                if (callback) {
+                    callback();
+                }
             });
         }
 
@@ -1141,6 +1149,17 @@ pm.indexedDB = {
                     var collection = items[i];
                     pm.indexedDB.getAllRequestsInCollection(collection, onGetAllRequestsInCollection);
                 }
+            }
+            else {
+                globals = pm.envManager.get("globals").get("globals");
+
+                pm.indexedDB.environments.getAllEnvironments(function (e) {
+                    environments = e;
+                    pm.indexedDB.headerPresets.getAllHeaderPresets(function (hp) {
+                        headerPresets = hp;
+                        onFinishExporttingAllData(callback);
+                    });
+                });
             }
         });
     },
@@ -1170,7 +1189,6 @@ pm.indexedDB = {
 
     importDataForVersion: function(version, data, callback) {
         if (version === 1) {
-            console.log(version, data, callback);
             var environments = pm.envManager.get("environments");
             var globals = pm.envManager.get("globals");
 

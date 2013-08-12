@@ -197,6 +197,7 @@ pm.init = function () {
         var driveSyncLog = new DriveSyncLog();
         var driveSyncLogger = new DriveSyncLogger({model: driveSyncLog});
         pm.driveSync = new DriveSync({log: driveSyncLog});
+        var driveSyncIntroduction = new DriveSyncIntroduction({model: pm.driveSync});
     }
 
     pm.mediator = new Mediator();

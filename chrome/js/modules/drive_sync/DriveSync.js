@@ -232,8 +232,6 @@ var DriveSync = Backbone.Model.extend({
     	var id = s.id;
     	var type = s.type;
 
-        console.log(detail);
-
     	if (status === "synced") {
     	    if (direction === "remote_to_local") {
     	        if (action === "added") {

@@ -64,7 +64,7 @@ var Settings = Backbone.Model.extend({
             this.create("requestBodyEditorContainerType", "editor");
 
             //Google Drive related
-            this.create("driveSyncConnectionStatus", "not_connected"); //notconnected, connected, disabled
+            this.create("driveSyncPermissionStatus", "not_asked"); //not_asked, asked, disabled
             this.create("driveSyncEnabled", false);
             this.create("driveStartChangeId", 0);
             this.create("driveAppDataFolderId", 0);
@@ -154,81 +154,5 @@ var Settings = Backbone.Model.extend({
         };
 
         return settings;
-    },
-
-    drive: {
-        registerHandlers: function() {
-            if (pm.drive) {
-                if (!pm.drive.isSyncEnabled()) {
-                    return;
-                }
-
-                pm.drive.onUpdate["postman_settings"] = this.drive.updateSettingsFromDrive;
-                pm.drive.onPost["postman_settings"] = this.drive.addSettingsFromDrive;
-            }
-        },
-
-        checkIfSettingsIsOnDrive: function(id, callback) {
-            pm.indexedDB.driveFiles.getDriveFile(id, function(driveFile) {
-                if (driveFile) {
-                    callback(true, driveFile);
-                }
-                else {
-                    callback(false);
-                }
-
-            });
-        },
-
-        queueSettingsPost: function(settings) {
-            if (!pm.drive.isSyncEnabled()) {
-                return;
-            }
-
-            var id = "settings";
-            var name = "settings" + ".postman_settings";
-            var filedata = JSON.stringify(settings);
-
-            pm.drive.queuePost(id, "settings", name, filedata, function() {
-            });
-        },
-
-        queueSettingsUpdate: function(settings) {
-            if (!pm.drive.isSyncEnabled()) {
-                return;
-            }
-
-            var id = "settings";
-            var name = "settings" + ".postman_settings";
-            var filedata = JSON.stringify(settings);
-
-            pm.indexedDB.driveFiles.getDriveFile(id, function(driveFile) {
-                pm.drive.queueUpdate(id, "settings", name, driveFile.file, filedata, function() {
-                });
-            });
-        },
-
-        updateSettingsFromDrive: function(responseText) {
-            var settings = JSON.parse(responseText);
-            this.update(settings);
-        },
-
-        addSettingsFromDrive: function(file, responseText) {
-            var settings = JSON.parse(responseText);
-            this.update(settings);
-
-            var newLocalDriveFile = {
-                "id": "settings",
-                "type": "settings",
-                "timestamp":new Date().getTime(),
-                "fileId": file.id,
-                "file": file
-            };
-
-            pm.indexedDB.driveFiles.addDriveFile(newLocalDriveFile, function(e) {
-                var currentTime = new Date().toISOString();
-                this.setSetting("lastDriveChangeTime", currentTime);
-            });
-        }
     }
 });

@@ -697,21 +697,88 @@ var PmCollections = Backbone.Collection.extend({
             timestamp: collection.timestamp
         };
 
-        var targetCollection = pmCollection.get(id);
+        var targetCollection;
+        targetCollection = new PmCollection(newCollection);
         targetCollection.set("name", collection.name);
 
         if ("order" in collection) {
             targetCollection.set("order", collection.order);
         }
 
+        if ("folders" in collection) {
+            targetCollection.set("folders", collection.folders);
+        }
+
+        targetCollection.set("requests", collection.requests);
+
+        pmCollection.add(targetCollection, {merge: true});
+
         pmCollection.updateCollectionInDataStore(targetCollection.getAsJSON(), true, function (c) {
             var driveCollectionRequests = collection.requests;
 
             pm.indexedDB.getAllRequestsInCollection(collection, function(collection, oldCollectionRequests) {
-                // TODO Refactor this
-                // Delete all old collection requests
-                // Add new collection requests from the DB
-                // Trigger updateCollection
+                var updatedRequests = [];
+                var deletedRequests = [];
+                var newRequests = [];
+                var finalRequests = [];
+                var i = 0;
+                var driveRequest;
+                var existingRequest;
+                var sizeOldRequests;
+                var loc;
+                var j;
+                var sizeUpdatedRequests;
+                var sizeNewRequests;
+                var sizeDeletedRequests;
+                var size = driveCollectionRequests.length;
+
+                function existingRequestFinder(r) {
+                    return driveRequest.id === r.id;
+                }
+
+                for (i = 0; i < size; i++) {
+                    driveRequest = driveCollectionRequests[i];
+                    existingRequest = _.find(oldCollectionRequests, existingRequestFinder);
+
+                    if (existingRequest) {
+                        updatedRequests.push(driveRequest);
+
+                        sizeOldRequests = oldCollectionRequests.length;
+                        loc = -1;
+                        for (j = 0; j < sizeOldRequests; j++) {
+                            if (oldCollectionRequests[j].id === existingRequest.id) {
+                                loc = j;
+                                break;
+                            }
+                        }
+
+                        if (loc >= 0) {
+                            oldCollectionRequests.splice(loc, 1);
+                        }
+                    }
+                    else {
+                        newRequests.push(driveRequest);
+                    }
+                }
+
+                deletedRequests = oldCollectionRequests;
+
+                sizeUpdatedRequests = updatedRequests.length;
+                for(i = 0; i < sizeUpdatedRequests; i++) {
+                    pmCollection.updateRequestInDataStore(updatedRequests[i], true);
+                }
+
+                sizeNewRequests = newRequests.length;
+                for(i = 0; i < sizeNewRequests; i++) {
+                    pmCollection.addRequestToDataStore(newRequests[i], true);
+                }
+
+                sizeDeletedRequests = deletedRequests.length;
+                for(i = 0; i < sizeDeletedRequests; i++) {
+                    pmCollection.deleteRequestFromDataStore(deletedRequests[i], true);
+                }
+
+                pmCollection.trigger("updateCollection", targetCollection);
             });
         });
     },
