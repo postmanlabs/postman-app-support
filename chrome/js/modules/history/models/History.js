@@ -21,7 +21,7 @@ var History = Backbone.Collection.extend({
             else {
                 for (var i = 0; i < count; i++) {
                     var r = historyRequests[i];
-                    pm.urlCache.addUrl(r.url);
+                    pm.mediator.trigger("addToURLCache", r.url);
 
                     var request = r;
                     request.position = "top";
@@ -109,7 +109,7 @@ var History = Backbone.Collection.extend({
         }
 
         pm.indexedDB.addRequest(historyRequest, function (request) {
-            pm.urlCache.addUrl(request.url);
+            pm.mediator.trigger("addToURLCache", request.url);
             var historyRequestModel = new HistoryRequest(request);
             historyRequestModel.set("position", "top");
             collection.add(historyRequestModel);
@@ -156,7 +156,7 @@ var History = Backbone.Collection.extend({
 
             filteredItems.push(filteredItem);
         }
-        
+
         this.trigger("filter", filteredItems);
 
         return filteredItems;

@@ -26,10 +26,7 @@ var DriveSyncLogger = Backbone.View.extend({
     },
 
     render: function() {
-        console.log("Change called for logItems");
-
         var logItems = this.model.toJSON();
-        console.log("LogItems = ", logItems);
         $('#logger-drivesync-items').html("");
         $('#logger-drivesync-items').append(Handlebars.templates.logger_drivesync({items: logItems}));
     }

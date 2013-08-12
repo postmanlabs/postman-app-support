@@ -31,7 +31,6 @@ var Request = Backbone.Model.extend({
 
         this.set("body", requestBody);
         this.set("response", response);
-        // this.body = requestBody;
 
         this.on("cancelRequest", this.onCancelRequest, this);
         this.on("startNew", this.onStartNew, this);
@@ -46,19 +45,16 @@ var Request = Backbone.Model.extend({
         this.startNew();
     },
 
-    // TODO Either text or arraybuffer
     onSend: function(type, action) {
         this.send(type, action);
     },
 
-    // Fixed
     isMethodWithBody:function (method) {
         var methodsWithBody = this.get("methodsWithBody");
         method = method.toUpperCase();
         return $.inArray(method, methodsWithBody) >= 0;
     },
 
-    // Fixed
     packHeaders:function (headers) {
         var headersLength = headers.length;
         var paramString = "";
@@ -96,11 +92,11 @@ var Request = Backbone.Model.extend({
         this.set("totalTime", totalTime);
         return totalTime;
     },
-    
+
     getPackedHeaders:function () {
         return this.packHeaders(this.get("headers"));
     },
-    
+
     unpackHeaders:function (data) {
         if (data === null || data === "") {
             return [];
@@ -142,7 +138,7 @@ var Request = Backbone.Model.extend({
     },
 
     getUrlParams: function() {
-        var params = getUrlVars(this.get("url"));        
+        var params = getUrlVars(this.get("url"));
         return params;
     },
 
@@ -166,7 +162,7 @@ var Request = Backbone.Model.extend({
 
         var baseUrl = url.split("?")[0];
         if (paramArr.length > 0) {
-            url = baseUrl + "?" + paramArr.join('&');            
+            url = baseUrl + "?" + paramArr.join('&');
         }
         else {
             //Has key/val pair
@@ -180,9 +176,9 @@ var Request = Backbone.Model.extend({
             this.trigger("updateURLInputText");
         }
         else {
-            this.set("url", url);    
+            this.set("url", url);
         }
-        
+
     },
 
     encodeUrl:function (url) {
@@ -204,7 +200,7 @@ var Request = Backbone.Model.extend({
             return url;
         }
     },
-    
+
     prepareHeadersForProxy:function (headers) {
         var count = headers.length;
         for (var i = 0; i < count; i++) {
@@ -261,7 +257,7 @@ var Request = Backbone.Model.extend({
 
     getAsObject: function() {
         var body = this.get("body");
-        
+
         var request = {
             url: this.get("url"),
             data: body.get("dataAsObjects"), //TODO This should be available in the model itself, asObjects = true
@@ -276,7 +272,7 @@ var Request = Backbone.Model.extend({
 
     getAsJson:function () {
         var body = this.get("body");
-        
+
         var request = {
             url: this.get("url"),
             data: body.get("dataAsObjects"), //TODO This should be available in the model itself, asObjects = true
@@ -295,7 +291,7 @@ var Request = Backbone.Model.extend({
 
         // TODO RequestEditor should be listening to this
         // TODO Needs to be made clearer
-        this.set("editorMode", 0);        
+        this.set("editorMode", 0);
 
         var xhr = this.get("xhr");
 
@@ -315,7 +311,7 @@ var Request = Backbone.Model.extend({
         this.set("isFromCollection", false);
         this.set("collectionRequestId", "");
 
-        body.set("data", "");            
+        body.set("data", "");
 
         this.trigger("loadRequest", this);
         response.trigger("clearResponse");
@@ -350,7 +346,7 @@ var Request = Backbone.Model.extend({
         var body = this.get("body");
         var response = this.get("response");
 
-        this.set("editorMode", 0);        
+        this.set("editorMode", 0);
 
         this.set("url", request.url);
 
@@ -423,7 +419,7 @@ var Request = Backbone.Model.extend({
         else {
             body.set("dataMode", "params");
         }
-        
+
         response.trigger("clearResponse");
         this.trigger("loadRequest", this);
     },
@@ -436,9 +432,9 @@ var Request = Backbone.Model.extend({
 
         var headers = this.get("headers");
 
-        $('#headers-keyvaleditor-actions-open .headers-count').html(headers.length);        
+        $('#headers-keyvaleditor-actions-open .headers-count').html(headers.length);
         this.set("startTime", new Date().getTime());
-    },    
+    },
 
     setHeader: function(key, value) {
         var headers = _.clone(this.get("headers"));
@@ -461,11 +457,11 @@ var Request = Backbone.Model.extend({
             else {
                 headers.push({key: contentTypeHeaderKey, name: contentTypeHeaderKey, value: value});
             }
-        }        
+        }
 
-        this.set("headers", headers);        
+        this.set("headers", headers);
     },
-    
+
     getXhrHeaders: function() {
         var body = this.get("body");
 
@@ -517,8 +513,8 @@ var Request = Backbone.Model.extend({
         }
 
         return finalHeaders;
-    },    
-    
+    },
+
     getRequestBodyPreview: function() {
         var body = this.get("body");
         return body.get("dataAsPreview");
@@ -542,13 +538,13 @@ var Request = Backbone.Model.extend({
         var url = this.encodeUrl(this.get("url"));
         url = pm.envManager.getCurrentValue(url);
         url = ensureProperUrl(url);
-        
+
         var method = this.get("method").toUpperCase();
 
         //Start setting up XHR
         var xhr = new XMLHttpRequest();
         xhr.open(method, url, true); //Open the XHR request. Will be sent later
-        xhr.onreadystatechange = function (event) {            
+        xhr.onreadystatechange = function (event) {
             _.bind(response.load, model)(event.target);
         };
 
@@ -594,7 +590,7 @@ var Request = Backbone.Model.extend({
         this.trigger("sentRequest", this);
     },
 
-    // TODO Should be activated on click    
+    // TODO Should be activated on click
     generatePreview:function() {
         var method = this.get("method").toUpperCase();
         var httpVersion = "HTTP/1.1";
@@ -624,7 +620,7 @@ var Request = Backbone.Model.extend({
         }
         else {
             requestPreview += "<br/><br/>";
-        }        
+        }
 
         this.set("previewHtml", requestPreview);
     },
@@ -638,8 +634,8 @@ var Request = Backbone.Model.extend({
     },
 
     checkIfCurrentRequestIsUpdated: function(request) {
-        var id = this.get("collectionRequestId");        
-        if(id === request.id) {            
+        var id = this.get("collectionRequestId");
+        if(id === request.id) {
             this.set("name", request.name);
             this.set("description", request.description);
         }

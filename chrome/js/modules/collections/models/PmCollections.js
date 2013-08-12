@@ -73,7 +73,6 @@ var PmCollections = Backbone.Collection.extend({
                     pm.indexedDB.getAllRequestsInCollection(collection, onGetAllRequestsInCollection);
                 }
             }
-
         });
     },
 
@@ -328,11 +327,12 @@ var PmCollections = Backbone.Collection.extend({
         pm.indexedDB.addCollectionRequest(request, function (req) {
             pm.mediator.trigger("addToURLCache", request.url);
 
-            // var collection = pmCollection.get(request.collectionId);
+            var collection = pmCollection.get(request.collectionId);
 
-            // if (collection) {
-            //     collection.addRequest(request);
-            // }
+            // TODO Test if this works
+            if (collection) {
+                collection.addRequest(request);
+            }
 
             if (sync) {
                 pmCollection.addRequestToSyncableFilesystem(request.id);
@@ -394,7 +394,6 @@ var PmCollections = Backbone.Collection.extend({
 
                 // This is called because the request would be deleted from "order"
                 pmCollection.updateCollectionInDataStore(collection, sync, function(c) {
-                    console.log("Updated old collection");
                 });
             }
             else {
@@ -466,7 +465,7 @@ var PmCollections = Backbone.Collection.extend({
 
             // TODO Can be improved by triggering another event
             if (collectionModel) {
-                collectionModel.addRequest(request) ;
+                // collectionModel.addRequest(request) ;
                 pmCollection.trigger("updateCollection", collectionModel);
             }
 
@@ -557,8 +556,6 @@ var PmCollections = Backbone.Collection.extend({
             collectionModel.set("folders", folders);
             collectionModel.set("order", collection["order"]);
 
-            console.log("Final dbCollection is", collectionModel.getAsJSON());
-
             // Add new collection to the database
             pmCollection.updateCollectionInDataStore(collectionModel.getAsJSON(), true, function() {
                 var i;
@@ -612,19 +609,17 @@ var PmCollections = Backbone.Collection.extend({
     },
 
     // Get collection data for file
-    getCollectionData:function (id, callback) {
+    getCollectionDataForFile:function (id, callback) {
         pm.indexedDB.getCollection(id, function (data) {
             var collection = data;
-            var ids;
             var i;
             var name;
             var type;
             var filedata;
 
-            pm.indexedDB.getAllRequestsInCollection(collection, function (collection, data) {
-                ids = [];
+            pm.indexedDB.getAllRequestsInCollection(collection, function (collection, requests) {
                 for (i = 0, count = data.length; i < count; i++) {
-                    ids.push(data[i].id);
+                    requests[i]["synced"] = false;
                 }
 
                 //Get all collection requests with one call
@@ -640,9 +635,8 @@ var PmCollections = Backbone.Collection.extend({
 
     // Save collection as a file
     saveCollection:function (id) {
-        this.getCollectionData(id, function (name, type, filedata) {
+        this.getCollectionDataForFile(id, function (name, type, filedata) {
             var filename = name + ".postman_collection";
-            console.log("PmCollections", filedata);
             pm.filesystem.saveAndOpenFile(filename, filedata, type, function () {
                 noty(
                     {
@@ -657,7 +651,7 @@ var PmCollections = Backbone.Collection.extend({
 
     // Upload collection
     uploadCollection:function (id, callback) {
-        this.getCollectionData(id, function (name, type, filedata) {
+        this.getCollectionDataForFile(id, function (name, type, filedata) {
             var uploadUrl = pm.webUrl + '/collections';
             $.ajax({
                 type:'POST',
@@ -819,7 +813,8 @@ var PmCollections = Backbone.Collection.extend({
 
                 // TODO Not needed. Test
                 var targetCollection = pmCollection.get(collection.id);
-                targetCollection.addRequest(collectionRequest);
+
+                // targetCollection.addRequest(collectionRequest);
 
                 pmCollection.addRequestToDataStore(collectionRequest, true, function(req) {
                     pmCollection.trigger("addCollectionRequest", req);
@@ -833,7 +828,7 @@ var PmCollections = Backbone.Collection.extend({
             var targetCollection = pmCollection.get(collection.id);
 
             // TODO Not needed. Test
-            targetCollection.addRequest(collectionRequest);
+            // targetCollection.addRequest(collectionRequest);
 
             // TODO This is needed
             targetCollection.addRequestIdToOrder(collectionRequest.id);
@@ -858,7 +853,7 @@ var PmCollections = Backbone.Collection.extend({
         collection.addRequestIdToOrder(collectionRequest.id);
 
         // TODO Not needed. Test
-        collection.addRequest(collectionRequest);
+        // collection.addRequest(collectionRequest);
 
         pmCollection.addRequestToDataStore(collectionRequest, true, function(req) {
             pmCollection.moveRequestToFolder(req.id, folderId);
@@ -928,7 +923,6 @@ var PmCollections = Backbone.Collection.extend({
         if(targetCollection.id === request.collectionId) {
             targetCollection.addRequestIdToFolder(folder.id, request.id);
             pmCollection.updateCollectionInDataStore(targetCollection.getAsJSON(), true, function() {
-                console.log("Fired moveRequestToFolder event");
                 pmCollection.trigger("moveRequestToFolder", targetCollection, folder, request);
             });
         }
@@ -941,13 +935,12 @@ var PmCollections = Backbone.Collection.extend({
                 targetCollection.addRequestIdToOrder(request.id);
 
                 // TODO Not needed. Test
-                targetCollection.addRequest(request);
+                // targetCollection.addRequest(request);
 
                 pmCollection.addRequestToDataStore(request, true, function(req) {
                     targetCollection.addRequestIdToFolder(folder.id, req.id);
                     var collection = targetCollection.getAsJSON();
                     pmCollection.updateCollectionInDataStore(collection, true, function(c) {
-                        console.log("Fired moveRequestToFolder event");
                         pmCollection.trigger("moveRequestToFolder", targetCollection, folder, request);
                     });
                 });
@@ -979,7 +972,7 @@ var PmCollections = Backbone.Collection.extend({
                 targetCollection.addRequestIdToOrder(request.id);
 
                 // TODO Not needed. Test
-                targetCollection.addRequest(request);
+                // targetCollection.addRequest(request);
 
                 pmCollection.addRequestToDataStore(request, true, function(req) {
                     pmCollection.updateCollectionInDataStore(targetCollection.getAsJSON(), true, function(c) {
@@ -1048,7 +1041,7 @@ var PmCollections = Backbone.Collection.extend({
         var collection;
 
         for(i = 0; i < folderRequestsIds.length; i++) {
-            this.deleteRequestFromDataStore(folderRequestsIds[i], false);
+            this.deleteRequestFromDataStore(folderRequestsIds[i], true);
         }
 
         collection = this.getCollectionForFolderId(id);

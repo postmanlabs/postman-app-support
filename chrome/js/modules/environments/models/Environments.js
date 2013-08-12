@@ -62,8 +62,6 @@ var Environments = Backbone.Collection.extend({
         var synced;
         var syncableFile;
 
-        console.log("Start syncing environments");
-
         if (this.isLoaded && this.initializedSyncing) {
             pm.mediator.on("addSyncableFileFromRemote", function(type, data) {
                 if (type === "environment") {
@@ -89,13 +87,11 @@ var Environments = Backbone.Collection.extend({
                 synced = environment.get("synced");
 
                 if (!synced) {
-                    console.log("Sync", this.getAsSyncableFile(environment.get("id")));
                     this.addToSyncableFilesystem(environment.get("id"));
                 }
             }
         }
         else {
-            console.log("Either environment not loaded or not initialized syncing");
         }
     },
 
@@ -125,7 +121,6 @@ var Environments = Backbone.Collection.extend({
 
         var syncableFile = this.getAsSyncableFile(id);
         pm.mediator.trigger("addSyncableFile", syncableFile, function(result) {
-            console.log("Updated environment sync status");
             if(result === "success") {
                 collection.updateEnvironmentSyncStatus(id, true);
             }
@@ -135,7 +130,6 @@ var Environments = Backbone.Collection.extend({
     removeFromSyncableFilesystem: function(id) {
         var name = id + ".environment";
         pm.mediator.trigger("removeSyncableFile", name, function(result) {
-            console.log("Removed file");
         });
     },
 
@@ -149,8 +143,6 @@ var Environments = Backbone.Collection.extend({
             timestamp:new Date().getTime(),
             synced: false
         };
-
-        console.log("Added environment", environment);
 
         var envModel = new Environment(environment);
         collection.add(envModel);
@@ -196,10 +188,7 @@ var Environments = Backbone.Collection.extend({
         environment.set("synced", status);
         collection.add(environment, {merge: true});
 
-        console.log("Update environment sync status");
-
         pm.indexedDB.environments.updateEnvironment(environment.toJSON(), function () {
-            console.log("Updated environment sync status");
         });
     },
 

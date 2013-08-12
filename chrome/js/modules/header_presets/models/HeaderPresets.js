@@ -60,8 +60,6 @@ var HeaderPresets = Backbone.Collection.extend({
         this.startListeningForFileSystemSyncEvents();
 
         pm.indexedDB.headerPresets.getAllHeaderPresets(function (items) {
-            console.log("Loaded header presets");
-
             collection.add(items, {merge: true});
             collection.refreshAutoCompleteList();
 
@@ -90,19 +88,15 @@ var HeaderPresets = Backbone.Collection.extend({
         var synced;
         var syncableFile;
 
-        console.log("Start syncing headerPresets");
-
         if (this.isLoaded && this.initializedSyncing) {
             pm.mediator.on("addSyncableFileFromRemote", function(type, data) {
                 if (type === collection.syncFileType) {
-                    console.log("Calling onReceivingSyncableFileData");
                     collection.onReceivingSyncableFileData(data);
                 }
             });
 
             pm.mediator.on("updateSyncableFileFromRemote", function(type, data) {
                 if (type === collection.syncFileType) {
-                    console.log("Calling onReceivingSyncableFileData");
                     collection.onReceivingSyncableFileData(data);
                 }
             });
@@ -119,18 +113,15 @@ var HeaderPresets = Backbone.Collection.extend({
                 synced = headerPreset.get("synced");
 
                 if (!synced) {
-                    console.log("Sync", this.getAsSyncableFile(headerPreset.get("id")));
                     this.addToSyncableFilesystem(headerPreset.get("id"));
                 }
             }
         }
         else {
-            console.log("Either headerPreset not loaded or not initialized syncing");
         }
     },
 
     onReceivingSyncableFileData: function(data) {
-        console.log("Add data", JSON.parse(data));
         this.mergeHeaderPreset(JSON.parse(data), true);
     },
 
@@ -157,7 +148,6 @@ var HeaderPresets = Backbone.Collection.extend({
 
         var syncableFile = this.getAsSyncableFile(id);
         pm.mediator.trigger("addSyncableFile", syncableFile, function(result) {
-            console.log("Updated headerPreset sync status");
             if(result === "success") {
                 collection.updateHeaderPresetSyncStatus(id, true);
             }
@@ -169,7 +159,6 @@ var HeaderPresets = Backbone.Collection.extend({
 
         var name = id + "." + collection.syncFileType;
         pm.mediator.trigger("removeSyncableFile", name, function(result) {
-            console.log("Removed file");
         });
     },
 
@@ -238,10 +227,7 @@ var HeaderPresets = Backbone.Collection.extend({
         headerPreset.set("synced", status);
         collection.add(headerPreset, {merge: true});
 
-        console.log("Update headerPreset sync status");
-
         pm.indexedDB.headerPresets.updateHeaderPreset(headerPreset.toJSON(), function () {
-            console.log("Updated headerPreset sync status");
         });
     },
 
@@ -288,7 +274,6 @@ var HeaderPresets = Backbone.Collection.extend({
         var collection = this;
 
         pm.indexedDB.headerPresets.addHeaderPreset(preset, function(headerPreset) {
-            console.log("Added header preset");
             collection.add(headerPreset, {merge: true});
 
             if (!doNotSync) {
