@@ -2015,7 +2015,7 @@ input[type="file"] {
     position: fixed;
     top: 0;
     left: 0;
-    height: 400px;
+    height: 435px;
     width: 100%;
     z-index: 10000;
     padding: 0 10px 10px 20px;
@@ -2054,8 +2054,14 @@ input[type="file"] {
     margin-left: 0;
 }
 
+.file-status-change {
+    color: #69A7C2;
+}
+
+.change-on-drive {
+    color: #879485;
+}
 
 #logger-drivesync ul .item-logger-time {
     color: #999;
-    margin-left: 10px;
 }

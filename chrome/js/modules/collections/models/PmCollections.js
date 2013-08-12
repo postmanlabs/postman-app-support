@@ -465,11 +465,8 @@ var PmCollections = Backbone.Collection.extend({
             var folder;
             var requestLocation;
 
-            // TODO Can be improved by triggering another event
             if (collectionModel) {
                 requestLocation = pmCollection.getRequestLocation(request.id);
-
-                console.log("Request location is ", requestLocation);
 
                 if (requestLocation.type === "collection") {
                     pmCollection.trigger("moveRequestToCollection", collectionModel, request);
@@ -478,8 +475,6 @@ var PmCollections = Backbone.Collection.extend({
                     folder = pmCollection.getFolderById(requestLocation.folderId);
                     pmCollection.trigger("moveRequestToFolder", collectionModel, folder, request);
                 }
-
-                // pmCollection.trigger("updateCollection", collectionModel);
             }
 
         });

@@ -13,6 +13,10 @@ var DriveSyncLogger = Backbone.View.extend({
             view.toggleLoggerDisplay();
         });
 
+        $("#google-drive-close-logger").on("click", function() {
+            view.toggleLoggerDisplay();
+        });
+
         $(document).bind('keydown', 'alt+g', function () {
             view.toggleLoggerDisplay();
         });
@@ -76,7 +80,7 @@ var DriveSyncLogger = Backbone.View.extend({
         var logItems = this.model.toJSON();
         $('#logger-drivesync-items').html("");
         $('#logger-drivesync-items').append(Handlebars.templates.logger_drivesync({items: logItems}));
-        $('#logger-drivesync-items').scrollTop($('#logger-drivesync-items').height());
+        $('#logger-drivesync-log-container').scrollTop($('#logger-drivesync-log-container').height());
     }
 
 });
