@@ -13,14 +13,14 @@ var App = Backbone.View.extend({
 		view.menuIdPrefix = guid();
 		view.contextMenuIds = {};
 
-	    $('a[rel="tooltip"]').tooltip();	    
+	    $('a[rel="tooltip"]').tooltip();
 	    $('input[rel="popover"]').popover();
 
 	    var resizeTimeout;
 
-	    $(window).on("resize", function () {	        
+	    $(window).on("resize", function () {
 	        clearTimeout(resizeTimeout);
-	        resizeTimeout = setTimeout(function() {	            
+	        resizeTimeout = setTimeout(function() {
 	            view.setLayout();
 	        }, 500);
 	    });
@@ -59,11 +59,11 @@ var App = Backbone.View.extend({
 
 		var contextMenuIds = view.contextMenuIds;
 		var obj = {
-			title: title,						
+			title: title,
 			contexts: ['selection']
 		};
 
-		if (contextMenuIds[id]) {			
+		if (contextMenuIds[id]) {
 			id = chrome.contextMenus.update(id, obj);
 		}
 		else {
@@ -72,14 +72,14 @@ var App = Backbone.View.extend({
 				obj.parentId = parentId;
 			}
 			id = chrome.contextMenus.create(obj);
-			contextMenuIds[id] = true;	
+			contextMenuIds[id] = true;
 		}
 	},
 
 	createEnvironmentContextMenu: function(environment) {
 		var view = this;
 		var i;
-		var count;		
+		var count;
 		var targetId;
 		var value;
 		var values;
@@ -90,12 +90,12 @@ var App = Backbone.View.extend({
 			this.createOrUpdateContextMenuItem(targetId, "Set: " + environment.get("name"), false);
 
 			values = environment.get("values");
-			count = values.length;				
+			count = values.length;
 
 			for(i = 0; i < count; i++) {
 				value = values[i];
 				targetId = view.menuIdPrefix + "/environment/" + value.key;
-				this.createOrUpdateContextMenuItem(targetId, value.key, view.menuIdPrefix + "/postman_current_environment");				
+				this.createOrUpdateContextMenuItem(targetId, value.key, view.menuIdPrefix + "/postman_current_environment");
 			}
 		}
 	},
@@ -103,22 +103,22 @@ var App = Backbone.View.extend({
 	createGlobalsContextMenu: function(globals) {
 		var view = this;
 		var i;
-		var count;			
+		var count;
 		var targetId;
 		var value;
 		var values;
 
 		if (globals) {
-			targetId = view.menuIdPrefix + "/postman_globals";		
-			this.createOrUpdateContextMenuItem(targetId, "Set: Globals", false);	
-			
-			values = globals.get("globals");		
-			count = values.length;		
+			targetId = view.menuIdPrefix + "/postman_globals";
+			this.createOrUpdateContextMenuItem(targetId, "Set: Globals", false);
+
+			values = globals.get("globals");
+			count = values.length;
 
 			for(i = 0; i < count; i++) {
 				value = values[i];
 				targetId = view.menuIdPrefix + "/globals/" + value.key;
-				this.createOrUpdateContextMenuItem(targetId, value.key, view.menuIdPrefix + "/postman_globals");				
+				this.createOrUpdateContextMenuItem(targetId, value.key, view.menuIdPrefix + "/postman_globals");
 			}
 		}
 	},
@@ -132,14 +132,14 @@ var App = Backbone.View.extend({
 	renderContextMenu: function() {
 		var variableProcessor = this.model.get("variableProcessor");
 		var globals = this.model.get("globals");
-		var environment = variableProcessor.get("selectedEnv");		
-		var view = this;		
+		var environment = variableProcessor.get("selectedEnv");
+		var view = this;
 
 		chrome.contextMenus.removeAll(function() {
 			view.contextMenuIds = {};
-			_.bind(view.createContextMenu, view)(environment, globals);		
+			_.bind(view.createContextMenu, view)(environment, globals);
 		});
-		
+
 
 		chrome.contextMenus.onClicked.addListener(function(info) {
 			if (!document.hasFocus()) {
@@ -150,8 +150,8 @@ var App = Backbone.View.extend({
 			var menuItemParts = info.menuItemId.split("/");
 			var category = menuItemParts[1];
 			var variable = menuItemParts[2];
-			_.bind(view.updateVariableFromContextMenu, view)(category, variable, info.selectionText);			
-		});		
+			_.bind(view.updateVariableFromContextMenu, view)(category, variable, info.selectionText);
+		});
 	},
 
 	updateEnvironmentVariableFromContextMenu: function(variable, selectionText) {
@@ -159,7 +159,7 @@ var App = Backbone.View.extend({
 		var environments = this.model.get("environments");
 		var selectedEnv = variableProcessor.get("selectedEnv");
 
-		if (selectedEnv) {			
+		if (selectedEnv) {
 			var values = _.clone(selectedEnv.get("values"));
 			var count = values.length;
 			for(var i = 0; i < count; i++) {
@@ -175,7 +175,7 @@ var App = Backbone.View.extend({
 		}
 	},
 
-	updateGlobalVariableFromContextMenu: function(variable, selectionText) {		
+	updateGlobalVariableFromContextMenu: function(variable, selectionText) {
 		var variableProcessor = this.model.get("variableProcessor");
 		var globals = this.model.get("globals");
 		var globalValues = _.clone(globals.get("globals"));
@@ -197,7 +197,7 @@ var App = Backbone.View.extend({
 
 	updateVariableFromContextMenu: function(category, variable, selectionText) {
 		if (category === "globals") {
-			this.updateGlobalVariableFromContextMenu(variable, selectionText);			
+			this.updateGlobalVariableFromContextMenu(variable, selectionText);
 		}
 		else if (category === "environment") {
 			this.updateEnvironmentVariableFromContextMenu(variable, selectionText);
@@ -206,13 +206,14 @@ var App = Backbone.View.extend({
 
 	onModalOpen:function (activeModal) {
 		this.model.set("activeModal", activeModal);
-		this.model.set("isModalOpen", true);	    
+		this.model.set("isModalOpen", true);
 	},
 
 	onModalClose:function () {
-		// $('a[rel=tooltip]').tooltip('hide')
+		// Shift focus to disable last shown tooltip
+		$("#url").focus();
 		this.model.set("activeModal", null);
-		this.model.set("isModalOpen", false);	    
+		this.model.set("isModalOpen", false);
 	},
 
 	isModalOpen: function() {
@@ -223,8 +224,8 @@ var App = Backbone.View.extend({
 	    this.refreshScrollPanes();
 	},
 
-	refreshScrollPanes:function () {	    
-	    var newMainHeight = $(document).height() - 55;	    
+	refreshScrollPanes:function () {
+	    var newMainHeight = $(document).height() - 55;
 	    $('#main').height(newMainHeight + "px");
 	    $('#sidebar-filler').height(newMainHeight + "px");
 	}

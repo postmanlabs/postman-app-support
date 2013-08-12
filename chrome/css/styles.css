@@ -35,6 +35,10 @@ html, body {
 a, a:hover {
   cursor: pointer; }
 
+a:focus {
+  outline: 0 !important;
+  outline-width: 0 !important; }
+
 /* Gmail style scrollbar */
 ::-webkit-scrollbar-thumb {
   border-width: 1px 1px 1px 2px; }
