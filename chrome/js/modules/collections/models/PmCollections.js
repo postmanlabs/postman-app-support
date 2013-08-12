@@ -461,10 +461,25 @@ var PmCollections = Backbone.Collection.extend({
 
         pmCollection.addRequestToDataStore(request, false, function(r) {
             var collectionModel = pmCollection.get(request.collectionId);
+            var folderId;
+            var folder;
+            var requestLocation;
 
             // TODO Can be improved by triggering another event
             if (collectionModel) {
-                pmCollection.trigger("updateCollection", collectionModel);
+                requestLocation = pmCollection.getRequestLocation(request.id);
+
+                console.log("Request location is ", requestLocation);
+
+                if (requestLocation.type === "collection") {
+                    pmCollection.trigger("moveRequestToCollection", collectionModel, request);
+                }
+                else if (requestLocation.type === "folder") {
+                    folder = pmCollection.getFolderById(requestLocation.folderId);
+                    pmCollection.trigger("moveRequestToFolder", collectionModel, folder, request);
+                }
+
+                // pmCollection.trigger("updateCollection", collectionModel);
             }
 
         });
@@ -783,6 +798,45 @@ var PmCollections = Backbone.Collection.extend({
         }
 
         return null;
+    },
+
+    getRequestLocation: function(id) {
+        var i;
+        var collection;
+        var indexCollection;
+        var folders;
+        var indexFolder;
+
+        for(var i = 0; i < this.models.length; i++) {
+            collection = this.models[i];
+
+            indexCollection = _.indexOf(collection.get("order"), id);
+
+            if (indexCollection >= 0) {
+                return {
+                    "type": "collection",
+                    "collectionId": collection.get("id")
+                };
+            }
+            else {
+                folders = collection.get("folders");
+                for(j = 0; j < folders.length; j++) {
+                    indexFolder = _.indexOf(folders[j].order, id);
+
+                    if (indexFolder >= 0) {
+                        return {
+                            "type": "folder",
+                            "folderId": folders[j].id,
+                            "collectionId": collection.get("id")
+                        };
+                    }
+                }
+            }
+        }
+
+        return {
+            "type": "not_found"
+        };
     },
 
     // Load collection request in the editor
