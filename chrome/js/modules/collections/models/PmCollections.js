@@ -173,7 +173,7 @@ var PmCollections = Backbone.Collection.extend({
     },
 
     onRemoveSyncableFileForRequests: function(id) {
-        this.deleteRequestFromDataStore(id, false, function() {
+        this.deleteRequestFromDataStore(id, false, false, function() {
         });
     },
 
@@ -329,7 +329,6 @@ var PmCollections = Backbone.Collection.extend({
 
             var collection = pmCollection.get(request.collectionId);
 
-            // TODO Test if this works
             if (collection) {
                 collection.addRequest(request);
             }
@@ -368,7 +367,7 @@ var PmCollections = Backbone.Collection.extend({
         });
     },
 
-    deleteRequestFromDataStore: function(id, sync, callback) {
+    deleteRequestFromDataStore: function(id, sync, syncCollection, callback) {
         var pmCollection = this;
 
         var request = this.getRequestById(id);
@@ -393,7 +392,7 @@ var PmCollections = Backbone.Collection.extend({
                 }
 
                 // This is called because the request would be deleted from "order"
-                pmCollection.updateCollectionInDataStore(collection, sync, function(c) {
+                pmCollection.updateCollectionInDataStore(collection, syncCollection, function(c) {
                 });
             }
             else {
@@ -465,7 +464,6 @@ var PmCollections = Backbone.Collection.extend({
 
             // TODO Can be improved by triggering another event
             if (collectionModel) {
-                // collectionModel.addRequest(request) ;
                 pmCollection.trigger("updateCollection", collectionModel);
             }
 
@@ -811,11 +809,6 @@ var PmCollections = Backbone.Collection.extend({
             pmCollection.addCollectionToDataStore(collection, true, function(newCollection) {
                 collectionRequest.collectionId = newCollection.id;
 
-                // TODO Not needed. Test
-                var targetCollection = pmCollection.get(collection.id);
-
-                // targetCollection.addRequest(collectionRequest);
-
                 pmCollection.addRequestToDataStore(collectionRequest, true, function(req) {
                     pmCollection.trigger("addCollectionRequest", req);
                     pmCollection.loadCollectionRequest(req.id);
@@ -826,11 +819,6 @@ var PmCollections = Backbone.Collection.extend({
             collectionRequest.collectionId = collection.id;
 
             var targetCollection = pmCollection.get(collection.id);
-
-            // TODO Not needed. Test
-            // targetCollection.addRequest(collectionRequest);
-
-            // TODO This is needed
             targetCollection.addRequestIdToOrder(collectionRequest.id);
 
             pmCollection.addRequestToDataStore(collectionRequest, true, function(req) {
@@ -849,11 +837,7 @@ var PmCollections = Backbone.Collection.extend({
 
         var collection = this.get(collectionId);
         collectionRequest.collectionId = collectionId;
-
         collection.addRequestIdToOrder(collectionRequest.id);
-
-        // TODO Not needed. Test
-        // collection.addRequest(collectionRequest);
 
         pmCollection.addRequestToDataStore(collectionRequest, true, function(req) {
             pmCollection.moveRequestToFolder(req.id, folderId);
@@ -905,7 +889,7 @@ var PmCollections = Backbone.Collection.extend({
     deleteCollectionRequest:function (id, callback) {
         var pmCollection = this;
 
-        pmCollection.deleteRequestFromDataStore(id, true, function() {
+        pmCollection.deleteRequestFromDataStore(id, true, true, function() {
             pmCollection.trigger("removeCollectionRequest", id);
 
             if (callback) {
@@ -933,9 +917,6 @@ var PmCollections = Backbone.Collection.extend({
                 request.collectionId = targetCollection.get("id");
 
                 targetCollection.addRequestIdToOrder(request.id);
-
-                // TODO Not needed. Test
-                // targetCollection.addRequest(request);
 
                 pmCollection.addRequestToDataStore(request, true, function(req) {
                     targetCollection.addRequestIdToFolder(folder.id, req.id);
@@ -968,11 +949,7 @@ var PmCollections = Backbone.Collection.extend({
                 request.id = guid();
                 request.collectionId = targetCollectionId;
 
-                // This can go after addRequestToDataStore
                 targetCollection.addRequestIdToOrder(request.id);
-
-                // TODO Not needed. Test
-                // targetCollection.addRequest(request);
 
                 pmCollection.addRequestToDataStore(request, true, function(req) {
                     pmCollection.updateCollectionInDataStore(targetCollection.getAsJSON(), true, function(c) {
@@ -1031,7 +1008,8 @@ var PmCollections = Backbone.Collection.extend({
         var collection = this.getCollectionForFolderId(id);
         collection.editFolder(folder);
         this.trigger("updateFolder", collection, folder);
-        this.updateCollectionInDataStore(collection.getAsJSON());
+
+        this.updateCollectionInDataStore(collection.getAsJSON(), true);
     },
 
     deleteFolder: function(id) {
@@ -1041,14 +1019,14 @@ var PmCollections = Backbone.Collection.extend({
         var collection;
 
         for(i = 0; i < folderRequestsIds.length; i++) {
-            this.deleteRequestFromDataStore(folderRequestsIds[i], true);
+            this.deleteRequestFromDataStore(folderRequestsIds[i], true, false);
         }
 
         collection = this.getCollectionForFolderId(id);
         collection.deleteFolder(id);
 
         this.trigger("deleteFolder", collection, id);
-        this.updateCollectionInDataStore(collection.getAsJSON());
+        this.updateCollectionInDataStore(collection.getAsJSON(), true);
     },
 
     filter: function(term) {

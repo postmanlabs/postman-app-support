@@ -12,8 +12,23 @@ var DriveSync = Backbone.Model.extend({
     },
 
     initialize: function(options) {
-    	this.get("log").addToLog("Initializing syncable file system");
-    	this.openSyncableFileSystem();
+        var model = this;
+
+        var canSync = pm.settings.getSetting("driveSyncEnabled");
+
+        if (canSync) {
+            this.openSyncableFileSystem();
+        }
+
+        pm.mediator.on("driveSyncStatusChanged", function() {
+            canSync = pm.settings.getSetting("driveSyncEnabled");
+            console.log("Start opening stuff", canSync);
+
+            if (canSync) {
+                model.openSyncableFileSystem();
+            }
+
+        });
     },
 
     errorHandler:function (e) {
@@ -44,19 +59,18 @@ var DriveSync = Backbone.Model.extend({
     },
 
     openSyncableFileSystem: function() {
-        this.get("log").addToLog("Opening syncFileSystem");
+        this.get("log").addToLog("Opening Google Drive file system");
+
     	var model = this;
 
         var canSync = pm.settings.getSetting("driveSyncEnabled");
-        canSync = false;
 
         if (!canSync) {
-            console.log("DriveSync", "Drive sync is disabled");
             return false;
         }
         else {
             chrome.syncFileSystem.requestFileSystem(function (fs) {
-                model.get("log").addToLog("Opened syncFileSystem");
+                model.get("log").addToLog("Opened Google Drive file system");
 
                 if (chrome.runtime.lastError) {
                     // TODO Need to handle this in a better way
@@ -79,7 +93,6 @@ var DriveSync = Backbone.Model.extend({
     	var model = this;
 
     	this.set("fileSystem", fs);
-    	console.log("DriveSync", 'Got FileSystem:', fs);
     	this.set("initializedSync", true);
     	pm.mediator.trigger("initializedSyncableFileSystem");
 

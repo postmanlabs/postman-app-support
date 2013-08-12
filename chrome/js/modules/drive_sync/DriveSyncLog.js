@@ -19,7 +19,7 @@ var DriveSyncLog = Backbone.Collection.extend({
 		var obj = new DriveSyncLogItem({
 			class: "change-on-drive",
 		    time: new Date().toUTCString(),
-		    message: "ChangeOnDrive: " + event + ", " + filename
+		    message: "Local to Drive: " + event + ", " + filename
 		});
 
 		this.add(obj);
@@ -29,7 +29,7 @@ var DriveSyncLog = Backbone.Collection.extend({
 		var obj = new DriveSyncLogItem({
 			class: "file-status-change",
 		    time: new Date().toUTCString(),
-		    message: "FileStatusChange: " + event + ", " + filename
+		    message: "Drive to local: " + event + ", " + filename
 		});
 
 		this.add(obj);

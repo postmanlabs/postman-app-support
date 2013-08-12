@@ -32,6 +32,9 @@
     </div>
 
     <div class="preferences">
+        <a id="google-drive-status" rel="tooltip"
+           data-placement="bottom" data-original-title="Google Drive Status">
+            <img src="img/google-drive/product32.png" style="vertical-align: middle;"/></a>
         <a href="#modal-settings" data-toggle="modal"
            rel="tooltip"
            data-placement="bottom" data-original-title="Settings">
@@ -1180,8 +1183,8 @@
         <ul class="nav nav-tabs">
             <li class="active"><a href="#settings-settings" data-toggle="tab">Settings</a></li>
             <li><a href="#settings-shortcuts" data-toggle="tab">Shortcuts</a></li>
-            <li><a href="#settings-data" data-toggle="tab">Data</a></li>            
-            <li><a href="#settings-add-ons" data-toggle="tab">Add-ons</a></li>            
+            <li><a href="#settings-data" data-toggle="tab">Data</a></li>
+            <li><a href="#settings-add-ons" data-toggle="tab">Add-ons</a></li>
             <li><a href="#settings-links" data-toggle="tab">Links</a></li>
         </ul>
         <div class="tab-content">
@@ -1365,6 +1368,10 @@
                         <td><strong>q</strong></td>
                     </tr>
                     <tr>
+                        <td>Toggle Google Drive log</td>
+                        <td><strong>Alt+g</strong></td>
+                    </tr>
+                    <tr>
                         <td>This window</td>
                         <td><strong>?</strong></td>
                     </tr>
@@ -1384,22 +1391,22 @@
                     <div class="control-group">
                         <input type="file" id="import-all-data-files-input" name="files"/>
                     </div>
-                </div>                
+                </div>
             </div>
-            <div class="tab-pane" id="settings-add-ons">                
+            <div class="tab-pane" id="settings-add-ons">
                 <div class="add-on">
                     <a target="_blank" href="https://github.com/a85/POSTMan-Chrome-Extension/wiki/Postman-Proxy">Postman Proxy</a>
                     <p>Postman Proxy allows you to bypass Chrome’s XMLHttpRequest restrictions. You can send headers not allowed by Chrome as well as receive and inspect responses which have a Location header set. For setting up the proxy you would require Python and Twisted.</p>
                 </div>
             </div>
-            <div class="tab-pane" id="settings-links">                
+            <div class="tab-pane" id="settings-links">
                 <div class="add-on">
-                    <a target="_blank" href="http://en.wikipedia.org/wiki/List_of_HTTP_status_codes">HTTP Status Codes</a>           
+                    <a target="_blank" href="http://en.wikipedia.org/wiki/List_of_HTTP_status_codes">HTTP Status Codes</a>
                     <p>Wikipedia reference for HTTP status codes</p>
                 </div>
-            </div>            
-        </div>        
-    </div>    
+            </div>
+        </div>
+    </div>
 </div>
 <div id="modal-share-collection" class="modal fade">
     <div class="modal-header">
@@ -1484,9 +1491,20 @@
     </div>
 </div>
 <div id="logger-drivesync">
-<h4>Sync log</h4>
-<ul id="logger-drivesync-items">
-</ul>
+	<div id="logger-drivesync-settings">
+		<button class="btn btn-primary" id="google-drive-toggle">Enable syncing with Google Drive</button>
+	</div>
+	<div id="logger-drivesync-log-empty-view">
+		<img src="img/google-drive/product48.png"/><br/>
+		Google Drive sync disabled
+	</div>
+	<div id="logger-drivesync-log-container">
+		<div id="logger-drivesync-log-header">
+			<h4>Sync log</h4>
+		</div>
+		<ul id="logger-drivesync-items">
+		</ul>
+	</div>
 </div>
 </div> <!-- container div end -->
 

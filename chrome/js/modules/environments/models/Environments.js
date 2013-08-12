@@ -270,7 +270,7 @@ var Environments = Backbone.Collection.extend({
             reader.onload = (function (theFile) {
                 return function (e) {
                     // Render thumbnail.
-                    collection.importedEnvironment(e.currentTarget.result);
+                    collection.importEnvironment(e.currentTarget.result);
                 };
             })(f);
 
