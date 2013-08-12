@@ -18,6 +18,8 @@ describe("Collections", function() {
 
 	afterEach(function() {
 		pm.tester.resetRequest();
+		$(".modal-backdrop").css("display", "none");
+		$(".modal-scrollable").css("display", "none");
 	});
 
 	it("has initialized Postman", function() {

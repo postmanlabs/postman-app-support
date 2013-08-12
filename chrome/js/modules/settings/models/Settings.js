@@ -29,7 +29,7 @@ var Settings = Backbone.Model.extend({
         this.setSetting("requestBodyEditorContainerType", "editor");
 
         //Google Drive related
-        this.setSetting("driveSyncConnectionStatus", "not_connected"); //notconnected, connected, disabled
+        this.setSetting("driveSyncPermissionStatus", "disabled"); //notconnected, connected, disabled
         this.setSetting("driveSyncEnabled", false);
         this.setSetting("driveStartChangeId", 0);
         this.setSetting("driveAppDataFolderId", 0);
