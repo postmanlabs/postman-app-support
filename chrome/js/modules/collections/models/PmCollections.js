@@ -328,11 +328,11 @@ var PmCollections = Backbone.Collection.extend({
         pm.indexedDB.addCollectionRequest(request, function (req) {
             pm.mediator.trigger("addToURLCache", request.url);
 
-            var collection = pmCollection.get(request.collectionId);
+            // var collection = pmCollection.get(request.collectionId);
 
-            if (collection) {
-                collection.addRequest(request);
-            }
+            // if (collection) {
+            //     collection.addRequest(request);
+            // }
 
             if (sync) {
                 pmCollection.addRequestToSyncableFilesystem(request.id);
@@ -476,7 +476,7 @@ var PmCollections = Backbone.Collection.extend({
     // Add collection data to the database with new IDs
     addAsNewCollection:function(collection) {
         var pmCollection = this;
-        var folders;
+        var folders = [];
         var folder;
         var order;
         var j, count;
@@ -487,7 +487,7 @@ var PmCollections = Backbone.Collection.extend({
 
         pmCollection.addCollectionToDataStore(dbCollection, true, function(c) {
             var collectionModel;
-            var requets;
+            var requests;
             var ordered;
             var i;
             var request;
@@ -499,7 +499,7 @@ var PmCollections = Backbone.Collection.extend({
 
             // Shows successs message
             pmCollection.trigger("importCollection", {
-                name:dbCollection.name,
+                name:collection.name,
                 action:"added"
             });
 
@@ -508,23 +508,23 @@ var PmCollections = Backbone.Collection.extend({
             ordered = false;
 
             // Check against legacy collections which do not have an order
-            if ("order" in dbCollection) {
+            if ("order" in collection) {
                 ordered = true;
             }
 
             // Change ID of request - Also need to change collection order
             // and add request to indexedDB
-            for (i = 0; i < dbCollection.requests.length; i++) {
-                request = dbCollection.requests[i];
-                request.collectionId = dbCollection.id;
+            for (i = 0; i < collection.requests.length; i++) {
+                request = collection.requests[i];
+                request.collectionId = collection.id;
 
                 var newId = guid();
                 idHashTable[request.id] = newId;
 
                 if (ordered) {
                     currentId = request.id;
-                    loc = _.indexOf(dbCollection["order"], currentId);
-                    dbCollection["order"][loc] = newId;
+                    loc = _.indexOf(collection["order"], currentId);
+                    collection["order"][loc] = newId;
                 }
 
                 request.id = newId;
@@ -540,8 +540,8 @@ var PmCollections = Backbone.Collection.extend({
             }
 
             // Change order inside folders with new IDs
-            if ("folders" in dbCollection) {
-                folders = dbCollection["folders"];
+            if ("folders" in collection) {
+                folders = collection["folders"];
 
                 for(i = 0; i < folders.length; i++) {
                     folders[i].id = guid();
@@ -553,12 +553,16 @@ var PmCollections = Backbone.Collection.extend({
                 }
             }
 
+            collectionModel.setRequests(requests);
+            collectionModel.set("folders", folders);
+            collectionModel.set("order", collection["order"]);
+
+            console.log("Final dbCollection is", collectionModel.getAsJSON());
+
             // Add new collection to the database
-            pmCollection.updateCollectionInDataStore(dbCollection, true, function() {
+            pmCollection.updateCollectionInDataStore(collectionModel.getAsJSON(), true, function() {
                 var i;
                 var request;
-
-                collectionModel.setRequests(requests);
 
                 for (i = 0; i < requests.length; i++) {
                     request = requests[i];
@@ -702,70 +706,10 @@ var PmCollections = Backbone.Collection.extend({
             var driveCollectionRequests = collection.requests;
 
             pm.indexedDB.getAllRequestsInCollection(collection, function(collection, oldCollectionRequests) {
-                var updatedRequests = [];
-                var deletedRequests = [];
-                var newRequests = [];
-                var finalRequests = [];
-                var i = 0;
-                var size = driveCollectionRequests.length;
-
-                function existingRequestFinder(r) {
-                    return driveRequest.id === r.id;
-                }
-
-                for (i = 0; i < size; i++) {
-                    var driveRequest = driveCollectionRequests[i];
-                    var existingRequest = _.find(oldCollectionRequests, existingRequestFinder);
-
-                    if (existingRequest) {
-                        updatedRequests.push(driveRequest);
-
-                        //Remove this request from oldCollectionRequests
-                        //Requsts remaining in oldCollectionRequests will be deleted
-                        var sizeOldRequests = oldCollectionRequests.length;
-                        var loc = -1;
-                        for (var j = 0; j < sizeOldRequests; j++) {
-                            if (oldCollectionRequests[j].id === existingRequest.id) {
-                                loc = j;
-                                break;
-                            }
-                        }
-
-                        if (loc >= 0) {
-                            oldCollectionRequests.splice(loc, 1);
-                        }
-                    }
-                    else {
-                        newRequests.push(driveRequest);
-                    }
-                }
-
-                deletedRequests = oldCollectionRequests;
-
-                //Update requests
-                var sizeUpdatedRequests = updatedRequests.length;
-
-                for(i = 0; i < sizeUpdatedRequests; i++) {
-                    pmCollection.updateRequestInDataStore(updateRequests[i], true);
-                }
-
-                var sizeNewRequests = newRequests.length;
-                for(i = 0; i < sizeNewRequests; i++) {
-                    pmCollection.addRequestToDataStore(newRequests[i], true);
-                }
-
-                //Delete requests
-                function onDeleteCollectionRequest(id) {
-                }
-
-                var sizeDeletedRequests = deletedRequests.length;
-                for(i = 0; i < sizeDeletedRequests; i++) {
-                    pmCollection.deleteRequestFromDataStore(deletedRequests[i].id, true);
-                }
-
-                newCollection.requests = driveCollectionRequests;
-
-                pmCollection.add(newCollection, {merge: true});
+                // TODO Refactor this
+                // Delete all old collection requests
+                // Add new collection requests from the DB
+                // Trigger updateCollection
             });
         });
     },
@@ -873,6 +817,7 @@ var PmCollections = Backbone.Collection.extend({
             pmCollection.addCollectionToDataStore(collection, true, function(newCollection) {
                 collectionRequest.collectionId = newCollection.id;
 
+                // TODO Not needed. Test
                 var targetCollection = pmCollection.get(collection.id);
                 targetCollection.addRequest(collectionRequest);
 
@@ -886,7 +831,11 @@ var PmCollections = Backbone.Collection.extend({
             collectionRequest.collectionId = collection.id;
 
             var targetCollection = pmCollection.get(collection.id);
+
+            // TODO Not needed. Test
             targetCollection.addRequest(collectionRequest);
+
+            // TODO This is needed
             targetCollection.addRequestIdToOrder(collectionRequest.id);
 
             pmCollection.addRequestToDataStore(collectionRequest, true, function(req) {
@@ -907,6 +856,8 @@ var PmCollections = Backbone.Collection.extend({
         collectionRequest.collectionId = collectionId;
 
         collection.addRequestIdToOrder(collectionRequest.id);
+
+        // TODO Not needed. Test
         collection.addRequest(collectionRequest);
 
         pmCollection.addRequestToDataStore(collectionRequest, true, function(req) {
@@ -968,8 +919,6 @@ var PmCollections = Backbone.Collection.extend({
         });
     },
 
-    // TODO call to addToSyncableFilesystem
-    // TODO call to removeFromSyncableFilesystem
     moveRequestToFolder: function(requestId, targetFolderId) {
         var pmCollection = this;
         var request = _.clone(this.getRequestById(requestId));
@@ -990,6 +939,8 @@ var PmCollections = Backbone.Collection.extend({
                 request.collectionId = targetCollection.get("id");
 
                 targetCollection.addRequestIdToOrder(request.id);
+
+                // TODO Not needed. Test
                 targetCollection.addRequest(request);
 
                 pmCollection.addRequestToDataStore(request, true, function(req) {
@@ -1005,8 +956,6 @@ var PmCollections = Backbone.Collection.extend({
         }
     },
 
-    // TODO call to addToSyncableFilesystem
-    // TODO call to removeFromSyncableFilesystem
     moveRequestToCollection: function(requestId, targetCollectionId) {
         var pmCollection = this;
         var targetCollection = this.get(targetCollectionId);
@@ -1026,7 +975,10 @@ var PmCollections = Backbone.Collection.extend({
                 request.id = guid();
                 request.collectionId = targetCollectionId;
 
+                // This can go after addRequestToDataStore
                 targetCollection.addRequestIdToOrder(request.id);
+
+                // TODO Not needed. Test
                 targetCollection.addRequest(request);
 
                 pmCollection.addRequestToDataStore(request, true, function(req) {
@@ -1092,12 +1044,14 @@ var PmCollections = Backbone.Collection.extend({
     deleteFolder: function(id) {
         var folder = this.getFolderById(id);
         var folderRequestsIds = _.clone(folder.order);
+        var i;
+        var collection;
 
-        for(var i = 0; i < folderRequestsIds.length; i++) {
+        for(i = 0; i < folderRequestsIds.length; i++) {
             this.deleteRequestFromDataStore(folderRequestsIds[i], false);
         }
 
-        var collection = this.getCollectionForFolderId(id);
+        collection = this.getCollectionForFolderId(id);
         collection.deleteFolder(id);
 
         this.trigger("deleteFolder", collection, id);

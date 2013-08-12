@@ -439,7 +439,7 @@ describe("Collections", function() {
 				pm.collections.addAsNewCollection(collection, false);
 				setTimeout(function() {
 					isDataAdded = true;
-				}, 100);
+				}, 200);
 			});
 
 			waitsFor(function() {

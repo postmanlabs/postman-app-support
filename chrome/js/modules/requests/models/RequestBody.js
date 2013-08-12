@@ -34,8 +34,6 @@ var RequestBody = Backbone.Model.extend({
     },
 
     loadData:function (mode, data, asObjects) {
-        console.log("Load body", mode, data, asObjects);
-
         this.set("dataMode", mode);
         this.set("asObjects", asObjects);
 
@@ -48,7 +46,6 @@ var RequestBody = Backbone.Model.extend({
                 var params = getBodyVars(data, false);
                 this.set("data", _.clone(params));
                 this.set("dataAsObjects", _.clone(params));
-                console.log("Not as objects", params);
             }
         }
         else {

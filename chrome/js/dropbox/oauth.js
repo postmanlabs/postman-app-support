@@ -404,7 +404,6 @@ OAuth.setProperties(OAuth.SignatureMethod, // class members
 ,
     /** Instantiate a SignatureMethod for the given method name. */
     newMethod: function newMethod(name, accessor) {
-        console.log(name, accessor);
         var impl = OAuth.SignatureMethod.REGISTERED[name];
         if (impl != null) {
             var method = new impl();
