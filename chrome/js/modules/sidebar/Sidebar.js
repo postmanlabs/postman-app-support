@@ -56,6 +56,7 @@ var Sidebar = Backbone.View.extend({
 
         $('#sidebar-toggle').animate({left:"0"}, animationDuration);
         $('#sidebar').animate({width:"0px", marginLeft: "-10px"}, animationDuration);
+        $('#sidebar-filler').animate({width:"0px", marginLeft: "-10px"}, animationDuration);
         $('#sidebar-search-container').css("display", "none");
         $('#sidebar div').animate({opacity:0}, animationDuration);
         var newMainWidth = $(document).width();
@@ -72,6 +73,7 @@ var Sidebar = Backbone.View.extend({
         });
 
         $('#sidebar').animate({width:sidebarWidth + "px", marginLeft: "0px"}, animationDuration);
+        $('#sidebar-filler').animate({width:sidebarWidth + "px", marginLeft: "0px"}, animationDuration);
         $('#sidebar-search-container').fadeIn(animationDuration);
         $('#sidebar div').animate({opacity:1}, animationDuration);
         $('#sidebar-toggle img').attr('src', 'img/tri_arrow_left.png');
