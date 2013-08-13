@@ -20,13 +20,10 @@ var HeaderPresetsRequestEditor = Backbone.View.extend({
         $("#headers-keyvaleditor-actions-add-preset").on("click", ".header-preset-dropdown-item", function() {
             var id = $(this).attr("data-id");
             var preset = model.getHeaderPreset(id);
+            var headers = $('#headers-keyvaleditor').keyvalueeditor('getValues');
 
-            if("headers" in preset) {
-                var headers = $('#headers-keyvaleditor').keyvalueeditor('getValues');
-
-                var newHeaders = _.union(headers, preset.get("headers"));
-                $('#headers-keyvaleditor').keyvalueeditor('reset', newHeaders);
-            }
+            var newHeaders = _.union(headers, preset.get("headers"));
+            $('#headers-keyvaleditor').keyvalueeditor('reset', newHeaders);
         });
     },
 
