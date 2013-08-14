@@ -5,16 +5,16 @@ var ResponseBodyViewer = Backbone.View.extend({
         response.on("finishedLoadResponse", this.load, this);
 
         this.responseBodyPrettyViewer = new ResponseBodyPrettyViewer({model: this.model});
-        this.responseBodyRawViewer = new ResponseBodyRawViewer({model: this.model});    
+        this.responseBodyRawViewer = new ResponseBodyRawViewer({model: this.model});
         this.responseBodyIFrameViewer = new ResponseBodyIFrameViewer({model: this.model});
 
-        this.responseBodyImageViewer = new ResponseBodyImageViewer({model: this.model});        
+        this.responseBodyImageViewer = new ResponseBodyImageViewer({model: this.model});
         this.responseBodyPDFViewer = new ResponseBodyPDFViewer({model: this.model});
     },
 
     downloadBody: function(response) {
         var previewType = response.get("previewType");
-        var responseRawDataType = response.get("rawDataType");        
+        var responseRawDataType = response.get("rawDataType");
         var filedata;
         var type = previewType;
         var filename = "response" + "." + previewType;
@@ -45,22 +45,22 @@ var ResponseBodyViewer = Backbone.View.extend({
         var responseRawDataType = response.get("rawDataType");
         var presetPreviewType = pm.settings.getSetting("previewType");
         var language = response.get("language");
-        var text = response.get("text");        
+        var text = response.get("text");
 
         var action = model.get("action");
 
         if (action === "download") {
-            $('#response-data-container').css("display", "none");            
+            $('#response-data-container').css("display", "none");
             this.downloadBody(response);
         }
         else {
             if (model.get("method") !== "HEAD") {
-                $('#response-data-container').css("display", "block");    
+                $('#response-data-container').css("display", "block");
             }
-            
+
             if (previewType === "image") {
                 $('#response-as-code').css("display", "none");
-                $('#response-as-text').css("display", "none");                        
+                $('#response-as-text').css("display", "none");
 
                 $('#response-formatting').css("display", "none");
                 $('#response-actions').css("display", "none");
@@ -68,8 +68,8 @@ var ResponseBodyViewer = Backbone.View.extend({
                 $("#response-as-preview").css("display", "none");
                 $("#response-copy-container").css("display", "none");
                 $("#response-pretty-modifiers").css("display", "none");
-            }        
-            else if (previewType === "pdf" && responseRawDataType === "arraybuffer") {           
+            }
+            else if (previewType === "pdf" && responseRawDataType === "arraybuffer") {
                 // Hide everything else
                 $('#response-as-code').css("display", "none");
                 $('#response-as-text').css("display", "none");
@@ -78,18 +78,18 @@ var ResponseBodyViewer = Backbone.View.extend({
                 $('#response-formatting').css("display", "none");
                 $('#response-actions').css("display", "none");
                 $("#response-language").css("display", "none");
-                $("#response-copy-container").css("display", "none");            
+                $("#response-copy-container").css("display", "none");
                 $("#response-pretty-modifiers").css("display", "none");
-            }       
-            else if (previewType === "pdf" && responseRawDataType === "text") {                                   
-            } 
+            }
+            else if (previewType === "pdf" && responseRawDataType === "text") {
+            }
             else {
                 this.displayTextResponse(language, text, presetPreviewType, true);
             }
-        }        
+        }
     },
-    
-    displayTextResponse:function (language, response, format, forceCreate) {    
+
+    displayTextResponse:function (language, response, format, forceCreate) {
         var codeDataArea = document.getElementById("code-data");
         var codeDataWidth = $(document).width() - $('#sidebar').width() - 60;
         var foldFunc;
@@ -97,11 +97,11 @@ var ResponseBodyViewer = Backbone.View.extend({
         var lineWrapping;
         var renderMode = mode;
 
-        // $('#code-data').css("display", "block");        
-        
+        // $('#code-data').css("display", "block");
+
         //Keep CodeMirror div visible otherwise the response gets cut off
         $("#response-copy-container").css("display", "block");
-        
+
         $('#response-as-code').css("display", "block");
         $('#response-as-text').css("display", "none");
         $('#response-as-image').css("display", "none");
@@ -117,14 +117,14 @@ var ResponseBodyViewer = Backbone.View.extend({
 
         $('#response-language').css("display", "block");
         $('#response-language a').removeClass("active");
-        
+
         if (language === 'javascript') {
             try {
                 if ('string' ===  typeof response && response.match(/^[\)\]\}]/)) {
                     response = response.substring(response.indexOf('\n'));
                 }
 
-                response = vkbeautify.json(response);
+                response = vkbeautify.json(response, 4);
                 mode = 'javascript';
                 foldFunc = CodeMirror.newFoldFunction(CodeMirror.braceRangeFinder);
             }
@@ -144,7 +144,7 @@ var ResponseBodyViewer = Backbone.View.extend({
             mode = 'text';
         }
 
-        
+
         if (pm.settings.getSetting("lineWrapping") === true) {
             $('#response-body-line-wrapping').addClass("active");
             lineWrapping = true;
@@ -176,7 +176,7 @@ var ResponseBodyViewer = Backbone.View.extend({
                 lineWrapping:lineWrapping,
                 readOnly:true
             });
-            
+
             codeMirror.setValue(response);
             codeMirror.refresh();
 
@@ -202,7 +202,7 @@ var ResponseBodyViewer = Backbone.View.extend({
             $('#response-pretty-modifiers').css("display", "block");
         }
         else if (format === "raw") {
-            $('#code-data-raw').val(response);            
+            $('#code-data-raw').val(response);
             $('#code-data-raw').css("width", codeDataWidth + "px");
             $('#code-data-raw').css("height", "600px");
             $('#response-as-code').css("display", "none");
@@ -217,7 +217,7 @@ var ResponseBodyViewer = Backbone.View.extend({
         }
     },
 
-    loadImage: function(url) {        
+    loadImage: function(url) {
         var remoteImage = new RAL.RemoteImage({
             priority: 0,
             src: imgLink,
@@ -251,7 +251,7 @@ var ResponseBodyViewer = Backbone.View.extend({
         pm.settings.setSetting("previewType", newType);
 
         $('#response-formatting a').removeClass('active');
-        $('#response-formatting a[data-type="' + previewType + '"]').addClass('active');        
+        $('#response-formatting a[data-type="' + previewType + '"]').addClass('active');
 
         if (previewType === 'raw') {
             $('#response-as-text').css("display", "block");
@@ -325,12 +325,12 @@ var ResponseBodyViewer = Backbone.View.extend({
         }
 
         response.set("state", state);
-    },    
+    },
 
     toggleLineWrapping: function() {
         this.responseBodyPrettyViewer.toggleLineWrapping();
     },
-    
+
     setMode:function (mode) {
         var model = this.model;
         var request = model;

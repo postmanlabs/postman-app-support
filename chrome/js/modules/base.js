@@ -27,6 +27,7 @@ pm.targets = {
 
 pm.target = pm.targets.CHROME_PACKAGED_APP;
 
+pm.isDriveEnabled = false;
 pm.isTesting = false;
 
 if (pm.isTesting) {
@@ -39,7 +40,7 @@ else {
 }
 
 
-pm.debug = true;
+pm.debug = false;
 
 pm.indexedDB = {};
 pm.indexedDB.db = null;
@@ -194,10 +195,12 @@ pm.init = function () {
     }
 
     function initializeDriveSync() {
-        var driveSyncLog = new DriveSyncLog();
-        var driveSyncLogger = new DriveSyncLogger({model: driveSyncLog});
-        pm.driveSync = new DriveSync({log: driveSyncLog});
-        var driveSyncIntroduction = new DriveSyncIntroduction({model: pm.driveSync});
+        if (pm.isDriveEnabled) {
+            var driveSyncLog = new DriveSyncLog();
+            var driveSyncLogger = new DriveSyncLogger({model: driveSyncLog});
+            var driveSync = new DriveSync({log: driveSyncLog});
+            var driveSyncIntroduction = new DriveSyncIntroduction({model: driveSync});
+        }
     }
 
     pm.mediator = new Mediator();

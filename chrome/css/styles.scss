@@ -532,7 +532,7 @@ li {
 }
 
 .folder-requests .request-actions {
-    margin-left: 255px !important;
+    margin-left: 265px !important;
 }
 
 .sidebar-collection-head {
@@ -1953,6 +1953,8 @@ input[type="file"] {
     }
 
     #google-drive-status {
+        display: none;
+
         img {
             height: 23px !important;
             opacity: 0.6 !important;

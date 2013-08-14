@@ -439,7 +439,7 @@ li .right {
   padding-left: 20px; }
 
 .folder-requests .request-actions {
-  margin-left: 255px !important; }
+  margin-left: 265px !important; }
 
 .sidebar-collection-head {
   font-weight: bold;
@@ -1560,11 +1560,13 @@ input[type="file"] {
     vertical-align: middle; }
   .preferences a:hover {
     text-decoration: none; }
-  .preferences #google-drive-status img {
-    height: 23px !important;
-    opacity: 0.6 !important; }
-  .preferences #google-drive-status img:hover {
-    opacity: 1 !important; }
+  .preferences #google-drive-status {
+    display: none; }
+    .preferences #google-drive-status img {
+      height: 23px !important;
+      opacity: 0.6 !important; }
+    .preferences #google-drive-status img:hover {
+      opacity: 1 !important; }
 
 #header-donate-link-container {
   float: right;
