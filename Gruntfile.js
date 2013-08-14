@@ -113,7 +113,7 @@ module.exports = function(grunt) {
     compress: {
       main: {
           options: {
-            archive: 'v0.9.1/chrome.zip'
+            archive: 'releases/v0.9.2.zip'
           },
           files: [
             {src: ['chrome/**', '!chrome/tests/**', '!chrome/manifest_key.json', '!chrome/tester.html'], dest: '/'}, // includes files in path and its subdirs

@@ -1568,6 +1568,10 @@ input[type="file"] {
     .preferences #google-drive-status img:hover {
       opacity: 1 !important; }
 
+#donate-link,
+#donate-link:hover {
+  color: #fff; }
+
 #header-donate-link-container {
   float: right;
   margin-top: 13px;

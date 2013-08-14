@@ -85,11 +85,12 @@ var SettingsModal = Backbone.View.extend({
         $('#have-donated').change(function () {
             var val = $('#have-donated').val();
             if (val === "true") {
-                pm.layout.hideDonationBar();
                 settings.setSetting("haveDonated", true);
+                pm.mediator.trigger("donatedStatusChanged", true);
             }
             else {
                 settings.setSetting("haveDonated", false);
+                pm.mediator.trigger("donatedStatusChanged", false);
             }
         });
 

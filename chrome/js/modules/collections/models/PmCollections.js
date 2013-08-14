@@ -518,6 +518,10 @@ var PmCollections = Backbone.Collection.extend({
             if ("order" in collection) {
                 ordered = true;
             }
+            else {
+                collection["order"] = [];
+                collection.requests.sort(sortAlphabetical);
+            }
 
             // Change ID of request - Also need to change collection order
             // and add request to indexedDB
@@ -532,6 +536,9 @@ var PmCollections = Backbone.Collection.extend({
                     currentId = request.id;
                     loc = _.indexOf(collection["order"], currentId);
                     collection["order"][loc] = newId;
+                }
+                else {
+                    collection["order"].push(newId);
                 }
 
                 request.id = newId;

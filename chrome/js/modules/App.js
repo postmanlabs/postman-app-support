@@ -50,6 +50,25 @@ var App = Backbone.View.extend({
 	        }
 	    });
 
+	    var donated = pm.settings.getSetting("haveDonated");
+
+	    console.log("Donated is ", donated);
+	    if(donated) {
+	    	$("#donate-link").css("display", "none");
+	    }
+	    else {
+	    	$("#donate-link").css("display", "inline");
+	    }
+
+	    pm.mediator.on("donatedStatusChanged", function(donated) {
+	    	if(donated) {
+	    		$("#donate-link").css("display", "none");
+	    	}
+	    	else {
+	    		$("#donate-link").css("display", "inline");
+	    	}
+	    });
+
 	    this.renderContextMenu();
 	    this.setLayout();
 	},
