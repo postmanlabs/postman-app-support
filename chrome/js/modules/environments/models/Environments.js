@@ -208,7 +208,8 @@ var Environments = Backbone.Collection.extend({
     },
 
     downloadEnvironment:function (id) {
-        var environment = _.clone(this.get(id));
+        var environment = this.get(id);
+
         environment.set("synced", false);
 
         var name = environment.get("name") + ".postman_environment";

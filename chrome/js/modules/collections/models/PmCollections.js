@@ -626,21 +626,27 @@ var PmCollections = Backbone.Collection.extend({
     // Get collection data for file
     getCollectionDataForFile:function (id, callback) {
         pm.indexedDB.getCollection(id, function (data) {
-            var collection = data;
+            var c = data;
             var i;
             var name;
             var type;
             var filedata;
 
-            pm.indexedDB.getAllRequestsInCollection(collection, function (collection, requests) {
-                for (i = 0, count = data.length; i < count; i++) {
+            pm.indexedDB.getAllRequestsInCollection(c, function (collection, requests) {
+                console.log(collection, requests);
+
+                for (i = 0, count = requests.length; i < count; i++) {
                     requests[i]["synced"] = false;
                 }
 
                 //Get all collection requests with one call
-                collection['requests'] = data;
+                collection['synced'] = false;
+                collection['requests'] = requests;
+
                 name = collection['name'] + ".json";
                 type = "application/json";
+
+                console.log(collection);
 
                 filedata = JSON.stringify(collection);
                 callback(name, type, filedata);
@@ -944,9 +950,12 @@ var PmCollections = Backbone.Collection.extend({
             var targetCollection = pmCollection.get(collection.id);
             targetCollection.addRequestIdToOrder(collectionRequest.id);
 
-            pmCollection.addRequestToDataStore(collectionRequest, true, function(req) {
-                pmCollection.trigger("addCollectionRequest", req);
-                pmCollection.loadCollectionRequest(req.id);
+
+            pmCollection.updateCollectionInDataStore(targetCollection.getAsJSON(), true, function() {
+                pmCollection.addRequestToDataStore(collectionRequest, true, function(req) {
+                    pmCollection.trigger("addCollectionRequest", req);
+                    pmCollection.loadCollectionRequest(req.id);
+                });
             });
         }
 
