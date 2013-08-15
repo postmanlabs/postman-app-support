@@ -32,15 +32,15 @@ var AddCollectionRequestModal = Backbone.View.extend({
             pm.app.trigger("modalOpen", "#modal-add-to-collection");
 
             if (!view.editor) {
-                view.initializeEditor();    
-            }            
+                view.initializeEditor();
+            }
         });
 
         $("#modal-add-to-collection").on("hidden", function () {
             pm.app.trigger("modalClose");
         });
 
-        //Initialize select-collection options        
+        //Initialize select-collection options
 
         $(document).bind('keydown', 'a', function () {
             if(pm.app.isModalOpen()) {
@@ -99,7 +99,7 @@ var AddCollectionRequestModal = Backbone.View.extend({
                     folders[j].collection_name = items[i].name;
                     folders[j].collection_id = items[i].id;
                 }
-            }            
+            }
         }
 
         $('#select-collection').html("<option>Select</option>");
@@ -115,7 +115,7 @@ var AddCollectionRequestModal = Backbone.View.extend({
         var folderId;
 
         if (targetType === "collection") {
-            collectionId = $option.attr("data-collection-id");            
+            collectionId = $option.attr("data-collection-id");
         }
         else if (targetType === "folder") {
             collectionId = $option.attr("data-collection-id");
@@ -138,35 +138,38 @@ var AddCollectionRequestModal = Backbone.View.extend({
         var newRequestName = $('#new-request-name').val();
         var newRequestDescription = this.editor.getValue();
 
-        var model = pm.request;
-        var body = model.get("body");
+        var model = this.model;
 
-        var url = model.get("url");
-        if (newRequestName === "") {
-            newRequestName = url;
-        }
+        pm.mediator.trigger("getRequest", function(request) {
+            var body = request.get("body");
 
-        // TODO Get some of this from getAsJson
-        var collectionRequest = {
-            id: guid(),
-            headers: model.getPackedHeaders(),
-            url: url,
-            method: model.get("method"),
-            data: body.get("dataAsObjects"),
-            dataMode: body.get("dataMode"),
-            name: newRequestName,
-            description: newRequestDescription,
-            descriptionFormat: "html",
-            time: new Date().getTime(),        
-            version: 2,
-            responses: []
-        };
-        
-        if (targetType === "folder") {
-            this.model.addRequestToFolder(collectionRequest, collectionId, folderId);
-        }
-        else {
-            this.model.addRequestToCollection(collectionRequest, collection);    
-        }        
+            var url = request.get("url");
+            if (newRequestName === "") {
+                newRequestName = url;
+            }
+
+            // TODO Get some of this from getAsJson
+            var collectionRequest = {
+                id: guid(),
+                headers: request.getPackedHeaders(),
+                url: url,
+                method: request.get("method"),
+                data: body.get("dataAsObjects"),
+                dataMode: body.get("dataMode"),
+                name: newRequestName,
+                description: newRequestDescription,
+                descriptionFormat: "html",
+                time: new Date().getTime(),
+                version: 2,
+                responses: []
+            };
+
+            if (targetType === "folder") {
+                model.addRequestToFolder(collectionRequest, collectionId, folderId);
+            }
+            else {
+                model.addRequestToCollection(collectionRequest, collection);
+            }
+        });
     }
 });

@@ -1,11 +1,11 @@
-var RequestBodyRawEditor = Backbone.View.extend({    
+var RequestBodyRawEditor = Backbone.View.extend({
     initialize: function() {
         var model = this.model;
         var view = this;
         var body = this.model.get("body");
 
-        body.on("change:data", this.onChangeBodyData, this);   
-        model.on("change:headers", this.onChangeHeaders, this);     
+        body.on("change:data", this.onChangeBodyData, this);
+        model.on("change:headers", this.onChangeHeaders, this);
     },
 
     onChangeHeaders: function() {
@@ -15,7 +15,7 @@ var RequestBodyRawEditor = Backbone.View.extend({
         var contentType = this.model.getHeaderValue("Content-Type");
         var editorMode = "text";
         var language = "text";
-        
+
         if (contentType) {
             if (contentType.search(/json/i) !== -1 || contentType.search(/javascript/i) !== -1) {
                 editorMode = 'javascript';
@@ -32,9 +32,9 @@ var RequestBodyRawEditor = Backbone.View.extend({
             else {
                 editorMode = 'text';
                 language = 'text';
-            }    
+            }
         }
-        
+
 
         body.set("editorMode", editorMode);
         body.set("language", language);
@@ -52,8 +52,8 @@ var RequestBodyRawEditor = Backbone.View.extend({
 
         if (mode === "raw") {
             if (data) {
-                this.loadRawData(data);    
-            }            
+                this.loadRawData(data);
+            }
         }
     },
 
@@ -99,7 +99,7 @@ var RequestBodyRawEditor = Backbone.View.extend({
             } else {
                 $('#body-editor-mode-selector-format').removeClass('disabled');
             }
-        }        
+        }
 
         $("#request .CodeMirror-scroll").css("height", "200px");
         codeMirror.refresh();
@@ -129,8 +129,8 @@ var RequestBodyRawEditor = Backbone.View.extend({
                 $('#body-editor-mode-selector-format').removeClass('disabled');
             }
 
-            if (toSetHeader) {                
-                model.setHeader("Content-Type", language);                
+            if (toSetHeader) {
+                model.setHeader("Content-Type", language);
             }
 
             codeMirror.refresh();
@@ -187,8 +187,8 @@ var RequestBodyRawEditor = Backbone.View.extend({
         if (isEditorInitialized === true) {
             if (data) {
                 codeMirror.setValue(data);
-                codeMirror.refresh();    
-            }            
+                codeMirror.refresh();
+            }
         }
     },
 
@@ -198,11 +198,7 @@ var RequestBodyRawEditor = Backbone.View.extend({
         var isEditorInitialized = body.get("isEditorInitialized");
         var codeMirror = body.get("codeMirror");
 
-        console.log("Trying to get raw data");
-
         if (isEditorInitialized) {
-            console.log("Editor is initialized");
-
             var data = codeMirror.getValue();
 
             if (pm.settings.getSetting("forceWindowsLineEndings") === true) {
@@ -213,7 +209,6 @@ var RequestBodyRawEditor = Backbone.View.extend({
             return data;
         }
         else {
-            console.log("Editor is not initialized");
             return "";
         }
     }

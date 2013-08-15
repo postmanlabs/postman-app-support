@@ -37,7 +37,12 @@ var Request = Backbone.Model.extend({
         this.on("send", this.onSend, this);
 
         pm.mediator.on("loadRequest", this.loadRequest, this);
+        pm.mediator.on("getRequest", this.onGetRequest, this);
         pm.mediator.on("updateCollectionRequest", this.checkIfCurrentRequestIsUpdated, this);
+    },
+
+    onGetRequest: function(callback) {
+        callback(this);
     },
 
     onCancelRequest: function() {
@@ -424,11 +429,6 @@ var Request = Backbone.Model.extend({
         }
     },
 
-    // TODO This should just be called
-    loadRequestInEditor:function (request, isFromCollection, isFromSample) {
-        this.loadRequest(request, isFromCollection, isFromSample);
-    },
-
     prepareForSending: function() {
         if (pm.helpers.getActiveHelperType() === "oauth1" && pm.helpers.getHelper("oAuth1").get("auto")) {
             pm.helpers.getHelper("oAuth1").generateHelper();
@@ -639,6 +639,8 @@ var Request = Backbone.Model.extend({
     },
 
     checkIfCurrentRequestIsUpdated: function(request) {
+        console.log("Is current request updated", request);
+
         var id = this.get("collectionRequestId");
         if(id === request.id) {
             this.set("name", request.name);

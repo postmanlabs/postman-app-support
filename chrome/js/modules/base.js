@@ -115,19 +115,7 @@ pm.init = function () {
     }
 
     function initializeHelpers() {
-        var basicAuthProcessor = new BasicAuthProcessor({request: pm.request});
-        var digestAuthProcessor = new DigestAuthProcessor({request: pm.request});
-        var oAuth1Processor = new OAuth1Processor({request: pm.request});
 
-        var helpers = new Helpers({
-            "basicAuth": basicAuthProcessor,
-            "digestAuth": digestAuthProcessor,
-            "oAuth1": oAuth1Processor,
-            "request": pm.request
-        });
-
-        var helperManager = new HelperManager({model: helpers});
-        pm.helpers = helperManager;
     }
 
     function initializeEnvironments() {
@@ -181,6 +169,21 @@ pm.init = function () {
         var request = new Request();
         var requestEditor = new RequestEditor({model: request});
         var responseViewer = new ResponseViewer({model: request});
+
+        var basicAuthProcessor = new BasicAuthProcessor({request: request});
+        var digestAuthProcessor = new DigestAuthProcessor({request: request});
+        var oAuth1Processor = new OAuth1Processor({request: request});
+
+        var helpers = new Helpers({
+            "basicAuth": basicAuthProcessor,
+            "digestAuth": digestAuthProcessor,
+            "oAuth1": oAuth1Processor,
+            "request": request
+        });
+
+        var helperManager = new HelperManager({model: helpers});
+        pm.helpers = helperManager;
+
         pm.request = request;
     }
 
@@ -213,7 +216,6 @@ pm.init = function () {
         pm.filesystem.init();
         pm.indexedDB.open(function() {
             initializeRequester();
-            initializeHelpers();
             initializeHistory();
             initializeCollections();
 

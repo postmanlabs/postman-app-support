@@ -14,9 +14,9 @@ var RequestEditor = Backbone.View.extend({
         this.requestPreviewer = new RequestPreviewer({model: this.model});
 
         model.on("loadRequest", this.onLoadRequest, this);
-        model.on("sentRequest", this.onSentRequest, this);        
+        model.on("sentRequest", this.onSentRequest, this);
         model.on("startNew", this.onStartNew, this);
-        model.on("updateModel", this.updateModel, this);        
+        model.on("updateModel", this.updateModel, this);
 
         responseModel.on("failedRequest", this.onFailedRequest, this);
         responseModel.on("finishedLoadResponse", this.onFinishedLoadResponse, this);
@@ -24,7 +24,7 @@ var RequestEditor = Backbone.View.extend({
         this.on("send", this.onSend, this);
         this.on("preview", this.onPreview, this);
 
-        $("#update-request-in-collection").on("click", function () {            
+        $("#update-request-in-collection").on("click", function () {
             view.updateModel();
 
             var current = model.getAsObject();
@@ -37,7 +37,7 @@ var RequestEditor = Backbone.View.extend({
                 method: current.method,
                 version: current.version,
                 time: new Date().getTime()
-            };            
+            };
 
             pm.collections.updateCollectionRequest(collectionRequest);
         });
@@ -58,7 +58,7 @@ var RequestEditor = Backbone.View.extend({
             view.trigger("send", "text");
         });
 
-        $("#submit-request-download").on("click", function () {            
+        $("#submit-request-download").on("click", function () {
             view.trigger("send", "arraybuffer", "download");
         });
 
@@ -98,8 +98,8 @@ var RequestEditor = Backbone.View.extend({
             }
 
             model.trigger("startNew", model);
-        };        
-        
+        };
+
 
         $(document).bind('keydown', 'alt+p', function() {
             _.bind(view.onPreviewRequestClick, view)();
@@ -119,7 +119,7 @@ var RequestEditor = Backbone.View.extend({
             var lastRequestParsed = JSON.parse(lastRequest);
             // TODO Be able to set isFromCollection too
             this.model.set("isFromCollection", false);
-            this.model.loadRequestInEditor(lastRequestParsed);
+            pm.mediator.trigger("loadRequest", lastRequestParsed, false, false);
         }
     },
 
@@ -179,7 +179,7 @@ var RequestEditor = Backbone.View.extend({
         var responses = model.get("responses");
         var isFromSample = model.get("isFromSample");
         var isFromCollection = model.get("isFromCollection");
-        
+
         this.showRequestBuilder();
 
         if (isFromCollection) {
@@ -188,7 +188,7 @@ var RequestEditor = Backbone.View.extend({
         else if (isFromSample) {
             $('#update-request-in-collection').css("display", "inline-block");
         }
-        else {            
+        else {
             $('#update-request-in-collection').css("display", "none");
         }
 
@@ -226,7 +226,7 @@ var RequestEditor = Backbone.View.extend({
         var previewHtml = this.model.get("previewHtml");
 
         $("#request-preview-content").html(previewHtml);
-        $("#preview-request").html("Build");        
+        $("#preview-request").html("Build");
         $("#request-builder").css("display", "none");
         $("#request-preview").css("display", "block");
     },
@@ -236,8 +236,8 @@ var RequestEditor = Backbone.View.extend({
         if(editorMode === 1) {
             this.showRequestBuilder();
         }
-        else {            
-            this.trigger("preview", this);            
+        else {
+            this.trigger("preview", this);
         }
     },
 });

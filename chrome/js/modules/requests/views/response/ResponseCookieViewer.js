@@ -42,17 +42,8 @@ var ResponseCookieViewer = Backbone.View.extend({
                 }
 
                 $('#response-cookies-items').html(Handlebars.templates.response_cookies({"items":cookies}));
-            }    
+            }
         }
-        
-    },
 
-    loadCookies:function (url) {
-        /* TODO: Not available in Chrome packaged apps
-        chrome.cookies.getAll({url:url}, function (cookies) {
-            var count;
-            pm.request.response.renderCookies(cookies);
-        });
-        */
-    },
+    }
 });

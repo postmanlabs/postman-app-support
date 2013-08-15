@@ -1004,7 +1004,7 @@ var PmCollections = Backbone.Collection.extend({
 
             pmCollection.updateRequestInDataStore(req, true, function(request) {
                 pmCollection.trigger("updateCollectionRequest", request);
-                pm.mediator.trigger("updateCollectionRequest", collectionRequest);
+                pm.mediator.trigger("updateCollectionRequest", request);
             });
         });
     },

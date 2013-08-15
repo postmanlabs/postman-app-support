@@ -523,7 +523,6 @@ var CollectionSidebar = Backbone.View.extend({
         this.addRequestToList(targetElement, request);
     },
 
-    // TODO Needs to be refactored
     addCollectionRequest: function(request) {
         var targetElement = "#collection-requests-" + request.collectionId;
 
@@ -531,11 +530,8 @@ var CollectionSidebar = Backbone.View.extend({
         $('#sidebar-request-' + request.id).addClass('sidebar-collection-request-active');
 
         this.addRequestToList(targetElement, request);
-
         this.openCollection(request.collectionId);
-
-        //TODO Refactor this
-        pm.request.loadRequestInEditor(request);
+        pm.mediator.trigger("loadRequest", request);
     },
 
     removeCollectionRequest: function(id) {

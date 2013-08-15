@@ -6,7 +6,7 @@ var RequestBodyEditor = Backbone.View.extend({
 
         model.on("change:method", this.onChangeMethod, this);
 
-        body.on("change:dataMode", this.onChangeDataMode, this);        
+        body.on("change:dataMode", this.onChangeDataMode, this);
         body.on("change:data", this.onChangeData, this);
 
         this.bodyFormDataEditor = new RequestBodyFormDataEditor({model: this.model});
@@ -61,7 +61,7 @@ var RequestBodyEditor = Backbone.View.extend({
     onChangeData: function() {
     },
 
-    getRequestBodyPreview: function() {        
+    getRequestBodyPreview: function() {
         var body = this.model.get("body");
         var dataMode = body.get("dataMode");
 
@@ -72,7 +72,7 @@ var RequestBodyEditor = Backbone.View.extend({
             return rawBodyData;
         }
         else if (dataMode === 'params') {
-            var formDataBody = this.bodyFormDataEditor.getFormDataPreview();            
+            var formDataBody = this.bodyFormDataEditor.getFormDataPreview();
             if(formDataBody !== false) {
                 return formDataBody;
             }
@@ -81,7 +81,7 @@ var RequestBodyEditor = Backbone.View.extend({
             }
         }
         else if (dataMode === 'urlencoded') {
-            var urlEncodedBodyData = this.bodyURLEncodedEditor.getUrlEncodedBody();            
+            var urlEncodedBodyData = this.bodyURLEncodedEditor.getUrlEncodedBody();
             if(urlEncodedBodyData !== false) {
                 return urlEncodedBodyData;
             }
@@ -95,10 +95,10 @@ var RequestBodyEditor = Backbone.View.extend({
         var model = this.model;
         var body = model.get("body");
 
-        var dataMode = body.get("dataMode");        
+        var dataMode = body.get("dataMode");
 
         if (dataMode === 'raw') {
-            var rawBodyData = this.getData(true);            
+            var rawBodyData = this.getData(true);
             rawBodyData = pm.envManager.getCurrentValue(rawBodyData);
             return rawBodyData;
         }
@@ -186,15 +186,15 @@ var RequestBodyEditor = Backbone.View.extend({
     },
 
     // TODO Needs to be in this order for updating the data property
-    updateModel: function() {        
-        var body = this.model.get("body");        
-        var data = this.getRequestBodyToBeSent();        
+    updateModel: function() {
+        var body = this.model.get("body");
+        var data = this.getRequestBodyToBeSent();
         body.set("data", data);
 
         var dataAsObjects = this.getData(true);
         body.set("dataAsObjects", dataAsObjects);
 
-        var dataAsPreview = this.getRequestBodyPreview();        
+        var dataAsPreview = this.getRequestBodyPreview();
         body.set("dataAsPreview", dataAsPreview);
     },
 
