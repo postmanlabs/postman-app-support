@@ -1,3 +1,9 @@
+function isMethodWithBody(method) {
+    var methodsWithBody = ["POST", "PUT", "PATCH", "DELETE", "LINK", "UNLINK"];
+    method = method.toUpperCase();
+    return $.inArray(method, methodsWithBody) >= 0;
+}
+
 function sortAscending(a, b) {
     if (a >= b) {
         return 1;
@@ -59,7 +65,7 @@ function limitStringLineWidth(string, numChars) {
     var remainingChars = string;
     var finalString = "";
     var numLeft = string.length;
-    do {        
+    do {
         finalString += remainingChars.substr(0, numChars);
         remainingChars = remainingChars.substr(numChars);
         numLeft -= numChars;
@@ -221,7 +227,7 @@ function string2ArrayBuffer(string, callback) {
 
 function find(collection, filter) {
     for (var i = 0; i < filter.length; i++) {
-        if (filter(collection[i], i, collection)) {            
+        if (filter(collection[i], i, collection)) {
             return i;
         }
     }

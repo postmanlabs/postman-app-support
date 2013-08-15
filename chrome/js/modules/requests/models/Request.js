@@ -35,6 +35,9 @@ var Request = Backbone.Model.extend({
         this.on("cancelRequest", this.onCancelRequest, this);
         this.on("startNew", this.onStartNew, this);
         this.on("send", this.onSend, this);
+
+        pm.mediator.on("loadRequest", this.loadRequest, this);
+        pm.mediator.on("updateCollectionRequest", this.checkIfCurrentRequestIsUpdated, this);
     },
 
     onCancelRequest: function() {
@@ -50,9 +53,7 @@ var Request = Backbone.Model.extend({
     },
 
     isMethodWithBody:function (method) {
-        var methodsWithBody = this.get("methodsWithBody");
-        method = method.toUpperCase();
-        return $.inArray(method, methodsWithBody) >= 0;
+        return isMethodWithBody(method);
     },
 
     packHeaders:function (headers) {
@@ -327,22 +328,7 @@ var Request = Backbone.Model.extend({
         response.clear();
     },
 
-    loadRequestFromLink:function (link, headers) {
-        this.trigger("startNew");
-
-        this.set("url", this.decodeLink(link));
-        this.set("method", "GET");
-        this.set("isFromCollection", false);
-
-        if (pm.settings.getSetting("retainLinkHeaders") === true) {
-            if (headers) {
-                this.set("headers", headers);
-            }
-        }
-    },
-
-    // TODO This should just be called
-    loadRequestInEditor:function (request, isFromCollection, isFromSample) {
+    loadRequest: function(request, isFromCollection, isFromSample) {
         var body = this.get("body");
         var response = this.get("response");
 
@@ -422,6 +408,25 @@ var Request = Backbone.Model.extend({
 
         response.trigger("clearResponse");
         this.trigger("loadRequest", this);
+    },
+
+    loadRequestFromLink:function (link, headers) {
+        this.trigger("startNew");
+
+        this.set("url", this.decodeLink(link));
+        this.set("method", "GET");
+        this.set("isFromCollection", false);
+
+        if (pm.settings.getSetting("retainLinkHeaders") === true) {
+            if (headers) {
+                this.set("headers", headers);
+            }
+        }
+    },
+
+    // TODO This should just be called
+    loadRequestInEditor:function (request, isFromCollection, isFromSample) {
+        this.loadRequest(request, isFromCollection, isFromSample);
     },
 
     prepareForSending: function() {

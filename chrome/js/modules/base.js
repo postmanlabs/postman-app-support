@@ -222,10 +222,6 @@ pm.init = function () {
 
             initializeSidebar();
 
-            pm.collections.on("updateCollectionRequest", function(request) {
-                pm.request.checkIfCurrentRequestIsUpdated(request);
-            });
-
             pm.broadcasts.init();
 
             initializeDriveSync();

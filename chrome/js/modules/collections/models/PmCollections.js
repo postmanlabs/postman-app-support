@@ -921,7 +921,7 @@ var PmCollections = Backbone.Collection.extend({
         pm.indexedDB.getCollectionRequest(id, function (request) {
             request.isFromCollection = true;
             request.collectionRequestId = id;
-            pm.request.loadRequestInEditor(request, true);
+            pm.mediator.trigger("loadRequest", request, true);
             pmCollection.trigger("selectedCollectionRequest", request);
         });
     },
@@ -960,6 +960,7 @@ var PmCollections = Backbone.Collection.extend({
         }
 
         this.trigger("updateCollectionRequest", collectionRequest);
+        pm.mediator.trigger("updateCollectionRequest", collectionRequest);
     },
 
 
@@ -989,6 +990,7 @@ var PmCollections = Backbone.Collection.extend({
 
             pmCollection.updateRequestInDataStore(collectionRequest, true, function(request) {
                 pmCollection.trigger("updateCollectionRequest", request);
+                pm.mediator.trigger("updateCollectionRequest", request);
             });
         });
     },
@@ -1002,6 +1004,7 @@ var PmCollections = Backbone.Collection.extend({
 
             pmCollection.updateRequestInDataStore(req, true, function(request) {
                 pmCollection.trigger("updateCollectionRequest", request);
+                pm.mediator.trigger("updateCollectionRequest", collectionRequest);
             });
         });
     },

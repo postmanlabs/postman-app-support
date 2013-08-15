@@ -38,7 +38,7 @@ var History = Backbone.Collection.extend({
         var index = -1;
         var method = request.method.toLowerCase();
 
-        if (pm.request.isMethodWithBody(method)) {
+        if (isMethodWithBody(method)) {
             return -1;
         }
 
@@ -70,7 +70,7 @@ var History = Backbone.Collection.extend({
 
     loadRequest:function (id) {
         var request = this.get(id).toJSON();
-        pm.request.loadRequestInEditor(request);
+        pm.mediator.trigger("loadRequest", request, false, false);
         this.trigger("loadRequest");
     },
 
