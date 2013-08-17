@@ -4,7 +4,7 @@ module.exports = function(grunt) {
   grunt.initConfig({
     concat: {
       dist: {
-        src: ['chrome/js/modules/**/*.js'],
+        src: ['chrome/js/requester/**/*.js'],
         dest: 'chrome/js/requester.js'
       },
       requester_html: {
@@ -46,7 +46,7 @@ module.exports = function(grunt) {
       },
 
       requester_js: {
-        files: ['chrome/js/modules/**/*.js'],
+        files: ['chrome/js/requester/**/*.js'],
         tasks: ['concat:dist']
       },
 
