@@ -9,26 +9,26 @@ describe("History ", function() {
 		runs(function() {
 			pm.settings.resetSettings();
 			pm.tester.resetRequest();
-		});		
+		});
 	});
 
 	afterEach(function() {
 		// pm.tester.resetHistory();
 	});
 
-	it("has initialized Postman", function() {		
-		expect(pm.hasPostmanInitialized).toBe(true);		
-	});  
+	it("has initialized Postman", function() {
+		expect(pm.hasPostmanInitialized).toBe(true);
+	});
 
 	it("shows empty history message", function() {
 		expect(pm.tester.historyHasString("Nothing in your history yet")).toBe(true);
 	});
 
-	it("load a GET request from history", function() {		
+	it("load a GET request from history", function() {
 		var mockDataLoaded = false;
 		var historyItemLoaded = false;
 		runs(function() {
-			var request = {"url":"http://localhost:5000/get","method":"GET","headers":"","data":[],"dataMode":"params","timestamp":1375432867383,"version":2}; 
+			var request = {"url":"http://localhost:5000/get","method":"GET","headers":"","data":[],"dataMode":"params","timestamp":1375432867383,"version":2};
 			pm.history.addRequest(request.url, request.method, request.headers, request.data, request.dataMode);
 
 		});
@@ -36,7 +36,7 @@ describe("History ", function() {
 		runs(function() {
 			setTimeout(function() {
 				mockDataLoaded = pm.tester.historyHasString("http://localhost:5000/get");
-			}, 100);			
+			}, 100);
 		});
 
 		waitsFor(function() {
@@ -47,7 +47,7 @@ describe("History ", function() {
 			pm.request.on("loadRequest", function() {
 				historyItemLoaded = true;
 			});
-			pm.tester.selectHistoryItem(1);			
+			pm.tester.selectHistoryItem(1);
 		});
 
 		waitsFor(function() {
@@ -71,7 +71,7 @@ describe("History ", function() {
 		runs(function() {
 			setTimeout(function() {
 				mockDataLoaded = pm.tester.historyHasString("http://localhost:5000/post");
-			}, 100);			
+			}, 100);
 		});
 
 		waitsFor(function() {
@@ -82,7 +82,7 @@ describe("History ", function() {
 			pm.request.on("loadRequest", function() {
 				historyItemLoaded = true;
 			});
-			pm.tester.selectHistoryItem(1);			
+			pm.tester.selectHistoryItem(1);
 		});
 
 		waitsFor(function() {
@@ -107,7 +107,7 @@ describe("History ", function() {
 		runs(function() {
 			setTimeout(function() {
 				mockDataLoaded = pm.tester.historyHasString("http://localhost:5000/post");
-			}, 100);			
+			}, 100);
 		});
 
 		waitsFor(function() {
@@ -118,7 +118,7 @@ describe("History ", function() {
 			pm.request.on("loadRequest", function() {
 				historyItemLoaded = true;
 			});
-			pm.tester.selectHistoryItem(1);			
+			pm.tester.selectHistoryItem(1);
 		});
 
 		waitsFor(function() {
@@ -143,7 +143,7 @@ describe("History ", function() {
 		runs(function() {
 			setTimeout(function() {
 				mockDataLoaded = pm.tester.historyHasString("http://localhost:5000/post");
-			}, 100);			
+			}, 100);
 		});
 
 		waitsFor(function() {
@@ -154,7 +154,7 @@ describe("History ", function() {
 			pm.request.on("loadRequest", function() {
 				historyItemLoaded = true;
 			});
-			pm.tester.selectHistoryItem(1);			
+			pm.tester.selectHistoryItem(1);
 		});
 
 		waitsFor(function() {
@@ -179,7 +179,7 @@ describe("History ", function() {
 		runs(function() {
 			setTimeout(function() {
 				mockDataLoaded = pm.tester.historyHasString("http://localhost:5000/post");
-			}, 100);			
+			}, 100);
 		});
 
 		waitsFor(function() {
@@ -190,7 +190,7 @@ describe("History ", function() {
 			pm.request.on("loadRequest", function() {
 				historyItemLoaded = true;
 			});
-			pm.tester.selectHistoryItem(1);			
+			pm.tester.selectHistoryItem(1);
 		});
 
 		waitsFor(function() {
@@ -216,7 +216,7 @@ describe("History ", function() {
 		runs(function() {
 			setTimeout(function() {
 				mockDataLoaded = pm.tester.historyHasString("http://localhost:5000/deletethisitem");
-			}, 100);			
+			}, 100);
 		});
 
 		waitsFor(function() {
@@ -227,7 +227,7 @@ describe("History ", function() {
 			pm.request.on("loadRequest", function() {
 				historyItemLoaded = true;
 			});
-			pm.tester.selectHistoryItem(1);			
+			pm.tester.selectHistoryItem(1);
 		});
 
 		waitsFor(function() {
@@ -235,7 +235,7 @@ describe("History ", function() {
 		}, "History item not loaded", 200);
 
 		runs(function() {
-			expect(pm.tester.urlHasString("http://localhost:5000/deletethisitem")).toBe(true);			
+			expect(pm.tester.urlHasString("http://localhost:5000/deletethisitem")).toBe(true);
 		});
 
 		runs(function() {

@@ -8,6 +8,7 @@ var ResponseViewer = Backbone.View.extend({
         this.responseHeaderViewer = new ResponseHeaderViewer({model: this.model});
         this.responseCookieViewer = new ResponseCookieViewer({model: this.model});
         this.responseMetaViewer = new ResponseMetaViewer({model: this.model});
+        this.responseSaver = new ResponseSaver({model: this.model});
 
         responseModel.on("failedRequest", this.onFailedRequest, this);
         responseModel.on("clearResponse", this.clear, this);
@@ -25,7 +26,6 @@ var ResponseViewer = Backbone.View.extend({
 
         $('#response-formatting').on("click", "a", function () {
             var previewType = $(this).attr('data-type');
-            console.log("changePreviewType to ", previewType);
             view.responseBodyViewer.changePreviewType(previewType);
         });
 
@@ -53,7 +53,7 @@ var ResponseViewer = Backbone.View.extend({
             }
         });
 
-        
+
         $(document).bind('keydown', 'f', function () {
             if(pm.app.isModalOpen()) {
                 return;
@@ -77,6 +77,8 @@ var ResponseViewer = Backbone.View.extend({
     },
 
     load:function () {
+        console.log("Load response called");
+
         var model = this.model;
         var request = model;
         var response = model.get("response");
@@ -89,14 +91,14 @@ var ResponseViewer = Backbone.View.extend({
         var responseData = response.get("responseData");
         var text = response.get("text");
         var method = request.get("method");
-        var action = model.get("action");        
+        var action = model.get("action");
         var presetPreviewType = pm.settings.getSetting("previewType");
-        
-        this.showScreen("success");        
-                    
+
+        this.showScreen("success");
+
         $('#response').css("display", "block");
-        $("#response-data").css("display", "block");                
-        
+        $("#response-data").css("display", "block");
+
         if (action === "download") {
             this.showHeaders();
         }
@@ -107,9 +109,9 @@ var ResponseViewer = Backbone.View.extend({
             else {
                 this.showBody();
             }
-    
+
         }
-        
+
         if (request.get("isFromCollection") === true) {
             $("#response-collection-request-actions").css("display", "block");
         }
@@ -117,9 +119,9 @@ var ResponseViewer = Backbone.View.extend({
             $("#response-collection-request-actions").css("display", "none");
         }
 
-        response.trigger("finishedLoadResponse");        
+        response.trigger("finishedLoadResponse");
     },
-    
+
     showHeaders:function () {
         console.log("Hide response data container");
 

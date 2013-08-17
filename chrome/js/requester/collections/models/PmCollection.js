@@ -1,3 +1,21 @@
+/****
+
+collectionRequest = {
+    id: guid(),
+    headers: request.getPackedHeaders(),
+    url: url,
+    method: request.get("method"),
+    data: body.get("dataAsObjects"),
+    dataMode: body.get("dataMode"),
+    name: newRequestName,
+    description: newRequestDescription,
+    descriptionFormat: "html",
+    time: new Date().getTime(),
+    version: 2,
+    responses: []
+};
+
+*****/
 var PmCollection = Backbone.Model.extend({
     defaults: function() {
         return {
@@ -154,6 +172,5 @@ var PmCollection = Backbone.Model.extend({
             folders[i].order.splice(indexInFolder, 1);
             this.set("folders", folders);
         }
-
     }
 });

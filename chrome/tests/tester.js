@@ -28,7 +28,7 @@ pm.tester = {
 
 	checkStatus: function(term) {
 		var content = $(".response-code .data").html();
-		var found = content.search(term) >= 0;		
+		var found = content.search(term) >= 0;
 		return found;
 	},
 
@@ -42,8 +42,8 @@ pm.tester = {
 	},
 
 	prettyBodyHasString: function(term) {
-		var body = pm.tester.getPrettyBody();			
-		var found = body.search(term) >= 0;		
+		var body = pm.tester.getPrettyBody();
+		var found = body.search(term) >= 0;
 		return found;
 	},
 
@@ -91,7 +91,7 @@ pm.tester = {
 		return $("#url-keyvaleditor").keyvalueeditor("getValues").length;
 	},
 
-	setURLParams: function(urlParams) {		
+	setURLParams: function(urlParams) {
 		$("#url-keyvaleditor").keyvalueeditor("reset", urlParams);
 	},
 
@@ -128,7 +128,7 @@ pm.tester = {
 		$("#headers-keyvaleditor-actions-open").click();
 	},
 
-	setEnvironmentByName: function(name) {		
+	setEnvironmentByName: function(name) {
 		var environments = pm.envManager.get("environments").toJSON();
 		for(var i = 0; i < environments.length; i++) {
 			if (name === environments[i].name) {
@@ -139,9 +139,9 @@ pm.tester = {
 		}
 	},
 
-	addTestEnvironments: function() {		
+	addTestEnvironments: function() {
 		var environments = pm.envManager.get("environments");
-		
+
 		var values = [
 			{key: "base_url", value: "http://localhost:5000/"},
 			{key: "full_url", value: "http://localhost:5000/get"},
@@ -231,7 +231,7 @@ pm.tester = {
 		$("#request-helper-oauth1-header").prop("checked", params.header);
 		$("#request-helper-oauth1-auto").prop("checked", params.auto);
 
-		$("#request-helper-oAuth1 .request-helper-submit").click();	
+		$("#request-helper-oAuth1 .request-helper-submit").click();
 	},
 
 	setDigestAuthParams: function(params) {
@@ -250,13 +250,13 @@ pm.tester = {
 
 	historyHasString: function(string) {
 		var content = $("#history-items").html();
-		var found = content.search(string) >= 0;		
-		return found;		
+		var found = content.search(string) >= 0;
+		return found;
 	},
 
-	selectHistoryItem: function(index) {		
+	selectHistoryItem: function(index) {
 		$("#history-items li:nth-child(" + index + ") .request").click();
-	},	
+	},
 
 	deleteHistoryItem: function(index) {
 		$("#history-items li:nth-child(" + index + ") .request-actions-delete").click();
@@ -264,8 +264,8 @@ pm.tester = {
 
 	urlHasString: function(string) {
 		var content = $("#url").val();
-		var found = content.search(string) >= 0;		
-		return found;			
+		var found = content.search(string) >= 0;
+		return found;
 	},
 
 	bodyTypeIs: function(type) {
@@ -282,9 +282,9 @@ pm.tester = {
 	},
 
 	collectionSidebarHasString: function(string) {
-		var content = $("#collection-items").html();		
-		var found = content.search(string) >= 0;		
-		return found;		
+		var content = $("#collection-items").html();
+		var found = content.search(string) >= 0;
+		return found;
 	},
 
 	openNewCollectionModal: function() {
@@ -336,7 +336,7 @@ pm.tester = {
 			}
 			else {
 				$("#new-request-description").val(params.requestDescription);
-			}			
+			}
 		}
 	},
 
@@ -358,13 +358,13 @@ pm.tester = {
 
 	requestMetaNameHas: function(term) {
 		var content = $("#request-name").html();
-		var found = content.search(term) >= 0;		
+		var found = content.search(term) >= 0;
 		return found;
 	},
 
 	requestMetaDescriptionHas: function(term) {
 		var content = $("#request-description").html();
-		var found = content.search(term) >= 0;		
+		var found = content.search(term) >= 0;
 		return found;
 	},
 
@@ -478,17 +478,17 @@ pm.tester = {
 
 		var selector = "#collection-items .sidebar-collection:nth-child(" + collectionIndex + ") .sidebar-collection-requests";
 		var requestsHtml = $(selector).html()
-		return requestsHtml.search(name) >= 0;		
+		return requestsHtml.search(name) >= 0;
 	},
 
 	collectionFolderHasRequest: function(collectionIndex, folderIndex, name) {
 		var requestsHtml = $($($("#collection-items .sidebar-collection .folders")[collectionIndex - 1]).find(".folder-requests")[folderIndex - 1]).html()
-		return requestsHtml.search(name) >= 0;		
+		return requestsHtml.search(name) >= 0;
 	},
 
 	getIDOfRequestInFolder: function(collectionIndex, folderIndex, requestIndex) {
 		//DOM has one extra element
-		collectionIndex += 1;		
+		collectionIndex += 1;
 
 		var selector = "#collection-items .sidebar-collection:nth-child(" + collectionIndex + ") ";
 		selector += ".folders .folder:nth-child(" + folderIndex + ") ";
@@ -499,9 +499,9 @@ pm.tester = {
 	},
 
 	getIDOfRequestInCollection: function(collectionIndex, requestIndex) {
-		collectionIndex += 1;		
+		collectionIndex += 1;
 
-		var selector = "#collection-items .sidebar-collection:nth-child(" + collectionIndex + ") .sidebar-collection-requests ";		
+		var selector = "#collection-items .sidebar-collection:nth-child(" + collectionIndex + ") .sidebar-collection-requests ";
 		selector += ".sidebar-collection-request:nth-child(" + requestIndex + ") ";
 		selector += " .request";
 
@@ -522,5 +522,30 @@ pm.tester = {
 
 		var selector = "#collection-items .sidebar-collection:nth-child(" + collectionIndex + ") ";
 		return $(selector).attr("data-id");
-	}
+	},
+
+	clickOnSaveSampleResponseButton: function() {
+		$("#response-sample-save-start").click();
+	},
+
+	setSampleResponseName: function(name) {
+		$("#response-sample-name").val(name);
+	},
+
+	saveSampleResponse: function() {
+		$("#response-sample-save").click();
+	},
+
+	sampleResponseListHas: function(term) {
+		var h = $("#request-samples-list").html()
+		return h.search(term) >= 0;
+	},
+
+	loadSampleResponse: function(index) {
+		$("#request-samples-list .sample-response-actions-load:nth-child(" + index + ")").click()
+	},
+
+	deleteSampleResponse: function(index) {
+		$("#request-samples-list .sample-response-actions-delete:nth-child(" + index + ")").click()
+	},
 };

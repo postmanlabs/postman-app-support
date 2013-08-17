@@ -37,6 +37,8 @@ var Request = Backbone.Model.extend({
         this.on("send", this.onSend, this);
 
         pm.mediator.on("loadRequest", this.loadRequest, this);
+        pm.mediator.on("saveSampleResponse", this.saveSampleResponse, this);
+        pm.mediator.on("loadSampleResponse", this.loadSampleResponse, this);
         pm.mediator.on("getRequest", this.onGetRequest, this);
         pm.mediator.on("updateCollectionRequest", this.checkIfCurrentRequestIsUpdated, this);
     },
@@ -266,7 +268,7 @@ var Request = Backbone.Model.extend({
 
         var request = {
             url: this.get("url"),
-            data: body.get("dataAsObjects"), //TODO This should be available in the model itself, asObjects = true
+            data: body.get("dataAsObjects"),
             headers: this.getPackedHeaders(),
             dataMode: body.get("dataMode"),
             method: this.get("method"),
@@ -316,6 +318,7 @@ var Request = Backbone.Model.extend({
         this.set("dataMode", "");
         this.set("isFromCollection", false);
         this.set("collectionRequestId", "");
+        this.set("responses", []);
 
         body.set("data", "");
 
@@ -331,6 +334,53 @@ var Request = Backbone.Model.extend({
         }
 
         response.clear();
+    },
+
+    saveSampleResponse: function(r) {
+        var sampleRequest = this.getAsObject();
+        var response = r;
+        var collectionRequestId = this.get("collectionRequestId");
+
+        response.request = sampleRequest;
+
+        if (collectionRequestId) {
+            var responses = this.get("responses");
+            responses.push(response);
+            this.trigger("change:responses");
+            pm.mediator.trigger("addResponseToCollectionRequest", collectionRequestId, response);
+        }
+    },
+
+    loadSampleResponseById: function(responseId) {
+        var responses = this.get("responses");
+        var location = arrayObjectIndexOf(responses, responseId, "id");
+        console.log("Loading", responses, responses[location]);
+        this.loadSampleResponse(responses[location]);
+    },
+
+    deleteSampleResponseById: function(responseId) {
+        var collectionRequestId = this.get("collectionRequestId");
+
+        if (collectionRequestId) {
+            var responses = this.get("responses");
+            var location = arrayObjectIndexOf(responses, responseId, "id");
+            responses.splice(location, 1);
+            this.trigger("change:responses");
+            pm.mediator.trigger("updateResponsesForCollectionRequest", collectionRequestId, responses);
+        }
+    },
+
+    loadSampleResponse: function(response) {
+        this.set("url", response.request.url);
+        this.set("method", response.request.method);
+        this.set("headers", response.request.headers);
+        this.set("data", response.request.data);
+        this.set("dataMode", response.request.dataMode);
+
+        this.trigger("loadRequest", this);
+
+        var r = this.get("response");
+        r.loadSampleResponse(this, response);
     },
 
     loadRequest: function(request, isFromCollection, isFromSample) {

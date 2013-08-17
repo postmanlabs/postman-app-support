@@ -126,7 +126,7 @@
 <div id="main-container">
 <div id="sidebar-filler">
 </div>
-<div id="main" class="content">    
+<div id="main" class="content">
     <section id="request">
         <div id="request-builder">
             <div id="request-types" class="clearfix">
@@ -161,7 +161,7 @@
                             </ul>
                         </div>
                     </div>
-                </div>                
+                </div>
             </div>
             <div id="request-helpers" class="clearfix">
                 <div id="request-helper-normal" class="request-helpers"></div>
@@ -269,7 +269,7 @@
                                     <a class="btn btn-secondary request-helper-clear"
                                             data-type="digest">Clear</a>
                                     <a class="btn btn-secondary request-helper-submit"
-                                            data-type="digest">Refresh headers</a>                                                                        
+                                            data-type="digest">Refresh headers</a>
                                 </div>
                             </div>
                         </form>
@@ -367,11 +367,11 @@
                                     <input type="checkbox" class="checkbox" id="request-helper-oauth1-header"/>
                                 </div>
                             </div>
-                            
+
                             <div class="control-group">
                                 <label class="control-label">Auto add parameters</label>
                                 <div class="controls">
-                                    <input type="checkbox" class="checkbox" id="request-helper-oauth1-auto"/>                        
+                                    <input type="checkbox" class="checkbox" id="request-helper-oauth1-auto"/>
                                 </div>
                             </div>
 
@@ -382,7 +382,7 @@
                                     <a class="btn btn-secondary request-helper-submit"
                                        data-type="oAuth1">
                                         Refresh request
-                                    </a>                                
+                                    </a>
                                 </div>
                             </div>
                         </form>
@@ -406,8 +406,7 @@
                     <p id="request-description"></p>
 
                     <div id="request-samples">
-                        <h4>Sample responses</h4>
-                        <table class="table table-striped table-bordered"></table>
+                        <div id="request-samples-list"></div>
                     </div>
                 </div>
             </div>
@@ -429,7 +428,7 @@
                             <option value="DELETE">DELETE</option>
                             <option value="COPY">COPY</option>
                             <option value="HEAD">HEAD</option>
-                            <option value="OPTIONS">OPTIONS</option>                            
+                            <option value="OPTIONS">OPTIONS</option>
                             <option value="LINK">LINK</option>
                             <option value="UNLINK">UNLINK</option>
                             <option value="PURGE">PURGE</option>
@@ -450,7 +449,7 @@
             </div>
 
             <div id="url-keyvaleditor-container" class="row" style="margin-left: 0px; display: none;">
-                <div id="url-keyvaleditor"></div>    
+                <div id="url-keyvaleditor"></div>
             </div>
 
             <div id="headers-keyvaleditor-container" class="row clearfix" style="margin-left: 0px; display: none;">
@@ -469,10 +468,10 @@
                         </div>
                         <input type="button" id="headers-keyvaleditor-actions-manage-presets"
                                class="btn"
-                               rel="popover" 
+                               rel="popover"
                                data-trigger="hover"
                                data-placement="bottom" data-content="Presets let you define groups of headers for quick addition" data-original-title="Header presets"
-                               value="Manage presets"/><br/>           
+                               value="Manage presets"/><br/>
                     </div>
                 </div>
             </div>
@@ -496,12 +495,12 @@
                                 <li><a data-editor-mode="text" data-language="text">Text</a></li>
                                 <li><a data-editor-mode="text" data-language="text/plain">Text (text/plain)</a></li>
                                 <li><a data-editor-mode="javascript" data-language="application/json">JSON (application/json)</a></li>
-                                <li><a data-editor-mode="javascript" data-language="application/javascript">Javascript (application/javascript)</a></li>                            
+                                <li><a data-editor-mode="javascript" data-language="application/javascript">Javascript (application/javascript)</a></li>
                                 <li><a data-editor-mode="xml" data-language="application/xml">XML (application/xml)</a></li>
                                 <li><a data-editor-mode="xml" data-language="text/xml">XML (text/xml)</a></li>
-                                <li><a data-editor-mode="xml" data-language="text/html">HTML (text/html)</a></li>                                
-                            </ul>                
-                        </div>                    
+                                <li><a data-editor-mode="xml" data-language="text/html">HTML (text/html)</a></li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
                 <div id="body-data-containers">
@@ -526,7 +525,7 @@
                                name="binaryFile"/>
                     </div>
                 </div>
-            </div>    
+            </div>
         </div>
 
         <div id="request-preview">
@@ -646,12 +645,12 @@
                             <div id="response-language" class="btn-group clearfix" data-toggle="buttons-radio">
                                 <a data-mode="javascript" class="btn">JSON</a>
                                 <a data-mode="html" class="btn">XML</a>
-                            </div>                        
+                            </div>
                         </div>
                         <div id="response-copy-container">
                             <div class="btn" id="response-copy-button" data-clipboard-text="Copy Me!">Copy</div>
-                        </div>                    
-                        <div id="response-collection-request-actions" class="clearfix">                        
+                        </div>
+                        <div id="response-collection-request-actions" class="clearfix">
                             <span id="response-sample-save-start-container">
                                 <a class="btn"
                                    rel="tooltip"
@@ -1576,9 +1575,9 @@
 <script type="text/javascript" src="tests/mocks/mocks.js"></script>
 <script type="text/javascript" src="tests/tester.js"></script>
 <script type="text/javascript" src="tests/init.js"></script>
+<script type="text/javascript" src="tests/specs/HistorySpec.js"></script>
 <script type="text/javascript" src="tests/specs/FoldersSpec.js"></script>
 <script type="text/javascript" src="tests/specs/CollectionsSpec.js"></script>
-<script type="text/javascript" src="tests/specs/HistorySpec.js"></script>
 <script type="text/javascript" src="tests/specs/RequestsSpec.js"></script>
 <script type="text/javascript" src="tests/specs/RequestsWithVariablesSpec.js"></script>
 <script type="text/javascript" src="tests/specs/HelpersSpec.js"></script>

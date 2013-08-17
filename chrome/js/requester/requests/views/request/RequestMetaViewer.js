@@ -6,6 +6,8 @@ var RequestMetaViewer = Backbone.View.extend({
         model.on("change:name", this.render, this);
         model.on("change:description", this.render, this);
 
+        this.requestSampleResponseList = new RequestSampleResponseList({model: this.model});
+
         $('.request-meta-actions-togglesize').on("click", function () {
             var action = $(this).attr('data-action');
 
@@ -31,6 +33,7 @@ var RequestMetaViewer = Backbone.View.extend({
     },
 
     show: function() {
+        $("#request-description-container").css("display", "block");
         $('#request-meta').css("display", "block");
         $('#request-name').css("display", "block");
         $('#request-description').css("display", "block");
@@ -55,7 +58,7 @@ var RequestMetaViewer = Backbone.View.extend({
             if(descriptionFormat === "markdown") {
                 description = markdown.toHTML(description);
             }
-            
+
             if (typeof name !== "undefined") {
                 $('#request-meta').css("display", "block");
                 $('#request-name').html(name);

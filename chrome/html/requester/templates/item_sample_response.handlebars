@@ -1,8 +1,11 @@
-<tr data-id="{{id}}">
-	<td>
-		<a class="sample-response-name" data-id="{{id}}">{{name}}</a>
-	</td>
-	<td width="50px">
-		<a class="sample-response-delete" data-id="{{id}}">Remove</a>
-	</td>
-</tr>
+<div class="sample-response-container clearfix" data-id="{{id}}">
+	<div class="sample-response-name-container">
+		<a class="sample-response-name sample-response-actions-load" data-id="{{id}}">{{name}}</a>
+	</div>
+	<div class="sample-response-actions">
+		<a rel="tooltip" data-original-title="Delete"
+		   data-placement="bottom" data-toggle="modal"
+		   class="sample-response-actions-delete" data-id="{{id}}">
+		    <img src="img/delete.png" style="vertical-align: middle;"/></a>
+	</div>
+</div>

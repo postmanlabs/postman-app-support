@@ -97,8 +97,6 @@ var ResponseBodyViewer = Backbone.View.extend({
         var lineWrapping;
         var renderMode = mode;
 
-        // $('#code-data').css("display", "block");
-
         //Keep CodeMirror div visible otherwise the response gets cut off
         $("#response-copy-container").css("display", "block");
 
@@ -124,13 +122,15 @@ var ResponseBodyViewer = Backbone.View.extend({
                     response = response.substring(response.indexOf('\n'));
                 }
 
-                response = vkbeautify.json(response, 4);
+                response = vkbeautify.json(response);
                 mode = 'javascript';
                 foldFunc = CodeMirror.newFoldFunction(CodeMirror.braceRangeFinder);
             }
             catch (e) {
                 mode = 'text';
             }
+
+            console.log("Language is javascript");
             $('#response-language a[data-mode="javascript"]').addClass("active");
 
         }

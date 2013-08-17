@@ -933,7 +933,35 @@ input[type="file"] {
 
 #request-samples {
     display: none;
-    margin-bottom: 5px;;
+    margin-bottom: 15px;;
+}
+
+.sample-response-container {
+    border-top: solid thin #efefef;
+    padding-top: 5px;
+    width: 250px;
+    height: 32px;
+}
+.sample-response-name-container {
+    float: left;
+    width: 220px;
+    padding-top: 2px;
+}
+
+.sample-response-actions {
+    float: left;
+    margin-left: 5px;
+    display: none;
+}
+
+.sample-response-actions img {
+    width: 18px;
+    height: 18px;
+    opacity: 0.5;
+}
+
+.sample-response-actions img:hover {
+    opacity: 1;
 }
 
 #request-url {
@@ -1485,7 +1513,6 @@ input[type="file"] {
 }
 
 #response-sample-save-start-container {
-    display: none;
 }
 
 #response-sample-save-form {

@@ -8,6 +8,7 @@ var Response = Backbone.Model.extend({
             cookies:[],
             mime:"",
             text:"",
+            language:"",
             rawDataType:"",
             state:{size:"normal"},
             previewType:"parsed"
@@ -15,7 +16,7 @@ var Response = Backbone.Model.extend({
     },
 
     initialize: function() {
-    },  
+    },
 
     setResponseCode: function(response) {
         var responseCodeName;
@@ -58,7 +59,7 @@ var Response = Backbone.Model.extend({
     setResponseData: function(response) {
         var responseData;
 
-        if (response.responseType === "arraybuffer") {            
+        if (response.responseType === "arraybuffer") {
             this.set("responseData", response.response);
         }
         else {
@@ -115,11 +116,40 @@ var Response = Backbone.Model.extend({
         return (contentType.search(/pdf/i) >= 0);
     },
 
+    saveAsSample: function(name) {
+        var response = this.toJSON();
+        response.state = {size: "normal"};
+        response.id = guid();
+        response.name = name;
+
+        console.log("Save this response", response);
+
+        pm.mediator.trigger("saveSampleResponse", response);
+    },
+
+    loadSampleResponse: function(requestModel, response) {
+        console.log("Load sample response", requestModel, response);
+
+        this.set("status", response.status);
+        this.set("responseCode", response.responseCode);
+        this.set("time", response.time);
+        this.set("headers", response.headers);
+        this.set("cookies", response.cookies);
+        this.set("mime", response.mime);
+        this.set("language", response.language);
+        this.set("text", response.text);
+        this.set("rawDataType", response.rawDataType);
+        this.set("state", response.state);
+        this.set("previewType", response.previewType);
+
+        this.trigger("loadResponse", requestModel);
+    },
+
     // Renders the response from a request
     // Called with this = request
-    load:function (response) {        
+    load:function (response) {
         var request = this;
-        var model = request.get("response");        
+        var model = request.get("response");
 
         // TODO These need to be renamed something else
         var presetPreviewType = pm.settings.getSetting("previewType");
@@ -130,12 +160,12 @@ var Response = Backbone.Model.extend({
             if (response.status === 0) {
                 var errorUrl = pm.envManager.getCurrentValue(request.get("url"));
                 model.trigger("failedRequest", errorUrl);
-                return;                        
+                return;
             }
             else {
                 var url = request.get("url");
                 model.setResponseCode(response);
-                model.setResponseTime(request.get("startTime"));                
+                model.setResponseTime(request.get("startTime"));
 
                 model.setResponseData(response);
                 model.setHeaders(response);
@@ -143,31 +173,31 @@ var Response = Backbone.Model.extend({
 
                 var contentType = response.getResponseHeader("Content-Type");
                 var language = 'html';
-                
-                var responsePreviewType = 'html';                
-                
+
+                var responsePreviewType = 'html';
+
                 if (model.doesContentTypeExist(contentType)) {
                     if (model.isContentTypeJavascript(contentType)) {
                         language = 'javascript';
                     }
 
-                    if (model.isContentTypeImage(contentType)) {                        
+                    if (model.isContentTypeImage(contentType)) {
                         responsePreviewType = 'image';
-                    }                    
+                    }
                     else if (model.isContentTypePDF(contentType) && response.responseType === "arraybuffer") {
-                        responsePreviewType = 'pdf';                        
-                    }                    
-                    else if (model.isContentTypePDF(contentType) && response.responseType === "text") {                                        
-                        responsePreviewType = 'pdf';                        
+                        responsePreviewType = 'pdf';
+                    }
+                    else if (model.isContentTypePDF(contentType) && response.responseType === "text") {
+                        responsePreviewType = 'pdf';
                     }
                     else {
-                        responsePreviewType = 'html';                        
+                        responsePreviewType = 'html';
                     }
                 }
                 else {
                     if (languageDetection === 'javascript') {
                         language = 'javascript';
-                    }                    
+                    }
                     else {
                         language = 'html';
                     }
@@ -177,8 +207,9 @@ var Response = Backbone.Model.extend({
                 model.set("previewType", responsePreviewType);
                 model.set("rawDataType", response.responseType);
                 model.set("state", {size: "normal"});
+
                 model.trigger("loadResponse", model);
-            }                
+            }
         }
     },
 
@@ -212,5 +243,5 @@ var Response = Backbone.Model.extend({
 
             return vars;
         }
-    }    
+    }
 });

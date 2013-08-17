@@ -771,11 +771,11 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
 
 
-  buffer += "<tr data-id=\"";
+  buffer += "<div class=\"sample-response-container clearfix\" data-id=\"";
   if (stack1 = helpers.id) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.id; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "\">\n	<td>\n		<a class=\"sample-response-name\" data-id=\"";
+    + "\">\n	<div class=\"sample-response-name-container\">\n		<a class=\"sample-response-name sample-response-actions-load\" data-id=\"";
   if (stack1 = helpers.id) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.id; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
@@ -783,11 +783,11 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   if (stack1 = helpers.name) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.name; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "</a>\n	</td>\n	<td width=\"50px\">\n		<a class=\"sample-response-delete\" data-id=\"";
+    + "</a>\n	</div>\n	<div class=\"sample-response-actions\">\n		<a rel=\"tooltip\" data-original-title=\"Delete\"\n		   data-placement=\"bottom\" data-toggle=\"modal\"\n		   class=\"sample-response-actions-delete\" data-id=\"";
   if (stack1 = helpers.id) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.id; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "\">Remove</a>\n	</td>\n</tr>";
+    + "\">\n		    <img src=\"img/delete.png\" style=\"vertical-align: middle;\"/></a>\n	</div>\n</div>";
   return buffer;
   });
 

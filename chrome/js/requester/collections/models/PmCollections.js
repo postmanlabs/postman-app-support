@@ -34,6 +34,9 @@ var PmCollections = Backbone.Collection.extend({
 
     initialize: function() {
         this.loadAllCollections();
+
+        pm.mediator.on("addResponseToCollectionRequest", this.addResponseToCollectionRequest, this);
+        pm.mediator.on("updateResponsesForCollectionRequest", this.updateResponsesForCollectionRequest, this);
     },
 
     // Load all collections
@@ -978,6 +981,43 @@ var PmCollections = Backbone.Collection.extend({
         });
     },
 
+
+    addResponseToCollectionRequest: function(collectionRequestId, response) {
+        var pmCollection = this;
+
+        pm.indexedDB.getCollectionRequest(collectionRequestId, function (collectionRequest) {
+            var responses;
+
+            if (collectionRequest.hasOwnProperty("responses")) {
+                responses = collectionRequest["responses"];
+            }
+            else {
+                responses = [];
+            }
+
+            responses.push(response);
+
+            pmCollection.updateRequestInDataStore(collectionRequest, true, function(request) {
+                pmCollection.trigger("updateCollectionRequest", request);
+                pm.mediator.trigger("updateCollectionRequest", request);
+            });
+        });
+    },
+
+    updateResponsesForCollectionRequest: function(collectionRequestId, responses) {
+        console.log(collectionRequestId, responses);
+
+        var pmCollection = this;
+
+        pm.indexedDB.getCollectionRequest(collectionRequestId, function (collectionRequest) {
+            var c = _.clone(collectionRequest);
+            c.responses = responses;
+            pmCollection.updateRequestInDataStore(c, true, function(request) {
+                pmCollection.trigger("updateCollectionRequest", request);
+                pm.mediator.trigger("updateCollectionRequest", request);
+            });
+        });
+    },
 
     // Update collection request
     updateCollectionRequest:function (collectionRequest) {

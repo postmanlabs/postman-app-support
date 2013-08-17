@@ -509,9 +509,135 @@ describe("Collections", function() {
 				expect(pm.tester.bodyTypeIs("raw")).toBe(true);
 			});
 		});
+
+
+		describe("save collection responses", function() {
+			it("can save response in a collection request", function() {
+				var collectionItemLoaded = false;
+				var responseLoaded = false;
+				var responseSaved = false;
+
+				runs(function() {
+					pm.tester.selectCollectionRequest(2, 2);
+
+					setTimeout(function() {
+						collectionItemLoaded = true;
+					}, 250);
+				});
+
+				waitsFor(function() {
+					return collectionItemLoaded === true;
+				}, "URLEncoded collection item not loaded", waitTime);
+
+				runs(function() {
+					expect(pm.tester.urlHasString("http://localhost:5000/post")).toBe(true);
+					expect(pm.tester.methodIs("POST"));
+					expect(pm.tester.bodyTypeIs("urlencoded")).toBe(true);
+
+					pm.tester.submitRequest();
+
+					var response = pm.request.get("response");
+					response.on("loadResponse", function() {
+						responseLoaded = true;
+					});
+				});
+
+				waitsFor(function() {
+					return responseLoaded === true;
+				}, "Could not get response", waitTime);
+
+				runs(function() {
+					var foundString = pm.tester.prettyBodyHasString("/post");
+					expect(foundString).toBe(true);
+
+					pm.tester.clickOnSaveSampleResponseButton();
+					pm.tester.setSampleResponseName("200 OK");
+					pm.tester.saveSampleResponse();
+
+					setTimeout(function() {
+						responseSaved = true;
+					}, 250);
+				});
+
+				waitsFor(function() {
+					return responseSaved === true;
+				}, "Could not save response", waitTime);
+
+				runs(function() {
+					expect(pm.tester.sampleResponseListHas("200 OK")).toBe(true);
+				});
+			});
+
+			it("can load collection responses", function() {
+				var collectionItemLoaded = false;
+				var responseLoaded = false;
+
+				runs(function() {
+					pm.tester.selectCollectionRequest(2, 2);
+
+					setTimeout(function() {
+						collectionItemLoaded = true;
+					}, 250);
+				});
+
+				waitsFor(function() {
+					return collectionItemLoaded === true;
+				}, "URLEncoded collection item not loaded", waitTime);
+
+				runs(function() {
+					pm.tester.loadSampleResponse(1);
+
+					setTimeout(function() {
+						responseLoaded = true;
+					}, 250);
+				});
+
+				waitsFor(function() {
+					return responseLoaded === true;
+				}, "Could not load response", waitTime);
+
+				runs(function() {
+					var found = pm.tester.prettyBodyHasString("/post");
+					expect(found).toBe(true);
+				});
+			});
+
+			it("can delete response from a collection request", function() {
+				var collectionItemLoaded = false;
+				var responseDeleted = false;
+
+				runs(function() {
+					pm.tester.selectCollectionRequest(2, 2);
+
+					setTimeout(function() {
+						collectionItemLoaded = true;
+					}, 250);
+				});
+
+				waitsFor(function() {
+					return collectionItemLoaded === true;
+				}, "URLEncoded collection item not loaded", waitTime);
+
+				runs(function() {
+					pm.tester.deleteSampleResponse(1);
+
+					setTimeout(function() {
+						responseDeleted = true;
+					}, 250);
+				});
+
+				waitsFor(function() {
+					return responseDeleted === true;
+				}, "Could not delete response", waitTime);
+
+				runs(function() {
+					expect(pm.tester.sampleResponseListHas("200 OK")).toBe(false);
+				});
+			});
+		});
 	});
 
-	describe("import collection", function() {
+	xdescribe("import collection", function() {
 		it("can overwrite collections", function() {
 
 		});
@@ -525,11 +651,11 @@ describe("Collections", function() {
 		});
 	});
 
-	describe("share a collection", function() {
+	xdescribe("share a collection", function() {
 		//TODO Use a spy here and ensure that the collection function was called
 	});
 
-	describe("search within collections", function() {
+	xdescribe("search within collections", function() {
 
 	});
 });
