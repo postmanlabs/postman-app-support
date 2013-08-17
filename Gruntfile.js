@@ -41,7 +41,7 @@ module.exports = function(grunt) {
 
     watch: {
       requester_templates: {
-        files: ['chrome/js/templates/*'],
+        files: ['chrome/html/requester/templates/*'],
         tasks: ['handlebars']
       },
 
@@ -97,7 +97,7 @@ module.exports = function(grunt) {
           }
         },
         files: {
-          "chrome/js/templates.js": "chrome/js/templates/*"
+          "chrome/html/requester/templates.js": "chrome/html/requester/templates/*"
         }
       }
     },
