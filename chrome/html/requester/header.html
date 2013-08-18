@@ -22,15 +22,6 @@
     <div id="logo">
         <img src="img/v2/logo.png"/>
     </div>
-    <div id="header-donate-link-container">
-        <a href="http://www.getpostman.com/donate"
-            id="header-donate-link"
-            rel="tooltip"
-            data-placement="bottom"
-            data-original-title="Help Postman get better!"
-            target="_blank">Donate</a>
-    </div>
-
     <div class="preferences">
         <a id="google-drive-status" rel="tooltip"
            data-placement="bottom" data-original-title="Google Drive Status">
@@ -63,11 +54,15 @@
                 <img src="img/sync.png" style="vertical-align: middle;"/>
             </a>
         </div>
-        <div id="user-img">
-        </div>
-        <div id="user-status">
-            <a id="user-status-text"><img src="img/drive-16.png"/></a>
-        </div>
+    </div>
+    <div id="user-status">
+      <div id="user-status-false">
+          <a href="#" id="user-status-not-logged-in">Not logged in</a>
+      </div>
+      <div id="user-status-true">
+          <a href="#" id="user-status-username"></a>
+      </div>
+
     </div>
 </div>
 <div id="container" class="clearfix">

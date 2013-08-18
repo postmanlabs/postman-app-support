@@ -1448,6 +1448,14 @@ input[type="file"] {
 .no-new-broadcasts {
   background-color: #555; }
 
+/*User status*/
+#user-status {
+  float: right;
+  margin-top: 14px;
+  margin-right: 25px; }
+  #user-status a {
+    color: #666; }
+
 /*Drive*/
 #drive-status {
   display: none;

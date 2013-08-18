@@ -206,6 +206,11 @@ pm.init = function () {
         }
     }
 
+    function initializeUser() {
+        var user = new User();
+        var userStatus = new UserStatus({model: user});
+    }
+
     pm.mediator = new Mediator();
 
     initializeStorage();
@@ -227,6 +232,8 @@ pm.init = function () {
             pm.broadcasts.init();
 
             initializeDriveSync();
+
+            initializeUser();
 
             pm.hasPostmanInitialized = true;
             console.log("Set hasPostmanInitialized to true");
