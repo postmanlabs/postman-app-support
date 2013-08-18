@@ -36,7 +36,8 @@ if (pm.isTesting) {
 }
 else {
     pm.databaseName = "postman";
-    pm.webUrl = "http://getpostman.com";
+    // pm.webUrl = "http://getpostman.com";
+    pm.webUrl = "http://localhost/postman/html";
 }
 
 
@@ -209,6 +210,8 @@ pm.init = function () {
     function initializeUser() {
         var user = new User();
         var userStatus = new UserStatus({model: user});
+
+        pm.user = user;
     }
 
     pm.mediator = new Mediator();

@@ -677,6 +677,12 @@ var PmCollections = Backbone.Collection.extend({
     uploadCollection:function (id, callback) {
         this.getCollectionDataForFile(id, function (name, type, filedata) {
             var uploadUrl = pm.webUrl + '/collections';
+
+            if (pm.user.get("id") !== 0) {
+                uploadUrl += "?user_id=" + pm.user.get("id");
+                uploadUrl += "&access_token=" + pm.user.get("access_token");
+            }
+
             $.ajax({
                 type:'POST',
                 url:uploadUrl,
