@@ -40,6 +40,7 @@
         "storage",
         "fileSystem",
         "fileSystem.write",
+        "identity",
         "syncFileSystem"
         ],
     "manifest_version": 2,
