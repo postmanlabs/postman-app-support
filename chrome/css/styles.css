@@ -258,8 +258,20 @@ li .right {
   /* IE6-9 */ }
 
 #logo {
+  cursor: pointer;
   margin-top: 14px;
   margin-left: 10px; }
+
+#add-ons {
+  float: left;
+  margin-left: -10px;
+  margin-top: 14px; }
+  #add-ons li {
+    list-style: none;
+    float: left;
+    margin-right: 15px; }
+  #add-ons a {
+    color: #888; }
 
 /*End top bar*/
 /*Sidebar*/
@@ -1695,3 +1707,28 @@ input[type="file"] {
   display: inline-block;
   margin-top: 8px;
   margin-left: 15px; }
+
+/*API Directory*/
+#directory-browser {
+  background: #efefef;
+  margin-top: -5px;
+  display: none;
+  padding-bottom: 20px; }
+  #directory-browser h3 {
+    margin: 10px 0 0 20px;
+    padding-top: 8px; }
+  #directory-browser .directory-collection {
+    height: 200px;
+    width: 300px;
+    border: solid thin #fff;
+    float: left;
+    margin: 10px 0 0 10px;
+    background: #fff;
+    padding: 15px; }
+    #directory-browser .directory-collection p {
+      margin: 0 0 10px;
+      display: block;
+      height: 125px; }
+    #directory-browser .directory-collection .btn-primary {
+      position: absolute;
+      margin-bottom: 5px; }

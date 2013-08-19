@@ -297,8 +297,25 @@ li {
 }
 
 #logo {
+    cursor: pointer;
     margin-top: 14px;
     margin-left: 10px;
+}
+
+#add-ons {
+    float: left;
+    margin-left: -10px;
+    margin-top: 14px;
+
+    li {
+        list-style: none;
+        float: left;
+        margin-right: 15px;
+    }
+
+    a {
+        color: #888;
+    }
 }
 /*End top bar*/
 
@@ -2126,4 +2143,38 @@ input[type="file"] {
     display: inline-block;
     margin-top: 8px;
     margin-left: 15px;
+}
+
+/*API Directory*/
+#directory-browser {
+    background: #efefef;
+    margin-top: -5px;
+    display: none;
+    padding-bottom: 20px;
+
+    h3 {
+        margin: 10px 0 0 20px;
+        padding-top: 8px;
+    }
+
+    .directory-collection {
+        height: 200px;
+        width: 300px;
+        border: solid thin #fff;
+        float: left;
+        margin: 10px 0 0 10px;
+        background: #fff;
+        padding: 15px;
+
+        p {
+            margin: 0 0 10px;
+            display: block;
+            height: 125px;
+        }
+
+        .btn-primary {
+            position: absolute;
+            margin-bottom: 5px;
+        }
+    }
 }

@@ -115,10 +115,6 @@ pm.init = function () {
         pm.history = history;
     }
 
-    function initializeHelpers() {
-
-    }
-
     function initializeEnvironments() {
         var globals = new Globals();
         var environments = new Environments();
@@ -207,7 +203,15 @@ pm.init = function () {
         }
     }
 
+    function initializeDirectory() {
+        var directory = new Directory();
+        var directoryBrowser = new DirectoryBrowser({model: directory});
+        var directoryCollectionViewer = new DirectoryCollectionViewer({model: directory});
+    }
+
     function initializeUser() {
+        var header = new Header();
+
         var user = new User();
         var userStatus = new UserStatus({model: user});
         var userCollections = new UserCollections({model: user});
@@ -235,8 +239,8 @@ pm.init = function () {
             pm.broadcasts.init();
 
             initializeDriveSync();
-
             initializeUser();
+            initializeDirectory();
 
             pm.hasPostmanInitialized = true;
             console.log("Set hasPostmanInitialized to true");

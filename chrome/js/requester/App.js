@@ -69,6 +69,26 @@ var App = Backbone.View.extend({
 	    	}
 	    });
 
+	    pm.mediator.on("notifySuccess", function(message) {
+	    	noty(
+	    	    {
+	    	        type:'success',
+	    	        text: message,
+	    	        layout:'topCenter',
+	    	        timeout:750
+	    	    });
+	    });
+
+	    pm.mediator.on("notifyError", function(message) {
+	    	noty(
+	    	    {
+	    	        type:'error',
+	    	        text: message,
+	    	        layout:'topCenter',
+	    	        timeout:750
+	    	    });
+	    });
+
 	    pm.mediator.on("error", function() {
 	    	noty(
 	    	    {
@@ -78,6 +98,8 @@ var App = Backbone.View.extend({
 	    	        timeout:750
 	    	    });
 	    });
+
+	    pm.mediator.on("openModule", this.openModule, this);
 
 	    this.renderContextMenu();
 	    this.setLayout();
@@ -257,5 +279,22 @@ var App = Backbone.View.extend({
 	    var newMainHeight = $(document).height() - 55;
 	    $('#main').height(newMainHeight + "px");
 	    $('#sidebar-filler').height(newMainHeight + "px");
+	},
+
+	openModule: function(module) {
+		console.log("Open module", module);
+
+		if (module === "requester") {
+			$("#directory-browser").css("display", "none");
+			$("#main-container").css("display", "block");
+			pm.mediator.trigger("showSidebar");
+		}
+		else if (module === "directory") {
+			$("#main-container").css("display", "none");
+			$("#directory-browser").css("display", "block");
+			pm.mediator.trigger("hideSidebar");
+		}
+		else if (module === "test_runner") {
+		}
 	}
 });

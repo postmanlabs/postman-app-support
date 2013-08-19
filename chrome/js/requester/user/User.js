@@ -75,6 +75,7 @@ var User = Backbone.Model.extend({
 
 	getCollections: function() {
 		var model = this;
+
 		var getUrl = pm.webUrl + "/users/" + this.get("id") + "/collections";
 		getUrl += "?user_id=" + this.get("id");
 		getUrl += "&access_token=" + this.get("access_token");

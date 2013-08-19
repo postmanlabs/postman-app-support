@@ -35,6 +35,7 @@ var PmCollections = Backbone.Collection.extend({
     initialize: function() {
         this.loadAllCollections();
 
+        pm.mediator.on("addDirectoryCollection", this.onAddDirectoryCollection, this);
         pm.mediator.on("addResponseToCollectionRequest", this.addResponseToCollectionRequest, this);
         pm.mediator.on("updateResponsesForCollectionRequest", this.updateResponsesForCollectionRequest, this);
     },
@@ -833,6 +834,11 @@ var PmCollections = Backbone.Collection.extend({
         else {
             this.addAsNewCollection(collection);
         }
+    },
+
+    onAddDirectoryCollection: function(collection) {
+        collection.id = guid();
+        this.addAsNewCollection(collection);
     },
 
     // Import multiple collections

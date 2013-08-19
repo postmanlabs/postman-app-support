@@ -35,8 +35,25 @@ var Sidebar = Backbone.View.extend({
     	    view.select(id);
     	});
 
+        pm.mediator.on("hideSidebar", this.hideSidebar, this);
+        pm.mediator.on("showSidebar", this.showSidebar, this);
+
         history.on("loadRequest", this.onLoadHistoryRequest, this);
         collections.on("addCollectionRequest", this.onAddCollectionRequest, this);
+    },
+
+    hideSidebar: function() {
+        $("#sidebar").css("display", "none");
+        $("#sidebar-filler").css("display", "none");
+        $("#sidebar-toggle").css("display", "none");
+        $("#sidebar-search-container").css("display", "none");
+    },
+
+    showSidebar: function() {
+        $("#sidebar").css("display", "block");
+        $("#sidebar-filler").css("display", "block");
+        $("#sidebar-toggle").css("display", "block");
+        $("#sidebar-search-container").css("display", "block");
     },
 
     onLoadHistoryRequest: function() {

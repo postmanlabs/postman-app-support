@@ -4,8 +4,8 @@ var EditCollectionRequestModal = Backbone.View.extend({
 
         model.on("editCollectionRequest", this.render, this);
 
-        var view = this;        
-                                            
+        var view = this;
+
         $('#form-edit-collection-request').submit(function() {
             var id = $('#form-edit-collection-request .collection-request-id').val();
             var name = $('#form-edit-collection-request .collection-request-name').val();
@@ -53,8 +53,6 @@ var EditCollectionRequestModal = Backbone.View.extend({
     },
 
     render: function(request) {
-        console.log("Render EditCollectionRequestModal", request);
-
         $('#form-edit-collection-request .collection-request-id').val(request.id);
         $('#form-edit-collection-request .collection-request-name').val(request.name);
         $('#modal-edit-collection-request').modal('show');
@@ -70,7 +68,7 @@ var EditCollectionRequestModal = Backbone.View.extend({
             view.editor.refresh();
 
             CodeMirror.commands["goDocStart"](view.editor);
-        }, 750);        
-        
+        }, 750);
+
     }
 });
