@@ -690,6 +690,7 @@ var PmCollections = Backbone.Collection.extend({
                 success:function (data) {
                     var link = data.link;
                     callback(link);
+                    pm.mediator.trigger("refreshSharedCollections");
                 }
             });
 

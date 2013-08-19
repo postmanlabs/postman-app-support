@@ -11,7 +11,11 @@ var UserStatus = Backbone.View.extend({
 			model.login();
 		});
 
-		$("#user-status-username").on("click", function() {
+		$("#user-status-shared-collections").on("click", function() {
+			console.log("Open shared collections window");
+		});
+
+		$("#user-status-logout").on("click", function() {
 			model.logout();
 		});
 

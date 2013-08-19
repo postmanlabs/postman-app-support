@@ -1447,7 +1447,8 @@ input[type="file"] {
   float: right;
   margin-top: 14px;
   margin-right: 25px; }
-  #user-status a {
+  #user-status #user-status-username,
+  #user-status #user-status-not-logged-in {
     color: #666; }
 
 /*Drive*/
@@ -1684,3 +1685,8 @@ input[type="file"] {
 /* Drive sync start modal */
 #drive-sync-backup {
   margin-top: 5px; }
+
+/*User collections*/
+.user-collection-link {
+  color: #999;
+  font-size: 11px; }

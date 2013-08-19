@@ -57,12 +57,26 @@
     </div>
     <div id="user-status">
       <div id="user-status-false">
-          <a href="#" id="user-status-not-logged-in">Not logged in</a>
+          <a href="#" id="user-status-not-logged-in" rel="tooltip"
+            data-placement="bottom" data-original-title"Log in to manage your shared collections">
+            Not logged in
+          </a>
       </div>
       <div id="user-status-true">
-          <a href="#" id="user-status-username"></a>
+        <div class="dropdown">
+          <a data-toggle="dropdown" id="user-status-username"></a>
+          <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu">
+            <li>
+              <a href="#modal-user-collections"
+                data-toggle="modal"
+                id="user-status-shared-collections">Shared collections</a>
+            </li>
+            <li>
+              <a id="user-status-logout">Logout</a>
+            </li>
+          </ul>
+        </div>
       </div>
-
     </div>
 </div>
 <div id="container" class="clearfix">

@@ -210,7 +210,7 @@ pm.init = function () {
     function initializeUser() {
         var user = new User();
         var userStatus = new UserStatus({model: user});
-
+        var userCollections = new UserCollections({model: user});
         pm.user = user;
     }
 

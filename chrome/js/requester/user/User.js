@@ -6,7 +6,8 @@ var User = Backbone.Model.extend({
 	        "access_token": "",
 	        "refresh_token": "",
 	        "expires_in": 0,
-	        "link": ""
+	        "link": "",
+	        "collections": []
 	    };
 	},
 
@@ -33,10 +34,15 @@ var User = Backbone.Model.extend({
 				model.set("access_token", u.access_token);
 				model.set("refresh_token", u.refresh_token);
 				model.set("expires_in", u.expires_in);
+
+				model.getCollections();
+
 				model.trigger("login", model);
 			}
 		});
 
+		pm.mediator.on("refreshSharedCollections", this.getCollections, this);
+		pm.mediator.on("deleteSharedCollection", this.onDeleteSharedCollection, this);
 	},
 
 	login: function() {
@@ -52,8 +58,9 @@ var User = Backbone.Model.extend({
 				model.set("expires_in", params.expires_in);
 
 				pm.storage.setValue({"user": model.toJSON()}, function() {
-					console.log("Stored the value");
 				});
+
+				model.getCollections();
 
 				model.trigger("login", model);
 				/* Extract token from redirect_url */
@@ -64,6 +71,45 @@ var User = Backbone.Model.extend({
 	logout: function() {
 		this.setDefaults();
 		this.trigger("logout");
+	},
+
+	getCollections: function() {
+		var model = this;
+		var getUrl = pm.webUrl + "/users/" + this.get("id") + "/collections";
+		getUrl += "?user_id=" + this.get("id");
+		getUrl += "&access_token=" + this.get("access_token");
+
+		$.ajax({
+		    type:'GET',
+		    url:getUrl,
+		    success:function (data) {
+		    	model.set("collections", data.collections);
+		    	model.trigger("change:collections");
+		    }
+		});
+	},
+
+	onDeleteSharedCollection: function(id) {
+		var model = this;
+		var deleteUrl = pm.webUrl + "/users/" + this.get("id") + "/collections/" + id;
+		deleteUrl += "?user_id=" + this.get("id");
+		deleteUrl += "&access_token=" + this.get("access_token");
+
+		$.ajax({
+		    type:'DELETE',
+		    url:deleteUrl,
+		    success:function (data) {
+		    	var collections = model.get("collections");
+		    	var index = arrayObjectIndexOf(collections, id, "id");
+		    	console.log(collections, index, id);
+
+		    	if (index >= 0) {
+		    		collections.splice(index, 1);
+		    	}
+
+		    	model.trigger("change:collections");
+		    }
+		});
 	}
 
 });
