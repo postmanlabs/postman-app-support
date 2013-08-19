@@ -32,7 +32,7 @@ var RequestBody = Backbone.Model.extend({
         var dataMode = this.get("dataMode");
 
         if (dataMode !== "params") {
-            return " -d " + this.get("dataaAsPreview");
+            return " -d '" + this.get("dataAsPreview") + "'";
         }
         else {
             return this.getFormDataForCurl();
