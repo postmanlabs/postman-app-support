@@ -887,6 +887,14 @@ input[type="file"] {
     user-select: text;
 }
 
+#request-preview-content-http-request {
+
+}
+
+#request-preview-content-curl {
+    display: none;
+}
+
 #request-method-selector {
     width: 100px;
 }
@@ -1061,7 +1069,7 @@ input[type="file"] {
     }
 }
 
-#request-types {
+.request-tabs-container {
     border-bottom: solid thin #ccc;
     height: 35px;
     margin-left: -20px;
@@ -1151,20 +1159,10 @@ input[type="file"] {
     width: 400px;
 }
 
-#request-preview-header {
-    border-bottom: solid thin #ccc;
-    margin-left: -20px;
-    margin-bottom: 10px;
-    height: 25px;
-    padding-top: 10px;
-}
-
-.request-preview-header-title {
-    padding-left: 20px;
-    font-size: 16px;
-    font-weight: bold;
-    margin-right: 20px;
-    padding-top: 20px;
+.request-preview-header-limitations {
+    margin-left: 170px;
+    margin-top: 8px;
+    display: block;
 }
 
 #request-preview-header .dropdown-menu {

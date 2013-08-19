@@ -20,7 +20,9 @@ var Request = Backbone.Model.extend({
             editorMode:0,
             responses:[],
             body:null,
-            data:null
+            data:null,
+            previewHtml:"",
+            curlHtml:""
         };
     },
 
@@ -575,6 +577,11 @@ var Request = Backbone.Model.extend({
         return body.get("dataAsPreview");
     },
 
+    getRequestBodyForCurl: function() {
+        var body = this.get("body");
+        return body.getBodyForCurl();
+    },
+
     send:function (responseRawDataType, action) {
         this.set("action", action);
 
@@ -645,8 +652,36 @@ var Request = Backbone.Model.extend({
         this.trigger("sentRequest", this);
     },
 
-    // TODO Should be activated on click
-    generatePreview:function() {
+    generateCurl: function() {
+        var method = this.get("method").toUpperCase();
+        var url = this.get("url");
+        var headers = this.getXhrHeaders();
+        var hasBody = this.isMethodWithBody(method);
+        var body;
+
+        if(hasBody) {
+            body = this.getRequestBodyForCurl();
+        }
+
+        var requestPreview = "curl -X " + method;
+        var headersCount = headers.length;
+
+        for(var i = 0; i < headersCount; i++) {
+            requestPreview += " -H " + headers[i].key + ":" + headers[i].value;
+        }
+
+        if(hasBody && body !== false) {
+            requestPreview += body;
+        }
+
+        requestPreview += " " + url;
+
+        requestPreview += "<br/><br/>";
+
+        this.set("curlHtml", requestPreview);
+    },
+
+    generateHTTPRequest:function() {
         var method = this.get("method").toUpperCase();
         var httpVersion = "HTTP/1.1";
         var hostAndPath = this.splitUrlIntoHostAndPath(this.get("url"));
@@ -666,7 +701,7 @@ var Request = Backbone.Model.extend({
         requestPreview += "Host: " + host + "<br/>";
 
         var headersCount = headers.length;
-        for(var i = 0; i < headersCount; i ++) {
+        for(var i = 0; i < headersCount; i++) {
             requestPreview += headers[i].key + ": " + headers[i].value + "<br/>";
         }
 
@@ -678,6 +713,11 @@ var Request = Backbone.Model.extend({
         }
 
         this.set("previewHtml", requestPreview);
+    },
+
+    generatePreview: function() {
+        this.generateCurl();
+        this.generateHTTPRequest();
     },
 
     stripScriptTag:function (text) {

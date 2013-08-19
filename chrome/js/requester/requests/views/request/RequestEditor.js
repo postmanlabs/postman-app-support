@@ -150,8 +150,7 @@ var RequestEditor = Backbone.View.extend({
 
     onPreview: function() {
         this.updateModel();
-        this.model.generatePreview();
-        this.showPreview();
+        pm.mediator.trigger("showPreview");
     },
 
     onSentRequest: function() {
@@ -220,17 +219,6 @@ var RequestEditor = Backbone.View.extend({
     },
 
     // TODO Implement this using events
-    showPreview: function() {
-        this.model.set("editorMode", 1);
-
-        var previewHtml = this.model.get("previewHtml");
-
-        $("#request-preview-content").html(previewHtml);
-        $("#preview-request").html("Build");
-        $("#request-builder").css("display", "none");
-        $("#request-preview").css("display", "block");
-    },
-
     onPreviewRequestClick: function(event) {
         var editorMode = this.model.get("editorMode");
         if(editorMode === 1) {

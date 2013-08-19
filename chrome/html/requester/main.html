@@ -4,7 +4,7 @@
 <div id="main" class="content">
     <section id="request">
         <div id="request-builder">
-            <div id="request-types" class="clearfix">
+            <div id="request-types" class="request-tabs-container clearfix">
                 <ul class="request-helper-tabs">
                     <li class="active" data-id="normal">Normal</li>
                     <li data-id="basicAuth">Basic Auth</li>
@@ -404,8 +404,11 @@
         </div>
 
         <div id="request-preview">
-            <div id="request-preview-header" class="dropdown">
-                <span class="request-preview-header-title">Preview</span>
+            <div id="request-preview-header" class="request-tabs-container dropdown">
+                <ul class="request-helper-tabs">
+                    <li class="active" data-id="http-request">HTTP request</li>
+                    <li data-id="curl">Curl</li>
+                </ul>
                 <a data-toggle="dropdown-toggle" class="dropdown-toggle request-preview-header-limitations">
                     Limitations
                 </a>
@@ -415,6 +418,8 @@
                 </ul>
             </div>
             <div id="request-preview-content">
+                <div id="request-preview-content-http-request"></div>
+                <div id="request-preview-content-curl"></div>
             </div>
         </div>
 

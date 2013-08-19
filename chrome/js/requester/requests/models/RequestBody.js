@@ -16,6 +16,29 @@ var RequestBody = Backbone.Model.extend({
 
     },
 
+    getFormDataForCurl: function() {
+        var dataAsObjects = this.get("dataAsObjects");
+        var kv;
+        console.log(dataAsObjects);
+        var body = "";
+        for(var i = 0; i < dataAsObjects.length; i++) {
+            body += " -F " + dataAsObjects[i].key + "=" + dataAsObjects[i].value;
+        }
+
+        return body;
+    },
+
+    getBodyForCurl: function() {
+        var dataMode = this.get("dataMode");
+
+        if (dataMode !== "params") {
+            return " -d " + this.get("dataaAsPreview");
+        }
+        else {
+            return this.getFormDataForCurl();
+        }
+    },
+
     // Fixed
     getBodyParamString:function (params) {
         var paramsLength = params.length;
