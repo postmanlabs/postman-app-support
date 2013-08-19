@@ -69,6 +69,16 @@ var App = Backbone.View.extend({
 	    	}
 	    });
 
+	    pm.mediator.on("error", function() {
+	    	noty(
+	    	    {
+	    	        type:'error',
+	    	        text:'Something went wrong.',
+	    	        layout:'topCenter',
+	    	        timeout:750
+	    	    });
+	    });
+
 	    this.renderContextMenu();
 	    this.setLayout();
 	},

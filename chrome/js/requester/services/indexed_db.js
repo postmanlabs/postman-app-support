@@ -16,8 +16,7 @@ pm.indexedDB = {
     },
 
     onerror:function (event, callback) {
-        console.log("error");
-        console.log(event);
+        pm.mediator.trigger("error");
     },
 
     open_v21:function (callback) {
