@@ -1,8 +1,8 @@
 /**
 * vkBeautify - javascript plugin to pretty-print or minify text in XML, JSON, CSS and SQL formats.
 *  
-* Version - 0.98.01.beta 
-* Copyright (c) 2012 Vadim Kiryukhin
+* Version - 2.0.00.regexp 08/2013
+* Copyright (c) 2013 Vadim Kiryukhin
 * vkiryukhin @ gmail.com
 * http://www.eslinstructor.net/vkbeautify/
 * 
@@ -13,7 +13,10 @@
 *   Pretty print
 *
 *        vkbeautify.xml(text [,indent_pattern]);
+*
 *        vkbeautify.json(text [,indent_pattern]);
+*        vkbeautify.json(text [,int_number_spaces]);
+*
 *        vkbeautify.css(text [,indent_pattern]);
 *        vkbeautify.sql(text [,indent_pattern]);
 *
@@ -86,8 +89,8 @@ vkbeautify.prototype.xml = function(text,step) {
 
 	var ar = text.replace(/>\s{0,}</g,"><")
 				 .replace(/</g,"~::~<")
-				 .replace(/xmlns\:/g,"~::~xmlns:")
-				 .replace(/xmlns\=/g,"~::~xmlns=")
+				 .replace(/\s*xmlns\:/g,"~::~xmlns:")
+				 .replace(/\s*xmlns\=/g,"~::~xmlns=")
 				 .split('~::~'),
 		len = ar.length,
 		inComment = false,
@@ -151,57 +154,41 @@ vkbeautify.prototype.xml = function(text,step) {
 }
 
 vkbeautify.prototype.json = function(text,step) {
-
-    // Attempt to process using the native JSON first
-	var step = step ? step : this.step;
 	
-    if ( window.JSON && window.JSON.stringify ) {
-		if ( typeof text === "string" ) {
-			return JSON.stringify(JSON.parse(text), null, step);
-		}
-		if ( typeof text === "object" ) {
-			return JSON.stringify(text, null, step);
-		}
-		return null;
-    }
+	var step = typeof step === 'undefined' ? this.step : step,
+			arrBody = [],
+			arrNums = [],
+			str = '',
+			delimiter = 1.234567890098765,
+			ix;
+			
+	if (typeof JSON === 'undefined' ) {	return text }
+	if (typeof text === "object"    ) { return JSON.stringify(text, null, step) }
 
-	// there is no native JSON object, so let's use regexp
-	
-	if ( typeof text !== "string" || !text )  return null;
-
-	var ar = this.jsonmin(text).replace(/\{/g,"~::~{~::~")
-								.replace(/\[/g,"[~::~")
-								.replace(/\}/g,"~::~}")
-								.replace(/\]/g,"~::~]")
-								.replace(/\"\,/g,'",~::~')
-								.replace(/\,\"/g,',~::~"')
-								.replace(/\]\,/g,'],~::~')
-								.replace(/~::~\s{0,}~::~/g,"~::~")
-								.split('~::~'),
-				
-		len = ar.length,
-		deep = 0,
-		str = '',
-		ix = 0,
-		shift = step ? createShiftArr(step) : this.shift;;
-
-	for(ix=0;ix<len;ix++) {
-		if( /\{/.exec(ar[ix]))  { 
-			str += shift[deep++]+ar[ix];
-		} else 
-		if( /\[/.exec(ar[ix]))  { 
-			str += shift[deep++]+ar[ix];
-		}  else 
-		if( /\]/.exec(ar[ix]))  { 
-			str += shift[--deep]+ar[ix];
-		}  else 
-		if( /\}/.exec(ar[ix]))  { 
-			str += shift[--deep]+ar[ix];
-		} else {
-			str += shift[deep]+ar[ix];
+	if ( typeof text === "string" ) {
+		
+		// save original invalid numbers in array and replace them //
+		// with valid delimiter to let JSON to process the string //
+		text = text.replace(/[0-9]{17,32}/g, function(match){
+				arrNums.push(match); 
+				return delimiter; 
+			});
+		
+		// beautify json string with delimiters instead of original numbers //
+		text = JSON.stringify(JSON.parse(text), null, step);
+		
+		//split the string into array//
+		arrBody = text.split(delimiter.toString()); 
+		
+		//restore original numbers//
+		for(ix=0; ix<arrNums.length; ix++){
+			str += arrBody[ix]+arrNums[ix];
 		}
+					
+		return str+arrBody[ix];
 	}
-	return str.replace(/^\n{1,}/,'');
+
+	return text; 
 }
 
 vkbeautify.prototype.css = function(text, step) {
@@ -256,7 +243,7 @@ function split_sql(str, tab) {
 				.replace(/ FROM /ig,"~::~FROM ")
 				.replace(/ GROUP\s{1,}BY/ig,"~::~GROUP BY ")
 				.replace(/ HAVING /ig,"~::~HAVING ")
-				//.replace(/ IN /ig,"~::~"+tab+"IN ")
+				//.replace(/ SET /ig," SET~::~")
 				.replace(/ IN /ig," IN ")
 				
 				.replace(/ JOIN /ig,"~::~JOIN ")
@@ -293,6 +280,8 @@ function split_sql(str, tab) {
 				.replace(/ NULL /ig," NULL ")
 				.replace(/ LIKE /ig," LIKE ")
 				.replace(/\s{0,}SELECT /ig,"SELECT ")
+				.replace(/\s{0,}UPDATE /ig,"UPDATE ")
+				.replace(/ SET /ig," SET ")
 							
 				.replace(/~::~{1,}/g,"~::~")
 				.split('~::~');
@@ -330,7 +319,11 @@ vkbeautify.prototype.sql = function(text,step) {
 			if( /\s{0,}\s{0,}SELECT\s{0,}/.exec(ar[ix]))  { 
 				ar[ix] = ar[ix].replace(/\,/g,",\n"+tab+tab+"")
 			} 
-		
+			
+			if( /\s{0,}\s{0,}SET\s{0,}/.exec(ar[ix]))  { 
+				ar[ix] = ar[ix].replace(/\,/g,",\n"+tab+tab+"")
+			} 
+			
 			if( /\s{0,}\(\s{0,}SELECT\s{0,}/.exec(ar[ix]))  { 
 				deep++;
 				str += shift[deep]+ar[ix];
@@ -363,22 +356,8 @@ vkbeautify.prototype.xmlmin = function(text, preserveComments) {
 	return  str.replace(/>\s{0,}</g,"><"); 
 }
 
-vkbeautify.prototype.jsonmin = function(text) {
-								  
-	return  text.replace(/\s{0,}\{\s{0,}/g,"{")
-				.replace(/\s{0,}\[$/g,"[")
-				.replace(/\[\s{0,}/g,"[")
-				.replace(/:\s{0,}\[/g,':[')
-		  		.replace(/\s{0,}\}\s{0,}/g,"}")
-				.replace(/\s{0,}\]\s{0,}/g,"]")
-				.replace(/\"\s{0,}\,/g,'",')
-				.replace(/\,\s{0,}\"/g,',"')
-				.replace(/\"\s{0,}:/g,'":')
-				.replace(/:\s{0,}\"/g,':"')
-				.replace(/:\s{0,}\[/g,':[')
-				.replace(/\,\s{0,}\[/g,',[')
-				.replace(/\,\s{2,}/g,', ')
-				.replace(/\]\s{0,},\s{0,}\[/g,'],[');							  
+vkbeautify.prototype.jsonmin = function(text) { 
+	return this.json(text,0) 
 }
 
 vkbeautify.prototype.cssmin = function(text, preserveComments) {
