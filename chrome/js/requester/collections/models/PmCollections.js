@@ -688,6 +688,7 @@ var PmCollections = Backbone.Collection.extend({
                 url:uploadUrl,
                 data:filedata,
                 success:function (data) {
+                    console.log(data);
                     var link = data.link;
                     callback(link);
                     pm.mediator.trigger("refreshSharedCollections");
