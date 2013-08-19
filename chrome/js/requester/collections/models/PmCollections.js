@@ -843,9 +843,14 @@ var PmCollections = Backbone.Collection.extend({
                 return function (e) {
                     // Render thumbnail.
                     var data = e.currentTarget.result;
-                    var collection = JSON.parse(data);
-                    collection.id = guid();
-                    pmCollection.importCollectionData(collection);
+                    try {
+                        var collection = JSON.parse(data);
+                        collection.id = guid();
+                        pmCollection.importCollectionData(collection);
+                    }
+                    catch(e) {
+                        pm.mediator.trigger("failedCollectionImport");
+                    }
                 };
             })(f);
 
@@ -858,9 +863,15 @@ var PmCollections = Backbone.Collection.extend({
         var pmCollection = this;
 
         $.get(url, function (data) {
-            var collection = data;
-            collection.id = guid();
-            pmCollection.importCollectionData(collection);
+            try {
+                var collection = data;
+                collection.id = guid();
+                pmCollection.importCollectionData(collection);
+            }
+            catch(e) {
+                pm.mediator.trigger("failedCollectionImport");
+            }
+
         });
     },
 

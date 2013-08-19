@@ -37,6 +37,16 @@ var ImportCollectionModal = Backbone.View.extend({
         $("#modal-import-collection").on("hidden", function () {
             pm.app.trigger("modalClose");
         });
+
+        pm.mediator.on("failedCollectionImport", function() {
+            noty(
+                {
+                    type:'error',
+                    text:'Failed importing collection. Check your file',
+                    layout:'topCenter',
+                    timeout:750
+                });
+        });
     },
 
     addAlert: function(message) {
