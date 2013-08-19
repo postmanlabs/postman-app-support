@@ -990,16 +990,40 @@
     </div>
     <div class="modal-body">
         <div id="edit-collection-details">
-            <form class="form form-inline" id="form-edit-collection">
+            <form class="form" id="form-edit-collection">
                 <input type="hidden" name="collection-id" class="collection-id"/>
-                <input type="text" name="collection-name" class="medium clean-input collection-name"/>
-                <a class="btn btn-primary">Edit</a>
+
+                <div class="control-group">
+                    <label class="control-label">Name</label>
+
+                    <div class="controls">
+                        <input type="text" name="collection-name" class="medium clean-input collection-name"/>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label" for="edit-collection-description">Description</label>
+
+                    <div class="controls">
+                        <div class="input">
+                            <textarea class="medium" id="edit-collection-description"></textarea>
+
+                            <p class="help-block">
+                                Collection descriptions support Markdown.
+                            </p>
+                        </div>
+                    </div>
+                </div>
             </form>
         </div>
 
         <div id="edit-collection-requests">
             <ul id="edit-collection-requests-list"></ul>
         </div>
+    </div>
+    <div class="modal-footer">
+        <a class="btn btn-primary">Edit</a>
+        <a data-dismiss="modal" class="btn btn-secondary">Cancel</a>
     </div>
 </div>
 <div id="modal-edit-folder" class="modal hide fade" tabindex="-1">
@@ -1164,13 +1188,27 @@
         <h3>Create a new collection</h3>
     </div>
     <div class="modal-body">
-        <form class="form form-horizontal" id="form-new-collection">
+        <form class="form" id="form-new-collection">
             <div class="control-group" id="new-collection-container">
-                <label class="control-label">Collection name</label>
+                <label class="control-label">Name</label>
 
                 <div class="controls">
                     <input type="text" class="medium clean-input" name="new-collection-blank"
                            id="new-collection-blank"/>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label" for="new-collection">Description</label>
+
+                <div class="controls">
+                    <div class="input">
+                        <textarea class="medium" id="new-collection-description"></textarea>
+
+                        <p class="help-block">
+                            Collection descriptions support Markdown.
+                        </p>
+                    </div>
                 </div>
             </div>
         </form>
@@ -1451,6 +1489,10 @@
                 Your existing collection will be updated if you are signed in.
             </p>
             <pre id="share-collection-link"></pre>
+            <label class="checkbox">
+                <input type="checkbox" id="share-collection-is-public" value="public"/>Make it public
+            </label>
+            <p>Public collections can be viewed and downloaded by others through the API directory</p>
             <a id="share-collection-get-link" data-collection-id="" class="btn">Upload</a>
         </div>
         <div style="margin-top: 20px;">

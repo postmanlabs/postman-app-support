@@ -21,6 +21,7 @@ var PmCollection = Backbone.Model.extend({
         return {
             "id": "",
             "name": "",
+            "description": "",
             "order": [],
             "folders": [],
             "requests": [],
@@ -125,6 +126,7 @@ var PmCollection = Backbone.Model.extend({
         return {
             "id": this.get("id"),
             "name": this.get("name"),
+            "description": this.get("description"),
             "order": this.get("order"),
             "folders": this.get("folders"),
             "timestamp": this.get("timestamp"),

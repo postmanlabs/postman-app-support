@@ -1690,3 +1690,8 @@ input[type="file"] {
 .user-collection-link {
   color: #999;
   font-size: 11px; }
+
+#user-collections-list .user-collection-action-delete {
+  display: inline-block;
+  margin-top: 8px;
+  margin-left: 15px; }

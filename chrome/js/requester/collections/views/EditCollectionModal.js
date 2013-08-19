@@ -1,14 +1,9 @@
 var EditCollectionModal = Backbone.View.extend({
     initialize: function() {
         var model = this.model;
+        var view = this;
 
         model.on("showEditModal", this.render, this);
-
-        $('#edit-collection-update-drive').on("click", function() {
-            var id = $(this).attr('data-collection-id');
-            console.log("Run change queue");
-            pm.drive.fetchChanges();
-        });
 
         $('#form-edit-collection').submit(function() {
             var id = $('#form-edit-collection .collection-id').val();
@@ -21,7 +16,8 @@ var EditCollectionModal = Backbone.View.extend({
         $('#modal-edit-collection .btn-primary').click(function () {
             var id = $('#form-edit-collection .collection-id').val();
             var name = $('#form-edit-collection .collection-name').val();
-            model.updateCollectionMeta(id, name);
+            var description = view.editor.getValue();
+            model.updateCollectionMeta(id, name, description);
             $('#modal-edit-collection').modal('hide');
         });
 
@@ -35,6 +31,24 @@ var EditCollectionModal = Backbone.View.extend({
         });
     },
 
+    initializeEditor: function() {
+        if (this.editor) {
+            return;
+        }
+
+        this.editor = CodeMirror.fromTextArea(document.getElementById("edit-collection-description"), {
+            mode: 'markdown',
+            theme: "eclipse",
+            lineWrapping: true,
+            lineNumbers:true,
+            extraKeys: {"Enter": "newlineAndIndentContinueMarkdownList"}
+        });
+
+        pm.editCollectionEditor = this.editor;
+
+        this.editor.refresh();
+    },
+
     render: function(c) {
         var collection = c.toJSON();
 
@@ -42,5 +56,18 @@ var EditCollectionModal = Backbone.View.extend({
         $('#form-edit-collection .collection-name').val(collection.name);
 
         $('#modal-edit-collection').modal('show');
+
+        if (!this.editor) {
+            this.initializeEditor();
+        }
+
+        var view = this;
+
+        setTimeout(function() {
+            view.editor.setValue(collection.description);
+            view.editor.refresh();
+
+            CodeMirror.commands["goDocStart"](view.editor);
+        }, 750);
     }
 });

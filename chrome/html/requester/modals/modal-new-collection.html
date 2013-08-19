@@ -5,13 +5,27 @@
         <h3>Create a new collection</h3>
     </div>
     <div class="modal-body">
-        <form class="form form-horizontal" id="form-new-collection">
+        <form class="form" id="form-new-collection">
             <div class="control-group" id="new-collection-container">
-                <label class="control-label">Collection name</label>
+                <label class="control-label">Name</label>
 
                 <div class="controls">
                     <input type="text" class="medium clean-input" name="new-collection-blank"
                            id="new-collection-blank"/>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label" for="new-collection">Description</label>
+
+                <div class="controls">
+                    <div class="input">
+                        <textarea class="medium" id="new-collection-description"></textarea>
+
+                        <p class="help-block">
+                            Collection descriptions support Markdown.
+                        </p>
+                    </div>
                 </div>
             </div>
         </form>

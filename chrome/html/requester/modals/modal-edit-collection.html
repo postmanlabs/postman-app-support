@@ -5,15 +5,39 @@
     </div>
     <div class="modal-body">
         <div id="edit-collection-details">
-            <form class="form form-inline" id="form-edit-collection">
+            <form class="form" id="form-edit-collection">
                 <input type="hidden" name="collection-id" class="collection-id"/>
-                <input type="text" name="collection-name" class="medium clean-input collection-name"/>
-                <a class="btn btn-primary">Edit</a>
+
+                <div class="control-group">
+                    <label class="control-label">Name</label>
+
+                    <div class="controls">
+                        <input type="text" name="collection-name" class="medium clean-input collection-name"/>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label" for="edit-collection-description">Description</label>
+
+                    <div class="controls">
+                        <div class="input">
+                            <textarea class="medium" id="edit-collection-description"></textarea>
+
+                            <p class="help-block">
+                                Collection descriptions support Markdown.
+                            </p>
+                        </div>
+                    </div>
+                </div>
             </form>
         </div>
 
         <div id="edit-collection-requests">
             <ul id="edit-collection-requests-list"></ul>
         </div>
+    </div>
+    <div class="modal-footer">
+        <a class="btn btn-primary">Edit</a>
+        <a data-dismiss="modal" class="btn btn-secondary">Cancel</a>
     </div>
 </div>

@@ -431,7 +431,7 @@ var PmCollections = Backbone.Collection.extend({
     },
 
     // Add collection
-    addCollection:function (name) {
+    addCollection:function (name, description) {
         var pmCollection = this;
 
         var collection = {};
@@ -439,6 +439,7 @@ var PmCollections = Backbone.Collection.extend({
         if (name) {
             collection.id = guid();
             collection.name = name;
+            collection.description = description;
             collection.order = [];
             collection.timestamp = new Date().getTime();
 
@@ -610,11 +611,12 @@ var PmCollections = Backbone.Collection.extend({
         });
     },
 
-    updateCollectionMeta: function(id, name) {
+    updateCollectionMeta: function(id, name, description) {
         var pmCollection = this;
 
         var targetCollection = pmCollection.get(id);
         targetCollection.set("name", name);
+        targetCollection.set("description", description);
 
         pmCollection.updateCollectionInDataStore(targetCollection.getAsJSON(), true, function (collection) {
             pmCollection.trigger("updateCollectionMeta", targetCollection);
@@ -674,12 +676,13 @@ var PmCollections = Backbone.Collection.extend({
     },
 
     // Upload collection
-    uploadCollection:function (id, callback) {
+    uploadCollection:function (id, isChecked, callback) {
+        console.log(isChecked);
         this.getCollectionDataForFile(id, function (name, type, filedata) {
-            var uploadUrl = pm.webUrl + '/collections';
+            var uploadUrl = pm.webUrl + '/collections?is_public=' + isChecked;
 
             if (pm.user.get("id") !== 0) {
-                uploadUrl += "?user_id=" + pm.user.get("id");
+                uploadUrl += "&user_id=" + pm.user.get("id");
                 uploadUrl += "&access_token=" + pm.user.get("access_token");
             }
 
