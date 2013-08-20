@@ -279,6 +279,7 @@ var App = Backbone.View.extend({
 	    var newMainHeight = $(document).height() - 55;
 	    $('#main').height(newMainHeight + "px");
 	    $('#sidebar-filler').height(newMainHeight + "px");
+	    $('#directory-browser').height(newMainHeight + "px");
 	},
 
 	openModule: function(module) {

@@ -84,6 +84,16 @@ var User = Backbone.Model.extend({
 		    type:'GET',
 		    url:getUrl,
 		    success:function (data) {
+		    	console.log(data);
+		    	var c;
+		    	for(var i = 0; i < data.collections.length; i++) {
+		    		c = data.collections[i];
+		    		c.is_public = c.is_public === "1" ? true : false;
+		    		c.updated_at_formatted = new Date(c.updated_at).toDateString();
+		    	}
+
+		    	console.log(data.collections);
+
 		    	model.set("collections", data.collections);
 		    	model.trigger("change:collections");
 		    }

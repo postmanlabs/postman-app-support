@@ -18,8 +18,6 @@ var UserCollections = Backbone.View.extend({
 		var id = this.model.get("id");
 		var name = this.model.get("name");
 
-		console.log("Rendering", id, name);
-
 		if (id !== 0) {
 			$('#user-collections-list tbody').html("");
 			$('#user-collections-list tbody').append(Handlebars.templates.user_collections_list({"items":this.model.get("collections")}));

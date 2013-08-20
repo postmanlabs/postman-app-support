@@ -1740,9 +1740,20 @@ input[type="file"] {
   margin-top: 5px; }
 
 /*User collections*/
+#user-collections-list {
+  -moz-user-select: text;
+  -khtml-user-select: text;
+  -webkit-user-select: text;
+  -ms-user-select: text;
+  user-select: text; }
+
 .user-collection-link {
+  color: #666;
+  font-size: 12px; }
+
+.user-collection-updated-at {
   color: #999;
-  font-size: 11px; }
+  font-size: 10px; }
 
 #user-collections-list .user-collection-action-delete {
   display: inline-block;
@@ -1801,7 +1812,7 @@ input[type="file"] {
     #directory-browser .directory-browser-navigator a.enabled:hover {
       text-decoration: underline; }
     #directory-browser .directory-browser-navigator a.disabled {
-      color: #333;
+      color: #999;
       cursor: auto; }
     #directory-browser .directory-browser-navigator a.disabled:hover {
       text-decoration: none; }

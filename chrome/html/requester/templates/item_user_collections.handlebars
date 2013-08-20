@@ -1,7 +1,12 @@
 <tr>
     <td>
-        <span class="user-collection-action-edit" data-id="{{id}}">{{name}}</span><br/>
-        <span class="user-collection-link">{{link}}</span>
+        <span class="user-collection-action-edit" data-id="{{id}}">{{name}}</span>
+        {{#if is_public}}
+        <span class="label label-success">Public</span>
+        {{/if}}
+        <br/>
+        <span class="user-collection-link">{{link}}</span><br/>
+        <span class="user-collection-updated-at">Last updated on {{updated_at_formatted}}</span>
     </td>
     <td style="width: 50px;">
         <a
