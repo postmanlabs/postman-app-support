@@ -16,13 +16,6 @@ var DirectoryBrowser = Backbone.View.extend({
         });
 
         $("#directory-collections").on("click", ".directory-collection-action-download", function() {
-            var id = $(this).attr("data-id");
-            var link_id = $(this).attr("data-link-id");
-            pm.mediator.trigger("getDirectoryCollection", link_id);
-        });
-
-        $("#directory-collections").on("click", ".directory-collection-action-download", function() {
-            var id = $(this).attr("data-id");
             var link_id = $(this).attr("data-link-id");
             pm.mediator.trigger("getDirectoryCollection", link_id);
         });

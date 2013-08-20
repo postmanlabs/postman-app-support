@@ -206,7 +206,6 @@ pm.init = function () {
     function initializeDirectory() {
         var directory = new Directory();
         var directoryBrowser = new DirectoryBrowser({model: directory});
-        var directoryCollectionViewer = new DirectoryCollectionViewer({model: directory});
     }
 
     function initializeUser() {
