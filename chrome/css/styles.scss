@@ -304,28 +304,54 @@ li {
 
 #add-ons {
     float: left;
-    margin-left: -10px;
-    margin-top: 14px;
+    margin-left: -28px;
+    height: 47px;
 
     li {
         list-style: none;
         float: left;
-        margin-right: 15px;
     }
 
     a {
-        color: #888;
+        color: #666;
+        padding-left: 13px;
+        padding-top: 14px;
+        display: inline-block;
+        height: 32px;
+        vertical-align: middle;
+        margin-left: 15px;
+        padding-right: 13px;
+
+    }
+
+    a:hover {
+        background: #333;
+        color: #AAA;
+        text-decoration: none;
     }
 }
 
 #back-to-requester-container {
     display: none;
     float: left;
-    margin-left: 13px;
-    margin-top: 14px;
+    height: 47px;
 
     a {
-        color: #888;
+        color: #666;
+        padding-left: 13px;
+        padding-top: 14px;
+        display: inline-block;
+        height: 32px;
+        vertical-align: middle;
+        margin-left: 15px;
+        padding-right: 13px;
+
+    }
+
+    a:hover {
+        background: #333;
+        color: #AAA;
+        text-decoration: none;
     }
 }
 
@@ -1839,12 +1865,30 @@ input[type="file"] {
 /*User status*/
 #user-status {
     float: right;
-    margin-top: 14px;
+    height: 47px;
     margin-right: 25px;
 
     #user-status-username,
     #user-status-not-logged-in {
         color: #666;
+    }
+
+    a.navbar-link {
+        color: #666;
+        padding-left: 13px;
+        padding-top: 14px;
+        display: inline-block;
+        height: 32px;
+        vertical-align: middle;
+        margin-left: 15px;
+        padding-right: 13px;
+
+    }
+
+    a.navbar-link:hover {
+        background: #333;
+        color: #AAA;
+        text-decoration: none;
     }
 }
 
