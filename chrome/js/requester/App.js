@@ -282,8 +282,6 @@ var App = Backbone.View.extend({
 	},
 
 	openModule: function(module) {
-		console.log("Open module", module);
-
 		if (module === "requester") {
 			$("#directory-browser").css("display", "none");
 			$("#main-container").css("display", "block");

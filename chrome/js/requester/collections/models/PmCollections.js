@@ -1055,6 +1055,7 @@ var PmCollections = Backbone.Collection.extend({
             collectionRequest.name = req.name;
             collectionRequest.description = req.description;
             collectionRequest.collectionId = req.collectionId;
+            collectionRequest.responses = req.responses;
 
             pmCollection.updateRequestInDataStore(collectionRequest, true, function(request) {
                 pmCollection.trigger("updateCollectionRequest", request);

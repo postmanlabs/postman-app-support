@@ -273,6 +273,14 @@ li .right {
   #add-ons a {
     color: #888; }
 
+#back-to-requester-container {
+  display: none;
+  float: left;
+  margin-left: 13px;
+  margin-top: 14px; }
+  #back-to-requester-container a {
+    color: #888; }
+
 /*End top bar*/
 /*Sidebar*/
 .sidebar-helper-tabs {
@@ -1714,21 +1722,22 @@ input[type="file"] {
   margin-top: -5px;
   display: none;
   padding-bottom: 20px; }
-  #directory-browser h3 {
+  #directory-browser .directory-browser-header {
     margin: 10px 0 0 20px;
     padding-top: 8px; }
   #directory-browser .directory-collection {
-    height: 200px;
-    width: 300px;
+    height: 160px;
+    width: 220px;
+    overflow: hidden;
     border: solid thin #fff;
     float: left;
     margin: 10px 0 0 10px;
     background: #fff;
-    padding: 15px; }
+    padding: 15px;
+    box-shadow: 0px 3px 5px 0px #CCC; }
     #directory-browser .directory-collection p {
       margin: 0 0 10px;
       display: block;
-      height: 125px; }
+      height: 100px; }
     #directory-browser .directory-collection .btn-primary {
-      position: absolute;
       margin-bottom: 5px; }
