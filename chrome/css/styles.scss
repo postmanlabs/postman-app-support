@@ -2206,16 +2206,28 @@ input[type="file"] {
     background: #efefef;
     margin-top: -5px;
     display: none;
-    padding-bottom: 20px;
+    padding-bottom: 50px;
+
+    #directory-collections {
+        margin-top: 5px;
+        margin-bottom: 25px;
+    }
 
     .directory-browser-header {
         margin: 10px 0 0 20px;
         padding-top: 8px;
     }
 
+    .directory-browser-header-tagline {
+        color: #666;
+        font-size: 12px;
+        font-weight: normal;
+        margin-left: 10px;
+    }
+
     .directory-collection {
-        height: 160px;
-        width: 220px;
+        height: 200px;
+        width: 255px;
         overflow: hidden;
         border: solid thin #fff;
         float: left;
@@ -2225,13 +2237,60 @@ input[type="file"] {
         box-shadow: 0px 3px 5px 0px #CCC;
 
         p {
-            margin: 0 0 10px;
+            margin: 0;
+        }
+
+        p.updated_at {
+            font-size: 11px;
+            color: #999;
+        }
+
+        p.count_requests {
+            font-size: 12px;
+            color: #333;
+            margin-bottom: 0;
+        }
+
+        p.description {
             display: block;
-            height: 100px;
+            height: 115px;
         }
 
         .btn-primary {
             margin-bottom: 5px;
         }
+    }
+
+    .directory-browser-navigator {
+        margin-top: 5px;
+        margin-bottom: 5px;
+        margin-left: 20px;
+        margin-right: 20px;
+
+        a.enabled {
+            color: #08c;
+            cursor: pointer;
+        }
+
+        a.enabled:hover {
+            text-decoration: underline;
+        }
+
+        a.disabled {
+            color: #333;
+            cursor: auto;
+        }
+
+        a.disabled:hover {
+            text-decoration: none;
+        }
+    }
+
+    .directory-browser-navigator-status {
+        float: left;
+    }
+
+    .directory-browser-navigator-next-prev {
+        float: right;
     }
 }

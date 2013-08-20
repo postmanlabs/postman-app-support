@@ -1754,13 +1754,21 @@ input[type="file"] {
   background: #efefef;
   margin-top: -5px;
   display: none;
-  padding-bottom: 20px; }
+  padding-bottom: 50px; }
+  #directory-browser #directory-collections {
+    margin-top: 5px;
+    margin-bottom: 25px; }
   #directory-browser .directory-browser-header {
     margin: 10px 0 0 20px;
     padding-top: 8px; }
+  #directory-browser .directory-browser-header-tagline {
+    color: #666;
+    font-size: 12px;
+    font-weight: normal;
+    margin-left: 10px; }
   #directory-browser .directory-collection {
-    height: 160px;
-    width: 220px;
+    height: 200px;
+    width: 255px;
     overflow: hidden;
     border: solid thin #fff;
     float: left;
@@ -1769,8 +1777,35 @@ input[type="file"] {
     padding: 15px;
     box-shadow: 0px 3px 5px 0px #CCC; }
     #directory-browser .directory-collection p {
-      margin: 0 0 10px;
+      margin: 0; }
+    #directory-browser .directory-collection p.updated_at {
+      font-size: 11px;
+      color: #999; }
+    #directory-browser .directory-collection p.count_requests {
+      font-size: 12px;
+      color: #333;
+      margin-bottom: 0; }
+    #directory-browser .directory-collection p.description {
       display: block;
-      height: 100px; }
+      height: 115px; }
     #directory-browser .directory-collection .btn-primary {
       margin-bottom: 5px; }
+  #directory-browser .directory-browser-navigator {
+    margin-top: 5px;
+    margin-bottom: 5px;
+    margin-left: 20px;
+    margin-right: 20px; }
+    #directory-browser .directory-browser-navigator a.enabled {
+      color: #08c;
+      cursor: pointer; }
+    #directory-browser .directory-browser-navigator a.enabled:hover {
+      text-decoration: underline; }
+    #directory-browser .directory-browser-navigator a.disabled {
+      color: #333;
+      cursor: auto; }
+    #directory-browser .directory-browser-navigator a.disabled:hover {
+      text-decoration: none; }
+  #directory-browser .directory-browser-navigator-status {
+    float: left; }
+  #directory-browser .directory-browser-navigator-next-prev {
+    float: right; }
