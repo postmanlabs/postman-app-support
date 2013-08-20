@@ -1,7 +1,7 @@
 <div id="directory-collection-{{id}}" class="directory-collection" data-id="{{id}}">
-	<a class="directory-collection-action-view">{{name}}</a>
+	<a class="directory-collection-action-view" data-id="{{id}}">{{name}}</a>
 	<p class="updated_at"><strong>{{updated_at_formatted}}</strong></p>
-	<p class="description">{{description}}</p>
+	<div class="description">{{{description}}}</div>
 	<p class="count_requests"><strong>{{count_requests}}</strong> endpoints</p>
 	<a class="btn btn-primary btn-small directory-collection-action-download" data-id="{{id}}" data-link-id="{{link_id}}">Download</a>
 </div>

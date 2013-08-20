@@ -757,13 +757,31 @@
     <div id="directory-collections" class="clearfix">
     </div>
     <div class="directory-browser-navigator clearfix">
-        <div class="directory-browser-navigator-status">
-            Showing <span class="start"></span>-<span class="end"></span>
-        </div>
         <div class="directory-browser-navigator-next-prev">
             <a class="directory-browser-navigator-previous">Previous</a> /
                 <a class="directory-browser-navigator-next">Next</a>
         </div>
+    </div>
+</div>
+<div id="directory-collection-viewer" class="modal fade">
+    <div class="modal-header">
+        <a class="close" data-dismiss="modal">x</a>
+        <h3 id="directory-collection-viewer-name"></h3>
+    </div>
+
+    <div class="modal-body">
+        <p id="directory-collection-viewer-description">
+        </p>
+        <p id="directory-collection-viewer-updated-at"><strong></strong></p>
+        <p id="directory-collection-viewer-count-requests"><strong></strong> endpoints</p>
+    </div>
+
+    <div class="modal-footer">
+        <a data-id=""
+            data-link-id=""
+            id="directory-collection-viewer-download"
+            data-dismiss="modal"
+            class="btn btn-primary">Download</a>
     </div>
 </div>
 <div id="modal-add-folder" class="modal fade">

@@ -2264,9 +2264,11 @@ input[type="file"] {
             margin-bottom: 0;
         }
 
-        p.description {
+        .description {
             display: block;
-            height: 115px;
+            height: 100px;
+            overflow: hidden;
+            margin-bottom: 10px;
         }
 
         .btn-primary {
@@ -2300,10 +2302,31 @@ input[type="file"] {
     }
 
     .directory-browser-navigator-status {
-        float: left;
+        float: right;
     }
 
     .directory-browser-navigator-next-prev {
-        float: right;
+        float: left;
+    }
+}
+
+#directory-collection-viewer {
+    p {
+        margin: 0;
+    }
+
+    #directory-collection-viewer-description {
+        margin-bottom: 10px;
+    }
+
+    #directory-collection-viewer-updated-at {
+        font-size: 11px;
+        color: #999;
+    }
+
+    #directory-collection-viewer-count-requests {
+        font-size: 12px;
+        color: #333;
+        margin-bottom: 0;
     }
 }

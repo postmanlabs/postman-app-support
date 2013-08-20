@@ -1796,9 +1796,11 @@ input[type="file"] {
       font-size: 12px;
       color: #333;
       margin-bottom: 0; }
-    #directory-browser .directory-collection p.description {
+    #directory-browser .directory-collection .description {
       display: block;
-      height: 115px; }
+      height: 100px;
+      overflow: hidden;
+      margin-bottom: 10px; }
     #directory-browser .directory-collection .btn-primary {
       margin-bottom: 5px; }
   #directory-browser .directory-browser-navigator {
@@ -1817,6 +1819,18 @@ input[type="file"] {
     #directory-browser .directory-browser-navigator a.disabled:hover {
       text-decoration: none; }
   #directory-browser .directory-browser-navigator-status {
-    float: left; }
-  #directory-browser .directory-browser-navigator-next-prev {
     float: right; }
+  #directory-browser .directory-browser-navigator-next-prev {
+    float: left; }
+
+#directory-collection-viewer p {
+  margin: 0; }
+#directory-collection-viewer #directory-collection-viewer-description {
+  margin-bottom: 10px; }
+#directory-collection-viewer #directory-collection-viewer-updated-at {
+  font-size: 11px;
+  color: #999; }
+#directory-collection-viewer #directory-collection-viewer-count-requests {
+  font-size: 12px;
+  color: #333;
+  margin-bottom: 0; }
