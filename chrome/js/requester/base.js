@@ -30,14 +30,15 @@ pm.target = pm.targets.CHROME_PACKAGED_APP;
 pm.isDriveEnabled = false;
 pm.isTesting = false;
 
+pm.features = new Features();
+
 if (pm.isTesting) {
     pm.databaseName = "postman_test";
     pm.webUrl = "http://localhost/postman/html";
 }
 else {
     pm.databaseName = "postman";
-    // pm.webUrl = "http://getpostman.com";
-    pm.webUrl = "http://localhost/postman/html";
+    pm.webUrl = "https://www.getpostman.com";
 }
 
 

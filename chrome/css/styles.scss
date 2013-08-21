@@ -302,6 +302,10 @@ li {
     margin-left: 10px;
 }
 
+#add-on-directory {
+    display: none !important;
+}
+
 #add-ons {
     float: left;
     margin-left: -28px;
@@ -1864,6 +1868,7 @@ input[type="file"] {
 
 /*User status*/
 #user-status {
+    display: none;
     float: right;
     height: 47px;
     margin-right: 25px;

@@ -19,9 +19,11 @@ var User = Backbone.Model.extend({
 		this.set("expires_in", 0);
 		this.set("link", "");
 
-		pm.storage.setValue({"user": this.toJSON()}, function() {
-			console.log("Stored the value");
-		});
+		if (pm.features.isFeatureEnabled(FEATURES.USER)) {
+			pm.storage.setValue({"user": this.toJSON()}, function() {
+				console.log("Stored the value");
+			});
+		}
 	},
 
 	initialize: function() {
@@ -48,7 +50,7 @@ var User = Backbone.Model.extend({
 	login: function() {
 		var model = this;
 
-		chrome.identity.launchWebAuthFlow({'url': 'http://localhost/postman/html/client-login', 'interactive': true},
+		chrome.identity.launchWebAuthFlow({'url': pm.webUrl + '/client-login', 'interactive': true},
 			function(redirect_url) {
 				var params = getUrlVars(redirect_url, true);
 				model.set("id", params.user_id);

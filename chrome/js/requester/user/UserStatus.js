@@ -23,6 +23,11 @@ var UserStatus = Backbone.View.extend({
 	},
 
 	render: function() {
+
+		if (pm.features.isFeatureEnabled(FEATURES.USER)) {
+			$("#user-status").css("display", "block");
+		}
+
 		var id = this.model.get("id");
 		var name = this.model.get("name");
 
