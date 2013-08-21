@@ -217,13 +217,13 @@ li .right {
     border-bottom: solid thin #fff;
     color: #ccc;
     cursor: pointer;
-    height: 14px;
+    height: 15px;
     letter-spacing: 0.05em; }
   .request-helper-tabs li:hover {
     color: #333; }
   .request-helper-tabs li.active {
     color: black;
-    height: 15px; }
+    height: 16px; }
   .request-helper-tabs li:last-child {
     border-right: solid thin #ccc; }
   .request-helper-tabs li:first-child {
@@ -910,7 +910,7 @@ input[type="file"] {
 
 .request-tabs-container {
   border-bottom: solid thin #ccc;
-  height: 35px;
+  height: 36px;
   margin-left: -20px;
   margin-bottom: 12px;
   border-top: solid thin #ccc; }
