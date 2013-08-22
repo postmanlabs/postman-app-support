@@ -5,6 +5,7 @@ var HelperManager = Backbone.View.extend({
         var basicAuthForm = new BasicAuthForm({model: model.get("basicAuth")});
         var digestAuthForm = new DigestAuthForm({model: model.get("digestAuth")});
         var oAuth1Form = new OAuth1Form({model: model.get("oAuth1")});
+        var oAuth2Manager = new OAuth2Manager({model: model.get("oAuth2")});
 
         this.model.on("change:activeHelper", this.render, this);
 

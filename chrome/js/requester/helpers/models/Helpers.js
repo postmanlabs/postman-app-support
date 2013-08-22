@@ -4,7 +4,8 @@ var Helpers = Backbone.Model.extend({
             "activeHelper": "normal",
             "basicAuth": null,
             "digestAuth": null,
-            "oAuth1": null
+            "oAuth1": null,
+            "oAuth2": null
         };
     }
 });

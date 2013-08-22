@@ -38,7 +38,8 @@ if (pm.isTesting) {
 }
 else {
     pm.databaseName = "postman";
-    pm.webUrl = "https://www.getpostman.com";
+    // pm.webUrl = "https://www.getpostman.com";
+    pm.webUrl = "http://localhost/postman/html";
 }
 
 
@@ -171,11 +172,13 @@ pm.init = function () {
         var basicAuthProcessor = new BasicAuthProcessor({request: request});
         var digestAuthProcessor = new DigestAuthProcessor({request: request});
         var oAuth1Processor = new OAuth1Processor({request: request});
+        var oAuth2TokenFetcher = new OAuth2TokenFetcher({request: request});
 
         var helpers = new Helpers({
             "basicAuth": basicAuthProcessor,
             "digestAuth": digestAuthProcessor,
             "oAuth1": oAuth1Processor,
+            "oAuth2": oAuth2TokenFetcher,
             "request": request
         });
 

@@ -155,6 +155,7 @@
                     <li data-id="basicAuth">Basic Auth</li>
                     <li data-id="digestAuth">Digest Auth</li>
                     <li data-id="oAuth1">OAuth 1.0</li>
+                    <li data-id="oAuth2">OAuth 2</li>
                 </ul>
                 <div id="environment-selector-wrapper">
                     <div id="environment-quicklook-wrapper">
@@ -410,6 +411,93 @@
                     <div class="request-helper-form-description">
                         <h4>Note</h4>
                         If auto addition is enabled, OAuth parameters will be added when you send the request
+                    </div>
+                </div>
+                <div id="request-helper-oAuth2" class="request-helpers">
+                    <div id="request-helper-oAuth2-access-tokens-container">
+                        <div id="request-helper-oAuth2-access-tokens-actions">
+                            <a id="request-helper-oAuth2-access-token-get" class="btn btn-secondary"
+                               data-type="oAuth2">
+                                Get access token
+                            </a>
+                        </div>
+                        <p>Select an access token to add it to the current request</p>
+                        <div id="request-helper-oAuth2-access-tokens">
+                        </div>
+                    </div>
+                    <div id="request-helper-oAuth2-access-token-form" class="request-helper-form-container">
+                        <form class="form-horizontal">
+                            <div class="control-group">
+                                <label class="control-label">Callback URL</label>
+                                <div class="controls">
+                                    <strong>https://www.getpostman.com/oauth2/callback</strong>
+                                    <span class="help-block">Set as the callback URL in your app settings
+                                    page.</span>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">Authorization URL</label>
+
+                                <div class="controls">
+                                    <input type="text" id="request-helper-oauth2-authorization-url"
+                                            data-key="authorization-uri"
+                                           class="clean-input"/>
+                                </div>
+                            </div>
+
+                            <div class="control-group">
+                                <label class="control-label">Access Token URL</label>
+
+                                <div class="controls">
+                                    <input type="text" id="request-helper-oauth2-access-token-url"
+                                            data-key="token-uri"
+                                           class="clean-input"/>
+                                </div>
+                            </div>
+
+                            <div class="control-group">
+                                <label class="control-label">Client ID</label>
+
+                                <div class="controls">
+                                    <input type="text" id="request-helper-oauth2-client-id"
+                                            data-key="token-uri"
+                                           class="clean-input"/>
+                                </div>
+                            </div>
+
+                            <div class="control-group">
+                                <label class="control-label">Client Secret</label>
+
+                                <div class="controls">
+                                    <input type="text" id="request-helper-oauth2-client-secret"
+                                            data-key="token-uri"
+                                           class="clean-input"/>
+                                </div>
+                            </div>
+
+                            <div class="control-group">
+                                <label class="control-label">Scope</label>
+
+                                <div class="controls">
+                                    <input type="text" id="request-helper-oauth2-scope"
+                                            data-key="token-uri"
+                                           class="clean-input"/>
+                                </div>
+                            </div>
+
+                            <div class="control-group">
+                                <div class="controls">
+                                    <a class="btn btn-secondary request-helper-back"
+                                        data-type="oAuth2">
+                                        Back
+                                    </a>
+                                    <a class="btn btn-secondary request-helper-submit"
+                                       data-type="oAuth2">
+                                        Get access token
+                                    </a>
+                                </div>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>

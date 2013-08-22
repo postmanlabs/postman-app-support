@@ -1,4 +1,3 @@
-// TODO Can be made cleaner by moving code for fetching stuff to the view. Already doing it. Just need to sort out signatureParam class stuff
 var OAuth1Processor = Backbone.Model.extend({
     defaults: function() {
         return {
@@ -85,7 +84,7 @@ var OAuth1Processor = Backbone.Model.extend({
 
         var processedUrl;
 
-        var realm = this.get("realm");        
+        var realm = this.get("realm");
         var method = request.get("method");
         var requestBody = request.get("body");
 
@@ -175,13 +174,13 @@ var OAuth1Processor = Backbone.Model.extend({
         return newParams;
     },
 
-    process: function () {        
+    process: function () {
         var request = this.get("request");
         request.trigger("updateModel");
-        
+
         var i, j, count, length;
         var params = [];
-        
+
         var urlParams = request.getUrlParams();
         var bodyParams = [];
 
@@ -246,21 +245,21 @@ var OAuth1Processor = Backbone.Model.extend({
             var authHeaderKey = "Authorization";
             var rawString = "OAuth realm=\"" + realm + "\",";
             var len = oAuthParams.length;
-            
+
             for (i = 0; i < len; i++) {
                 rawString += encodeURIComponent(oAuthParams[i].key) + "=\"" + encodeURIComponent(oAuthParams[i].value) + "\",";
             }
 
             rawString = rawString.substring(0, rawString.length - 1);
-            request.setHeader(authHeaderKey, rawString);            
+            request.setHeader(authHeaderKey, rawString);
             request.trigger("customHeaderUpdate");
-        } else {            
+        } else {
             params = params.concat(oAuthParams);
 
             if (!request.isMethodWithBody(method)) {
                 request.setUrlParamString(params);
                 request.trigger("customURLParamUpdate");
-            } else {                
+            } else {
                 if (dataMode === 'urlencoded') {
                     body.loadData("urlencoded", params, true);
                 }
@@ -268,7 +267,7 @@ var OAuth1Processor = Backbone.Model.extend({
                     body.loadData("params", params, true);
                 }
                 else if (dataMode === 'raw') {
-                    request.setUrlParamString(params);                    
+                    request.setUrlParamString(params);
                     request.trigger("customURLParamUpdate");
                 }
             }

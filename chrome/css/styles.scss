@@ -999,31 +999,36 @@ input[type="file"] {
     margin-bottom: 15px;;
 }
 
-.sample-response-container {
+.sample-response-container,
+.oauth2-access-token-container {
     border-top: solid thin #efefef;
     padding-top: 5px;
     width: 250px;
     height: 32px;
 }
-.sample-response-name-container {
+.sample-response-name-container,
+.oauth2-access-token-name-container {
     float: left;
     width: 220px;
     padding-top: 2px;
 }
 
-.sample-response-actions {
+.sample-response-actions,
+.oauth2-access-token-actions {
     float: left;
     margin-left: 5px;
     display: none;
 }
 
-.sample-response-actions img {
+.sample-response-actions img,
+.oauth2-access-token-actions img {
     width: 18px;
     height: 18px;
     opacity: 0.5;
 }
 
-.sample-response-actions img:hover {
+.sample-response-actions img:hover,
+.oauth2-access-token-actions img:hover {
     opacity: 1;
 }
 
@@ -1142,6 +1147,18 @@ input[type="file"] {
         font-size: 11px;
         font-weight: bold;
     }
+}
+
+#request-helper-oAuth2-access-tokens-container {
+    margin-left: 20px;
+}
+
+#request-helper-oAuth2-access-tokens-actions {
+    margin-bottom: 10px;
+}
+
+#request-helper-oAuth2-access-token-form {
+    display: none;
 }
 
 .request-helper-form-container {
