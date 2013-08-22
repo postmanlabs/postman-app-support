@@ -302,11 +302,8 @@ li {
     margin-left: 10px;
 }
 
-#add-on-directory {
-    display: none !important;
-}
-
 #add-ons {
+    display: none;
     float: left;
     margin-left: -28px;
     height: 47px;
@@ -325,7 +322,6 @@ li {
         vertical-align: middle;
         margin-left: 15px;
         padding-right: 13px;
-
     }
 
     a:hover {

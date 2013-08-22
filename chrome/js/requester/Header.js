@@ -18,13 +18,14 @@ var Header = Backbone.View.extend({
 			pm.mediator.trigger("openModule", "requester");
 		});
 
-		this.render();
 		pm.mediator.on("openModule", this.onOpenModule, this);
+
+		this.render();
 	},
 
 	render: function() {
 		if (pm.features.isFeatureEnabled(FEATURES.DIRECTORY)) {
-			$("#add-on-directory").css("display", "block");
+			$("#add-ons").css("display", "block");
 		}
 	},
 
