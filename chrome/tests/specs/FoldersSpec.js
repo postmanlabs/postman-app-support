@@ -36,12 +36,12 @@ describe("Folders", function() {
 				pm.tester.openNewCollectionModal();
 				setTimeout(function() {
 					isOpen = true;
-				}, modalToggleWaitTime);
+				}, codeMirrorModalWaitTime);
 			});
 
 			waitsFor(function() {
 				return isOpen === true;
-			}, "Could not open new collection modal", waitTime);
+			}, "Could not open new collection modal", codeMirrorWaitTime);
 
 			runs(function() {
 				pm.tester.setNewCollectionModalName("id Software");
@@ -92,12 +92,12 @@ describe("Folders", function() {
 				pm.tester.openAddFolderModal(1);
 				setTimeout(function() {
 					isAddFolderOpen = true;
-				}, modalToggleWaitTime);
+				}, codeMirrorModalWaitTime);
 			});
 
 			waitsFor(function() {
 				return isAddFolderOpen === true;
-			}, "could not open new folder", waitTime);
+			}, "could not open new folder", codeMirrorWaitTime);
 
 			runs(function() {
 				pm.tester.setNewFolderName("Wolfenstein");
