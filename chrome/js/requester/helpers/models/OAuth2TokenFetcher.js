@@ -54,8 +54,14 @@ var OAuth2TokenFetcher = Backbone.Model.extend({
 
         chrome.identity.launchWebAuthFlow({'url': postmanAuthUrl, 'interactive': true},
             function(redirect_url) {
-                var params = getUrlVars(redirect_url);
-                pm.mediator.trigger("addOAuth2Token", params);
+                if (chrome.runtime.lastError) {
+                    pm.mediator.trigger("notifyError", "Could not initiate OAuth 2 flow");
+                }
+                else {
+                    var params = getUrlVars(redirect_url);
+                    console.log("Show form", params);
+                    pm.mediator.trigger("addOAuth2Token", params);
+                }
             }
         );
     }

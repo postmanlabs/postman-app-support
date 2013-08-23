@@ -5,8 +5,6 @@ var UserStatus = Backbone.View.extend({
 		model.on("login", this.render, this);
 		model.on("logout", this.render, this);
 
-		console.log("Initialize user status");
-
 		$("#user-status-not-logged-in").on("click", function() {
 			model.login();
 		});

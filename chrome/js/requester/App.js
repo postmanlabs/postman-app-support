@@ -52,7 +52,6 @@ var App = Backbone.View.extend({
 
 	    var donated = pm.settings.getSetting("haveDonated");
 
-	    console.log("Donated is ", donated);
 	    if(donated) {
 	    	$("#donate-link").css("display", "none");
 	    }

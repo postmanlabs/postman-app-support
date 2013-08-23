@@ -476,7 +476,7 @@
                             </div>
 
                             <div class="control-group">
-                                <label class="control-label">Scope</label>
+                                <label class="control-label">Scope (Optional)</label>
 
                                 <div class="controls">
                                     <input type="text" id="request-helper-oauth2-scope"
@@ -494,6 +494,35 @@
                                     <a class="btn btn-secondary request-helper-submit"
                                        data-type="oAuth2">
                                         Get access token
+                                    </a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div id="request-helper-oAuth2-access-token-save-form" class="request-helper-form-container">
+                        <form class="form-horizontal">
+                            <div class="control-group">
+                                <label class="control-label">Access token data</label>
+                                <div class="controls">
+                                    <ul id="request-helper-oAuth2-access-token-data">
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">Name</label>
+
+                                <div class="controls">
+                                    <input type="text" id="request-helper-oauth2-name"
+                                            data-key="authorization-uri"
+                                           class="clean-input"/>
+                                   <span class="help-block">Use a good identifier to remember this token.</span>
+                                </div>
+                            </div>
+
+                            <div class="control-group">
+                                <div class="controls">
+                                    <a class="btn btn-secondary request-helper-save">
+                                        Save
                                     </a>
                                 </div>
                             </div>
@@ -1799,6 +1828,7 @@
 <script type="text/javascript" src="js/utils/util.js" data-cover></script>
 <script type="text/javascript" src="js/utils/httpstatuscodes.js"></script>
 <script type="text/javascript" src="js/utils/httpheaders.js"></script>
+<script type="text/javascript" src="js/utils/oauth2_urls.js"></script>
 <script type="text/javascript" src="js/utils/mediatypes.js"></script>
 <script type="text/javascript" src="html/requester/templates.js"></script>
 <script type="text/javascript" src="js/requester.js" data-cover></script>

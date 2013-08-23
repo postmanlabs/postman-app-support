@@ -1098,16 +1098,16 @@ pm.indexedDB = {
             var store = trans.objectStore(pm.indexedDB.TABLE_OAUTH2_ACCESS_TOKENS);
 
             //Get everything in the store
-            var cursorRequest = store.get(id);
+            var request = store['delete'](id);
 
-            cursorRequest.onsuccess = function (e) {
-                var result = e.target.result;
-                callback(result);
+            request.onsuccess = function (e) {
+                callback(id);
             };
-            cursorRequest.onerror = pm.indexedDB.onerror;
+            request.onerror = pm.indexedDB.onerror;
         },
 
         getAllAccessTokens: function(callback) {
+            console.log("Get access tokens");
             var db = pm.indexedDB.db;
             if (db === null) {
                 console.log("Db is null");
@@ -1139,6 +1139,23 @@ pm.indexedDB = {
             };
 
             cursorRequest.onerror = pm.indexedDB.onerror;
+        },
+
+        updateAccessToken:function (accessToken, callback) {
+            var db = pm.indexedDB.db;
+            var trans = db.transaction([pm.indexedDB.TABLE_OAUTH2_ACCESS_TOKENS], "readwrite");
+            var store = trans.objectStore(pm.indexedDB.TABLE_OAUTH2_ACCESS_TOKENS);
+
+            var boundKeyRange = IDBKeyRange.only(accessToken.id);
+            var request = store.put(accessToken);
+
+            request.onsuccess = function (e) {
+                callback(accessToken);
+            };
+
+            request.onerror = function (e) {
+                console.log(e.value);
+            };
         },
 
         getAccessToken: function(id, callback) {

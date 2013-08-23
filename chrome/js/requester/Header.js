@@ -1,6 +1,5 @@
 var Header = Backbone.View.extend({
 	initialize: function() {
-		console.log("Initialized header");
 		$("#add-on-directory").on("click", function() {
 			pm.mediator.trigger("openModule", "directory");
 			pm.mediator.trigger("initializeDirectory");

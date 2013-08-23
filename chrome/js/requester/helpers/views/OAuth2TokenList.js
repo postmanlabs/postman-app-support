@@ -1,11 +1,43 @@
-var OAuth2TokenList = new Backbone.View.extend({
+var OAuth2TokenList = Backbone.View.extend({
 	initialize: function() {
+		var model = this.model;
+
+		console.log("Added");
+		model.on("add", this.render, this);
+		model.on("remove", this.render, this);
+		model.on("change", this.render, this);
+
 		// Click event to load access_token
 		// Delete event
+
+		$("#request-helper-oAuth2-access-tokens").on("mouseenter", ".oauth2-access-token-container", function() {
+			var actionsEl = $('.oauth2-access-token-actions', this);
+			actionsEl.css('display', 'block');
+		});
+
+		$("#request-helper-oAuth2-access-tokens").on("mouseleave", ".oauth2-access-token-container", function() {
+		    var actionsEl = $('.oauth2-access-token-actions', this);
+		    actionsEl.css('display', 'none');
+		});
+
+		$("#request-helper-oAuth2-access-tokens").on("click", ".oauth2-access-token-actions-load", function() {
+		    var id = $(this).attr("data-id");
+		    model.addAccessTokenToRequest(id, "url");
+		});
+
+		$("#request-helper-oAuth2-access-tokens").on("click", ".oauth2-access-token-actions-delete", function() {
+		    var id = $(this).attr("data-id");
+		    model.deleteAccessToken(id);
+		});
 	},
 
 	render: function() {
+		console.log("Render list");
 		// Render list event
+		var tokens = this.model.toJSON();
+		console.log(tokens);
+		$("#request-helper-oAuth2-access-tokens").html("");
+		$("#request-helper-oAuth2-access-tokens").append(Handlebars.templates.oauth2_access_tokens({"items": tokens}));
 	}
 
 });

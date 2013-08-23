@@ -38,11 +38,25 @@ var Request = Backbone.Model.extend({
         this.on("startNew", this.onStartNew, this);
         this.on("send", this.onSend, this);
 
+        pm.mediator.on("addRequestURLParam", this.onAddRequestURLParam, this);
         pm.mediator.on("loadRequest", this.loadRequest, this);
         pm.mediator.on("saveSampleResponse", this.saveSampleResponse, this);
         pm.mediator.on("loadSampleResponse", this.loadSampleResponse, this);
         pm.mediator.on("getRequest", this.onGetRequest, this);
         pm.mediator.on("updateCollectionRequest", this.checkIfCurrentRequestIsUpdated, this);
+    },
+
+    onAddRequestURLParam: function(param) {
+        var urlParams = this.getUrlParams();
+        var index = arrayObjectIndexOf(urlParams, "access_token", "key");
+
+        if (index >= 0) {
+            urlParams.splice(index, 1);
+        }
+
+        urlParams.push(param);
+        this.setUrlParamString(urlParams);
+        this.trigger("customURLParamUpdate");
     },
 
     onGetRequest: function(callback) {

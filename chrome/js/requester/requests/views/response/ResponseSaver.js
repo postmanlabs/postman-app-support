@@ -3,7 +3,6 @@ var ResponseSaver = Backbone.View.extend({
     	var model = this.model;
     	var view = this;
 
-    	console.log("ResponseSaver initialized", this.model);
     	$("#response-sample-save-start").on("click", function() {
     		view.showSaveForm();
     	});

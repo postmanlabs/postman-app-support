@@ -818,13 +818,13 @@ input[type="file"] {
 .oauth2-access-token-container {
   border-top: solid thin #efefef;
   padding-top: 5px;
-  width: 250px;
+  width: 450px;
   height: 32px; }
 
 .sample-response-name-container,
 .oauth2-access-token-name-container {
   float: left;
-  width: 220px;
+  width: 420px;
   padding-top: 2px; }
 
 .sample-response-actions,
@@ -936,7 +936,23 @@ input[type="file"] {
 #request-helper-oAuth2-access-tokens-actions {
   margin-bottom: 10px; }
 
-#request-helper-oAuth2-access-token-form {
+#request-helper-oAuth2-access-token-data {
+  list-style: none;
+  margin-left: 0; }
+
+#request-helper-oAuth2-access-token-data li {
+  list-style: none;
+  margin-left: -5px;
+  -moz-user-select: text;
+  -khtml-user-select: text;
+  -webkit-user-select: text;
+  -ms-user-select: text;
+  user-select: text; }
+  #request-helper-oAuth2-access-token-data li .key {
+    font-weight: bold; }
+
+#request-helper-oAuth2-access-token-form,
+#request-helper-oAuth2-access-token-save-form {
   display: none; }
 
 .request-helper-form-container {

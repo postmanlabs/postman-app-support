@@ -182,6 +182,9 @@ pm.init = function () {
             "request": request
         });
 
+        var oAuth2Tokens = new OAuth2Tokens();
+        var oAuth2TokenList = new OAuth2TokenList({model: oAuth2Tokens});
+
         var helperManager = new HelperManager({model: helpers});
         pm.helpers = helperManager;
 

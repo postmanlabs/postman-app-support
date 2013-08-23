@@ -23,7 +23,6 @@ var UserCollections = Backbone.View.extend({
 			$('#user-collections-list tbody').append(Handlebars.templates.user_collections_list({"items":this.model.get("collections")}));
 		}
 		else {
-			console.log(this);
 			$('#user-collections-list tbody').html("");
 		}
 	}

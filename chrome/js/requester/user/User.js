@@ -37,9 +37,10 @@ var User = Backbone.Model.extend({
 				model.set("refresh_token", u.refresh_token);
 				model.set("expires_in", u.expires_in);
 
-				model.getCollections();
-
-				model.trigger("login", model);
+				if (pm.features.isFeatureEnabled(FEATURES.USER)) {
+					model.getCollections();
+					model.trigger("login", model);
+				}
 			}
 		});
 
@@ -52,20 +53,26 @@ var User = Backbone.Model.extend({
 
 		chrome.identity.launchWebAuthFlow({'url': pm.webUrl + '/client-login', 'interactive': true},
 			function(redirect_url) {
-				var params = getUrlVars(redirect_url, true);
-				model.set("id", params.user_id);
-				model.set("name", decodeURIComponent(params.name));
-				model.set("access_token", decodeURIComponent(params.access_token));
-				model.set("refresh_token", decodeURIComponent(params.refresh_token));
-				model.set("expires_in", params.expires_in);
+				if (chrome.runtime.lastError) {
+					pm.mediator.trigger("notifyError", "Could not initiate OAuth 2 flow");
+				}
+				else {
+					var params = getUrlVars(redirect_url, true);
+					model.set("id", params.user_id);
+					model.set("name", decodeURIComponent(params.name));
+					model.set("access_token", decodeURIComponent(params.access_token));
+					model.set("refresh_token", decodeURIComponent(params.refresh_token));
+					model.set("expires_in", params.expires_in);
 
-				pm.storage.setValue({"user": model.toJSON()}, function() {
-				});
+					pm.storage.setValue({"user": model.toJSON()}, function() {
+					});
 
-				model.getCollections();
+					model.getCollections();
 
-				model.trigger("login", model);
-				/* Extract token from redirect_url */
+					model.trigger("login", model);
+					/* Extract token from redirect_url */
+				}
+
 			}
 		);
 	},
@@ -88,16 +95,20 @@ var User = Backbone.Model.extend({
 		    success:function (data) {
 		    	console.log(data);
 		    	var c;
-		    	for(var i = 0; i < data.collections.length; i++) {
-		    		c = data.collections[i];
-		    		c.is_public = c.is_public === "1" ? true : false;
-		    		c.updated_at_formatted = new Date(c.updated_at).toDateString();
+
+		    	if (data.hasOwnProperty("collections")) {
+			    	for(var i = 0; i < data.collections.length; i++) {
+			    		c = data.collections[i];
+			    		c.is_public = c.is_public === "1" ? true : false;
+			    		c.updated_at_formatted = new Date(c.updated_at).toDateString();
+			    	}
+
+			    	console.log(data.collections);
+
+			    	model.set("collections", data.collections);
+			    	model.trigger("change:collections");
 		    	}
 
-		    	console.log(data.collections);
-
-		    	model.set("collections", data.collections);
-		    	model.trigger("change:collections");
 		    }
 		});
 	},
