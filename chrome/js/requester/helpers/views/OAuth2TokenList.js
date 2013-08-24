@@ -22,7 +22,8 @@ var OAuth2TokenList = Backbone.View.extend({
 
 		$("#request-helper-oAuth2-access-tokens").on("click", ".oauth2-access-token-actions-load", function() {
 		    var id = $(this).attr("data-id");
-		    model.addAccessTokenToRequest(id, "url");
+		    var location = $("#request-helper-oAuth2-options input[name='oAuth2-token-location']:checked").val();
+		    model.addAccessTokenToRequest(id, location);
 		});
 
 		$("#request-helper-oAuth2-access-tokens").on("click", ".oauth2-access-token-actions-delete", function() {

@@ -39,6 +39,8 @@ var Request = Backbone.Model.extend({
         this.on("send", this.onSend, this);
 
         pm.mediator.on("addRequestURLParam", this.onAddRequestURLParam, this);
+        pm.mediator.on("addRequestHeader", this.onAddRequestHeader, this);
+
         pm.mediator.on("loadRequest", this.loadRequest, this);
         pm.mediator.on("saveSampleResponse", this.saveSampleResponse, this);
         pm.mediator.on("loadSampleResponse", this.loadSampleResponse, this);
@@ -57,6 +59,11 @@ var Request = Backbone.Model.extend({
         urlParams.push(param);
         this.setUrlParamString(urlParams);
         this.trigger("customURLParamUpdate");
+    },
+
+    onAddRequestHeader: function(param) {
+        this.setHeader(param.key, param.value);
+        this.trigger("customHeaderUpdate");
     },
 
     onGetRequest: function(callback) {

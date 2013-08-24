@@ -82,15 +82,19 @@ var OAuth2Tokens = Backbone.Collection.extend({
 		var data = token.get("data");
 		var index = arrayObjectIndexOf(data, "access_token", "key");
 
-		var accessTokenParam = {
-			key: "access_token",
-			value: data[index].value
-		};
-
 		if (type === "url") {
+			var accessTokenParam = {
+				key: "access_token",
+				value: data[index].value
+			};
 			pm.mediator.trigger("addRequestURLParam", accessTokenParam);
 		}
 		else if (type === "header") {
+			var accessTokenHeader = {
+				key: "Authorization",
+				value: "Bearer " + data[index].value
+			};
+			pm.mediator.trigger("addRequestHeader", accessTokenHeader);
 			// TODO Not implemented yet
 		}
 

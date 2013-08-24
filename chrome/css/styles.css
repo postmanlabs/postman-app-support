@@ -955,6 +955,9 @@ input[type="file"] {
 #request-helper-oAuth2-access-token-save-form {
   display: none; }
 
+#request-helper-oAuth2-options {
+  margin-bottom: 10px; }
+
 .request-helper-form-container {
   float: left;
   width: 400px; }
