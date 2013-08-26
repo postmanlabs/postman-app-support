@@ -1,0 +1,41 @@
+
+/*Code editors*/
+.keyvaleditor-left {
+    float: left;
+    margin-right: 10px
+}
+
+.keyvaleditor-right {
+    float: left;
+    padding-top: 5px;
+}
+
+.cm-link {
+    background: white;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.cm-link:hover {
+    color: #555 !important;
+    text-decoration: none;
+}
+
+#response .CodeMirror {
+    margin-left: -1px;
+    overflow-x: auto;
+}
+
+.CodeMirror pre {
+    font-family: Consolas, "Andale Mono", monospace;
+}
+
+#response .CodeMirror-gutter-text {
+    cursor: pointer;
+    padding-left: 1em !important;
+}
+
+#response .CodeMirror-scroll {
+    height: auto !important;
+    overflow: visible !important;
+}

@@ -1,0 +1,31 @@
+
+/*User status*/
+#user-status {
+    display: none;
+    float: right;
+    height: 47px;
+    margin-right: 25px;
+
+    #user-status-username,
+    #user-status-not-logged-in {
+        color: #666;
+    }
+
+    a.navbar-link {
+        color: #666;
+        padding-left: 13px;
+        padding-top: 14px;
+        display: inline-block;
+        height: 32px;
+        vertical-align: middle;
+        margin-left: 15px;
+        padding-right: 13px;
+
+    }
+
+    a.navbar-link:hover {
+        background: #333;
+        color: #AAA;
+        text-decoration: none;
+    }
+}

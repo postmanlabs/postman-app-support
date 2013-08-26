@@ -1,0 +1,22 @@
+
+
+/* jQuery UI */
+.ui-autocomplete-category {
+    font-weight: bold;
+    padding: .2em .4em;
+    margin: .2em 0 .2em;
+    font-size: 12px;
+}
+
+.ui-autocomplete {
+    max-height: 250px;
+    overflow-y: auto;
+    /* prevent horizontal scrollbar */
+    overflow-x: hidden;
+    z-index: 300 !important;
+}
+
+.ui-menu-item {
+    font-size: 12px;
+    font-family: $font;
+}

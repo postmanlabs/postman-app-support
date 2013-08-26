@@ -1,0 +1,64 @@
+
+/*Collections*/
+
+#new-request-description {
+    height: 100px;
+}
+
+#import-collection-dropzone {
+    border: 2px dashed #BBB;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+    padding: 25px;
+    text-align: center;
+}
+
+#import-collection-dropzone h3 {
+    font: 20pt bold $font;
+    color: #BBB;
+}
+
+#form-edit-collection .collection-name {
+    font-size: 14px;
+}
+
+#edit-collection-drive-status-container {
+    color: #aaa;
+    font-size: 10px;
+}
+
+#edit-collection-drive-actions {
+    margin-top: 10px;
+}
+
+#collection-request-description-container {
+    border: solid thin #efefef;
+}
+
+
+.collection-request-description {
+    max-height: 250px;
+    height: 250px;
+    background-color: white;
+    border-collapse: separate;
+    border: 1px solid rgb(204, 204, 204);
+    padding: 4px;
+    box-sizing: content-box;
+    -webkit-box-shadow: rgba(0, 0, 0, 0.0745098) 0px 1px 1px 0px inset;
+    box-shadow: rgba(0, 0, 0, 0.0745098) 0px 1px 1px 0px inset;
+    border-top-right-radius: 3px; border-bottom-right-radius: 3px;
+    border-bottom-left-radius: 3px; border-top-left-radius: 3px;
+    overflow: scroll;
+    outline: none;
+}
+
+#share-collection-link {
+    display: none;
+    -moz-user-select: text;
+    -khtml-user-select: text;
+    -webkit-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
+}
+/* End collections */

@@ -1,0 +1,66 @@
+
+/*Settings*/
+.add-on {
+    margin-bottom: 10px;
+
+    a {
+        font-size: 14px;
+        font-weight: bold;
+    }
+}
+
+/*Preferences*/
+.preferences {
+    float: right;
+    margin-top: 12px;
+
+    a {
+        font-size: 11px;
+        font-weight: bold;
+        text-decoration: none;
+        margin-right: 9px;
+    }
+
+    img {
+        height: 20px;
+        vertical-align: middle;
+    }
+
+    a:hover {
+        text-decoration: none;
+    }
+
+    #google-drive-status {
+        display: none;
+
+        img {
+            height: 23px !important;
+            opacity: 0.6 !important;
+        }
+
+        img:hover {
+            opacity: 1 !important;
+        }
+    }
+}
+
+/* Notifications */
+#notification {
+    background: #fff;
+    display: none;
+    padding: 5px;
+    padding-top: 10px;
+    border-radius: 5px;
+    width: 200px;
+    height: 50px;
+    position: absolute;
+    text-align: center;
+    font-size: 16px;
+    font-weight: bold;
+    color: #afafaf;
+
+    img {
+        vertical-align: middle;
+        margin-left: 10px;
+    }
+}

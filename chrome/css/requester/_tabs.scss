@@ -1,0 +1,35 @@
+.request-helper-tabs {
+    margin: 0;
+    padding: 0;
+
+    li {
+        float: left;
+        font-size: 13px;
+        font-weight: bold;
+        list-style: none;
+        padding: 10px;
+        border-left: solid thin #ccc;
+        border-bottom: solid thin #fff;
+        color: #ccc;
+        cursor: pointer;
+        height: 15px;
+        letter-spacing: 0.05em;
+    }
+
+    li:hover {
+        color: #333;
+    }
+
+    li.active {
+        color: black;
+        height: 16px;
+    }
+
+    li:last-child {
+        border-right: solid thin #ccc;
+    }
+
+    li:first-child {
+        border-left: none;
+    }
+}

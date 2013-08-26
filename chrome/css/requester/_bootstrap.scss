@@ -1,0 +1,42 @@
+/*Bootstrap overrides*/
+.form-stacked {
+    margin-bottom: 0px;
+}
+
+.modal {
+    display: none;
+}
+
+.modal-header h3 {
+    font-size: 18px;
+}
+
+.pills li a {
+    font-size: 11px;
+    font-weight: bold;
+    border-radius: 5px;
+    padding: 0 7px;
+}
+
+.modal.fade {
+    top: -150%;
+}
+
+.label {
+    text-transform: uppercase;
+}
+
+.btn {
+    border-radius: 0;
+    font-family: $font;
+}
+
+input[type="file"] {
+    height: 28px;
+    line-height: 0px;
+}
+
+.controls input[type="checkbox"] {
+    margin-top: 8px;
+    display: inline-block;
+}

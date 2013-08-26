@@ -1,0 +1,159 @@
+/*Drive*/
+#drive-status {
+    display: none;
+    float: right;
+    margin-top: 10px;
+    margin-right: 15px;
+}
+
+#sync-status {
+    cursor: pointer;
+    display: none;
+    float: left;
+    margin-right: 10px;
+
+    img {
+        width: 20px;
+        height: 20px;
+    }
+}
+
+.sync-normal {
+    -webkit-transform: rotate(0deg);
+}
+
+.sync-spin {
+    -webkit-animation-name: spin;
+    -webkit-animation-duration: 4000ms;
+    -webkit-animation-iteration-count: infinite;
+    -webkit-animation-timing-function: linear;
+
+    animation-name: spin;
+    animation-duration: 4000ms;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+
+@-webkit-keyframes spin {
+    from { -webkit-transform: rotate(360deg); }
+    to { -webkit-transform: rotate(0deg); }
+}
+
+#drive-status #user-img {
+    float: left;
+
+    img {
+        width: 20px;
+        height: 20px;
+    }
+}
+
+#drive-status #user-status {
+    float: left;
+    margin-left: 5px;
+}
+
+#user-details-meta-container {
+    float: left;
+    margin-left: 10px;
+}
+
+#sync-details {
+    color: #999;
+    font-size: 11px;
+    margin-top: 2px;
+}
+
+#user-details-image {
+    float: left;
+
+    img {
+        height: 40px;
+        width: 40px;
+    }
+}
+
+#user-details-name {
+    font-size: 16px;
+    font-weight: bold;
+    margin-top: 3px;
+}
+
+#drive-user-enable {
+    display: none;
+}
+
+#drive-first-time-sync-step2 {
+    display: none;
+}
+
+#drive-first-time-sync-step1 .connection-error {
+    display: none;
+}
+
+/* DriveSync Logger */
+#logger-drivesync {
+    background-color: white;
+    border-bottom: solid thin #ccc;
+    box-shadow: 0px 3px 5px 0px #CCC;
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 435px;
+    width: 100%;
+    z-index: 50;
+    padding: 0 10px 10px 20px;
+    overflow: hidden;
+    opacity: 0.95;
+    margin-top: $navbar_height;
+}
+
+#logger-drivesync-settings {
+    margin: 20px 0 10px 0;
+}
+
+#google-drive-toggle {
+}
+
+#logger-drivesync-log-empty-view {
+    margin-top: 40px;
+    height: 300px;
+    text-align: center;
+    opacity: 0.3;
+}
+
+#logger-drivesync-log-container {
+    display: none;
+    height: 340px;
+    overflow: scroll;
+}
+#logger-drivesync ul {
+    padding: 0;
+    margin: 0;
+}
+
+#logger-drivesync ul li {
+    list-style: none;
+    padding-left: 0;
+    margin-left: 0;
+}
+
+.file-status-change {
+    color: #69A7C2;
+}
+
+.change-on-drive {
+    color: #879485;
+}
+
+#logger-drivesync ul .item-logger-time {
+    color: #999;
+}
+
+/* Drive sync start modal */
+#drive-sync-backup {
+    margin-top: 5px;
+}
+
+/* End Drive */

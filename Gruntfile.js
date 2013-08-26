@@ -56,7 +56,7 @@ module.exports = function(grunt) {
       },
 
       requester_css: {
-        files: ['chrome/css/styles.scss'],
+        files: ['chrome/css/**/*.scss'],
         tasks: ['sass']
       }
     },
@@ -105,7 +105,7 @@ module.exports = function(grunt) {
     sass: {
       dist: {
         files: {
-          'chrome/css/styles.css': 'chrome/css/styles.scss'
+          'chrome/css/requester/styles.css': 'chrome/css/requester/styles.scss'
         }
       }
     },

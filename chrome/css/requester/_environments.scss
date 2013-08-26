@@ -1,0 +1,115 @@
+
+/*Environments*/
+#environment-quicklook-wrapper {
+    float: left;
+    margin-left: 20px;
+
+    .btn-group {
+        font-size: 12px;
+    }
+
+    .btn-group .dropdown-menu li a {
+        font-size: 10px !important;
+    }
+}
+
+#environment-quicklook-content {
+    background: white;
+    border: solid thin #ccc;
+    border-radius: 5px;
+    display: none;
+    position: absolute;
+    min-width: 350px;
+    min-height: 40px;
+    margin-top: 30px;
+    padding: 10px;
+    z-index: 10;
+
+
+    h6 {
+        color: #888;
+        font-size: 12px;
+        margin-top: 3px;
+        margin-bottom: 5px
+    }
+
+
+    ul {
+        margin: 0;
+        padding: 0;
+    }
+
+    .key {
+        font-weight: bold;
+    }
+
+    li {
+        list-style: none;
+    }
+}
+
+#environment-quicklook-environments {
+    width: 100%;
+}
+
+#environment-quicklook-globals {
+    border-top: solid thin #ccc;
+    margin-top: 5px;
+    padding-top: 5px;
+    width: 100%;
+}
+
+#environment-quicklook img {
+    opacity: 0.5;
+    width: 20px;
+}
+
+#environment-quicklook img:hover {
+    opacity: 1;
+}
+
+#environment-selector-wrapper {
+    margin-top: 8px;
+    margin-left: 325px;
+    font-size: 11px;
+}
+
+#environment-selector {
+    float: left;
+    margin-left: 10px;
+}
+
+#environment-importer,
+#globals-editor {
+    display: none;
+}
+
+.environment-selector-label {
+    font-weight: bold;
+    color: #AAA;
+}
+
+.environment-selector-active {
+    color: #666;
+    font-weight: bold;
+}
+
+#environment-editor {
+    display: none;
+}
+
+#environment-editor-name {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+#environments-list-help-detail {
+    display: none;
+}
+
+#environment-selector .btn-group a {
+    font-size: 12px;
+}
+
+
+/* End environments */

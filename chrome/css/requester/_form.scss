@@ -1,0 +1,44 @@
+/*Form styles*/
+.clean-input {
+    color: $input_text_color !important;
+    padding: 5px !important;
+    border: none !important;
+    border-bottom: solid thin $input_border_color !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    outline: none !important;
+}
+
+.clean-input:focus {
+    outline: 0 !important;
+    outline-width: 0 !important;
+    border-bottom-color: #999 !important;
+}
+
+.inputText {
+    border: 2px solid #cce0e9;
+    min-height: 18px;
+    width: 100% !important;
+    padding: 5px;
+}
+
+.input-text-light {
+    border-radius: 0;
+    min-height: 18px;
+    width: 100% !important;
+    padding: 5px;
+    padding-left: 0px;
+
+    color: $input_text_color !important;
+    border: none !important;
+    border-bottom: solid thin $input_border_color !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    outline: none !important;
+}
+
+.input-text-light:focus {
+    border-bottom-color: $input_border_color_focus !important;
+    outline: none !important;
+    box-shadow: none !important;
+}

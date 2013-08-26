@@ -1,0 +1,398 @@
+/*Sidebar*/
+.sidebar-helper-tabs {
+    height: 36px;
+
+    li {
+        border-left: solid thin #ccc;
+        border-bottom: solid thin #ccc;
+        padding: 0;
+        height: 36px;
+        float: left;
+    }
+
+    li span {
+        display: inline-block;
+        padding: 10px;
+    }
+
+    li.active {
+        background-color: #eaeaea;
+        border-bottom: solid thin #eaeaea;
+        height: 36px;
+    }
+
+    li:last-child {
+        border-right: solid thin #ccc;
+    }
+}
+
+
+#message-no-collection,
+#message-no-history {
+    margin-top: 10px;
+}
+
+.empty-message {
+    margin-top: 5px;
+    padding: 0 10px 0 10px;
+}
+
+
+#sidebar {
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+    float: left;
+    padding-left: 10px;
+    background: -webkit-linear-gradient(rgba(234, 238, 243, 0.2), #EAEAEA), -webkit-linear-gradient(left, #EAEAEA, #EAEAEA 97%, #DDDDDD);
+    z-index: 20;
+    width: 340px;
+    height: 95%;
+    position: fixed;
+    overflow-y: hidden;
+    overflow-x: hidden;
+    border-top: solid thin #ccc;
+}
+
+#sidebar:hover {
+    overflow-y: scroll;
+}
+
+#sidebar:focus,
+#main:focus {
+    border: none !important;
+    outline: none;
+}
+
+#sidebar-sections {
+    ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+}
+
+#sidebar-selectors {
+    position: absolute;
+    width: 110%;
+    border-bottom: solid thin #ccc;
+    left: 0;
+}
+
+#sidebar-footer {
+    background-color: #000;
+    font-size: 11px;
+    font-weight: bold;
+    position: fixed;
+    bottom: 0;
+    width: 350px;
+    height: 20px;
+    opacity: 0.8;
+    z-index: 50;
+    padding: 5px 0 5px 0;
+
+    a {
+        color: #fff;
+        display: inline-block;
+        margin-left: 10px;
+        padding: 3px;
+        border-radius: 3px;
+    }
+
+    a:hover {
+        background: #08C;
+    }
+}
+
+#donate-form {
+    display: none;
+}
+
+#donate {
+    float: right;
+    margin-right: 25px;
+}
+
+#sidebar-footer:hover {
+    opacity: 1;
+}
+
+#sidebar-filler {
+    height: 50px;
+}
+
+#sidebar-section-data {
+    margin-bottom: 50px;
+    margin-top: 45px;
+
+    ul {
+        margin-left: -10px;
+        margin-bottom: 5px;
+    }
+}
+
+#sidebar-sections .pills {
+    margin-left: -4px;
+}
+
+#sidebar-sections .pills .active .a {
+    background-color: #333;
+}
+
+#sidebar-section-collections {
+    display: none;
+}
+
+.sidebar-collection {
+    border-bottom: solid thin #DEDEDE;
+}
+
+.sidebar-collection-request,
+.sidebar-history-request {
+    border-radius: 3px;
+}
+
+.sidebar-collection-request div {
+    padding: 6px;
+    padding-left: 25px;
+}
+
+.sidebar-history-request div {
+    padding: 8px;
+}
+
+.sidebar-collection-request:hover,
+.sidebar-history-request:hover {
+    background-color: #DEDEDE;
+    cursor: pointer;
+}
+
+.sidebar-collection-request:hover .request-name {
+    color: #333 !important;
+}
+
+.sidebar-collection-request-active {
+    background-color: #DFEAF0;
+}
+
+.folder-requests .sidebar-collection-request {
+    padding-left: 20px;
+}
+
+.folder-requests .request-actions {
+    margin-left: 265px !important;
+}
+
+.sidebar-collection-head {
+    font-weight: bold;
+    padding-left: 5px;
+}
+
+.sidebar-collection-head:hover {
+    background-color: #DEDEDE;
+}
+
+.sidebar-collection-head-name,
+.folder-head-name {
+    cursor: pointer;
+    padding: 5px;
+}
+
+.folder-head-name {
+    color: #777;
+    font-weight: normal;
+    margin-left: 20px;
+    padding: 4px !important;
+}
+
+.sidebar-collection-head-dt,
+.folder-head-dt {
+    -webkit-transition: all 0.2s;
+}
+
+.disclosure-triangle-open {
+    display: inline-block;
+    -webkit-transform: rotate(90deg);
+}
+
+.disclosure-triangle-close {
+    display: inline-block;
+    -webkit-transform: rotate(0deg);
+}
+
+.collection-children {
+    display: none;
+}
+
+.folder-requests {
+    border-bottom: solid thin #ddd;
+    padding-bottom: 0 !important;
+    margin-bottom: 0 !important;
+    display: none;
+}
+
+.collection-head-actions span,
+.folder-head-actions span {
+    display: block;
+    float: left;
+    width: 25px;
+    text-align: center;
+    margin-right: 5px;
+    cursor: pointer;
+}
+
+.folder-head {
+    font-weight: bold;
+}
+
+.folder-head:hover {
+    background-color: #DEDEDE;
+}
+
+.sidebar-collection-request a,
+.sidebar-collection-request a:hover,
+.sidebar-history-request a,
+.sidebar-history-request a:hover {
+    color: #333;
+    text-decoration: none;
+}
+
+.collection-head-actions,
+.folder-head-actions {
+    position: absolute;
+    margin-left: 238px;
+    z-index: 10;
+    display: none;
+    padding-top: 4px;
+}
+
+.folder-head-actions {
+    margin-left: 294px;
+}
+
+.collection-head-actions img,
+.folder-head-actions img {
+    opacity: 0.5;
+    width: 18px;
+    height: 18px;
+}
+
+.collection-head-actions img:hover,
+.folder-head-actions img:hover {
+    opacity: 1;
+}
+
+#history-items .request-actions {
+    margin-left: 287px;
+}
+
+#sidebar-search-container {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    background: #ccc;
+    width: 338px;
+    padding: 6px;
+    z-index: 20;
+}
+
+#sidebar-search-container .form-search {
+    margin-bottom: 0;
+}
+
+#sidebar-search {
+    width: 306px;
+}
+
+#sidebar-search-cancel {
+    cursor: pointer;
+    opacity: 0.2;
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    display: none;
+}
+
+#sidebar-search-cancel:hover {
+    opacity: 0.4;
+}
+
+
+
+#collection-items .request-actions {
+    margin-left: 275px;
+    opacity: 1;
+}
+
+.section-options {
+    position: absolute;
+    margin-left: 200px;
+    top: 8px;
+
+    img {
+        opacity: 0.5;
+    }
+
+    img:hover {
+        opacity: 1;
+    }
+}
+
+
+#history-options {
+    margin-left: 295px;
+}
+
+#collections-options {
+    margin-left: 270px;
+}
+
+#collections-options {
+    display: none;
+}
+
+#sidebar-toggle {
+    position: fixed;
+    bottom: 0;
+    left: 350px;
+    opacity: 0.5;
+    z-index: 100;
+    cursor: pointer;
+    height: 36px;
+    width: 12px;
+    background: #ccc;
+    border-top-right-radius: 5px;
+    padding-top: 6px;
+}
+
+#sidebar-toggle img {
+    width: 10px;
+    height: 10px;
+    margin-top: 8px;
+}
+
+#sidebar-toggle:hover {
+    opacity: 1;
+}
+
+.label-method-GET,
+.label-method-get {
+    background-color: #4DAB58;
+}
+
+.label-method-POST,
+.label-method-post {
+    background-color: #CC9900;
+}
+
+.label-method-DELETE,
+.label-method-delete {
+    background-color: #C30;
+}
+
+.label-method-PUT,
+.label-method-put {
+    background-color: #36F;
+}
