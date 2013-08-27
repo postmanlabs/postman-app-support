@@ -35,7 +35,6 @@ var Directory = Backbone.Collection.extend({
     onInitializeDirectory: function() {
     	if (!this.isInitialized) {
     		this.isInitialized = true;
-    		console.log("Initialize Directory");
     		this.getCollections(this.startId, this.fetchCount, "descending");
     	}
     },
@@ -81,9 +80,6 @@ var Directory = Backbone.Collection.extend({
 
                 collection.lastCount = collections.length;
 
-                console.log(collection.lastCount, collection.startId, collection.totalCount);
-
-    	    	console.log("Received collections", collections, collection);
     	    	if(collections.hasOwnProperty("message")) {
     	    		// Signal error
     	    	}
