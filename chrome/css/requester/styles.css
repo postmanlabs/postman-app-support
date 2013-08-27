@@ -274,7 +274,7 @@ li .right {
     list-style: none;
     float: left; }
   #add-ons a {
-    color: #666;
+    color: #999;
     padding-left: 13px;
     padding-top: 14px;
     display: inline-block;
@@ -1627,9 +1627,9 @@ input[type="file"] {
   margin-right: 25px; }
   #user-status #user-status-username,
   #user-status #user-status-not-logged-in {
-    color: #666; }
+    color: #999; }
   #user-status a.navbar-link {
-    color: #666;
+    color: #999;
     padding-left: 13px;
     padding-top: 14px;
     display: inline-block;
