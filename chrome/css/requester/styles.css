@@ -323,9 +323,20 @@ li .right {
 #logo {
   float: left; }
 
-#donate-link,
+#donate-link {
+  color: #999;
+  padding-left: 13px;
+  padding-top: 14px;
+  display: inline-block;
+  height: 32px;
+  vertical-align: middle;
+  margin-left: 1px;
+  padding-right: 13px; }
+
 #donate-link:hover {
-  color: #fff; }
+  background: #333;
+  color: #AAA;
+  text-decoration: none; }
 
 #header-donate-link-container {
   float: right;
@@ -346,7 +357,28 @@ li .right {
   background: #333;
   color: #fff; }
 
-/*End top bar*/
+/*Preferences*/
+.preferences {
+  float: right;
+  margin-top: 12px; }
+  .preferences a.icon {
+    font-size: 11px;
+    font-weight: bold;
+    text-decoration: none;
+    margin-right: 9px; }
+  .preferences img {
+    height: 20px;
+    vertical-align: middle; }
+  .preferences a.icon:hover {
+    text-decoration: none; }
+  .preferences #google-drive-status {
+    display: none; }
+    .preferences #google-drive-status img {
+      height: 23px !important;
+      opacity: 0.6 !important; }
+    .preferences #google-drive-status img:hover {
+      opacity: 1 !important; }
+
 /*Sidebar*/
 .sidebar-helper-tabs {
   height: 36px; }
@@ -1762,28 +1794,6 @@ input[type="file"] {
   .add-on a {
     font-size: 14px;
     font-weight: bold; }
-
-/*Preferences*/
-.preferences {
-  float: right;
-  margin-top: 12px; }
-  .preferences a {
-    font-size: 11px;
-    font-weight: bold;
-    text-decoration: none;
-    margin-right: 9px; }
-  .preferences img {
-    height: 20px;
-    vertical-align: middle; }
-  .preferences a:hover {
-    text-decoration: none; }
-  .preferences #google-drive-status {
-    display: none; }
-    .preferences #google-drive-status img {
-      height: 23px !important;
-      opacity: 0.6 !important; }
-    .preferences #google-drive-status img:hover {
-      opacity: 1 !important; }
 
 /* Notifications */
 #notification {

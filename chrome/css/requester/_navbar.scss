@@ -76,8 +76,7 @@
     a:hover {
         background: #333;
         color: #AAA;
-        text-decoration: none;
-    }
+        text-decoration: none;    }
 }
 
 /*Links at the top*/
@@ -108,9 +107,21 @@
 }
 
 
-#donate-link,
+#donate-link {
+    color: #999;
+    padding-left: 13px;
+    padding-top: 14px;
+    display: inline-block;
+    height: 32px;
+    vertical-align: middle;
+    margin-left: 1px;
+    padding-right: 13px;
+}
+
 #donate-link:hover {
-    color: #fff;
+    background: #333;
+    color: #AAA;
+    text-decoration: none;
 }
 
 #header-donate-link-container {
@@ -134,4 +145,38 @@
     background: #333;
     color: #fff;
 }
-/*End top bar*/
+
+/*Preferences*/
+.preferences {
+    float: right;
+    margin-top: 12px;
+
+    a.icon {
+        font-size: 11px;
+        font-weight: bold;
+        text-decoration: none;
+        margin-right: 9px;
+    }
+
+    img {
+        height: 20px;
+        vertical-align: middle;
+    }
+
+    a.icon:hover {
+        text-decoration: none;
+    }
+
+    #google-drive-status {
+        display: none;
+
+        img {
+            height: 23px !important;
+            opacity: 0.6 !important;
+        }
+
+        img:hover {
+            opacity: 1 !important;
+        }
+    }
+}
