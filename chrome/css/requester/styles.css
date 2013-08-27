@@ -1364,6 +1364,9 @@ input[type="file"] {
   -ms-user-select: text;
   user-select: text; }
 
+#share-collection-directory-features {
+  display: block; }
+
 /* End collections */
 /*Environments*/
 #environment-quicklook-wrapper {
@@ -1492,50 +1495,21 @@ input[type="file"] {
   background-color: #555; }
 
 /*Drive*/
-#drive-status {
-  display: none;
-  float: right;
-  margin-top: 10px;
-  margin-right: 15px; }
-
-#sync-status {
+#google-drive-status {
   cursor: pointer;
   display: none;
-  float: left;
-  margin-right: 10px; }
-  #sync-status img {
-    width: 20px;
-    height: 20px; }
-
-.sync-normal {
-  -webkit-transform: rotate(0deg); }
-
-.sync-spin {
-  -webkit-animation-name: spin;
-  -webkit-animation-duration: 4000ms;
-  -webkit-animation-iteration-count: infinite;
-  -webkit-animation-timing-function: linear;
-  animation-name: spin;
-  animation-duration: 4000ms;
-  animation-iteration-count: infinite;
-  animation-timing-function: linear; }
-
-@-webkit-keyframes spin {
-  from {
-    -webkit-transform: rotate(360deg); }
-
-  to {
-    -webkit-transform: rotate(0deg); } }
+  float: right;
+  margin-top: 13px;
+  margin-right: 13px; }
+  #google-drive-status img {
+    width: 24px;
+    height: 24px; }
 
 #drive-status #user-img {
   float: left; }
   #drive-status #user-img img {
     width: 20px;
     height: 20px; }
-
-#drive-status #user-status {
-  float: left;
-  margin-left: 5px; }
 
 #user-details-meta-container {
   float: left;

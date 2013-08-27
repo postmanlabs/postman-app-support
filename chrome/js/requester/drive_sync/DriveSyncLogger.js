@@ -9,7 +9,7 @@ var DriveSyncLogger = Backbone.View.extend({
             view.toggleGoogleDriveSync();
         });
 
-        $("#google-drive-status").on("click", function() {
+        $("#google-drive-status a").on("click", function() {
             view.toggleLoggerDisplay();
         });
 

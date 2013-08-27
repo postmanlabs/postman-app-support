@@ -27,9 +27,7 @@ pm.targets = {
 
 pm.target = pm.targets.CHROME_PACKAGED_APP;
 
-pm.isDriveEnabled = false;
 pm.isTesting = false;
-
 pm.features = new Features();
 
 if (pm.isTesting) {
@@ -201,11 +199,14 @@ pm.init = function () {
     }
 
     function initializeDriveSync() {
-        if (pm.isDriveEnabled) {
+        if (pm.features.isFeatureEnabled(FEATURES.DRIVE_SYNC)) {
             var driveSyncLog = new DriveSyncLog();
             var driveSyncLogger = new DriveSyncLogger({model: driveSyncLog});
             var driveSync = new DriveSync({log: driveSyncLog});
             var driveSyncIntroduction = new DriveSyncIntroduction({model: driveSync});
+        }
+        else {
+            console.log("Drive sync is disabled");
         }
     }
 
@@ -248,7 +249,6 @@ pm.init = function () {
             initializeDirectory();
 
             pm.hasPostmanInitialized = true;
-            console.log("Set hasPostmanInitialized to true");
         });
     });
 };

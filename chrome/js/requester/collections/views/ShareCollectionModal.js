@@ -2,6 +2,10 @@ var ShareCollectionModal = Backbone.View.extend({
     initialize: function() {
         var model = this.model;
 
+        if (pm.features.isFeatureEnabled(FEATURES.DIRECTORY)) {
+            $("share-collection-directory-features").css("display", "block");
+        }
+
         $('#share-collection-get-link').on("click", function () {
             var id = $(this).attr('data-collection-id');
             var isChecked = $("#share-collection-is-public").is(":checked");

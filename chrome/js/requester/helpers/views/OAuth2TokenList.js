@@ -2,7 +2,6 @@ var OAuth2TokenList = Backbone.View.extend({
 	initialize: function() {
 		var model = this.model;
 
-		console.log("Added");
 		model.on("add", this.render, this);
 		model.on("remove", this.render, this);
 		model.on("change", this.render, this);
@@ -33,10 +32,7 @@ var OAuth2TokenList = Backbone.View.extend({
 	},
 
 	render: function() {
-		console.log("Render list");
-		// Render list event
 		var tokens = this.model.toJSON();
-		console.log(tokens);
 		$("#request-helper-oAuth2-access-tokens").html("");
 		$("#request-helper-oAuth2-access-tokens").append(Handlebars.templates.oauth2_access_tokens({"items": tokens}));
 	}

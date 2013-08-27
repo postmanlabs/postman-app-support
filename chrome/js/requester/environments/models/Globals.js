@@ -76,7 +76,6 @@ var Globals = Backbone.Model.extend({
             }
         }
         else {
-            console.log("Either globals not loaded or not initialized syncing");
         }
     },
 

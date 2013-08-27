@@ -65,6 +65,7 @@ var DriveSync = Backbone.Model.extend({
         var canSync = pm.settings.getSetting("driveSyncEnabled");
 
         if (!canSync) {
+            this.get("log").addToLog("Can not sync");
             return false;
         }
         else {

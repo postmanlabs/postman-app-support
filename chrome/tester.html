@@ -57,13 +57,11 @@
            data-placement="bottom" data-original-title="Donate to make Postman even better!">
             Donate</a>
     </div>
-    <div id="drive-status">
-        <div id="sync-status">
-            <a rel="tooltip"
-                data-placement="bottom" data-original-title="Sync">
-                <img src="img/sync.png" style="vertical-align: middle;"/>
-            </a>
-        </div>
+    <div id="google-drive-status">
+        <a rel="tooltip"
+            data-placement="bottom" data-original-title="Sync">
+            <img src="img/google-drive/product32.png" style="vertical-align: middle;"/>
+        </a>
     </div>
     <div id="user-status">
       <div id="user-status-false">
@@ -1663,13 +1661,18 @@
 
             <p>
                 Upload your collection to getpostman.com and get a link to share with others.
-                Your existing collection will be updated if you are signed in.
             </p>
+            <div id="share-collection-directory-features">
+                <p>
+                    Your existing collection will be updated if you are signed in.
+                </p>
+                <label class="checkbox">
+                    <input type="checkbox" id="share-collection-is-public" value="public"/>Make it public
+                </label>
+                <p>Public collections can be viewed and downloaded by others through the API directory</p>
+            </div>
+
             <pre id="share-collection-link"></pre>
-            <label class="checkbox">
-                <input type="checkbox" id="share-collection-is-public" value="public"/>Make it public
-            </label>
-            <p>Public collections can be viewed and downloaded by others through the API directory</p>
             <a id="share-collection-get-link" data-collection-id="" class="btn">Upload</a>
         </div>
         <div style="margin-top: 20px;">
@@ -1840,9 +1843,8 @@
 <script type="text/javascript" src="js/utils/oauth2_urls.js"></script>
 <script type="text/javascript" src="js/utils/mediatypes.js"></script>
 <script type="text/javascript" src="html/requester/templates.js"></script>
-<script type="text/javascript" src="js/requester.js" data-cover></script>
-
 <script type="text/javascript" src="js/gapi-chrome-apps.js"></script>
+<script type="text/javascript" src="js/requester.js" data-cover></script>
 </body>
 </html>
 <!-- Tester HTML here -->

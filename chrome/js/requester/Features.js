@@ -7,9 +7,9 @@ var FEATURES = {
 var Features = Backbone.Model.extend({
 	defaults: function() {
 		var obj = {};
-		obj[FEATURES.USER] = true;
-		obj[FEATURES.DIRECTORY] = true;
-		obj[FEATURES.DRIVE_SYNC] = true;
+		obj[FEATURES.USER] = false;
+		obj[FEATURES.DIRECTORY] = false;
+		obj[FEATURES.DRIVE_SYNC] = false;
 
 	    return obj;
 	},

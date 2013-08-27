@@ -1107,7 +1107,6 @@ pm.indexedDB = {
         },
 
         getAllAccessTokens: function(callback) {
-            console.log("Get access tokens");
             var db = pm.indexedDB.db;
             if (db === null) {
                 console.log("Db is null");

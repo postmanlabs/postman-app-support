@@ -25,7 +25,6 @@ var OAuth2TokenFetcher = Backbone.Model.extend({
     },
 
     updateDB: function() {
-        console.log(this.toJSON());
         var helper = {
             "id": this.get("id"),
             "authorization_url": this.get("authorization_url"),

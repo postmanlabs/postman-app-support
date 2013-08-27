@@ -21,7 +21,6 @@ var User = Backbone.Model.extend({
 
 		if (pm.features.isFeatureEnabled(FEATURES.USER)) {
 			pm.storage.setValue({"user": this.toJSON()}, function() {
-				console.log("Stored the value");
 			});
 		}
 	},
@@ -93,7 +92,6 @@ var User = Backbone.Model.extend({
 		    type:'GET',
 		    url:getUrl,
 		    success:function (data) {
-		    	console.log(data);
 		    	var c;
 
 		    	if (data.hasOwnProperty("collections")) {
@@ -102,8 +100,6 @@ var User = Backbone.Model.extend({
 			    		c.is_public = c.is_public === "1" ? true : false;
 			    		c.updated_at_formatted = new Date(c.updated_at).toDateString();
 			    	}
-
-			    	console.log(data.collections);
 
 			    	model.set("collections", data.collections);
 			    	model.trigger("change:collections");
@@ -125,7 +121,6 @@ var User = Backbone.Model.extend({
 		    success:function (data) {
 		    	var collections = model.get("collections");
 		    	var index = arrayObjectIndexOf(collections, id, "id");
-		    	console.log(collections, index, id);
 
 		    	if (index >= 0) {
 		    		collections.splice(index, 1);
