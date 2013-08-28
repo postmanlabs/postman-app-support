@@ -597,6 +597,7 @@
                 <div id="response-data-options" class="clearfix">
                     <div id="response-formatting" class="btn-group clearfix" data-toggle="buttons-radio">
                         <a data-type="parsed" class="btn">Pretty</a>
+                        <a data-type="jsonview" class="btn">JSONView</a>
                         <a data-type="raw" class="btn">Raw</a>
                         <a data-type="preview" class="btn">Preview</a>
                     </div>
@@ -663,6 +664,9 @@
                 <div id="response-editors">
                     <div id="response-as-code">
                         <textarea id="code-data" data-formatted="false"></textarea>
+                    </div>
+                    <div id="response-as-jsonview">
+                        <div id="jsonview"></div>
                     </div>
                     <div id="response-as-text">
                         <textarea id="code-data-raw"></textarea>
@@ -1455,7 +1459,9 @@
 <script type="text/javascript" src="js/httpstatuscodes.js"></script>
 <script type="text/javascript" src="js/httpheaders.js"></script>
 <script type="text/javascript" src="js/templates.js"></script>
-<script type="text/javascript" src="js/requester.min.js"></script>
+<script type="text/javascript" src="js/requester.js"></script>
+
+<script type="text/javascript" src="js/jsonview/jsonview.js"></script>
 
 <script type="text/javascript" src="https://apis.google.com/js/client.js?onload=handleClientLoad"></script>
 </body>
