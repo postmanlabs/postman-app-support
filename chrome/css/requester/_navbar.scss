@@ -1,3 +1,20 @@
+@mixin navbar-text-link {
+    color: #999;
+    padding-left: 13px;
+    padding-top: 14px;
+    display: inline-block;
+    height: 32px;
+    vertical-align: middle;
+    margin-left: 15px;
+    padding-right: 13px;
+}
+
+@mixin navbar-text-link-hover {
+    background: #333;
+    color: #AAA;
+    text-decoration: none;
+}
+
 /*Top bar*/
 .postman-navbar {
     border-top: solid 1px #777;
@@ -25,9 +42,10 @@
     cursor: pointer;
     margin-top: 14px;
     margin-left: 10px;
+    float: left;
 }
 
-#add-ons {
+.navbar-main-navigation {
     display: none;
     float: left;
     margin-left: -28px;
@@ -39,111 +57,13 @@
     }
 
     a {
-        color: #999;
-        padding-left: 13px;
-        padding-top: 14px;
-        display: inline-block;
-        height: 32px;
-        vertical-align: middle;
-        margin-left: 15px;
-        padding-right: 13px;
+        @include navbar-text-link;
     }
 
     a:hover {
-        background: #333;
-        color: #AAA;
-        text-decoration: none;
-    }
-}
-
-#back-to-requester-container {
-    display: none;
-    float: left;
-    height: 47px;
-
-    a {
-        color: #666;
-        padding-left: 13px;
-        padding-top: 14px;
-        display: inline-block;
-        height: 32px;
-        vertical-align: middle;
-        margin-left: 15px;
-        padding-right: 13px;
-
+        @include navbar-text-link-hover;
     }
 
-    a:hover {
-        background: #333;
-        color: #AAA;
-        text-decoration: none;    }
-}
-
-/*Links at the top*/
-#external-links {
-    float: right;
-
-    ul li {
-        float: left;
-        list-style: none;
-        margin-left: 5px;
-        margin-right: 0;
-    }
-
-    ul li img {
-        width: 20px;
-        height: 20px;
-        opacity: 0.3;
-    }
-
-    ul li img:hover {
-        opacity: 0.7;
-    }
-}
-
-
-#logo {
-    float: left;
-}
-
-
-#donate-link {
-    color: #999;
-    padding-left: 13px;
-    padding-top: 14px;
-    display: inline-block;
-    height: 32px;
-    vertical-align: middle;
-    margin-left: 1px;
-    padding-right: 13px;
-}
-
-#donate-link:hover {
-    background: #333;
-    color: #AAA;
-    text-decoration: none;
-}
-
-#header-donate-link-container {
-    float: right;
-    margin-top: 13px;
-    margin-right: 5px;
-    display: none;
-}
-
-#header-donate-link {
-    border-radius: 3px;
-    color: #999;
-    font-size: 13px;
-    font-weight: bold;
-    padding: 5px;
-    padding-top: 3px;
-    text-decoration: none;
-}
-
-#header-donate-link:hover {
-    background: #333;
-    color: #fff;
 }
 
 /*Preferences*/
@@ -179,4 +99,13 @@
             opacity: 1 !important;
         }
     }
+
+    #donate-link {
+        @include navbar-text-link;
+    }
+
+    #donate-link:hover {
+        @include navbar-text-link-hover;
+    }
+
 }
