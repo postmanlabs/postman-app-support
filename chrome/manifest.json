@@ -3,10 +3,10 @@
     "version":"0.9.3",
     "minimum_chrome_version": "28",
     "icons":{
-        "16":"icon_16.png",
-        "32":"icon_32.png",
-        "48":"icon_48.png",
-        "128":"icon_128.png"
+        "16":"icon_beta_16.png",
+        "32":"icon_beta_32.png",
+        "48":"icon_beta_48.png",
+        "128":"icon_beta_128.png"
     },
 
     "app":{
