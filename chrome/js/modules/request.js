@@ -946,13 +946,13 @@ pm.request = {
                     responseCodeName = response.statusText;
                 }
                 else {
-                    responseCodeName = httpStatusCodes[response.status]['name'];
+                    responseCodeName = httpStatusCodes[response.status] ? httpStatusCodes[response.status]['name'] : "";
                 }
 
                 var responseCode = {
                     'code':response.status,
                     'name':responseCodeName,
-                    'detail':httpStatusCodes[response.status]['detail']
+                    'detail':httpStatusCodes[response.status] ? httpStatusCodes[response.status]['detail'] : ""
                 };
 
                 var responseData;
