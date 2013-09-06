@@ -10,18 +10,18 @@ pm.layout = {
 
     detectLauncher: function() {
         if(pm.debug) {
-            return;    
+            return;
         }
 
-        var launcherNotificationCount = pm.settings.get("launcherNotificationCount");        
+        var launcherNotificationCount = pm.settings.get("launcherNotificationCount");
         var maxCount = 1;
         if(launcherNotificationCount >= 1) {
             return true;
-        }        
+        }
 
         var extension_id = "igofndmniooofoabmmpfonmdnhgchoka";
-        var extension_url = "https://chrome.google.com/webstore/detail/" + extension_id;        
-        
+        var extension_url = "https://chrome.google.com/webstore/detail/" + extension_id;
+
         noty(
         {
             type:'information',
@@ -33,15 +33,15 @@ pm.layout = {
                     window.open(url, '_blank');
                     window.focus();
                 }
-            }            
-        });        
+            }
+        });
 
-        var launcherNotificationCount = parseInt(pm.settings.get("launcherNotificationCount")) + 1;        
-        pm.settings.set("launcherNotificationCount", launcherNotificationCount);       
+        var launcherNotificationCount = parseInt(pm.settings.get("launcherNotificationCount")) + 1;
+        pm.settings.set("launcherNotificationCount", launcherNotificationCount);
     },
 
     init:function () {
-        pm.layout.detectLauncher()   
+        pm.layout.detectLauncher()
 
         if (pm.settings.get("haveDonated") == true) {
             console.log("Donated");
@@ -59,7 +59,7 @@ pm.layout = {
 
         $('#donate').popover({
             animation: true,
-            content: "Please donate $5 only if you like Postman! This will help a lot in the development and maintenance of the project.",
+            content: "Please donate only if you like Postman! This will help a lot in the development and maintenance of the project.",
             placement: "top",
             trigger: "hover",
             title: "Donate"
@@ -184,7 +184,7 @@ pm.layout = {
 
         $('#modal-edit-collection .btn-primary').click(function () {
             var id = $('#form-edit-collection .collection-id').val();
-            var name = $('#form-edit-collection .collection-name').val();            
+            var name = $('#form-edit-collection .collection-name').val();
 
             pm.collections.updateCollectionMeta(id, name);
             $('#modal-edit-collection').modal('hide');
@@ -233,7 +233,7 @@ pm.layout = {
     },
 
     onModalOpen:function (activeModal) {
-        pm.layout.activeModal = activeModal;        
+        pm.layout.activeModal = activeModal;
         pm.layout.isModalOpen = true;
     },
 
@@ -252,7 +252,7 @@ pm.layout = {
             pm.layout.onModalClose();
         });
 
-        $("#modal-edit-collection").on("shown", function () {            
+        $("#modal-edit-collection").on("shown", function () {
             $("#modal-edit-collection .collection-name").focus();
             pm.layout.onModalOpen("#modal-edit-collection");
         });
@@ -365,7 +365,7 @@ pm.layout = {
     },
 
     setLayout:function () {
-        this.refreshScrollPanes();        
+        this.refreshScrollPanes();
     },
 
     refreshScrollPanes:function () {
