@@ -6,6 +6,7 @@ var User = Backbone.Model.extend({
 	        "access_token": "",
 	        "refresh_token": "",
 	        "expires_in": 0,
+	        "logged_in_at": 0,
 	        "link": "",
 	        "collections": []
 	    };
@@ -35,20 +36,43 @@ var User = Backbone.Model.extend({
 				model.set("access_token", u.access_token);
 				model.set("refresh_token", u.refresh_token);
 				model.set("expires_in", u.expires_in);
+				model.set("logged_in_at", u.logged_in_at);
+
+				console.log(u);
 
 				if (pm.features.isFeatureEnabled(FEATURES.USER)) {
-					model.getCollections();
-					model.trigger("login", model);
+					if (u.id !== 0) {
+						model.getCollections();
+						model.trigger("login", model);
+					}
+
 				}
 			}
 		});
 
 		pm.mediator.on("refreshSharedCollections", this.getCollections, this);
 		pm.mediator.on("deleteSharedCollection", this.onDeleteSharedCollection, this);
+		pm.mediator.on("invalidAccessToken", this.onTokenNotValid, this);
+	},
+
+	onTokenNotValid: function() {
+		// Indicate error
 	},
 
 	isLoggedIn: function() {
 		return this.get("id") !== 0;
+	},
+
+	setAccessToken: function(data) {
+		var model = this;
+
+		model.set("access_token", data.access_token);
+		model.set("refresh_token", data.refresh_token);
+		model.set("expires_in", data.expires_in);
+		model.set("logged_in_at", new Date().getTime());
+
+		pm.storage.setValue({"user": model.toJSON()}, function() {
+		});
 	},
 
 	login: function() {
@@ -61,11 +85,15 @@ var User = Backbone.Model.extend({
 				}
 				else {
 					var params = getUrlVars(redirect_url, true);
+
 					model.set("id", params.user_id);
 					model.set("name", decodeURIComponent(params.name));
 					model.set("access_token", decodeURIComponent(params.access_token));
 					model.set("refresh_token", decodeURIComponent(params.refresh_token));
-					model.set("expires_in", params.expires_in);
+					model.set("expires_in", parseInt(params.expires_in, 10));
+					model.set("logged_in_at", new Date().getTime());
+
+					console.log(model.toJSON());
 
 					pm.storage.setValue({"user": model.toJSON()}, function() {
 					});
@@ -88,6 +116,8 @@ var User = Backbone.Model.extend({
 	getCollections: function() {
 		var model = this;
 
+		console.log("Get user collections");
+
 		pm.api.getUserCollections(function(data) {
 	    	if (data.hasOwnProperty("collections")) {
 		    	for(var i = 0; i < data.collections.length; i++) {
@@ -95,6 +125,8 @@ var User = Backbone.Model.extend({
 		    		c.is_public = c.is_public === "1" ? true : false;
 		    		c.updated_at_formatted = new Date(c.updated_at).toDateString();
 		    	}
+
+		    	console.log("Setting collections", data.collections);
 
 		    	model.set("collections", data.collections);
 		    	model.trigger("change:collections");

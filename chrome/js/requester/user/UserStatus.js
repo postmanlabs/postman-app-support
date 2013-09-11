@@ -6,6 +6,7 @@ var UserStatus = Backbone.View.extend({
 		model.on("logout", this.render, this);
 
 		$("#user-status-not-logged-in").on("click", function() {
+			$("#user-status-not-logged-in").html("Loading...");
 			model.login();
 		});
 
@@ -14,6 +15,7 @@ var UserStatus = Backbone.View.extend({
 		});
 
 		$("#user-status-logout").on("click", function() {
+			$("#user-status-not-logged-in").html("Not logged in");
 			model.logout();
 		});
 

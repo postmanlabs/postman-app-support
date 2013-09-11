@@ -9,6 +9,67 @@ var PostmanAPI = Backbone.Model.extend({
 		console.log("This is going to be the awesome postman API!");
 	},
 
+	isTokenValid: function() {
+		var user = pm.user;
+
+		var expiresIn = user.get("expires_in");
+		var loggedInAt = user.get("logged_in_at");
+
+		var now = new Date().getTime();
+
+		if (loggedInAt + expiresIn > now) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	},
+
+	exchangeRefreshToken: function(successCallback) {
+		var postUrl = pm.webUrl + "/client-oauth2-refresh";
+		postUrl += "?user_id=" + pm.user.get("id");
+
+		var parameters = {
+			"grant_type": "refresh_token",
+			"refresh_token": pm.user.get("refresh_token")
+		};
+
+		$.ajax({
+			type: 'POST',
+			url: postUrl,
+			data: parameters,
+			success: function(data) {
+				console.log("Received refresh_token", data);
+
+				if (data.hasOwnProperty("result")) {
+					var result = data.hasOwnProperty("result");
+					if (!result) {
+						pm.mediator.trigger("invalidRefreshToken");
+					}
+				}
+				else if (data.hasOwnProperty("access_token")) {
+					pm.user.setAccessToken(data);
+					if (successCallback) {
+						successCallback();
+					}
+				}
+			}
+		})
+	},
+
+	executeAuthenticatedRequest: function(func) {
+		var isTokenValid = this.isTokenValid();
+
+		if (isTokenValid) {
+			func();
+		}
+		else {
+			this.exchangeRefreshToken(function() {
+				func();
+			});
+		}
+	},
+
 	uploadCollection: function(collectionData, isPublic, successCallback) {
 		var uploadUrl = pm.webUrl + '/collections?is_public=' + isPublic;
 
@@ -61,38 +122,42 @@ var PostmanAPI = Backbone.Model.extend({
 	},
 
 	getUserCollections: function(successCallback) {
-		var user = pm.user;
+		this.executeAuthenticatedRequest(function() {
+			var user = pm.user;
 
-		var getUrl = pm.webUrl + "/users/" + user.get("id") + "/collections";
-		getUrl += "?user_id=" + user.get("id");
-		getUrl += "&access_token=" + user.get("access_token");
+			var getUrl = pm.webUrl + "/users/" + user.get("id") + "/collections";
+			getUrl += "?user_id=" + user.get("id");
+			getUrl += "&access_token=" + user.get("access_token");
 
-		$.ajax({
-		    type:'GET',
-		    url:getUrl,
-		    success:function (data) {
-		    	if (successCallback) {
-		    		successCallback(data);
-		    	}
-		    }
+			$.ajax({
+			    type:'GET',
+			    url:getUrl,
+			    success:function (data) {
+			    	if (successCallback) {
+			    		successCallback(data);
+			    	}
+			    }
+			});
 		});
 	},
 
 	deleteSharedCollection: function(id, successCallback) {
-		var user = pm.user;
+		this.executeAuthenticatedRequest(function() {
+			var user = pm.user;
 
-		var deleteUrl = pm.webUrl + "/users/" + user.get("id") + "/collections/" + id;
-		deleteUrl += "?user_id=" + user.get("id");
-		deleteUrl += "&access_token=" + user.get("access_token");
+			var deleteUrl = pm.webUrl + "/users/" + user.get("id") + "/collections/" + id;
+			deleteUrl += "?user_id=" + user.get("id");
+			deleteUrl += "&access_token=" + user.get("access_token");
 
-		$.ajax({
-		    type:'DELETE',
-		    url:deleteUrl,
-		    success:function (data) {
-		    	if (successCallback) {
-		    		successCallback(data);
-		    	}
-		    }
+			$.ajax({
+			    type:'DELETE',
+			    url:deleteUrl,
+			    success:function (data) {
+			    	if (successCallback) {
+			    		successCallback(data);
+			    	}
+			    }
+			});
 		});
 	}
 })
