@@ -101,12 +101,7 @@ var CollectionSidebar = Backbone.View.extend({
 
         $collection_items.on("click", ".collection-actions-download", function () {
             var id = $(this).attr('data-id');
-
-            $("#modal-share-collection").modal("show");
-
-            $('#share-collection-get-link').attr("data-collection-id", id);
-            $('#share-collection-download').attr("data-collection-id", id);
-            $('#share-collection-link').css("display", "none");
+            model.trigger("shareCollectionModal", id);
         });
 
         $('#collection-items').on("mouseenter", ".sidebar-request", function () {

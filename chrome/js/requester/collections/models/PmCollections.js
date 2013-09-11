@@ -639,8 +639,6 @@ var PmCollections = Backbone.Collection.extend({
             var filedata;
 
             pm.indexedDB.getAllRequestsInCollection(c, function (collection, requests) {
-                console.log(collection, requests);
-
                 for (i = 0, count = requests.length; i < count; i++) {
                     requests[i]["synced"] = false;
                 }
@@ -651,8 +649,6 @@ var PmCollections = Backbone.Collection.extend({
 
                 name = collection['name'] + ".json";
                 type = "application/json";
-
-                console.log(collection);
 
                 filedata = JSON.stringify(collection);
                 callback(name, type, filedata);
@@ -678,7 +674,8 @@ var PmCollections = Backbone.Collection.extend({
 
     // Upload collection
     uploadCollection:function (id, isChecked, callback) {
-        console.log(isChecked);
+        var pmCollection = this;
+
         this.getCollectionDataForFile(id, function (name, type, filedata) {
             var uploadUrl = pm.webUrl + '/collections?is_public=' + isChecked;
 
@@ -695,6 +692,12 @@ var PmCollections = Backbone.Collection.extend({
                     var link = data.link;
                     callback(link);
                     pm.mediator.trigger("refreshSharedCollections");
+
+                    var collection = pmCollection.get(id);
+                    var remote_id = parseInt(data.id, 10);
+                    collection.set("remote_id", remote_id);
+                    pmCollection.updateCollectionInDataStore(collection.getAsJSON(), true, function (c) {
+                    });
                 }
             });
 
@@ -1032,8 +1035,6 @@ var PmCollections = Backbone.Collection.extend({
     },
 
     updateResponsesForCollectionRequest: function(collectionRequestId, responses) {
-        console.log(collectionRequestId, responses);
-
         var pmCollection = this;
 
         pm.indexedDB.getCollectionRequest(collectionRequestId, function (collectionRequest) {

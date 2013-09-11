@@ -27,7 +27,8 @@ var PmCollection = Backbone.Model.extend({
             "requests": [],
             "timestamp": 0,
             "synced": false,
-            "syncedFilename": ""
+            "syncedFilename": "",
+            "remote_id": 0
         };
     },
 
@@ -130,7 +131,8 @@ var PmCollection = Backbone.Model.extend({
             "order": this.get("order"),
             "folders": this.get("folders"),
             "timestamp": this.get("timestamp"),
-            "synced": this.get("synced")
+            "synced": this.get("synced"),
+            "remote_id": this.get("remote_id")
         }
     },
 
@@ -174,5 +176,9 @@ var PmCollection = Backbone.Model.extend({
             folders[i].order.splice(indexInFolder, 1);
             this.set("folders", folders);
         }
+    },
+
+    isUploaded: function() {
+        return this.get("remote_id") !== 0;
     }
 });

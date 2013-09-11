@@ -1298,6 +1298,9 @@ input[type="file"] {
 
 #share-collection-directory-features {
   display: block; }
+  #share-collection-directory-features p {
+    color: #cdcdcd;
+    font-size: 10px; }
 
 /* End collections */
 /*Environments*/

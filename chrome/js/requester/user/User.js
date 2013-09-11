@@ -47,6 +47,10 @@ var User = Backbone.Model.extend({
 		pm.mediator.on("deleteSharedCollection", this.onDeleteSharedCollection, this);
 	},
 
+	isLoggedIn: function() {
+		return this.get("id") !== 0;
+	},
+
 	login: function() {
 		var model = this;
 
