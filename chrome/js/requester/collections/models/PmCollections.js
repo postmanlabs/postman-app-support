@@ -40,6 +40,28 @@ var PmCollections = Backbone.Collection.extend({
         pm.mediator.on("updateResponsesForCollectionRequest", this.updateResponsesForCollectionRequest, this);
         pm.mediator.on("deletedSharedCollection", this.onDeletedSharedCollection, this);
         pm.mediator.on("overwriteCollection", this.onOverwriteCollection, this);
+        pm.mediator.on("uploadAllLocalCollections", this.onUploadAllLocalCollections, this);
+    },
+
+    onUploadAllLocalCollections: function() {
+        console.log("Uploading all local collections");
+
+        var uploaded = 0;
+        var count = this.models.length;
+
+        function callback() {
+            console.log("Uploaded collection");
+            uploaded++;
+
+            if (uploaded === count) {
+                console.log("Uploaded all collections");
+                pm.mediator.trigger("refreshSharedCollections");
+            }
+        }
+
+        for(var i = 0; i < this.models.length; i++) {
+            this.uploadCollection(this.models[i].get("id"), false, false, callback);
+        }
     },
 
     // Load all collections
@@ -708,14 +730,20 @@ var PmCollections = Backbone.Collection.extend({
     },
 
     // Upload collection
-    uploadCollection:function (id, isPublic, callback) {
+    uploadCollection:function (id, isPublic, refreshSharedCollections, callback) {
         var pmCollection = this;
 
         this.getCollectionDataForFile(id, function (name, type, filedata) {
             pm.api.uploadCollection(filedata, isPublic, function (data) {
                 var link = data.link;
-                callback(link);
-                pm.mediator.trigger("refreshSharedCollections");
+
+                if (callback) {
+                    callback(link);
+                }
+
+                if (refreshSharedCollections) {
+                    pm.mediator.trigger("refreshSharedCollections");
+                }
 
                 var collection = pmCollection.get(id);
                 var remote_id = parseInt(data.id, 10);

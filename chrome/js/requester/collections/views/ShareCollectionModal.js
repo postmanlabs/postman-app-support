@@ -10,7 +10,7 @@ var ShareCollectionModal = Backbone.View.extend({
             var id = $(this).attr('data-collection-id');
             var isChecked = $("#share-collection-is-public").is(":checked");
 
-            model.uploadCollection(id, isChecked, function (link) {
+            model.uploadCollection(id, isChecked, true, function (link) {
                 $('#share-collection-link').css("display", "block");
                 $('#share-collection-link').html(link);
             });
