@@ -91,6 +91,10 @@ window.requestFileSystem = window.requestFileSystem || window.webkitRequestFileS
 pm.init = function () {
     Handlebars.partials = Handlebars.templates;
 
+    function initializePostmanAPI() {
+        pm.api = new PostmanAPI();
+    }
+
     function initializeCollections() {
         var pmCollections = new PmCollections();
 
@@ -234,6 +238,7 @@ pm.init = function () {
         var settingsModal = new SettingsModal({model: pm.settings});
         pm.filesystem.init();
         pm.indexedDB.open(function() {
+            initializePostmanAPI();
             initializeRequester();
             initializeHistory();
             initializeCollections();
