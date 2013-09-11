@@ -88,50 +88,35 @@ var User = Backbone.Model.extend({
 	getCollections: function() {
 		var model = this;
 
-		var getUrl = pm.webUrl + "/users/" + this.get("id") + "/collections";
-		getUrl += "?user_id=" + this.get("id");
-		getUrl += "&access_token=" + this.get("access_token");
-
-		$.ajax({
-		    type:'GET',
-		    url:getUrl,
-		    success:function (data) {
-		    	var c;
-
-		    	if (data.hasOwnProperty("collections")) {
-			    	for(var i = 0; i < data.collections.length; i++) {
-			    		c = data.collections[i];
-			    		c.is_public = c.is_public === "1" ? true : false;
-			    		c.updated_at_formatted = new Date(c.updated_at).toDateString();
-			    	}
-
-			    	model.set("collections", data.collections);
-			    	model.trigger("change:collections");
+		pm.api.getUserCollections(function(data) {
+	    	if (data.hasOwnProperty("collections")) {
+		    	for(var i = 0; i < data.collections.length; i++) {
+		    		c = data.collections[i];
+		    		c.is_public = c.is_public === "1" ? true : false;
+		    		c.updated_at_formatted = new Date(c.updated_at).toDateString();
 		    	}
 
-		    }
+		    	model.set("collections", data.collections);
+		    	model.trigger("change:collections");
+	    	}
 		});
 	},
 
 	onDeleteSharedCollection: function(id) {
 		var model = this;
-		var deleteUrl = pm.webUrl + "/users/" + this.get("id") + "/collections/" + id;
-		deleteUrl += "?user_id=" + this.get("id");
-		deleteUrl += "&access_token=" + this.get("access_token");
+		pm.api.deleteSharedCollection(id, function(data) {
+			var collections = model.get("collections");
+			var index = arrayObjectIndexOf(collections, id, "id");
+			var collection = _.clone(collections[index]);
+			console.log(collection);
 
-		$.ajax({
-		    type:'DELETE',
-		    url:deleteUrl,
-		    success:function (data) {
-		    	var collections = model.get("collections");
-		    	var index = arrayObjectIndexOf(collections, id, "id");
+			if (index >= 0) {
+				collections.splice(index, 1);
+			}
 
-		    	if (index >= 0) {
-		    		collections.splice(index, 1);
-		    	}
+			pm.mediator.trigger("deletedSharedCollection", collection);
 
-		    	model.trigger("change:collections");
-		    }
+			model.trigger("change:collections");
 		});
 	}
 

@@ -54,56 +54,40 @@ var Directory = Backbone.Collection.extend({
     getCollections: function(startId, count, order) {
     	var collection = this;
 
-    	var getUrl = pm.webUrl + "/collections";
-    	getUrl += "?user_id=" + pm.user.get("id");
-    	getUrl += "&access_token=" + pm.user.get("access_token");
-    	getUrl += "&start_id=" + startId;
-    	getUrl += "&count=" + count;
-    	getUrl += "&order=" + order;
+    	pm.api.getDirectoryCollections(startId, count, order, function (collections) {
+            var c;
+            var i;
+            var updated_at_formatted;
 
-    	$.ajax({
-    	    type:'GET',
-    	    url:getUrl,
-    	    success:function (collections) {
-                var c;
-                var i;
-                var updated_at_formatted;
+            if (order === "descending") {
+                collection.startId = parseInt(collections[collections.length - 1].id, 10);
+                collection.totalCount += collections.length;
+            }
+            else {
+                collection.startId = parseInt(collections[0].id, 10);
+                collection.totalCount -= collection.lastCount;
+            }
 
-                if (order === "descending") {
-                    collection.startId = parseInt(collections[collections.length - 1].id, 10);
-                    collection.totalCount += collections.length;
+            collection.lastCount = collections.length;
+
+	    	if(collections.hasOwnProperty("message")) {
+	    		// Signal error
+	    	}
+	    	else {
+                for(i = 0; i < collections.length; i++) {
+                    c = collections[i];
+                    updated_at_formatted = new Date(c.updated_at).toDateString();
+                    c.updated_at_formatted = updated_at_formatted;
                 }
-                else {
-                    collection.startId = parseInt(collections[0].id, 10);
-                    collection.totalCount -= collection.lastCount;
-                }
 
-                collection.lastCount = collections.length;
-
-    	    	if(collections.hasOwnProperty("message")) {
-    	    		// Signal error
-    	    	}
-    	    	else {
-                    for(i = 0; i < collections.length; i++) {
-                        c = collections[i];
-                        updated_at_formatted = new Date(c.updated_at).toDateString();
-                        c.updated_at_formatted = updated_at_formatted;
-                    }
-
-                    collection.reset([]);
-                    collection.add(collections, {merge: true});
-    	    	}
-
-    	    }
-    	});
+                collection.reset([]);
+                collection.add(collections, {merge: true});
+	    	}
+        });
     },
 
     downloadCollection: function(link_id) {
-        var getUrl = pm.webUrl + "/collections/" + link_id;
-        getUrl += "?user_id=" + pm.user.get("id");
-        getUrl += "&access_token=" + pm.user.get("access_token");
-
-        $.get(getUrl, function (data) {
+        pm.api.downloadDirectoryCollection(link_id, function (data) {
             try {
                 var collection = data;
                 pm.mediator.trigger("notifySuccess", "Downloaded collection");
@@ -113,7 +97,6 @@ var Directory = Backbone.Collection.extend({
                 pm.mediator.trigger("notifyError", "Failed to download collection");
                 pm.mediator.trigger("failedCollectionImport");
             }
-
         });
     }
 

@@ -38,6 +38,7 @@ var PmCollections = Backbone.Collection.extend({
         pm.mediator.on("addDirectoryCollection", this.onAddDirectoryCollection, this);
         pm.mediator.on("addResponseToCollectionRequest", this.addResponseToCollectionRequest, this);
         pm.mediator.on("updateResponsesForCollectionRequest", this.updateResponsesForCollectionRequest, this);
+        pm.mediator.on("deletedSharedCollection", this.onDeletedSharedCollection, this);
     },
 
     // Load all collections
@@ -179,6 +180,22 @@ var PmCollections = Backbone.Collection.extend({
     onRemoveSyncableFileForRequests: function(id) {
         this.deleteRequestFromDataStore(id, false, false, function() {
         });
+    },
+
+    onDeletedSharedCollection: function(collection) {
+        console.log("Deleted shared collection", collection);
+        var c;
+        var pmCollection = this;
+
+        for(var i = 0; i < this.models.length; i++) {
+            var c = this.models[i];
+            if (c.get("remote_id") === collection.remote_id) {
+                c.set("remote_id", 0);
+                pmCollection.updateCollectionInDataStore(c.getAsJSON(), true, function (c) {
+                });
+                break;
+            }
+        }
     },
 
     getAsSyncableFile: function(id) {
@@ -673,34 +690,21 @@ var PmCollections = Backbone.Collection.extend({
     },
 
     // Upload collection
-    uploadCollection:function (id, isChecked, callback) {
+    uploadCollection:function (id, isPublic, callback) {
         var pmCollection = this;
 
         this.getCollectionDataForFile(id, function (name, type, filedata) {
-            var uploadUrl = pm.webUrl + '/collections?is_public=' + isChecked;
+            pm.api.uploadCollection(filedata, isPublic, function (data) {
+                var link = data.link;
+                callback(link);
+                pm.mediator.trigger("refreshSharedCollections");
 
-            if (pm.user.get("id") !== 0) {
-                uploadUrl += "&user_id=" + pm.user.get("id");
-                uploadUrl += "&access_token=" + pm.user.get("access_token");
-            }
-
-            $.ajax({
-                type:'POST',
-                url:uploadUrl,
-                data:filedata,
-                success:function (data) {
-                    var link = data.link;
-                    callback(link);
-                    pm.mediator.trigger("refreshSharedCollections");
-
-                    var collection = pmCollection.get(id);
-                    var remote_id = parseInt(data.id, 10);
-                    collection.set("remote_id", remote_id);
-                    pmCollection.updateCollectionInDataStore(collection.getAsJSON(), true, function (c) {
-                    });
-                }
+                var collection = pmCollection.get(id);
+                var remote_id = parseInt(data.id, 10);
+                collection.set("remote_id", remote_id);
+                pmCollection.updateCollectionInDataStore(collection.getAsJSON(), true, function (c) {
+                });
             });
-
         });
     },
 
