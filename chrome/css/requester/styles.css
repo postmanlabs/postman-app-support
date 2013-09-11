@@ -284,9 +284,8 @@ li .right {
     color: #999;
     padding-left: 13px;
     padding-top: 14px;
-    display: inline-block;
+    display: inline-block !important;
     height: 32px;
-    vertical-align: middle;
     margin-left: 15px;
     padding-right: 13px; }
   .navbar-main-navigation a:hover {
@@ -296,13 +295,15 @@ li .right {
 
 /*Preferences*/
 .preferences {
-  float: right;
-  margin-top: 12px; }
+  float: right; }
   .preferences a.icon {
     font-size: 11px;
     font-weight: bold;
     text-decoration: none;
-    margin-right: 9px; }
+    margin-right: 9px;
+    display: inline-block;
+    height: 32px;
+    padding-top: 14px; }
   .preferences img {
     height: 20px;
     vertical-align: middle; }
@@ -319,9 +320,8 @@ li .right {
     color: #999;
     padding-left: 13px;
     padding-top: 14px;
-    display: inline-block;
+    display: inline-block !important;
     height: 32px;
-    vertical-align: middle;
     margin-left: 15px;
     padding-right: 13px; }
   .preferences #donate-link:hover {
@@ -1671,6 +1671,10 @@ input[type="file"] {
   margin-bottom: 0; }
 
 /*User collections*/
+#modal-user-collections .instructions {
+  color: #666;
+  font-size: 11px; }
+
 #user-collections-list {
   -moz-user-select: text;
   -khtml-user-select: text;
@@ -1686,10 +1690,15 @@ input[type="file"] {
   color: #999;
   font-size: 10px; }
 
-#user-collections-list .user-collection-action-delete {
+#user-collections-list .user-collection-action-download {
   display: inline-block;
   margin-top: 8px;
   margin-left: 15px; }
+
+#user-collections-list .user-collection-action-delete {
+  display: inline-block;
+  margin-top: 8px;
+  margin-left: 3px; }
 
 /*Settings*/
 .add-on {

@@ -8,7 +8,12 @@
         <span class="user-collection-link">{{link}}</span><br/>
         <span class="user-collection-updated-at">Last updated on {{updated_at_formatted}}</span>
     </td>
-    <td style="width: 50px;">
+    <td style="width: 75px;">
+        <a
+           data-name="{{name}}"
+           rel="tooltip" data-original-title="Download collection" data-placement="bottom"
+           class="user-collection-action-download" data-id="{{id}}">
+            <img src="img/download.png" style="vertical-align: middle; width: 20px; height: 20px;"/></a>
         <a
            data-name="{{name}}"
            rel="tooltip" data-original-title="Delete collection" data-placement="bottom"
