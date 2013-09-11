@@ -175,5 +175,18 @@ var PostmanAPI = Backbone.Model.extend({
 			    }
 			});
 		});
+	},
+
+	getCollectionFromRemoteId: function(id, successCallback) {
+		var getUrl = pm.webUrl + "/collections/" + id;
+		getUrl += "?id_type=remote&user_id=" + pm.user.get("id");
+		getUrl += "&access_token=" + pm.user.get("access_token");
+
+		$.get(getUrl, function (data) {
+			if (successCallback) {
+				successCallback(data);
+			}
+		});
 	}
+
 })

@@ -39,6 +39,7 @@ var PmCollections = Backbone.Collection.extend({
         pm.mediator.on("addResponseToCollectionRequest", this.addResponseToCollectionRequest, this);
         pm.mediator.on("updateResponsesForCollectionRequest", this.updateResponsesForCollectionRequest, this);
         pm.mediator.on("deletedSharedCollection", this.onDeletedSharedCollection, this);
+        pm.mediator.on("overwriteCollection", this.onOverwriteCollection, this);
     },
 
     // Load all collections
@@ -180,6 +181,11 @@ var PmCollections = Backbone.Collection.extend({
     onRemoveSyncableFileForRequests: function(id) {
         this.deleteRequestFromDataStore(id, false, false, function() {
         });
+    },
+
+    onOverwriteCollection: function(collection) {
+        console.log("Collection data is", collection);
+        this.overwriteCollection(collection.id, collection);
     },
 
     onDeletedSharedCollection: function(collection) {
@@ -593,6 +599,14 @@ var PmCollections = Backbone.Collection.extend({
             collectionModel.set("folders", folders);
             collectionModel.set("order", collection["order"]);
 
+
+            // Check for remote_id
+
+            if (pm.user.isLoggedIn()) {
+                var remoteId = pm.user.getRemoteIdForCollection(c.id);
+                collectionModel.set("remote_id", remoteId);
+            }
+
             // Add new collection to the database
             pmCollection.updateCollectionInDataStore(collectionModel.getAsJSON(), true, function() {
                 var i;
@@ -658,6 +672,10 @@ var PmCollections = Backbone.Collection.extend({
             pm.indexedDB.getAllRequestsInCollection(c, function (collection, requests) {
                 for (i = 0, count = requests.length; i < count; i++) {
                     requests[i]["synced"] = false;
+                }
+
+                if (collection.hasOwnProperty("remote_id")) {
+                    delete collection['remote_id'];
                 }
 
                 //Get all collection requests with one call

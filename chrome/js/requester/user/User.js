@@ -51,6 +51,7 @@ var User = Backbone.Model.extend({
 		});
 
 		pm.mediator.on("refreshSharedCollections", this.getCollections, this);
+		pm.mediator.on("downloadSharedCollection", this.onDownloadSharedCollection, this);
 		pm.mediator.on("deleteSharedCollection", this.onDeleteSharedCollection, this);
 		pm.mediator.on("invalidAccessToken", this.onTokenNotValid, this);
 	},
@@ -73,6 +74,18 @@ var User = Backbone.Model.extend({
 
 		pm.storage.setValue({"user": model.toJSON()}, function() {
 		});
+	},
+
+	getRemoteIdForCollection: function(id) {
+		var collections = this.get("collections");
+		var index = arrayObjectIndexOf(collections, id, "id");
+
+		if (index >= 0) {
+			return collections[index].remote_id;
+		}
+		else {
+			return 0;
+		}
 	},
 
 	login: function() {
@@ -121,8 +134,6 @@ var User = Backbone.Model.extend({
 	getCollections: function() {
 		var model = this;
 
-		console.log("Get user collections");
-
 		pm.api.getUserCollections(function(data) {
 	    	if (data.hasOwnProperty("collections")) {
 		    	for(var i = 0; i < data.collections.length; i++) {
@@ -154,6 +165,14 @@ var User = Backbone.Model.extend({
 			pm.mediator.trigger("deletedSharedCollection", collection);
 
 			model.trigger("change:collections");
+		});
+	},
+
+	onDownloadSharedCollection: function(id) {
+		console.log("Get collection", id);
+
+		pm.api.getCollectionFromRemoteId(id, function(data) {
+			pm.mediator.trigger("overwriteCollection", data);
 		});
 	}
 
