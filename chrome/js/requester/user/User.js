@@ -54,6 +54,7 @@ var User = Backbone.Model.extend({
 		pm.mediator.on("downloadSharedCollection", this.onDownloadSharedCollection, this);
 		pm.mediator.on("deleteSharedCollection", this.onDeleteSharedCollection, this);
 		pm.mediator.on("invalidAccessToken", this.onTokenNotValid, this);
+		pm.mediator.on("downloadAllSharedCollections", this.onDownloadAllSharedCollections, this);
 	},
 
 	onTokenNotValid: function() {
@@ -168,12 +169,22 @@ var User = Backbone.Model.extend({
 		});
 	},
 
-	onDownloadSharedCollection: function(id) {
-		console.log("Get collection", id);
-
+	downloadSharedCollection: function(id) {
 		pm.api.getCollectionFromRemoteId(id, function(data) {
 			pm.mediator.trigger("overwriteCollection", data);
 		});
+	},
+
+	onDownloadSharedCollection: function(id) {
+		this.downloadSharedCollection(id);
+	},
+
+	onDownloadAllSharedCollections: function() {
+		var collections = this.get("collections");
+
+		for(var i = 0; i < collections.length; i++) {
+			this.downloadSharedCollection(collections[i].remote_id);
+		}
 	}
 
 });
