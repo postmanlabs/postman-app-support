@@ -57,6 +57,22 @@ var PostmanAPI = Backbone.Model.extend({
 		})
 	},
 
+	logoutUser: function(userId, accessToken, successCallback) {
+		var postUrl = pm.webUrl + '/client-logout';
+	    postUrl += "?user_id=" + userId;
+	    postUrl += "&access_token=" + accessToken;
+
+		$.ajax({
+			type: 'POST',
+			url: postUrl,
+			success: function() {
+				if (successCallback) {
+					successCallback();
+				}
+			}
+		})
+	},
+
 	executeAuthenticatedRequest: function(func) {
 		var isTokenValid = this.isTokenValid();
 

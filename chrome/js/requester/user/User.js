@@ -109,8 +109,13 @@ var User = Backbone.Model.extend({
 	},
 
 	logout: function() {
-		this.setDefaults();
-		this.trigger("logout");
+		var model = this;
+
+		pm.api.logoutUser(this.get("id"), this.get("access_token"), function() {
+			model.setDefaults();
+			model.trigger("logout");
+		});
+
 	},
 
 	getCollections: function() {
