@@ -6,9 +6,12 @@ var UserCollections = Backbone.View.extend({
 		model.on("logout", this.render, this);
 		model.on("change:collections", this.render, this);
 
+		var deleteUserCollectionModal = new DeleteUserCollectionModal();
+
 		$("#user-collections-list").on("click", ".user-collection-action-delete", function() {
+			// Show delete modal
 			var id = $(this).attr("data-id");
-			pm.mediator.trigger("deleteSharedCollection", id)
+			pm.mediator.trigger("confirmDeleteSharedCollection", id);
 		});
 
 		this.render();
