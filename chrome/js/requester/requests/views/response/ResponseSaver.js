@@ -11,7 +11,7 @@ var ResponseSaver = Backbone.View.extend({
 	    	view.saveResponse();
 	    });
 
-	    $("#response-sample-save").on("click", function() {
+	    $("#response-sample-cancel").on("click", function() {
 	    	view.cancelSaveResponse();
 	    });
     },
@@ -30,13 +30,14 @@ var ResponseSaver = Backbone.View.extend({
     	this.hideSaveForm();
 
     	var name = $("#response-sample-name").val();
-    	console.log("Save this response", name);
 
     	var response = this.model.get("response");
+        $("#response-sample-name").val("");
     	response.saveAsSample(name);
     },
 
     cancelSaveResponse: function() {
+        $("#response-sample-name").val("");
     	this.hideSaveForm();
     }
 });
