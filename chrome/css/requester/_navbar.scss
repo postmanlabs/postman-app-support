@@ -2,7 +2,7 @@
     color: #999;
     padding-left: 13px;
     padding-top: 14px;
-    display: inline-block !important;
+    display: inline-block;
     height: 32px;
     margin-left: 15px;
     padding-right: 13px;
@@ -102,6 +102,7 @@
     }
 
     #donate-link {
+        display: inline-block;
         @include navbar-text-link;
     }
 

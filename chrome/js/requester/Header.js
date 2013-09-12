@@ -1,5 +1,23 @@
 var Header = Backbone.View.extend({
 	initialize: function() {
+		var donated = pm.settings.getSetting("haveDonated");
+
+		if(donated) {
+			$("#donate-link").css("display", "none");
+		}
+		else {
+			$("#donate-link").css("display", "inline-block");
+		}
+
+		pm.mediator.on("donatedStatusChanged", function(donated) {
+			if(donated) {
+				$("#donate-link").css("display", "none");
+			}
+			else {
+				$("#donate-link").css("display", "inline-block");
+			}
+		});
+
 		$("#add-on-directory").on("click", function() {
 			pm.mediator.trigger("openModule", "directory");
 			pm.mediator.trigger("initializeDirectory");

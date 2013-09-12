@@ -84,6 +84,7 @@ var SettingsModal = Backbone.View.extend({
 
         $('#have-donated').change(function () {
             var val = $('#have-donated').val();
+            console.log("Donated status changed");
             if (val === "true") {
                 settings.setSetting("haveDonated", true);
                 pm.mediator.trigger("donatedStatusChanged", true);

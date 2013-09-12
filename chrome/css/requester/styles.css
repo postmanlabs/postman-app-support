@@ -284,7 +284,7 @@ li .right {
     color: #999;
     padding-left: 13px;
     padding-top: 14px;
-    display: inline-block !important;
+    display: inline-block;
     height: 32px;
     margin-left: 15px;
     padding-right: 13px; }
@@ -317,10 +317,11 @@ li .right {
     .preferences #google-drive-status img:hover {
       opacity: 1 !important; }
   .preferences #donate-link {
+    display: inline-block;
     color: #999;
     padding-left: 13px;
     padding-top: 14px;
-    display: inline-block !important;
+    display: inline-block;
     height: 32px;
     margin-left: 15px;
     padding-right: 13px; }
