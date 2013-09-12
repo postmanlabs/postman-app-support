@@ -57,6 +57,12 @@ pm.layout = {
             $('#donate-form form').submit();
         });
 
+        $('#download-all-data').on("click", function() {
+            pm.indexedDB.downloadAllData(function() {
+                console.log("Downloaded all data");
+            });
+        });
+
         $('#donate').popover({
             animation: true,
             content: "Please donate only if you like Postman! This will help a lot in the development and maintenance of the project.",
