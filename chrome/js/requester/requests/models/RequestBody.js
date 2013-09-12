@@ -19,10 +19,12 @@ var RequestBody = Backbone.Model.extend({
     getFormDataForCurl: function() {
         var dataAsObjects = this.get("dataAsObjects");
         var kv;
-        console.log(dataAsObjects);
+        var value;
+
         var body = "";
         for(var i = 0; i < dataAsObjects.length; i++) {
-            body += " -F " + dataAsObjects[i].key + "=" + dataAsObjects[i].value;
+            value = pm.envManager.getCurrentValue(dataAsObjects[i].value);
+            body += " -F " + dataAsObjects[i].key + "=" + value;
         }
 
         return body;
@@ -30,9 +32,11 @@ var RequestBody = Backbone.Model.extend({
 
     getBodyForCurl: function() {
         var dataMode = this.get("dataMode");
+        var preview;
 
         if (dataMode !== "params") {
-            return " -d '" + this.get("dataAsPreview") + "'";
+            preview = pm.envManager.getCurrentValue(this.get("dataAsPreview"));
+            return " -d '" + preview + "'";
         }
         else {
             return this.getFormDataForCurl();
