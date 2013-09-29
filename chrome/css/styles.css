@@ -1511,3 +1511,14 @@ input[type="file"] {
 #request-preview-header .dropdown-menu li:last-child {
     border-bottom: none;
 }
+
+#sidebar-footer .popover {
+    height: 135px;
+}
+
+.supporter-tag {
+    display: block;
+    margin-top: 5px;
+    font-weight: normal;
+    line-height: 1.2em !important;
+}
