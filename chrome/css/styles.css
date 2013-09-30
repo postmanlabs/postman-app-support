@@ -1513,12 +1513,30 @@ input[type="file"] {
 }
 
 #sidebar-footer .popover {
-    height: 135px;
+    width: 250px;
+    height: 185px;
 }
 
+.supporter {
+    border-bottom: solid thin #efefef;
+    margin-bottom: 5px;
+    padding-bottom: 5px;
+}
+
+.supporter:first {
+    border-bottom: none;
+}
+
+.supporter-image {
+    float: left;
+    margin-right: 10px;
+    margin-top: 5px;
+    width: 100px;
+}
 .supporter-tag {
-    display: block;
+    float: left;
     margin-top: 5px;
     font-weight: normal;
     line-height: 1.2em !important;
+    width: 100px;
 }

@@ -63,12 +63,17 @@ pm.layout = {
             });
         });
 
+        var supportContent = "<div class='supporter clearfix'><div class='supporter-image'><img src='img/supporters/mashape.png'/></div>";
+        supportContent += "<div class='supporter-tag'>Consume or provide cloud services with the Mashape API Platform & Marketplace.</div>";
+        supportContent += "</div>";
+
         $('#donate').popover({
             animation: true,
-            content: "Please donate only if you like Postman! This will help a lot in the development and maintenance of the project.",
+            content: supportContent,
             placement: "top",
             trigger: "hover",
-            title: "Donate"
+            html: true,
+            title: "Postman is supported by some amazing companies"
         });
 
         $('#response-body-toggle').on("click", function () {
