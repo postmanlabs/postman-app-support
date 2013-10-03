@@ -65,12 +65,12 @@ pm.layout = {
 
         var supportContent = "<div class='supporters'><div class='supporter clearfix'>";
         supportContent += "<div class='supporter-image'>";
-        supportContent += "<a href='http://www.getpostman.com/r?url=https://www.mashape.com/?utm_source=chrome%26utm_medium=app%26utm_campaign=postman'>";
+        supportContent += "<a href='http://www.getpostman.com/r?url=https://www.mashape.com/?utm_source=chrome%26utm_medium=app%26utm_campaign=postman' target='_blank'>";
         supportContent += "<img src='img/supporters/mashape.png'/></a></div>";
         supportContent += "<div class='supporter-tag'>Consume or provide cloud services with the Mashape API Platform.</div></div>";
         supportContent += "<div class='supporter clearfix'>";
         supportContent += "<div class='supporter-image'>";
-        supportContent += "<a href='http://www.getpostman.com/r?url=https://www.runscope.com/t/postman'>";
+        supportContent += "<a href='http://www.getpostman.com/r?url=https://www.runscope.com/t/postman' target='_blank'>";
         supportContent += "<img src='img/supporters/runscope.png'/></a></div>";
         supportContent += "<div class='supporter-tag'>Everything is going to be 200 OK.</div>";
         supportContent += "</div></div>";
