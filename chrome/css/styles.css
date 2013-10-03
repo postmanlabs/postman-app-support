@@ -1523,6 +1523,10 @@ input[type="file"] {
     padding-bottom: 5px;
 }
 
+.supporter a:hover {
+    background: white !important;
+}
+
 .supporter:first {
     border-bottom: none;
 }
