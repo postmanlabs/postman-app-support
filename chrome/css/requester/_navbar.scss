@@ -104,10 +104,47 @@
     #donate-link {
         display: inline-block;
         @include navbar-text-link;
+        margin-left: 0;
+        margin-right: 5px;
     }
 
     #donate-link:hover {
         @include navbar-text-link-hover;
     }
 
+}
+
+.supporter {
+    border-bottom: solid thin #efefef;
+    margin-bottom: 5px;
+    padding-bottom: 5px;
+}
+
+.supporter a:hover {
+    background: white !important;
+}
+
+.supporter:first {
+    border-bottom: none;
+}
+
+.supporter-image {
+    float: left;
+    margin-right: 10px;
+    margin-top: 5px;
+    width: 100px;
+}
+
+.supporter-image-mashape img {
+    width: 100px;
+    height: 28px;
+}
+
+.supporter-tag {
+    float: left;
+    font-size: 11px;
+    margin-top: 5px;
+    font-weight: normal;
+    line-height: 1.2em !important;
+    width: 125px;
 }

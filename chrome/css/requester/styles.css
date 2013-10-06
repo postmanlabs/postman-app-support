@@ -324,11 +324,42 @@ li .right {
     display: inline-block;
     height: 32px;
     margin-left: 15px;
-    padding-right: 13px; }
+    padding-right: 13px;
+    margin-left: 0;
+    margin-right: 5px; }
   .preferences #donate-link:hover {
     background: #333;
     color: #AAA;
     text-decoration: none; }
+
+.supporter {
+  border-bottom: solid thin #efefef;
+  margin-bottom: 5px;
+  padding-bottom: 5px; }
+
+.supporter a:hover {
+  background: white !important; }
+
+.supporter:first {
+  border-bottom: none; }
+
+.supporter-image {
+  float: left;
+  margin-right: 10px;
+  margin-top: 5px;
+  width: 100px; }
+
+.supporter-image-mashape img {
+  width: 100px;
+  height: 28px; }
+
+.supporter-tag {
+  float: left;
+  font-size: 11px;
+  margin-top: 5px;
+  font-weight: normal;
+  line-height: 1.2em !important;
+  width: 125px; }
 
 /*Sidebar*/
 .sidebar-helper-tabs {
@@ -1560,7 +1591,7 @@ input[type="file"] {
   display: none;
   float: right;
   height: 47px;
-  margin-right: 25px; }
+  margin-right: 5px; }
   #user-status #user-status-username,
   #user-status #user-status-not-logged-in {
     color: #999; }

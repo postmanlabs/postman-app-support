@@ -40,7 +40,45 @@ var Header = Backbone.View.extend({
 		this.render();
 	},
 
+	createSupporterPopover: function() {
+		var supportContent = "<div class='supporters'><div class='supporter clearfix'>";
+		supportContent += "<div class='supporter-image supporter-image-mashape'>";
+		supportContent += "<a href='http://www.getpostman.com/r?url=https://www.mashape.com/?utm_source=chrome%26utm_medium=app%26utm_campaign=postman' target='_blank'>";
+		supportContent += "<img src='img/supporters/mashape.png'/></a></div>";
+		supportContent += "<div class='supporter-tag'>Consume or provide cloud services with the Mashape API Platform.</div></div>";
+		supportContent += "<div class='supporter clearfix'>";
+		supportContent += "<div class='supporter-image'>";
+		supportContent += "<a href='http://www.getpostman.com/r?url=https://www.runscope.com/t/postman' target='_blank'>";
+		supportContent += "<img src='img/supporters/runscope.png'/></a></div>";
+		supportContent += "<div class='supporter-tag'>Everything is going to be 200 OK.</div>";
+		supportContent += "</div></div>";
+
+		$('#donate-link').popover({
+		    animation: false,
+		    content: supportContent,
+		    placement: "bottom",
+		    trigger: "manual",
+		    html: true,
+		    title: "Postman is supported by amazing companies"
+		}).on("mouseenter", function () {
+		    var _this = this;
+		    $(this).popover("show");
+		    $(this).siblings(".popover").on("mouseleave", function () {
+		        $(_this).popover('hide');
+		    });
+		}).on("mouseleave", function () {
+		    var _this = this;
+		    setTimeout(function () {
+		        if (!$(".popover:hover").length) {
+		            $(_this).popover("hide")
+		        }
+		    }, 100);
+		});
+	},
+
 	render: function() {
+		this.createSupporterPopover();
+
 		if (pm.features.isFeatureEnabled(FEATURES.DIRECTORY)) {
 			$("#add-ons").css("display", "block");
 		}
