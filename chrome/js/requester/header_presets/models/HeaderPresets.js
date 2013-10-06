@@ -260,7 +260,8 @@ var HeaderPresets = Backbone.Collection.extend({
             list.push(item);
         }
 
-        list = _.union(list, chromeHeaders);
+        list = _.union(list, allowedChromeHeaders);
+        list = _.union(list, restrictedChromeHeaders);
 
         return list;
     },
