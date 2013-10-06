@@ -26,6 +26,7 @@ var Settings = Backbone.Model.extend({
         this.setSetting("languageDetection", "auto");
         this.setSetting("haveDonated", false);
 
+        this.setSetting("responsePreviewDataSection", "body");
         this.setSetting("requestBodyEditorContainerType", "editor");
 
         //Google Drive related
@@ -61,6 +62,7 @@ var Settings = Backbone.Model.extend({
             this.create("languageDetection", "auto");
             this.create("haveDonated", false);
 
+            this.create("responsePreviewDataSection", "body");
             this.create("requestBodyEditorContainerType", "editor");
 
             //Google Drive related

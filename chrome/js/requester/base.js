@@ -27,7 +27,7 @@ pm.targets = {
 
 pm.target = pm.targets.CHROME_PACKAGED_APP;
 
-pm.isTesting = true;
+pm.isTesting = false;
 pm.features = new Features();
 
 if (pm.isTesting) {

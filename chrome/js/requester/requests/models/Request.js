@@ -566,19 +566,16 @@ var Request = Backbone.Model.extend({
 
         if (this.isMethodWithBody(this.get("method"))) {
             if(body.get("dataMode") === "urlencoded") {
-                var urlencodedHeader = {
-                    key: "Content-Type",
-                    name: "Content-Type",
-                    value: "application/x-www-form-urlencoded"
-                };
-
-                headers.push(urlencodedHeader);
+                this.setHeader("Content-Type", "application/x-www-form-urlencoded");
             }
+
+            headers = _.clone(this.get("headers"));
         }
 
         if (pm.settings.getSetting("usePostmanProxy") === true) {
             headers = this.prepareHeadersForProxy(headers);
         }
+
 
         var i;
         var finalHeaders = [];
