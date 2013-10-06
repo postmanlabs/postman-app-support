@@ -125,7 +125,14 @@ var OAuth1Processor = Backbone.Model.extend({
         //Get parameters
         var urlParams = request.getUrlParams();
 
-        var bodyParams = requestBody.get("dataAsObjects");
+        var bodyParams;
+
+        if (isMethodWithBody(method)) {
+            bodyParams = requestBody.get("dataAsObjects");
+        }
+        else {
+            bodyParams = [];
+        }
 
         var params = _.union(urlParams, bodyParams);
 
