@@ -645,6 +645,7 @@ var Request = Backbone.Model.extend({
         // Prepare body
         if (this.isMethodWithBody(method)) {
             var data = body.get("data");
+            console.log("Sending data", data);
             if(data === false) {
                 xhr.send();
             }
@@ -660,6 +661,7 @@ var Request = Backbone.Model.extend({
 
         //Save the request
         if (pm.settings.getSetting("autoSaveRequest")) {
+            console.log("Saving data", body.get("dataAsObjects"));
             pm.history.addRequest(originalUrl,
                 method,
                 this.getPackedHeaders(),

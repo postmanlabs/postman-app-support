@@ -98,7 +98,7 @@ var RequestBodyEditor = Backbone.View.extend({
         var dataMode = body.get("dataMode");
 
         if (dataMode === 'raw') {
-            var rawBodyData = this.getData(true);
+            var rawBodyData = _.clone(this.getData(true));
             rawBodyData = pm.envManager.getCurrentValue(rawBodyData);
             return rawBodyData;
         }
@@ -157,9 +157,11 @@ var RequestBodyEditor = Backbone.View.extend({
                 data = model.getBodyParamString(newParams);
             }
 
+            console.log("Params data in RequestBodyEditor is", data);
         }
         else if (mode === "raw") {
             data = this.bodyRawEditor.getRawData();
+            console.log("Raw data in RequestBodyEditor is", data);
         }
         else if (mode === "urlencoded") {
             params = $('#urlencoded-keyvaleditor').keyvalueeditor('getValues');
