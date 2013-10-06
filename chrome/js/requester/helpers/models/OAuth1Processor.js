@@ -60,7 +60,7 @@ var OAuth1Processor = Backbone.Model.extend({
         if(this.get("signatureMethod" === "")) {
             this.set("signatureMethod", "HMAC-SHA1");
         }
-        this.set("timestamp", OAuth.timestamp());
+        this.set("timestamp", OAuth.timestamp() + "");
         this.set("nonce", OAuth.nonce(6));
     },
 
@@ -211,9 +211,11 @@ var OAuth1Processor = Backbone.Model.extend({
         ];
 
         for(i = 0; i < signatureParams.length; i++) {
-            var param = signatureParams[i];
-            param.value = pm.envManager.getCurrentValue(param.value);
-            oAuthParams.push(param);
+            if (signatureParams[i].key !== "oauth_consumer_key" && signatureParams[i].key !== "oauth_token") {
+                var param = signatureParams[i];
+                param.value = pm.envManager.getCurrentValue(param.value);
+                oAuthParams.push(param);
+            }
         }
 
         //Convert environment values
@@ -232,6 +234,8 @@ var OAuth1Processor = Backbone.Model.extend({
         var addToHeader = this.get("header");
 
         if (addToHeader) {
+            console.log("Need to add to header");
+
             var realm = this.get("realm");
 
             if (realm === '') {
@@ -254,6 +258,8 @@ var OAuth1Processor = Backbone.Model.extend({
             request.setHeader(authHeaderKey, rawString);
             request.trigger("customHeaderUpdate");
         } else {
+            console.log("oAuthParams", oAuthParams);
+            console.log("params", params);
             params = params.concat(oAuthParams);
 
             if (!request.isMethodWithBody(method)) {

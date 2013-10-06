@@ -27,6 +27,11 @@ var OAuth1Form = Backbone.View.extend({
                 $('#request-helper-oAuth1 .request-helper-submit').css("display", "none");
             }
         });
+
+        $('#request-helper-oauth1-header').click(function () {
+            var isHeaderEnabled = $('#request-helper-oauth1-header').attr('checked') ? true : false;
+            model.set("header", isHeaderEnabled);
+        });
     },
 
     clearFields: function() {

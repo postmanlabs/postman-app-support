@@ -12,7 +12,7 @@ var SearchForm = Backbone.View.extend({
     			var searchTerm = $("#sidebar-search").val();
 
     			if (searchTerm !== model.get("term")) {
-    				model.set("term", searchTerm);    				    				    				
+    				model.set("term", searchTerm);
     			}
 
                 if (searchTerm === "") {

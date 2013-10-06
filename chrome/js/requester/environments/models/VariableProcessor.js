@@ -31,8 +31,8 @@ var VariableProcessor = Backbone.Model.extend({
 
             "$timestamp": {
                 run: function() {
-                    return Math.round(new Date().getTime() / 1000);    
-                }                
+                    return Math.round(new Date().getTime() / 1000);
+                }
             },
 
             "$randomInt": {
@@ -56,9 +56,9 @@ var VariableProcessor = Backbone.Model.extend({
         this.set("functions", functions);
     },
 
-    setCurrentEnvironment: function() {        
+    setCurrentEnvironment: function() {
         this.set("selectedEnvironmentId", pm.settings.getSetting("selectedEnvironmentId"));
-        this.set("selectedEnv", this.get("environments").get(pm.settings.getSetting("selectedEnvironmentId")));        
+        this.set("selectedEnv", this.get("environments").get(pm.settings.getSetting("selectedEnvironmentId")));
     },
 
     containsVariable:function (string, values) {
@@ -101,14 +101,14 @@ var VariableProcessor = Backbone.Model.extend({
             patString = startDelimiter + values[i].key + endDelimiter;
             pattern = new RegExp(patString, 'g');
 
-            if(typeof values[i].value === "object") {       
-                var result = values[i].value.run();                
+            if(typeof values[i].value === "object") {
+                var result = values[i].value.run();
                 finalString = finalString.replace(patString, result);
             }
             else {
-                finalString = finalString.replace(patString, values[i].value);    
+                finalString = finalString.replace(patString, values[i].value);
             }
-            
+
         }
 
         if (this.containsVariable(finalString, values)) {
@@ -119,8 +119,12 @@ var VariableProcessor = Backbone.Model.extend({
             return finalString;
         }
     },
-    
+
     getCurrentValue: function(string) {
+        if (typeof string === "number") {
+            return string;
+        }
+
         var envModel = this.get("selectedEnv");
         var envValues = [];
 
@@ -135,7 +139,7 @@ var VariableProcessor = Backbone.Model.extend({
         var values;
 
         if (globals) {
-            values = _.union(envValues, globals);    
+            values = _.union(envValues, globals);
         }
 
         var functions = this.get("functions");
@@ -144,7 +148,7 @@ var VariableProcessor = Backbone.Model.extend({
             if(functions.hasOwnProperty(f)) {
                 var kvpair = {
                     "key": f,
-                    "value": functions[f]                    
+                    "value": functions[f]
                 };
 
                 fs.push(kvpair);
@@ -159,6 +163,6 @@ var VariableProcessor = Backbone.Model.extend({
         else {
             return string;
         }
-        
+
     },
 });

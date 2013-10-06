@@ -503,14 +503,14 @@ var Request = Backbone.Model.extend({
     },
 
     prepareForSending: function() {
-        if (pm.helpers.getActiveHelperType() === "oauth1" && pm.helpers.getHelper("oAuth1").get("auto")) {
+        console.log("Preparing request for sending", pm.helpers.getActiveHelperType(), pm.helpers.getHelper("oAuth1").get("auto"));
+
+        if (pm.helpers.getActiveHelperType() === "oAuth1" && pm.helpers.getHelper("oAuth1").get("auto")) {
+            console.log("Generating oAuth1 helper");
             pm.helpers.getHelper("oAuth1").generateHelper();
             pm.helpers.getHelper("oAuth1").process();
         }
 
-        var headers = this.get("headers");
-
-        $('#headers-keyvaleditor-actions-open .headers-count').html(headers.length);
         this.set("startTime", new Date().getTime());
     },
 
