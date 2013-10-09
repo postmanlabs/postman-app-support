@@ -1,6 +1,6 @@
 {
     "name":"Postman - v0.9.3",
-    "version":"0.9.3.3",
+    "version":"0.9.3.4",
     "minimum_chrome_version": "28",
     "icons":{
         "16":"icon_beta_16.png",
