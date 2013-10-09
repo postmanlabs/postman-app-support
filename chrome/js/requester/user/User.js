@@ -92,9 +92,10 @@ var User = Backbone.Model.extend({
 	login: function() {
 		var model = this;
 
-		chrome.identity.launchWebAuthFlow({'url': pm.webUrl + '/client-login', 'interactive': true},
+		chrome.identity.launchWebAuthFlow({'url': pm.webUrl + '/signup', 'interactive': true},
 			function(redirect_url) {
 				if (chrome.runtime.lastError) {
+					model.trigger("logout", model);
 					pm.mediator.trigger("notifyError", "Could not initiate OAuth 2 flow");
 				}
 				else {

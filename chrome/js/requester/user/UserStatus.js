@@ -23,6 +23,7 @@ var UserStatus = Backbone.View.extend({
 	},
 
 	render: function() {
+		console.log("Logout triggered", this.model.get("id"));
 
 		if (pm.features.isFeatureEnabled(FEATURES.USER)) {
 			$("#user-status").css("display", "block");
@@ -37,6 +38,7 @@ var UserStatus = Backbone.View.extend({
 			$("#user-status-username").html(name);
 		}
 		else {
+			$("#user-status-not-logged-in").html("Sign in");
 			$("#user-status-false").css("display", "block");
 			$("#user-status-true").css("display", "none");
 			$("#user-status-username").html("");

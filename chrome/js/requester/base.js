@@ -36,8 +36,8 @@ if (pm.isTesting) {
 }
 else {
     pm.databaseName = "postman";
-    pm.webUrl = "https://www.getpostman.com";
-    // pm.webUrl = "http://localhost/postman/html";
+    // pm.webUrl = "https://www.getpostman.com";
+    pm.webUrl = "http://localhost/postman/html";
 }
 
 
