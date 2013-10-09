@@ -1,8 +1,8 @@
 var ResponseBodyPrettyViewer = Backbone.View.extend({
-	defineCodeMirrorLinksMode:function () {	    
+	defineCodeMirrorLinksMode:function () {
 	    var editorMode = this.mode;
 
-	    CodeMirror.defineMode("links", function (config, parserConfig) {	        
+	    CodeMirror.defineMode("links", function (config, parserConfig) {
 	        var linksOverlay = {
 	            startState:function () {
 	                return { "link":"" }
@@ -49,8 +49,8 @@ var ResponseBodyPrettyViewer = Backbone.View.extend({
 	        return CodeMirror.overlayParser(CodeMirror.getMode(config, parserConfig.backdrop || editorMode), linksOverlay);
 	    });
 	},
-	
-	toggleLineWrapping:function () {        
+
+	toggleLineWrapping:function () {
 	    var codeMirror = this.codeMirror;
 
 	    var lineWrapping = codeMirror.getOption("lineWrapping");
@@ -73,5 +73,11 @@ var ResponseBodyPrettyViewer = Backbone.View.extend({
     	this.codeMirror = null;
     	this.mode = "text";
     	this.defineCodeMirrorLinksMode();
+
+    	pm.mediator.on("focusPrettyViewer", this.onFocusPrettyViewer, this);
+    },
+
+    onFocusPrettyViewer: function() {
+    	console.log("Trigger keydown on CodeMirror");
     }
 });

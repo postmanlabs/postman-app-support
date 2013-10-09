@@ -168,3 +168,11 @@ li {
 .dropdown-menu a {
   cursor: pointer;
 }
+
+.overlay {
+    position: absolute;
+    border: 1px solid red;
+    background: #dff;
+    margin: -1px;
+    z-index: -1;
+}

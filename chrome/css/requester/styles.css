@@ -168,6 +168,13 @@ li .right {
 .dropdown-menu a {
   cursor: pointer; }
 
+.overlay {
+  position: absolute;
+  border: 1px solid red;
+  background: #dff;
+  margin: -1px;
+  z-index: -1; }
+
 /*Form styles*/
 .clean-input {
   color: #333333 !important;
