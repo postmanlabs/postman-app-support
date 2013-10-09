@@ -10,7 +10,7 @@ var RequestURLEditor = Backbone.View.extend({
 
         model.on("change:url", this.onChangeUrl, this);
         model.on("updateURLInputText", this.onUpdateURLInputText, this);
-        model.on("startNew", this.onStartNew, this);        
+        model.on("startNew", this.onStartNew, this);
         model.on("customURLParamUpdate", this.onCustomUrlParamUpdate, this);
 
         var params = {
@@ -19,12 +19,14 @@ var RequestURLEditor = Backbone.View.extend({
             deleteButton:'<img class="deleteButton" src="img/delete.png">',
             onDeleteRow:function () {
                 var params = view.getUrlEditorParams();
+                model.set("url", $("#url").val());
                 model.setUrlParams(params);
                 model.setUrlParamString(view.getUrlEditorParams(), true);
             },
 
             onBlurElement:function () {
                 var params = view.getUrlEditorParams();
+                model.set("url", $("#url").val());
                 model.setUrlParams(params);
                 model.setUrlParamString(view.getUrlEditorParams(), true);
             }
@@ -73,7 +75,7 @@ var RequestURLEditor = Backbone.View.extend({
         catch(e) {
 
         }
-        
+
         $(document).bind('keydown', 'backspace', urlFocusHandler);
     },
 
@@ -103,7 +105,7 @@ var RequestURLEditor = Backbone.View.extend({
 
     updateModel: function() {
         this.model.set("url", $("#url").val());
-        this.model.setUrlParamString(this.getUrlEditorParams(), true);        
+        this.model.setUrlParamString(this.getUrlEditorParams(), true);
     },
 
     openUrlEditor:function () {
