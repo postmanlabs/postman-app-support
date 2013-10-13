@@ -92,10 +92,10 @@ var PostmanAPI = Backbone.Model.extend({
 		var uploadUrl = pm.webUrl + '/collections?is_public=' + isPublic;
 
 		if (pm.user.isLoggedIn()) {
-		    uploadUrl += "&user_id=" + pm.user.get("id");
-		    uploadUrl += "&access_token=" + pm.user.get("access_token");
-
 		    this.executeAuthenticatedRequest(function() {
+		    	uploadUrl += "&user_id=" + pm.user.get("id");
+		    	uploadUrl += "&access_token=" + pm.user.get("access_token");
+
 		    	$.ajax({
 		    	    type:'POST',
 		    	    url:uploadUrl,
