@@ -1419,6 +1419,11 @@ input[type="file"] {
   font-size: 18px;
   font-weight: bold; }
 
+#environments-list .environment-actions {
+  width: 100px;
+  padding: 5px;
+  text-align: center; }
+
 #environments-list-help-detail {
   display: none; }
 

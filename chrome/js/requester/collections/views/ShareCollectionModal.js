@@ -41,12 +41,18 @@ var ShareCollectionModal = Backbone.View.extend({
         $('#share-collection-download').attr("data-collection-id", id);
         $('#share-collection-link').css("display", "none");
 
-        if (collection.get("remote_id") !== 0) {
-            $('#share-collection-directory-features').css("display", "none");
-            $('#share-collection-get-link').html("Update");
+        if (pm.user.isLoggedIn()) {
+            if (collection.get("remote_id") !== 0) {
+                $('#share-collection-directory-features').css("display", "none");
+                $('#share-collection-get-link').html("Update");
+            }
+            else {
+                $('#share-collection-directory-features').css("display", "block");
+                $('#share-collection-get-link').html("Upload");
+            }
         }
         else {
-            $('#share-collection-directory-features').css("display", "block");
+            $('#share-collection-directory-features').css("display", "none");
             $('#share-collection-get-link').html("Upload");
         }
     },

@@ -324,6 +324,8 @@ var ResponseBodyViewer = Backbone.View.extend({
             $('#response-data').css("padding", "0px");
         }
 
+        $('#response-body-toggle').focus();
+
         response.set("state", state);
     },
 
