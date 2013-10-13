@@ -83,9 +83,9 @@
             h += '<input type="text" class="keyvalueeditor-key" placeHolder="' + pKey
                 + '" name="keyvalueeditor-' + key
                 + '" value="' + key
-                + '"/>';            
+                + '"/>';
 
-            if ($.inArray("file", valueTypes) >= 0) {                
+            if ($.inArray("file", valueTypes) >= 0) {
                 if (type === "file") {
                     h += '<input type="text" class="keyvalueeditor-value keyvalueeditor-value-text" placeHolder="' + pValue
                         + '" name="keyvalueeditor-' + value
@@ -99,7 +99,7 @@
 
                     h += '<select class="keyvalueeditor-valueTypeSelector"><option value="text">Text</option>' +
                         '<option value="file" selected>File</option></select>';
-                }                    
+                }
                 else {
                     h += '<input type="text" class="keyvalueeditor-value keyvalueeditor-value-text" placeHolder="' + pValue
                         + '" name="keyvalueeditor-' + value
@@ -175,9 +175,9 @@
         },
 
         //For external use
-        addParam:function (param, state) {                
+        addParam:function (param, state) {
             if(!("type" in param)) {
-                param.type = "text";                    
+                param.type = "text";
             }
 
             $(state.editor).find('.keyvalueeditor-last').before(methods.getNewRow(param.key, param.value, param.type, state));
@@ -200,9 +200,9 @@
             var pairs = [];
             $(this).find('.keyvalueeditor-row').each(function () {
                 var key = $(this).find('.keyvalueeditor-key').val();
-                var value = $(this).find('.keyvalueeditor-value').val();                
+                var value = $(this).find('.keyvalueeditor-value').val();
                 var type = $(this).find('.keyvalueeditor-valueTypeSelector').val();
-                
+
                 if (type === undefined) {
                     type = "text";
                 }
