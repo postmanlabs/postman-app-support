@@ -35,10 +35,11 @@ var User = Backbone.Model.extend({
 				model.set("name", u.name);
 				model.set("access_token", u.access_token);
 				model.set("refresh_token", u.refresh_token);
-				model.set("expires_in", u.expires_in);
-				model.set("logged_in_at", u.logged_in_at);
 
-				console.log(u);
+				var expires_in = parseInt(u.expires_in, 10);
+
+				model.set("expires_in", expires_in);
+				model.set("logged_in_at", u.logged_in_at);
 
 				if (pm.features.isFeatureEnabled(FEATURES.USER)) {
 					if (u.id !== 0) {
@@ -68,9 +69,11 @@ var User = Backbone.Model.extend({
 	setAccessToken: function(data) {
 		var model = this;
 
+		var expires_in = parseInt(data.expires_in, 10);
+
 		model.set("access_token", data.access_token);
 		model.set("refresh_token", data.refresh_token);
-		model.set("expires_in", data.expires_in);
+		model.set("expires_in", expires_in);
 		model.set("logged_in_at", new Date().getTime());
 
 		pm.storage.setValue({"user": model.toJSON()}, function() {

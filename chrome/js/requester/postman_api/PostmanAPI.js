@@ -92,18 +92,32 @@ var PostmanAPI = Backbone.Model.extend({
 		if (pm.user.get("id") !== 0) {
 		    uploadUrl += "&user_id=" + pm.user.get("id");
 		    uploadUrl += "&access_token=" + pm.user.get("access_token");
-		}
 
-		$.ajax({
-		    type:'POST',
-		    url:uploadUrl,
-		    data:collectionData,
-		    success:function (data) {
-		    	if (successCallback) {
-		    		successCallback(data);
-		    	}
-		    }
-		});
+		    this.executeAuthenticatedRequest(function() {
+		    	$.ajax({
+		    	    type:'POST',
+		    	    url:uploadUrl,
+		    	    data:collectionData,
+		    	    success:function (data) {
+		    	    	if (successCallback) {
+		    	    		successCallback(data);
+		    	    	}
+		    	    }
+		    	});
+		    });
+		}
+		else {
+			$.ajax({
+			    type:'POST',
+			    url:uploadUrl,
+			    data:collectionData,
+			    success:function (data) {
+			    	if (successCallback) {
+			    		successCallback(data);
+			    	}
+			    }
+			});
+		}
 	},
 
 	getDirectoryCollections: function(startId, count, order, successCallback) {
