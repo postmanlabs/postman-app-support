@@ -111,8 +111,6 @@ var User = Backbone.Model.extend({
 					model.set("expires_in", parseInt(params.expires_in, 10));
 					model.set("logged_in_at", new Date().getTime());
 
-					console.log(model.toJSON());
-
 					pm.storage.setValue({"user": model.toJSON()}, function() {
 					});
 
@@ -139,20 +137,20 @@ var User = Backbone.Model.extend({
 	getCollections: function() {
 		var model = this;
 
-		pm.api.getUserCollections(function(data) {
-	    	if (data.hasOwnProperty("collections")) {
-		    	for(var i = 0; i < data.collections.length; i++) {
-		    		c = data.collections[i];
-		    		c.is_public = c.is_public === "1" ? true : false;
-		    		c.updated_at_formatted = new Date(c.updated_at).toDateString();
+		if (this.isLoggedIn()) {
+			pm.api.getUserCollections(function(data) {
+		    	if (data.hasOwnProperty("collections")) {
+			    	for(var i = 0; i < data.collections.length; i++) {
+			    		c = data.collections[i];
+			    		c.is_public = c.is_public === "1" ? true : false;
+			    		c.updated_at_formatted = new Date(c.updated_at).toDateString();
+			    	}
+
+			    	model.set("collections", data.collections);
+			    	model.trigger("change:collections");
 		    	}
-
-		    	console.log("Setting collections", data.collections);
-
-		    	model.set("collections", data.collections);
-		    	model.trigger("change:collections");
-	    	}
-		});
+			});
+		}
 	},
 
 	onDeleteSharedCollection: function(id) {
@@ -161,7 +159,6 @@ var User = Backbone.Model.extend({
 			var collections = model.get("collections");
 			var index = arrayObjectIndexOf(collections, id, "id");
 			var collection = _.clone(collections[index]);
-			console.log(collection);
 
 			if (index >= 0) {
 				collections.splice(index, 1);
