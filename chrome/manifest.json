@@ -1,5 +1,5 @@
 {
-    "name":"Postman - v0.9.3",
+    "name":"Postman - REST Client (Packaged app)",
     "version":"0.9.3.6",
     "minimum_chrome_version": "28",
     "icons":{
