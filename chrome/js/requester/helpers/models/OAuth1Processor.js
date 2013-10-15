@@ -7,7 +7,7 @@ var OAuth1Processor = Backbone.Model.extend({
             "consumerSecret": "",
             "token": "",
             "tokenSecret": "",
-            "signatureMethod": "",
+            "signatureMethod": "HMAC-SHA1",
             "timestamp": "",
             "nonce": "",
             "version": "",
