@@ -219,11 +219,9 @@ var OAuth1Processor = Backbone.Model.extend({
         ];
 
         for(i = 0; i < signatureParams.length; i++) {
-            if (signatureParams[i].key !== "oauth_consumer_key" && signatureParams[i].key !== "oauth_token") {
-                var param = signatureParams[i];
-                param.value = pm.envManager.getCurrentValue(param.value);
-                oAuthParams.push(param);
-            }
+            var param = signatureParams[i];
+            param.value = pm.envManager.getCurrentValue(param.value);
+            oAuthParams.push(param);
         }
 
         //Convert environment values
