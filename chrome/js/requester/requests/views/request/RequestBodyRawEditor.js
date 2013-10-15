@@ -54,6 +54,12 @@ var RequestBodyRawEditor = Backbone.View.extend({
             if (data) {
                 this.loadRawData(data);
             }
+            else {
+                this.loadRawData("");
+            }
+        }
+        else {
+            this.loadRawData("");
         }
     },
 
@@ -187,8 +193,12 @@ var RequestBodyRawEditor = Backbone.View.extend({
         if (isEditorInitialized === true) {
             if (data) {
                 codeMirror.setValue(data);
-                codeMirror.refresh();
             }
+            else {
+                codeMirror.setValue("");
+            }
+
+            codeMirror.refresh();
         }
     },
 
