@@ -60,6 +60,7 @@ var OAuth1Processor = Backbone.Model.extend({
         if(this.get("signatureMethod" === "")) {
             this.set("signatureMethod", "HMAC-SHA1");
         }
+
         this.set("timestamp", OAuth.timestamp() + "");
         this.set("nonce", OAuth.nonce(6));
     },
