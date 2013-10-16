@@ -2,6 +2,8 @@
 module.exports = function(grunt) {
   // Project configuration.
   grunt.initConfig({
+    manifest: grunt.file.readJSON('chrome/manifest.json'),
+
     concat: {
       dist: {
         src: ['chrome/js/requester/**/*.js'],
@@ -113,7 +115,7 @@ module.exports = function(grunt) {
     compress: {
       main: {
           options: {
-            archive: 'releases/v0.9.3.7.zip'
+            archive: 'releases/v<%= manifest.version %>.zip'
           },
           files: [
             {src: ['chrome/**', '!chrome/tests/**', '!chrome/manifest_key.json', '!chrome/tester.html'], dest: '/'}, // includes files in path and its subdirs

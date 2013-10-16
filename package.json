@@ -1,6 +1,6 @@
 {
-  "name": "my-project-name",
-  "version": "0.1.0",
+  "name": "Postman",
+  "version": "0.9.3.8",
   "devDependencies": {
     "grunt": "~0.4.0",
     "grunt-contrib-handlebars": "~0.5.6",
