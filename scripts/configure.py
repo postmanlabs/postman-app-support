@@ -10,7 +10,7 @@ from datetime import datetime
 from jinja2 import Environment, PackageLoader, Template
 
 def generate_config_file(is_testing, web_url):
-	config_template = open('templates/config_template.js')
+	config_template = open('../chrome/js/config_template.js')
 	s = config_template.read()
 	config_template.close()
 	template = Template(s)
@@ -24,6 +24,21 @@ def generate_config_file(is_testing, web_url):
 	config_file.write(template.render(is_testing=is_testing, web_url=web_url_constant))
 	config_file.close()
 
+def generate_background_file(is_testing):
+	background_template = open('../chrome/background_template.js')
+	s = background_template.read()
+	background_template.close()
+	template = Template(s)
+
+	if is_testing == 'true':
+		file_name = 'tester.html'
+	else:
+		file_name = 'requester.html'
+
+	background_file = open("../chrome/background.js", "w")
+	background_file.write(template.render(file_name=file_name))
+	background_file.close()
+
 def main():
     parser = OptionParser(usage="Usage: %prog [options] filename")
     parser.add_option("-t", "--testing", dest="testing", help="is_testing flag")
@@ -31,7 +46,11 @@ def main():
 
     (options, args) = parser.parse_args()
 
-    generate_config_file(options.testing, options.web_url)
+    testing = options.testing
+    web_url = options.web_url
+
+    generate_config_file(testing, web_url)
+    generate_background_file(options.testing)
 
 
 if __name__ == "__main__":
