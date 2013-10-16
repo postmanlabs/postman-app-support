@@ -190,8 +190,6 @@ pm.indexedDB = {
         console.log("Clearing all object stores");
         //Make sure we are testing and the database is not postman
         if (pm.isTesting && pm.databaseName !== "postman") {
-            console.log("Correct database");
-
             var stores = [
                 "requests", "collections", "header_presets",
                 "collection_requests", "environments",

@@ -27,19 +27,11 @@ pm.targets = {
 
 pm.target = pm.targets.CHROME_PACKAGED_APP;
 
-pm.isTesting = false;
+pm.isTesting = postman_flag_is_testing;
+pm.databaseName = postman_database_name;
+pm.webUrl = postman_web_url;
+
 pm.features = new Features();
-
-if (pm.isTesting) {
-    pm.databaseName = "postman_test";
-    pm.webUrl = "http://localhost/postman/html";
-}
-else {
-    pm.databaseName = "postman";
-    pm.webUrl = "https://www.getpostman.com";
-    // pm.webUrl = "http://localhost/postman/html";
-}
-
 
 pm.debug = false;
 
