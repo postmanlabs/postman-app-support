@@ -1,5 +1,6 @@
 var ResponseBodyViewer = Backbone.View.extend({
     initialize: function() {
+        var view = this;
         var model = this.model;
         var response = model.get("response");
         response.on("finishedLoadResponse", this.load, this);
@@ -10,6 +11,20 @@ var ResponseBodyViewer = Backbone.View.extend({
 
         this.responseBodyImageViewer = new ResponseBodyImageViewer({model: this.model});
         this.responseBodyPDFViewer = new ResponseBodyPDFViewer({model: this.model});
+
+        $(document).bind('keydown', 'ctrl+f', function() {
+            view.searchResponse();
+        });
+
+        $(document).bind('keydown', 'meta+f', function() {
+            view.searchResponse();
+        });
+
+    },
+
+    searchResponse: function() {
+        this.changePreviewType("parsed");
+        CodeMirror.commands.find(this.responseBodyPrettyViewer.codeMirror);
     },
 
     downloadBody: function(response) {

@@ -1339,6 +1339,9 @@ input[type="file"] {
     color: #cdcdcd;
     font-size: 10px; }
 
+.CodeMirror-dialog {
+  font-family: sans-serif; }
+
 /* End collections */
 /*Environments*/
 #environment-quicklook-wrapper {

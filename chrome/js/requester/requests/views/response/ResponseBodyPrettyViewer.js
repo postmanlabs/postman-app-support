@@ -74,6 +74,8 @@ var ResponseBodyPrettyViewer = Backbone.View.extend({
     	this.mode = "text";
     	this.defineCodeMirrorLinksMode();
 
+    	pm.cmp = this.codeMirror;
+
     	pm.mediator.on("focusPrettyViewer", this.onFocusPrettyViewer, this);
     },
 
