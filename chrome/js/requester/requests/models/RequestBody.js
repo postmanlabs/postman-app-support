@@ -66,8 +66,14 @@ var RequestBody = Backbone.Model.extend({
 
         if (mode !== "raw") {
             if (asObjects) {
-                this.set("data", _.clone(data));
-                this.set("dataAsObjects", _.clone(data));
+                if (mode === "params") {
+                    // Change made through an event in RequestBodyFormDataEditor
+                    this.set("dataAsObjects", _.clone(data));
+                }
+                else {
+                    this.set("data", _.clone(data));
+                    this.set("dataAsObjects", _.clone(data));
+                }
             }
             else {
                 var params = getBodyVars(data, false);

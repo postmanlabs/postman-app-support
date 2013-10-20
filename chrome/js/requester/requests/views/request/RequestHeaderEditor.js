@@ -68,7 +68,7 @@ var RequestHeaderEditor = Backbone.View.extend({
                         view.onHeaderAutoCompleteItemSelect(item.item);
                     }
                 });
-                
+
                 var headers = view.getHeaderEditorParams();
                 $('#headers-keyvaleditor-actions-open .headers-count').html(headers.length);
                 model.set(headers, { silent: true });
@@ -98,7 +98,7 @@ var RequestHeaderEditor = Backbone.View.extend({
             }
         });
 
-        
+
         $(document).bind('keydown', 'h', function () {
             if(pm.app.isModalOpen()) {
                 return;
@@ -111,9 +111,9 @@ var RequestHeaderEditor = Backbone.View.extend({
             }
             else {
                 view.openHeaderEditor();
-                $('#headers-keyvaleditor div:first-child input:first-child').focus();    
+                $('#headers-keyvaleditor div:first-child input:first-child').focus();
             }
-            
+
             return false;
         });
     },
@@ -122,8 +122,9 @@ var RequestHeaderEditor = Backbone.View.extend({
         this.openHeaderEditor();
     },
 
-    onChangeHeaders: function() {                
+    onChangeHeaders: function() {
         var headers = this.model.get("headers");
+        console.log("Headers changed", headers);
         $('#headers-keyvaleditor').keyvalueeditor('reset', headers);
     },
 
@@ -166,8 +167,8 @@ var RequestHeaderEditor = Backbone.View.extend({
     },
 
     updateModel: function() {
-        this.model.set("headers", this.getHeaderEditorParams(), {silent: true});        
-        var headers = this.model.get("headers");        
+        this.model.set("headers", this.getHeaderEditorParams(), {silent: true});
+        var headers = this.model.get("headers");
         $('#headers-keyvaleditor-actions-open .headers-count').html(headers.length);
     },
 
@@ -186,12 +187,12 @@ var RequestHeaderEditor = Backbone.View.extend({
         return newHeaders;
     },
 
-    onHeaderAutoCompleteItemSelect:function(item) {                 
+    onHeaderAutoCompleteItemSelect:function(item) {
         if(item.type === "preset") {
             $(this.currentFocusedRow).remove();
 
             var preset = pm.headerPresets.getHeaderPreset(item.id);
-            
+
             var headers = $('#headers-keyvaleditor').keyvalueeditor('getValues');
             var newHeaders = _.union(headers, preset.get("headers"));
             $('#headers-keyvaleditor').keyvalueeditor('reset', newHeaders);
@@ -202,7 +203,7 @@ var RequestHeaderEditor = Backbone.View.extend({
             setTimeout(function() {
                 element.focus();
             }, 10);
-            
+
         }
     }
 });

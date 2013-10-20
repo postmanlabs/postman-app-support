@@ -1,5 +1,5 @@
 describe("History ", function() {
-	var waitTime = 200;
+	var waitTime = 500;
 
 	beforeEach(function() {
 		waitsFor(function() {

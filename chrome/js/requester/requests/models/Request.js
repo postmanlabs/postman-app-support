@@ -396,7 +396,10 @@ var Request = Backbone.Model.extend({
     loadSampleResponse: function(response) {
         this.set("url", response.request.url);
         this.set("method", response.request.method);
-        this.set("headers", response.request.headers);
+
+        console.log("Loading sample response headers", response.request.headers);
+
+        this.set("headers", this.unpackHeaders(response.request.headers));
         this.set("data", response.request.data);
         this.set("dataMode", response.request.dataMode);
 

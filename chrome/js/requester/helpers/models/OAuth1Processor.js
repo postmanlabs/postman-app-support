@@ -128,7 +128,6 @@ var OAuth1Processor = Backbone.Model.extend({
 
         var bodyParams;
 
-        console.log(method, "OAuth method is");
         if (isMethodWithBody(method)) {
             bodyParams = requestBody.get("dataAsObjects");
         }
@@ -151,8 +150,6 @@ var OAuth1Processor = Backbone.Model.extend({
                 }
             }
         }
-
-        console.log(message);
 
         var accessor = {};
         if (this.get("consumerSecret") !=='') {
@@ -249,8 +246,6 @@ var OAuth1Processor = Backbone.Model.extend({
         var addToHeader = this.get("header");
 
         if (addToHeader) {
-            console.log("Need to add to header");
-
             var realm = this.get("realm");
 
             if (realm === '') {
@@ -273,8 +268,6 @@ var OAuth1Processor = Backbone.Model.extend({
             request.setHeader(authHeaderKey, rawString);
             request.trigger("customHeaderUpdate");
         } else {
-            console.log("oAuthParams", oAuthParams);
-            console.log("params", params);
             params = params.concat(oAuthParams);
 
             if (!request.isMethodWithBody(method)) {

@@ -176,11 +176,13 @@
 
         //For external use
         addParam:function (param, state) {
-            if(!("type" in param)) {
-                param.type = "text";
-            }
+            if (typeof param === "object") {
+                if(!("type" in param)) {
+                    param.type = "text";
+                }
 
-            $(state.editor).find('.keyvalueeditor-last').before(methods.getNewRow(param.key, param.value, param.type, state));
+                $(state.editor).find('.keyvalueeditor-last').before(methods.getNewRow(param.key, param.value, param.type, state));
+            }
         },
 
         //Check for duplicates here

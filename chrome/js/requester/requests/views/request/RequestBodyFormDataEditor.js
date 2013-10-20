@@ -35,12 +35,12 @@ var RequestBodyFormDataEditor = Backbone.View.extend({
         if (mode === "params") {
             if (data) {
                 try {
-                    $('#formdata-keyvaleditor').keyvalueeditor('reset', data);        
+                    $('#formdata-keyvaleditor').keyvalueeditor('reset', data);
+                    body.set("data", this.getFormDataBody());
                 }
                 catch(e) {
                 }
-                
-            }            
+            }
         }
     },
 
@@ -128,7 +128,7 @@ var RequestBodyFormDataEditor = Backbone.View.extend({
             var paramsCount = params.length;
             var body = "";
             for(i = 0; i < paramsCount; i++) {
-                var param = params[i];                
+                var param = params[i];
                 body += this.getDummyFormDataBoundary();
                 if(param.type === "text") {
                     body += "<br/>Content-Disposition: form-data; name=\"" + param.key + "\"<br/><br/>";
