@@ -1645,12 +1645,15 @@ input[type="file"] {
   background: #efefef;
   margin-top: -5px;
   display: none;
-  padding-bottom: 50px; }
+  padding-bottom: 50px;
+  overflow-y: scroll; }
   #directory-browser .directory-browser-header {
     cursor: pointer; }
   #directory-browser #directory-collections {
     margin-top: 5px;
-    margin-bottom: 25px; }
+    margin-bottom: 25px;
+    overflow-y: scroll;
+    padding-bottom: 10px; }
   #directory-browser .directory-browser-header {
     margin: 10px 0 0 20px;
     padding-top: 8px; }
@@ -1661,7 +1664,7 @@ input[type="file"] {
     margin-left: 10px; }
   #directory-browser .directory-collection {
     height: 200px;
-    width: 255px;
+    width: 250px;
     overflow: hidden;
     border: solid thin #fff;
     float: left;
