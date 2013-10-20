@@ -5,6 +5,10 @@
     display: none;
     padding-bottom: 50px;
 
+    .directory-browser-header {
+        cursor: pointer;
+    }
+
     #directory-collections {
         margin-top: 5px;
         margin-bottom: 25px;

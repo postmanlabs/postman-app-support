@@ -25,6 +25,14 @@ var Directory = Backbone.Collection.extend({
 
     isInitialized: false,
 
+    reload: function() {
+        this.startId = 0;
+        this.fetchCount = 42;
+        this.lastCount = 0;
+        this.totalCount = 0;
+        this.getCollections(this.startId, this.fetchCount, "descending");
+    },
+
     initialize: function() {
     	pm.mediator.on("initializeDirectory", this.onInitializeDirectory, this);
         pm.mediator.on("getDirectoryCollection", this.onGetDirectoryCollection, this);

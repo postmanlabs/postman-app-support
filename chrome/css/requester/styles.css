@@ -1645,6 +1645,8 @@ input[type="file"] {
   margin-top: -5px;
   display: none;
   padding-bottom: 50px; }
+  #directory-browser .directory-browser-header {
+    cursor: pointer; }
   #directory-browser #directory-collections {
     margin-top: 5px;
     margin-bottom: 25px; }

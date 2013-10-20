@@ -9,6 +9,10 @@ var DirectoryBrowser = Backbone.View.extend({
         model.on("remove", this.removeDirectoryCollection, this);
         model.on("reset", this.render, this);
 
+        $(".directory-browser-header").on("click", function() {
+            model.reload();
+        });
+
         $("#directory-collections").on("click", ".directory-collection-action-view", function() {
             var id = $(this).attr("data-id");
             var collection = model.get(id);
