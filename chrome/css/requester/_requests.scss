@@ -52,17 +52,13 @@
     width: 100px;
 }
 
-#sidebar-filler {
-    width: 350px;
-    float: left;
-}
-
 #main {
+    float: left;
+    margin-left: 350px;
     background: #fff;
     padding-bottom: 20px;
     overflow: scroll;
 }
-
 
 .headerText {
     font-weight: bolder;
