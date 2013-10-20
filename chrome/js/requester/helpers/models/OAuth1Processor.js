@@ -128,6 +128,7 @@ var OAuth1Processor = Backbone.Model.extend({
 
         var bodyParams;
 
+        console.log(method, "OAuth method is");
         if (isMethodWithBody(method)) {
             bodyParams = requestBody.get("dataAsObjects");
         }
@@ -136,14 +137,22 @@ var OAuth1Processor = Backbone.Model.extend({
         }
 
         var params = _.union(urlParams, bodyParams);
+        var param;
+        var existingOAuthParams = _.union(signatureParams, [{key: "oauth_signature", value: ""}]);
+        var pos;
 
         for (i = 0; i < params.length; i++) {
-            var param = params[i];
+            param = params[i];
             if (param.key) {
-                param.value = pm.envManager.getCurrentValue(param.value);
-                message.parameters.push([param.key, param.value]);
+                pos = findPosition(existingOAuthParams, "key", param.key);
+                if (pos < 0) {
+                    param.value = pm.envManager.getCurrentValue(param.value);
+                    message.parameters.push([param.key, param.value]);
+                }
             }
         }
+
+        console.log(message);
 
         var accessor = {};
         if (this.get("consumerSecret") !=='') {

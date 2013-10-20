@@ -21,8 +21,8 @@ def generate_base_icon(source, version, icon_type):
 
     draw = ImageDraw.Draw(image)
     box = [(20, 40), (128, 80)]
-    draw.rectangle(box, fill=128)
-    draw.text((25, 40), version, (0, 0, 0), font=font)
+    draw.rectangle(box, fill=(50, 50, 50))
+    draw.text((25, 40), version, (255, 255, 255), font=font)
     draw = ImageDraw.Draw(image)
 
     image.save("../chrome/icon.png", "PNG")
