@@ -170,9 +170,13 @@ var User = Backbone.Model.extend({
 		});
 	},
 
-	downloadSharedCollection: function(id) {
+	downloadSharedCollection: function(id, callback) {
 		pm.api.getCollectionFromRemoteId(id, function(data) {
 			pm.mediator.trigger("overwriteCollection", data);
+
+			if (callback) {
+				callback();
+			}
 		});
 	},
 
@@ -185,6 +189,22 @@ var User = Backbone.Model.extend({
 
 		for(var i = 0; i < collections.length; i++) {
 			this.downloadSharedCollection(collections[i].remote_id);
+		}
+	},
+
+	getRemoteIdForLinkId: function(linkId) {
+		var link = pm.webUrl + "/collections/" + linkId;
+
+		console.log("Link = ", link);
+
+		var collections = this.get("collections");
+		var index = arrayObjectIndexOf(collections, link, "link");
+
+		if (index >= 0) {
+			return collections[index].remote_id;
+		}
+		else {
+			return 0;
 		}
 	}
 

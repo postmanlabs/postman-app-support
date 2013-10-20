@@ -20,7 +20,6 @@ var UserCollections = Backbone.View.extend({
 
 		$("#user-collections-list").on("click", ".user-collection-action-download", function() {
 			var id = parseInt($(this).attr("data-remote-id"), 10);
-			console.log("User collection to download", id);
 			pm.mediator.trigger("downloadSharedCollection", id);
 		});
 
