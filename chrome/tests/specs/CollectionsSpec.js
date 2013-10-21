@@ -39,12 +39,12 @@ describe("Collections", function() {
 				pm.tester.openNewCollectionModal();
 				setTimeout(function() {
 					isOpen = true;
-				}, modalWaitTime);
+				}, codeMirrorModalWaitTime);
 			});
 
 			waitsFor(function() {
 				return isOpen === true;
-			}, "Could not open new collection modal", waitTime);
+			}, "Could not open new collection modal", codeMirrorWaitTime);
 
 			runs(function() {
 				pm.tester.setNewCollectionModalName("Test new collection");

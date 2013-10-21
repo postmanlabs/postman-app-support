@@ -1,6 +1,6 @@
 {
     "name":"Postman - REST Client (Packaged app)",
-    "version":"0.9.3.8",
+    "version":"0.9.3.9",
     "minimum_chrome_version": "28",
     "icons":{
         "16":"icon_16.png",
@@ -18,7 +18,6 @@
     "oauth2": {
       "client_id": "986289894049-gfdof5fk4mcv0igaldjr8g8976d3rgoi.apps.googleusercontent.com",
       "scopes": [
-        "https://www.googleapis.com/auth/drive",
         "https://www.googleapis.com/auth/drive.file",
         "https://www.googleapis.com/auth/drive.appdata",
         "https://www.googleapis.com/auth/userinfo.email",
