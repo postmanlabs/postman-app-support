@@ -40,6 +40,24 @@ var RequestURLPathVariablesEditor = Backbone.View.extend({
         this.model.setPathVariables(params);
     },
 
+    loadEditorParams: function(params) {
+        var rows = [];
+        var row;
+
+        for (var key in params) {
+            if (params.hasOwnProperty(key)) {
+                row = {
+                    "key": key,
+                    "value": params[key]
+                }
+
+                rows.push(row);
+            }
+        }
+
+        $(this.editorId).keyvalueeditor('reset', rows);
+    },
+
     setEditorParams: function(url) {
         var newKeys = getURLPathVariables(url);
         var currentParams = $(this.editorId).keyvalueeditor('getValues');
@@ -73,7 +91,9 @@ var RequestURLPathVariablesEditor = Backbone.View.extend({
     },
 
     onChangeUrl: function() {
+        console.log("Change URL called in PathVariables");
         // Generate keyvaleditor rows
+        this.setEditorParams($("#url").val());
     },
 
     startNew: function() {
@@ -106,5 +126,6 @@ var RequestURLPathVariablesEditor = Backbone.View.extend({
     closeEditor:function () {
         var containerId = "#pathvariables-keyvaleditor-container";
         $(containerId).css("display", "none");
+        this.updateModel();
     }
 });

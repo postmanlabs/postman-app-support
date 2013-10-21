@@ -198,6 +198,7 @@ var RequestEditor = Backbone.View.extend({
         var method = model.get("method");
         var isMethodWithBody = model.isMethodWithBody(method);
         var url = model.get("url");
+        var pathVariables = model.get("pathVariables");
         var headers = model.get("headers");
         var data = model.get("data");
         var name = model.get("name");
@@ -227,6 +228,8 @@ var RequestEditor = Backbone.View.extend({
         //@todoSet params using keyvalueeditor function
         $('#url-keyvaleditor').keyvalueeditor('reset', newUrlParams);
         $('#headers-keyvaleditor').keyvalueeditor('reset', headers);
+
+        this.requestURLPathVariablesEditor.loadEditorParams(pathVariables);
 
         $('#request-method-selector').val(method);
 
