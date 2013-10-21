@@ -59,6 +59,77 @@ describe("Postman utility functions", function() {
     });
   });
 
+describe("replaceURLPathVariables", function() {
+  it("should return an empty array for URL with no segments", function() {
+      var url = "http://localhost/";
+      var replacedUrl = replaceURLPathVariables(url, []);
+      expect(replacedUrl).toBe(url);
+  });
+
+  it("should return an empty array for URL with no segments and a port", function() {
+      var url = "http://localhost:5000/";
+      var replacedUrl = replaceURLPathVariables(url, []);
+      expect(replacedUrl).toBe(url);
+  });
+
+  it("should return an empty array for URL with no segments and url params", function() {
+      var url = "http://localhost:5000/?foo=bar&something=wow";
+      var replacedUrl = replaceURLPathVariables(url, []);
+      expect(url).toBe(url);
+  });
+
+  it("should return an empty array for URL with no segments and url params which have a colon", function() {
+      var url = "http://localhost:5000/?foo=bar&something=wow:awesome:stuff:is:happening";
+      var replacedUrl = replaceURLPathVariables(url, []);
+      expect(replacedUrl).toBe(url);
+  });
+
+  it("should return key/val pairs for one path variable ending at the string end", function() {
+      var url = "http://localhost/:user_id";
+      var vals = {
+        "user_id": 1002
+      };
+
+      var replacedUrl = replaceURLPathVariables(url, vals);
+      expect(replacedUrl).toBe("http://localhost/1002");
+  });
+
+  it("should return key/val pairs for two path variables with one ending at the string end", function() {
+      var url = "http://localhost/:user_id/:category";
+
+      var vals = {
+        "user_id": 1002,
+        "category": "photos"
+      };
+
+      var replacedUrl = replaceURLPathVariables(url, vals);
+
+      expect(replacedUrl).toBe("http://localhost/1002/photos");
+  });
+
+  it("should return key/val pairs for path variable ending with /", function() {
+      var url = "http://localhost/:user_id/";
+      var vals = {
+        "user_id": 1002
+      };
+
+      var replacedUrl = replaceURLPathVariables(url, vals);
+      expect(replacedUrl).toBe("http://localhost/1002/");
+  });
+
+  it("should return key/val pairs for two path variables with one ending with /", function() {
+      var url = "http://localhost/:user_id/:category/";
+      var vals = {
+        "user_id": 1002,
+        "category": "photos"
+      };
+
+      var replacedUrl = replaceURLPathVariables(url, vals);
+
+      expect(replacedUrl).toBe("http://localhost/1002/photos/");
+  });
+});
+
   describe("getUrlVars", function() {
     it("should split URL with no arguments", function() {
       var url = "http://localhost/?";
