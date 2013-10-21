@@ -6,8 +6,8 @@ var POSTMAN_INDEXED_DB_PRODUCTION = "postman";
 var POSTMAN_INDEXED_DB_TESTING = "postman_test";
 
 // Config variables
-var postman_flag_is_testing = false;
-var postman_web_url = POSTMAN_WEB_URL_PRODUCTION;
+var postman_flag_is_testing = true;
+var postman_web_url = POSTMAN_WEB_URL_LOCAL;
 
 var postman_database_name;
 

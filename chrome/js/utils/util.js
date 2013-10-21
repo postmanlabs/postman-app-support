@@ -285,3 +285,19 @@ function splitSyncableFilename(name) {
         "type": parts[1]
     };
 }
+
+/*
+    Get path variables from the URL
+*/
+
+function getURLPathVariables(url) {
+    if (!url) {
+        return [];
+    }
+
+    var quesLocation = url.indexOf('?');
+
+    console.log(url);
+    var pairs = [];
+    return pairs;
+}

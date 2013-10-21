@@ -34,23 +34,6 @@ var RequestURLEditor = Backbone.View.extend({
 
         $(editorId).keyvalueeditor('init', params);
 
-        $('#url-keyvaleditor-actions-close').on("click", function () {
-            view.closeUrlEditor();
-        });
-
-        $('#url-keyvaleditor-actions-open').on("click", function () {
-            var isDisplayed = $('#url-keyvaleditor-container').css("display") === "block";
-            if (isDisplayed) {
-                view.closeUrlEditor();
-            }
-            else {
-                var newRows = getUrlVars($('#url').val(), false);
-                $(editorId).keyvalueeditor('reset', newRows);
-                view.openUrlEditor();
-            }
-
-        });
-
         $('#url').keyup(function () {
             var newRows = getUrlVars($('#url').val(), false);
             $('#url-keyvaleditor').keyvalueeditor('reset', newRows);
@@ -106,6 +89,12 @@ var RequestURLEditor = Backbone.View.extend({
     updateModel: function() {
         this.model.set("url", $("#url").val());
         this.model.setUrlParamString(this.getUrlEditorParams(), true);
+    },
+
+    openAndInitUrlEditor: function() {
+        var newRows = getUrlVars($('#url').val(), false);
+        $("#url-keyvaleditor").keyvalueeditor('reset', newRows);
+        this.openUrlEditor();
     },
 
     openUrlEditor:function () {

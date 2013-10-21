@@ -8,6 +8,7 @@ var RequestEditor = Backbone.View.extend({
         this.requestMetaViewer = new RequestMetaViewer({model: this.model});
         this.requestMethodEditor = new RequestMethodEditor({model: this.model});
         this.requestHeaderEditor = new RequestHeaderEditor({model: this.model});
+        this.requestURLPathVariablesEditor = new RequestURLPathVariablesEditor({model: this.model});
         this.requestURLEditor = new RequestURLEditor({model: this.model});
         this.requestBodyEditor = new RequestBodyEditor({model: this.model});
         this.requestClipboard = new RequestClipboard({model: this.model});
@@ -23,6 +24,23 @@ var RequestEditor = Backbone.View.extend({
 
         this.on("send", this.onSend, this);
         this.on("preview", this.onPreview, this);
+
+        $('#url-keyvaleditor-actions-close').on("click", function () {
+            view.requestURLPathVariablesEditor.closeEditor();
+            view.requestURLEditor.closeUrlEditor();
+        });
+
+        $('#url-keyvaleditor-actions-open').on("click", function () {
+            var isDisplayed = $('#url-keyvaleditor-container').css("display") === "block";
+            if (isDisplayed) {
+                view.requestURLPathVariablesEditor.closeEditor();
+                view.requestURLEditor.closeUrlEditor();
+            }
+            else {
+                view.requestURLPathVariablesEditor.openEditor();
+                view.requestURLEditor.openAndInitUrlEditor();
+            }
+        });
 
         $("#update-request-in-collection").on("click", function () {
             view.updateModel();
