@@ -2,6 +2,7 @@ var Request = Backbone.Model.extend({
     defaults: function() {
         return {
             url:"",
+            pathVariables:{},
             urlParams:{},
             name:"",
             description:"",
@@ -168,6 +169,14 @@ var Request = Backbone.Model.extend({
         return $(document.createElement('div')).html(link).text();
     },
 
+    setPathVariables: function(params) {
+        this.set("pathVariables", params);
+    },
+
+    getPathVariables: function() {
+        return this.get("pathVariables");
+    },
+
     getUrlParams: function() {
         var params = getUrlVars(this.get("url"));
         return params;
@@ -291,6 +300,7 @@ var Request = Backbone.Model.extend({
 
         var request = {
             url: this.get("url"),
+            pathVariables: this.get("pathVariables"),
             data: body.get("dataAsObjects"),
             headers: this.getPackedHeaders(),
             dataMode: body.get("dataMode"),
@@ -306,6 +316,7 @@ var Request = Backbone.Model.extend({
 
         var request = {
             url: this.get("url"),
+            pathVariables: this.get("pathVariables"),
             data: body.get("dataAsObjects"), //TODO This should be available in the model itself, asObjects = true
             headers: this.getPackedHeaders(),
             dataMode: body.get("dataMode"),
@@ -416,6 +427,10 @@ var Request = Backbone.Model.extend({
         this.set("editorMode", 0);
 
         this.set("url", request.url);
+
+        if ("pathVariables" in request) {
+            this.set("pathVariables", request.pathVariables);
+        }
 
         this.set("isFromCollection", isFromCollection);
         this.set("isFromSample", isFromSample);

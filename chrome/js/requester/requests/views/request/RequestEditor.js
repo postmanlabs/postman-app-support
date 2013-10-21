@@ -147,8 +147,17 @@ var RequestEditor = Backbone.View.extend({
         $('#update-request-in-collection').css("display", "none");
     },
 
+    /*
+    Called before
+    1. Sending
+    2. Previewing
+    3. Saving to a collection
+    4. Adding to a collection
+    5. Processing OAuth and Digest params
+    */
     updateModel: function() {
         this.requestHeaderEditor.updateModel();
+        this.requestURLPathVariablesEditor.updateModel();
         this.requestURLEditor.updateModel();
         this.requestBodyEditor.updateModel();
     },

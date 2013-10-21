@@ -19,6 +19,7 @@ var RequestURLEditor = Backbone.View.extend({
             deleteButton:'<img class="deleteButton" src="img/delete.png">',
             onDeleteRow:function () {
                 var params = view.getUrlEditorParams();
+                // TODO Simplify this
                 model.set("url", $("#url").val());
                 model.setUrlParams(params);
                 model.setUrlParamString(view.getUrlEditorParams(), true);
