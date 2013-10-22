@@ -9,16 +9,16 @@ helpers = this.merge(helpers, Handlebars.helpers); partials = this.merge(partial
 function program1(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n    ";
+  buffer += "\r\n    ";
   stack1 = self.invokePartial(partials.item_broadcast, 'item_broadcast', depth0, helpers, partials, data);
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n";
+  buffer += "\r\n";
   return buffer;
   }
 
   stack1 = helpers.each.call(depth0, depth0.items, {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n";
+  buffer += "\r\n\r\n";
   return buffer;
   });
 
@@ -30,10 +30,10 @@ helpers = this.merge(helpers, Handlebars.helpers); partials = this.merge(partial
 function program1(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n    ";
+  buffer += "\r\n    ";
   stack1 = self.invokePartial(partials.item_collection_selector_list, 'item_collection_selector_list', depth0, helpers, partials, data);
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n";
+  buffer += "\r\n";
   return buffer;
   }
 
@@ -50,26 +50,26 @@ helpers = this.merge(helpers, Handlebars.helpers); partials = this.merge(partial
 function program1(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n    ";
+  buffer += "\r\n    ";
   stack1 = self.invokePartial(partials.item_collection_folder, 'item_collection_folder', depth0, helpers, partials, data);
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n";
+  buffer += "\r\n";
   return buffer;
   }
 
 function program3(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n    ";
+  buffer += "\r\n    ";
   stack1 = self.invokePartial(partials.item_collection_sidebar_request, 'item_collection_sidebar_request', depth0, helpers, partials, data);
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n";
+  buffer += "\r\n";
   return buffer;
   }
 
   stack1 = helpers.each.call(depth0, depth0.folders, {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n";
+  buffer += "\r\n";
   stack1 = helpers.each.call(depth0, depth0.items, {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   return buffer;
@@ -83,16 +83,16 @@ helpers = this.merge(helpers, Handlebars.helpers); partials = this.merge(partial
 function program1(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n    ";
+  buffer += "\r\n    ";
   stack1 = self.invokePartial(partials.item_collection_folder, 'item_collection_folder', depth0, helpers, partials, data);
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n";
+  buffer += "\r\n";
   return buffer;
   }
 
   stack1 = helpers.each.call(depth0, depth0.folders, {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n";
+  buffer += "\r\n";
   return buffer;
   });
 
@@ -104,10 +104,10 @@ helpers = this.merge(helpers, Handlebars.helpers); partials = this.merge(partial
 function program1(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n    ";
+  buffer += "\r\n    ";
   stack1 = self.invokePartial(partials.item_collection_sidebar_request, 'item_collection_sidebar_request', depth0, helpers, partials, data);
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n";
+  buffer += "\r\n";
   return buffer;
   }
 
@@ -133,10 +133,10 @@ helpers = this.merge(helpers, Handlebars.helpers); partials = this.merge(partial
 function program1(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n    ";
+  buffer += "\r\n    ";
   stack1 = self.invokePartial(partials.item_environment_list, 'item_environment_list', depth0, helpers, partials, data);
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n";
+  buffer += "\r\n";
   return buffer;
   }
 
@@ -153,10 +153,10 @@ helpers = this.merge(helpers, Handlebars.helpers); partials = this.merge(partial
 function program1(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n    ";
+  buffer += "\r\n    ";
   stack1 = self.invokePartial(partials.item_environment_quicklook, 'item_environment_quicklook', depth0, helpers, partials, data);
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n";
+  buffer += "\r\n";
   return buffer;
   }
 
@@ -173,10 +173,10 @@ helpers = this.merge(helpers, Handlebars.helpers); partials = this.merge(partial
 function program1(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n    ";
+  buffer += "\r\n    ";
   stack1 = self.invokePartial(partials.item_environment_selector, 'item_environment_selector', depth0, helpers, partials, data);
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n";
+  buffer += "\r\n";
   return buffer;
   }
 
@@ -191,7 +191,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   
 
 
-  return "<li><a class=\"environment-list-item-noenvironment\" >No environment</a></li>\n<li class=\"divider\"></li>\n<li><a href=\"#modal-environments\" data-toggle=\"modal\" data-keyboard=\"true\">Manage environments</a></li>";
+  return "<li><a class=\"environment-list-item-noenvironment\" >No environment</a></li>\r\n<li class=\"divider\"></li>\r\n<li><a href=\"#modal-environments\" data-toggle=\"modal\" data-keyboard=\"true\">Manage environments</a></li>";
   });
 
 this["Handlebars"]["templates"]["header_preset_dropdown"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
@@ -202,10 +202,10 @@ helpers = this.merge(helpers, Handlebars.helpers); partials = this.merge(partial
 function program1(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n    ";
+  buffer += "\r\n    ";
   stack1 = self.invokePartial(partials.item_header_preset_dropdown, 'item_header_preset_dropdown', depth0, helpers, partials, data);
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n";
+  buffer += "\r\n";
   return buffer;
   }
 
@@ -222,10 +222,10 @@ helpers = this.merge(helpers, Handlebars.helpers); partials = this.merge(partial
 function program1(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n    ";
+  buffer += "\r\n    ";
   stack1 = self.invokePartial(partials.item_header_preset_list, 'item_header_preset_list', depth0, helpers, partials, data);
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n";
+  buffer += "\r\n";
   return buffer;
   }
 
@@ -242,10 +242,10 @@ helpers = this.merge(helpers, Handlebars.helpers); partials = this.merge(partial
 function program1(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n    ";
+  buffer += "\r\n    ";
   stack1 = self.invokePartial(partials.item_history_sidebar_request, 'item_history_sidebar_request', depth0, helpers, partials, data);
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n";
+  buffer += "\r\n";
   return buffer;
   }
 
@@ -260,11 +260,11 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
 
 
-  buffer += "<li class=\"broadcast\">\n<div>";
+  buffer += "<li class=\"broadcast\">\r\n<div>";
   if (stack1 = helpers.content) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.content; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "</div>\n</li>";
+    + "</div>\r\n</li>";
   return buffer;
   });
 
@@ -276,10 +276,10 @@ helpers = this.merge(helpers, Handlebars.helpers); partials = this.merge(partial
 function program1(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n                ";
+  buffer += "\r\n                ";
   stack1 = self.invokePartial(partials.item_collection_sidebar_request, 'item_collection_sidebar_request', depth0, helpers, partials, data);
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n            ";
+  buffer += "\r\n            ";
   return buffer;
   }
 
@@ -291,7 +291,7 @@ function program1(depth0,data) {
   if (stack1 = helpers.id) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.id; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "\">\n        <div class=\"folder-head\">\n            <div class=\"folder-head-actions\">\n                <a\n                   data-placement=\"bottom\"\n                   rel=\"tooltip\" data-original-title=\"Edit\"\n                   ref=\"#modal-edit-folder\" data-toggle=\"modal\"\n                   class=\"folder-actions-edit\" data-id=\"";
+    + "\">\r\n        <div class=\"folder-head\">\r\n            <div class=\"folder-head-actions\">\r\n                <a\r\n                   data-placement=\"bottom\"\r\n                   rel=\"tooltip\" data-original-title=\"Edit\"\r\n                   ref=\"#modal-edit-folder\" data-toggle=\"modal\"\r\n                   class=\"folder-actions-edit\" data-id=\"";
   if (stack1 = helpers.id) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.id; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
@@ -299,23 +299,23 @@ function program1(depth0,data) {
   if (stack1 = helpers.name) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.name; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "\">\n                    <img src=\"img/edit.png\" style=\"vertical-align: middle;\"/></a>            \n                <a rel=\"tooltip\" data-original-title=\"Delete folder\"\n                   data-name=\"";
+    + "\">\r\n                    <img src=\"img/edit.png\" style=\"vertical-align: middle;\"/></a>            \r\n                <a rel=\"tooltip\" data-original-title=\"Delete folder\"\r\n                   data-name=\"";
   if (stack1 = helpers.name) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.name; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "\"\n                   data-placement=\"bottom\"\n                   href=\"#modal-delete-folder\" data-toggle=\"modal\"\n                   class=\"folder-actions-delete\" data-id=\"";
+    + "\"\r\n                   data-placement=\"bottom\"\r\n                   href=\"#modal-delete-folder\" data-toggle=\"modal\"\r\n                   class=\"folder-actions-delete\" data-id=\"";
   if (stack1 = helpers.id) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.id; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "\">\n                    <img src=\"img/delete.png\" style=\"vertical-align: middle;\"/></a>\n            </div>\n            <div class=\"folder-head-name\" data-id=\"";
+    + "\">\r\n                    <img src=\"img/delete.png\" style=\"vertical-align: middle;\"/></a>\r\n            </div>\r\n            <div class=\"folder-head-name\" data-id=\"";
   if (stack1 = helpers.id) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.id; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "\">\n                <span class=\"folder-head-dt\">\n                    <img src=\"img/dt.png\"/>\n                </span>\n                <span class=\"name\">\n                  ";
+    + "\">\r\n                <span class=\"folder-head-dt\">\r\n                    <img src=\"img/dt.png\"/>\r\n                </span>\r\n                <span class=\"name\">\r\n                  ";
   if (stack1 = helpers.name) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.name; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "\n                </span>\n            </div>\n        </div>\n        <ul id=\"folder-requests-";
+    + "\r\n                </span>\r\n            </div>\r\n        </div>\r\n        <ul id=\"folder-requests-";
   if (stack1 = helpers.id) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.id; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
@@ -323,10 +323,10 @@ function program1(depth0,data) {
   if (stack1 = helpers.id) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.id; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "\">\n            ";
+    + "\">\r\n            ";
   stack1 = helpers.each.call(depth0, depth0.requests, {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n        </ul>\n    </li>";
+  buffer += "\r\n        </ul>\r\n    </li>";
   return buffer;
   });
 
@@ -338,10 +338,10 @@ helpers = this.merge(helpers, Handlebars.helpers); partials = this.merge(partial
 function program1(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n    ";
+  buffer += "\r\n    ";
   stack1 = self.invokePartial(partials.item_collection_selector_list_folder, 'item_collection_selector_list_folder', depth0, helpers, partials, data);
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n";
+  buffer += "\r\n";
   return buffer;
   }
 
@@ -357,7 +357,7 @@ function program1(depth0,data) {
   if (stack1 = helpers.name) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.name; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "</option>\n";
+    + "</option>\r\n";
   stack1 = helpers.each.call(depth0, depth0.folders, {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   return buffer;
@@ -407,7 +407,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   if (stack1 = helpers.id) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.id; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "\" class=\"sidebar-collection\">\n    <div class=\"sidebar-collection-head\">\n        <div class=\"collection-head-actions\">\n            <a\n               data-placement=\"bottom\"\n               rel=\"tooltip\" data-original-title=\"Add folder\"\n               ref=\"#modal-add-folder\" data-toggle=\"modal\"\n               class=\"collection-actions-add-folder\" data-id=\"";
+    + "\" class=\"sidebar-collection\">\r\n    <div class=\"sidebar-collection-head\">\r\n        <div class=\"collection-head-actions\">\r\n            <a\r\n               data-placement=\"bottom\"\r\n               rel=\"tooltip\" data-original-title=\"Add folder\"\r\n               ref=\"#modal-add-folder\" data-toggle=\"modal\"\r\n               class=\"collection-actions-add-folder\" data-id=\"";
   if (stack1 = helpers.id) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.id; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
@@ -415,7 +415,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   if (stack1 = helpers.name) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.name; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "\">\n                <img src=\"img/folder_plus.png\" style=\"vertical-align: middle;\"/></a>\n            <a\n               data-placement=\"bottom\"\n               rel=\"tooltip\" data-original-title=\"Edit collection\"\n               ref=\"#modal-edit-collection\" data-toggle=\"modal\"\n               class=\"collection-actions-edit\" data-id=\"";
+    + "\">\r\n                <img src=\"img/folder_plus.png\" style=\"vertical-align: middle;\"/></a>\r\n            <a\r\n               data-placement=\"bottom\"\r\n               rel=\"tooltip\" data-original-title=\"Edit collection\"\r\n               ref=\"#modal-edit-collection\" data-toggle=\"modal\"\r\n               class=\"collection-actions-edit\" data-id=\"";
   if (stack1 = helpers.id) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.id; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
@@ -423,39 +423,39 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   if (stack1 = helpers.name) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.name; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "\">\n                <img src=\"img/edit.png\" style=\"vertical-align: middle;\"/></a>\n            <a\n               data-placement=\"bottom\"\n               rel=\"tooltip\" data-original-title=\"Share collection\"\n               class=\"collection-actions-download\" data-id=\"";
+    + "\">\r\n                <img src=\"img/edit.png\" style=\"vertical-align: middle;\"/></a>\r\n            <a\r\n               data-placement=\"bottom\"\r\n               rel=\"tooltip\" data-original-title=\"Share collection\"\r\n               class=\"collection-actions-download\" data-id=\"";
   if (stack1 = helpers.id) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.id; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "\">\n                <img src=\"img/share.png\" style=\"vertical-align: middle;\"/></a>\n            <a rel=\"tooltip\" data-original-title=\"Delete collection\"\n               data-name=\"";
+    + "\">\r\n                <img src=\"img/share.png\" style=\"vertical-align: middle;\"/></a>\r\n            <a rel=\"tooltip\" data-original-title=\"Delete collection\"\r\n               data-name=\"";
   if (stack1 = helpers.name) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.name; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "\"\n               data-placement=\"bottom\"\n               href=\"#modal-delete-collection\" data-toggle=\"modal\"\n               class=\"collection-actions-delete\" data-id=\"";
+    + "\"\r\n               data-placement=\"bottom\"\r\n               href=\"#modal-delete-collection\" data-toggle=\"modal\"\r\n               class=\"collection-actions-delete\" data-id=\"";
   if (stack1 = helpers.id) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.id; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "\">\n                <img src=\"img/delete.png\" style=\"vertical-align: middle;\"/></a>\n        </div>\n        <div class=\"sidebar-collection-head-name\" data-id=\"";
+    + "\">\r\n                <img src=\"img/delete.png\" style=\"vertical-align: middle;\"/></a>\r\n        </div>\r\n        <div class=\"sidebar-collection-head-name\" data-id=\"";
   if (stack1 = helpers.id) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.id; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "\">\n            <span class=\"sidebar-collection-head-dt\">\n              <img src=\"img/dt.png\"/>\n            </span>\n            ";
+    + "\">\r\n            <span class=\"sidebar-collection-head-dt\">\r\n              <img src=\"img/dt.png\"/>\r\n            </span>\r\n            ";
   if (stack1 = helpers.name) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.name; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "\n        </div>\n    </div>\n    <div id=\"collection-children-";
+    + "\r\n        </div>\r\n    </div>\r\n    <div id=\"collection-children-";
   if (stack1 = helpers.id) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.id; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "\" class=\"collection-children\">\n      <ul id=\"folders-";
+    + "\" class=\"collection-children\">\r\n      <ul id=\"folders-";
   if (stack1 = helpers.id) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.id; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "\" class=\"folders\"></ul>\n      <ul id=\"collection-requests-";
+    + "\" class=\"folders\"></ul>\r\n      <ul id=\"collection-requests-";
   if (stack1 = helpers.id) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.id; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "\" class=\"sidebar-collection-requests\"></ul>\n    </div>\n</li>\n";
+    + "\" class=\"sidebar-collection-requests\"></ul>\r\n    </div>\r\n</li>\r\n";
   return buffer;
   });
 
@@ -465,23 +465,23 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
 
 
-  buffer += "\n    <li id=\"sidebar-request-";
+  buffer += "\r\n    <li id=\"sidebar-request-";
   if (stack1 = helpers.id) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.id; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "\" class=\"sidebar-collection-request sidebar-request clearfix\">\n        <div class=\"request-actions\">\n            <a  data-id=\"";
+    + "\" class=\"sidebar-collection-request sidebar-request clearfix\">\r\n        <div class=\"request-actions\">\r\n            <a  data-id=\"";
   if (stack1 = helpers.id) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.id; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "\" class=\"request-actions-edit\">\n                <img src=\"img/edit.png\" style=\"vertical-align: middle;\"/>\n            </a>\n            <a  data-id=\"";
+    + "\" class=\"request-actions-edit\">\r\n                <img src=\"img/edit.png\" style=\"vertical-align: middle;\"/>\r\n            </a>\r\n            <a  data-id=\"";
   if (stack1 = helpers.id) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.id; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "\" class=\"request-actions-delete\">\n                <img src=\"img/delete.png\" style=\"vertical-align: middle;\"/>\n            </a>\n        </div>\n        <div class=\"request request-actions-load\" data-id=\"";
+    + "\" class=\"request-actions-delete\">\r\n                <img src=\"img/delete.png\" style=\"vertical-align: middle;\"/>\r\n            </a>\r\n        </div>\r\n        <div class=\"request request-actions-load\" data-id=\"";
   if (stack1 = helpers.id) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.id; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "\">\n            <a ><span class=\"label label-method-";
+    + "\">\r\n            <a ><span class=\"label label-method-";
   if (stack1 = helpers.method) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.method; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
@@ -489,11 +489,11 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   if (stack1 = helpers.method) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.method; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "</span>\n                <span class=\"request-name\">\n                ";
+    + "</span>\r\n                <span class=\"request-name\">\r\n                ";
   if (stack1 = helpers.name) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.name; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n                </span>\n            </a>\n        </div>\n    </li>";
+  buffer += "\r\n                </span>\r\n            </a>\r\n        </div>\r\n    </li>";
   return buffer;
   });
 
@@ -511,7 +511,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   if (stack1 = helpers.id) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.id; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "\">\n	<a class=\"directory-collection-action-view\" data-id=\"";
+    + "\">\r\n	<a class=\"directory-collection-action-view\" data-id=\"";
   if (stack1 = helpers.id) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.id; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
@@ -519,19 +519,19 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   if (stack1 = helpers.name) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.name; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "</a>\n	<p class=\"updated_at\"><strong>";
+    + "</a>\r\n	<p class=\"updated_at\"><strong>";
   if (stack1 = helpers.updated_at_formatted) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.updated_at_formatted; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "</strong></p>\n	<div class=\"description\">";
+    + "</strong></p>\r\n	<div class=\"description\">";
   if (stack1 = helpers.description) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.description; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "</div>\n	<p class=\"count_requests\"><strong>";
+  buffer += "</div>\r\n	<p class=\"count_requests\"><strong>";
   if (stack1 = helpers.count_requests) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.count_requests; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "</strong> endpoints</p>\n	<a class=\"btn btn-primary btn-small directory-collection-action-download\" data-id=\"";
+    + "</strong> endpoints</p>\r\n	<a class=\"btn btn-primary btn-small directory-collection-action-download\" data-id=\"";
   if (stack1 = helpers.id) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.id; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
@@ -539,7 +539,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   if (stack1 = helpers.link_id) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.link_id; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "\">Download</a>\n</div>";
+    + "\">Download</a>\r\n</div>";
   return buffer;
   });
 
@@ -558,7 +558,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
 
 
-  buffer += "<tr>\n    <td>\n        <a  class=\"environment-action-edit\" data-id=\"";
+  buffer += "<tr>\r\n    <td>\r\n        <a  class=\"environment-action-edit\" data-id=\"";
   if (stack1 = helpers.id) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.id; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
@@ -566,23 +566,23 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   if (stack1 = helpers.name) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.name; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "</a>\n    </td>\n    <td class=\"environment-actions\">\n        <a\n           rel=\"tooltip\" data-original-title=\"Duplicate environment\"\n           data-placement=\"bottom\"\n           class=\"environment-action-duplicate\" data-id=\"";
+    + "</a>\r\n    </td>\r\n    <td class=\"environment-actions\">\r\n        <a\r\n           rel=\"tooltip\" data-original-title=\"Duplicate environment\"\r\n           data-placement=\"bottom\"\r\n           class=\"environment-action-duplicate\" data-id=\"";
   if (stack1 = helpers.id) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.id; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "\">\n           <img src=\"img/copy.png\"\n                style=\"vertical-align: middle; width: 20px; height: 20px;\"/></a>\n        <a\n           rel=\"tooltip\" data-original-title=\"Download environment\"\n           data-placement=\"bottom\"\n           class=\"environment-action-download\" data-id=\"";
+    + "\">\r\n           <img src=\"img/copy.png\"\r\n                style=\"vertical-align: middle; width: 20px; height: 20px;\"/></a>\r\n        <a\r\n           rel=\"tooltip\" data-original-title=\"Download environment\"\r\n           data-placement=\"bottom\"\r\n           class=\"environment-action-download\" data-id=\"";
   if (stack1 = helpers.id) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.id; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "\">\n            <img src=\"img/download.png\"\n                 style=\"vertical-align: middle; width: 20px; height: 20px;\"/></a>\n        <a\n           data-name=\"";
+    + "\">\r\n            <img src=\"img/download.png\"\r\n                 style=\"vertical-align: middle; width: 20px; height: 20px;\"/></a>\r\n        <a\r\n           data-name=\"";
   if (stack1 = helpers.name) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.name; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "\"\n           rel=\"tooltip\" data-original-title=\"Delete environment\" data-placement=\"bottom\"\n           class=\"environment-action-delete\" data-id=\"";
+    + "\"\r\n           rel=\"tooltip\" data-original-title=\"Delete environment\" data-placement=\"bottom\"\r\n           class=\"environment-action-delete\" data-id=\"";
   if (stack1 = helpers.id) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.id; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "\">\n            <img src=\"img/delete.png\" style=\"vertical-align: middle; width: 20px; height: 20px;\"/></a>\n    </td>\n</tr>\n";
+    + "\">\r\n            <img src=\"img/delete.png\" style=\"vertical-align: middle; width: 20px; height: 20px;\"/></a>\r\n    </td>\r\n</tr>\r\n";
   return buffer;
   });
 
@@ -592,15 +592,15 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
 
 
-  buffer += "<li>\n    <span class=\"key\">";
+  buffer += "<li>\r\n    <span class=\"key\">";
   if (stack1 = helpers.key) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.key; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "</span> →\n    <span class=\"value\">";
+    + "</span> →\r\n    <span class=\"value\">";
   if (stack1 = helpers.value) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.value; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "</span>\n</li>\n";
+    + "</span>\r\n</li>\r\n";
   return buffer;
   });
 
@@ -618,7 +618,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   if (stack1 = helpers.name) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.name; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "</a></li>\n";
+    + "</a></li>\r\n";
   return buffer;
   });
 
@@ -646,7 +646,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
 
 
-  buffer += "<tr>\n    <td>\n        <a  class=\"header-preset-action-edit\" data-id=\"";
+  buffer += "<tr>\r\n    <td>\r\n        <a  class=\"header-preset-action-edit\" data-id=\"";
   if (stack1 = helpers.id) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.id; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
@@ -654,15 +654,15 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   if (stack1 = helpers.name) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.name; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "</a>\n    </td>\n    <td style=\"width: 50px;\">\n        <a\n           data-name=\"";
+    + "</a>\r\n    </td>\r\n    <td style=\"width: 50px;\">\r\n        <a\r\n           data-name=\"";
   if (stack1 = helpers.name) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.name; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "\"\n           rel=\"tooltip\" data-original-title=\"Delete header preset\" data-placement=\"bottom\"\n           class=\"header-preset-action-delete\" data-id=\"";
+    + "\"\r\n           rel=\"tooltip\" data-original-title=\"Delete header preset\" data-placement=\"bottom\"\r\n           class=\"header-preset-action-delete\" data-id=\"";
   if (stack1 = helpers.id) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.id; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "\">\n            <img src=\"img/delete.png\" style=\"vertical-align: middle; width: 20px; height: 20px;\"/></a>\n    </td>\n</tr>\n";
+    + "\">\r\n            <img src=\"img/delete.png\" style=\"vertical-align: middle; width: 20px; height: 20px;\"/></a>\r\n    </td>\r\n</tr>\r\n";
   return buffer;
   });
 
@@ -676,19 +676,19 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   if (stack1 = helpers.id) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.id; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "\" class=\"sidebar-history-request sidebar-request clearfix\">\n    <div class=\"request-actions\">\n        <a  data-request-id=\"";
+    + "\" class=\"sidebar-history-request sidebar-request clearfix\">\r\n    <div class=\"request-actions\">\r\n        <a  data-request-id=\"";
   if (stack1 = helpers.id) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.id; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "\" class=\"request-actions-delete\">\n            <img src=\"img/delete.png\"/>\n        </a>\n    </div>\n    <div class=\"request\" data-request-id=\"";
+    + "\" class=\"request-actions-delete\">\r\n            <img src=\"img/delete.png\"/>\r\n        </a>\r\n    </div>\r\n    <div class=\"request\" data-request-id=\"";
   if (stack1 = helpers.id) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.id; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "\">\n        <a  data-request-id=\"";
+    + "\">\r\n        <a  data-request-id=\"";
   if (stack1 = helpers.id) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.id; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "\">\n            <span\n            class=\"label label-method-";
+    + "\">\r\n            <span\r\n            class=\"label label-method-";
   if (stack1 = helpers.method) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.method; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
@@ -696,11 +696,11 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   if (stack1 = helpers.method) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.method; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "</span>\n            <span class=\"request-name\">\n                ";
+    + "</span>\r\n            <span class=\"request-name\">\r\n                ";
   if (stack1 = helpers.url) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.url; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n            </span>\n        </a>\n    </div>\n</li>";
+  buffer += "\r\n            </span>\r\n        </a>\r\n    </div>\r\n</li>";
   return buffer;
   });
 
@@ -714,15 +714,15 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   if (stack1 = helpers['class']) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0['class']; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "\">\n	<span class=\"item-logger-time\">";
+    + "\">\r\n	<span class=\"item-logger-time\">";
   if (stack1 = helpers.time) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.time; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "</span>\n	<span class=\"item-logger-message\">";
+    + "</span>\r\n	<span class=\"item-logger-message\">";
   if (stack1 = helpers.message) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.message; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "</span>\n</li>";
+    + "</span>\r\n</li>";
   return buffer;
   });
 
@@ -736,19 +736,19 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   if (stack1 = helpers.id) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.id; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "\">\n	<div class=\"oauth2-access-token-name-container\">\n		<a class=\"oauth2-access-token-name oauth2-access-token-actions-load\" data-id=\"";
+    + "\">\r\n	<div class=\"oauth2-access-token-name-container\">\r\n		<a class=\"oauth2-access-token-name oauth2-access-token-actions-load\" data-id=\"";
   if (stack1 = helpers.id) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.id; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "\"\n		data-original-title=\"Click to add to request\"\n		data-placement=\"top\"\n		rel=\"tooltip\" >";
+    + "\"\r\n		data-original-title=\"Click to add to request\"\r\n		data-placement=\"top\"\r\n		rel=\"tooltip\" >";
   if (stack1 = helpers.name) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.name; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "</a>\n	</div>\n	<div class=\"oauth2-access-token-actions\">\n		<a rel=\"tooltip\" data-original-title=\"Delete\"\n		   data-placement=\"bottom\" data-toggle=\"modal\"\n		   class=\"oauth2-access-token-actions-delete\" data-id=\"";
+    + "</a>\r\n	</div>\r\n	<div class=\"oauth2-access-token-actions\">\r\n		<a rel=\"tooltip\" data-original-title=\"Delete\"\r\n		   data-placement=\"bottom\" data-toggle=\"modal\"\r\n		   class=\"oauth2-access-token-actions-delete\" data-id=\"";
   if (stack1 = helpers.id) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.id; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "\">\n		    <img src=\"img/delete.png\" style=\"vertical-align: middle;\"/></a>\n	</div>\n</div>";
+    + "\">\r\n		    <img src=\"img/delete.png\" style=\"vertical-align: middle;\"/></a>\r\n	</div>\r\n</div>";
   return buffer;
   });
 
@@ -758,15 +758,15 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
 
 
-  buffer += "<li>\n    <span class=\"key\">";
+  buffer += "<li>\r\n    <span class=\"key\">";
   if (stack1 = helpers.key) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.key; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "</span> →\n    <span class=\"value\">";
+    + "</span> →\r\n    <span class=\"value\">";
   if (stack1 = helpers.value) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.value; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "</span>\n</li>\n";
+    + "</span>\r\n</li>\r\n";
   return buffer;
   });
 
@@ -788,7 +788,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   if (stack1 = helpers.detail) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.detail; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "\"\n     rel=\"popover\"><span class=\"label\">Status</span>\n    <div class=\"data\">";
+    + "\"\r\n     rel=\"popover\"><span class=\"label\">Status</span>\r\n    <div class=\"data\">";
   if (stack1 = helpers.code) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.code; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
@@ -796,7 +796,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   if (stack1 = helpers.name) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.name; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "</div>\n</div>\n";
+    + "</div>\r\n</div>\r\n";
   return buffer;
   });
 
@@ -806,35 +806,35 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
 
 
-  buffer += "<tr>\n    <td>";
+  buffer += "<tr>\r\n    <td>";
   if (stack1 = helpers.name) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.name; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "</td>\n    <td>";
+  buffer += "</td>\r\n    <td>";
   if (stack1 = helpers.value) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.value; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "</td>\n    <td>";
+  buffer += "</td>\r\n    <td>";
   if (stack1 = helpers.domain) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.domain; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "</td>\n    <td>";
+  buffer += "</td>\r\n    <td>";
   if (stack1 = helpers.path) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.path; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "</td>\n    <td>";
+  buffer += "</td>\r\n    <td>";
   if (stack1 = helpers.expires) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.expires; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "</td>\n    <td>";
+    + "</td>\r\n    <td>";
   if (stack1 = helpers.httpOnly) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.httpOnly; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "</td>\n    <td>";
+    + "</td>\r\n    <td>";
   if (stack1 = helpers.secure) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.secure; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "</td>\n</tr>\n";
+    + "</td>\r\n</tr>\r\n";
   return buffer;
   });
 
@@ -844,23 +844,23 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
 
 
-  buffer += "<li class=\"response-header clearfix\">\n    <div class=\"response-header-name\" data-placement=\"top\" data-original-title=\"";
+  buffer += "<li class=\"response-header clearfix\">\r\n    <div class=\"response-header-name\" data-placement=\"top\" data-original-title=\"";
   if (stack1 = helpers.name) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.name; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "\"\n         data-content=\"";
+    + "\"\r\n         data-content=\"";
   if (stack1 = helpers.description) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.description; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "\"\n         data-trigger=\"hover\"\n         rel=\"popover\">";
+    + "\"\r\n         data-trigger=\"hover\"\r\n         rel=\"popover\">";
   if (stack1 = helpers.name) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.name; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + " &rarr;</div>\n    <div class=\"response-header-value\">";
+    + " &rarr;</div>\r\n    <div class=\"response-header-value\">";
   if (stack1 = helpers.value) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.value; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "</div>\n</li>";
+    + "</div>\r\n</li>";
   return buffer;
   });
 
@@ -874,7 +874,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   if (stack1 = helpers.id) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.id; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "\">\n	<div class=\"sample-response-name-container\">\n		<a class=\"sample-response-name sample-response-actions-load\" data-id=\"";
+    + "\">\r\n	<div class=\"sample-response-name-container\">\r\n		<a class=\"sample-response-name sample-response-actions-load\" data-id=\"";
   if (stack1 = helpers.id) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.id; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
@@ -882,11 +882,11 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   if (stack1 = helpers.name) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.name; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "</a>\n	</div>\n	<div class=\"sample-response-actions\">\n		<a rel=\"tooltip\" data-original-title=\"Delete\"\n		   data-placement=\"bottom\" data-toggle=\"modal\"\n		   class=\"sample-response-actions-delete\" data-id=\"";
+    + "</a>\r\n	</div>\r\n	<div class=\"sample-response-actions\">\r\n		<a rel=\"tooltip\" data-original-title=\"Delete\"\r\n		   data-placement=\"bottom\" data-toggle=\"modal\"\r\n		   class=\"sample-response-actions-delete\" data-id=\"";
   if (stack1 = helpers.id) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.id; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "\">\n		    <img src=\"img/delete.png\" style=\"vertical-align: middle;\"/></a>\n	</div>\n</div>";
+    + "\">\r\n		    <img src=\"img/delete.png\" style=\"vertical-align: middle;\"/></a>\r\n	</div>\r\n</div>";
   return buffer;
   });
 
@@ -898,10 +898,10 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 function program1(depth0,data) {
   
   
-  return "\n        <span class=\"label label-success\">Public</span>\n        ";
+  return "\r\n        <span class=\"label label-success\">Public</span>\r\n        ";
   }
 
-  buffer += "<tr>\n    <td>\n        <span class=\"user-collection-action-edit\" data-id=\"";
+  buffer += "<tr>\r\n    <td>\r\n        <span class=\"user-collection-action-edit\" data-id=\"";
   if (stack1 = helpers.id) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.id; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
@@ -909,22 +909,22 @@ function program1(depth0,data) {
   if (stack1 = helpers.name) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.name; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "</span>\n        ";
+    + "</span>\r\n        ";
   stack1 = helpers['if'].call(depth0, depth0.is_public, {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n        <br/>\n        <span class=\"user-collection-link\">";
+  buffer += "\r\n        <br/>\r\n        <span class=\"user-collection-link\">";
   if (stack1 = helpers.link) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.link; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "</span><br/>\n        <span class=\"user-collection-updated-at\">Last updated on ";
+    + "</span><br/>\r\n        <span class=\"user-collection-updated-at\">Last updated on ";
   if (stack1 = helpers.updated_at_formatted) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.updated_at_formatted; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "</span>\n    </td>\n    <td style=\"width: 75px;\">\n        <a\n           data-name=\"";
+    + "</span>\r\n    </td>\r\n    <td style=\"width: 75px;\">\r\n        <a\r\n           data-name=\"";
   if (stack1 = helpers.name) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.name; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "\"\n           rel=\"tooltip\" data-original-title=\"Download collection\" data-placement=\"bottom\"\n           class=\"user-collection-action-download\" data-id=\"";
+    + "\"\r\n           rel=\"tooltip\" data-original-title=\"Download collection\" data-placement=\"bottom\"\r\n           class=\"user-collection-action-download\" data-id=\"";
   if (stack1 = helpers.id) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.id; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
@@ -932,15 +932,15 @@ function program1(depth0,data) {
   if (stack1 = helpers.remote_id) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.remote_id; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "\">\n            <img src=\"img/download.png\" style=\"vertical-align: middle; width: 20px; height: 20px;\"/></a>\n        <a\n           data-name=\"";
+    + "\">\r\n            <img src=\"img/download.png\" style=\"vertical-align: middle; width: 20px; height: 20px;\"/></a>\r\n        <a\r\n           data-name=\"";
   if (stack1 = helpers.name) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.name; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "\"\n           rel=\"tooltip\" data-original-title=\"Delete collection\" data-placement=\"bottom\"\n           class=\"user-collection-action-delete\" data-id=\"";
+    + "\"\r\n           rel=\"tooltip\" data-original-title=\"Delete collection\" data-placement=\"bottom\"\r\n           class=\"user-collection-action-delete\" data-id=\"";
   if (stack1 = helpers.id) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.id; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "\">\n            <img src=\"img/delete.png\" style=\"vertical-align: middle; width: 20px; height: 20px;\"/></a>\n    </td>\n</tr>\n";
+    + "\">\r\n            <img src=\"img/delete.png\" style=\"vertical-align: middle; width: 20px; height: 20px;\"/></a>\r\n    </td>\r\n</tr>\r\n";
   return buffer;
   });
 
@@ -952,10 +952,10 @@ helpers = this.merge(helpers, Handlebars.helpers); partials = this.merge(partial
 function program1(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n    ";
+  buffer += "\r\n    ";
   stack1 = self.invokePartial(partials.item_logger_drivesync, 'item_logger_drivesync', depth0, helpers, partials, data);
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n";
+  buffer += "\r\n";
   return buffer;
   }
 
@@ -970,7 +970,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
 
 
-  buffer += "<div class=\"alert alert-block\">\n    <a class=\"close\" data-dismiss=\"alert\">×</a>\n    <h4 class=\"alert-heading\">It worked!</h4>\n    The collection ";
+  buffer += "<div class=\"alert alert-block\">\r\n    <a class=\"close\" data-dismiss=\"alert\">×</a>\r\n    <h4 class=\"alert-heading\">It worked!</h4>\r\n    The collection ";
   if (stack1 = helpers.name) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.name; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
@@ -978,7 +978,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   if (stack1 = helpers.action) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.action; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + ".\n</div>";
+    + ".\r\n</div>";
   return buffer;
   });
 
@@ -988,7 +988,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
 
 
-  buffer += "<div class=\"alert alert-block\">\n    <a class=\"close\" data-dismiss=\"alert\">×</a>\n    <h4 class=\"alert-heading\">It worked!</h4>\n    The environment ";
+  buffer += "<div class=\"alert alert-block\">\r\n    <a class=\"close\" data-dismiss=\"alert\">×</a>\r\n    <h4 class=\"alert-heading\">It worked!</h4>\r\n    The environment ";
   if (stack1 = helpers.name) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.name; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
@@ -996,7 +996,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   if (stack1 = helpers.action) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.action; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + ".\n</div>";
+    + ".\r\n</div>";
   return buffer;
   });
 
@@ -1006,7 +1006,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   
 
 
-  return "<div class=\"empty-message\">\n    You haven't created any collections yet. Collections let you group requests together for quick access.\n</div>";
+  return "<div class=\"empty-message\">\r\n    You haven't created any collections yet. Collections let you group requests together for quick access.\r\n</div>";
   });
 
 this["Handlebars"]["templates"]["message_no_history"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
@@ -1015,7 +1015,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   
 
 
-  return "<div class=\"empty-message\">\n    Nothing in your history yet. You can automatically save and access your sent requests here.\n</div>";
+  return "<div class=\"empty-message\">\r\n    Nothing in your history yet. You can automatically save and access your sent requests here.\r\n</div>";
   });
 
 this["Handlebars"]["templates"]["oauth2_access_tokens"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
@@ -1026,10 +1026,10 @@ helpers = this.merge(helpers, Handlebars.helpers); partials = this.merge(partial
 function program1(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n    ";
+  buffer += "\r\n    ";
   stack1 = self.invokePartial(partials.item_oauth2_access_token, 'item_oauth2_access_token', depth0, helpers, partials, data);
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n";
+  buffer += "\r\n";
   return buffer;
   }
 
@@ -1046,10 +1046,10 @@ helpers = this.merge(helpers, Handlebars.helpers); partials = this.merge(partial
 function program1(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n    ";
+  buffer += "\r\n    ";
   stack1 = self.invokePartial(partials.item_environment_quicklook, 'item_environment_quicklook', depth0, helpers, partials, data);
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n";
+  buffer += "\r\n";
   return buffer;
   }
 
@@ -1066,10 +1066,10 @@ helpers = this.merge(helpers, Handlebars.helpers); partials = this.merge(partial
 function program1(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n    ";
+  buffer += "\r\n    ";
   stack1 = self.invokePartial(partials.item_response_cookie, 'item_response_cookie', depth0, helpers, partials, data);
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n";
+  buffer += "\r\n";
   return buffer;
   }
 
@@ -1086,10 +1086,10 @@ helpers = this.merge(helpers, Handlebars.helpers); partials = this.merge(partial
 function program1(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n    ";
+  buffer += "\r\n    ";
   stack1 = self.invokePartial(partials.item_response_header, 'item_response_header', depth0, helpers, partials, data);
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n";
+  buffer += "\r\n";
   return buffer;
   }
 
@@ -1106,10 +1106,10 @@ helpers = this.merge(helpers, Handlebars.helpers); partials = this.merge(partial
 function program1(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n    ";
+  buffer += "\r\n    ";
   stack1 = self.invokePartial(partials.item_sample_response, 'item_sample_response', depth0, helpers, partials, data);
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n";
+  buffer += "\r\n";
   return buffer;
   }
 
@@ -1126,10 +1126,10 @@ helpers = this.merge(helpers, Handlebars.helpers); partials = this.merge(partial
 function program1(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n    ";
+  buffer += "\r\n    ";
   stack1 = self.invokePartial(partials.item_user_collections, 'item_user_collections', depth0, helpers, partials, data);
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n";
+  buffer += "\r\n";
   return buffer;
   }
 
