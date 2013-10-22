@@ -1011,6 +1011,8 @@ var PmCollections = Backbone.Collection.extend({
 
     // Add request to collection
     addRequestToCollection:function (collectionRequest, collection) {
+        console.log("Add request to collection", collectionRequest);
+
         var pmCollection = this;
 
         if (collection.name) {

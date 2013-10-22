@@ -14,7 +14,6 @@ var RequestURLPathVariablesEditor = Backbone.View.extend({
             placeHolderValue:"Value",
             deleteButton:'<img class="deleteButton" src="img/delete.png">',
             editableKeys: false,
-            newRows: false,
             onDeleteRow:function () {
                 view.setUrl();
             },
@@ -55,6 +54,8 @@ var RequestURLPathVariablesEditor = Backbone.View.extend({
             }
         }
 
+        console.log("Load editor params", rows);
+
         $(this.editorId).keyvalueeditor('reset', rows);
     },
 
@@ -84,8 +85,6 @@ var RequestURLPathVariablesEditor = Backbone.View.extend({
 
             newParams.push(newParam);
         }
-
-        console.log(newParams);
 
         $(this.editorId).keyvalueeditor('reset', newParams);
     },

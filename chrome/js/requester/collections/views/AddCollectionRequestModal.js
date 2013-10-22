@@ -153,6 +153,7 @@ var AddCollectionRequestModal = Backbone.View.extend({
                 id: guid(),
                 headers: request.getPackedHeaders(),
                 url: url,
+                pathVariables: request.get("pathVariables"),
                 method: request.get("method"),
                 data: body.get("dataAsObjects"),
                 dataMode: body.get("dataMode"),
@@ -163,6 +164,8 @@ var AddCollectionRequestModal = Backbone.View.extend({
                 version: 2,
                 responses: []
             };
+
+            console.log("Add request", collectionRequest);
 
             if (targetType === "folder") {
                 model.addRequestToFolder(collectionRequest, collectionId, folderId);

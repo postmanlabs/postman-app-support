@@ -20,8 +20,10 @@
                         editor:$this
                     };
 
-                    var h = methods.getLastRow(data);
-                    $this.append(h);
+                    if (data.settings.editableKeys) {
+                        var h = methods.getLastRow(data);
+                        $this.append(h);
+                    }
 
                     $this.on("focus.keyvalueeditor", '.keyvalueeditor-last', data, methods.focusEventHandler);
                     $this.on("focus.keyvalueeditor", '.keyvalueeditor-row input', data, methods.rowFocusEventHandler);
@@ -79,11 +81,20 @@
             value = value.replace(/'/g, "&apos;").replace(/"/g, "&quot;");
 
             var h;
+
             h = '<div class="keyvalueeditor-row">';
             h += '<input type="text" class="keyvalueeditor-key" placeHolder="' + pKey
                 + '" name="keyvalueeditor-' + key
-                + '" value="' + key
-                + '"/>';
+                + '" value="' + key + '"';
+
+            if (!settings.editableKeys) {
+                h += ' data-editable="false"';
+                h += ' readonly="readonly"';
+                h += '/>';
+            }
+            else {
+                h += '"/>';
+            }
 
             if ($.inArray("file", valueTypes) >= 0) {
                 if (type === "file") {
@@ -128,7 +139,12 @@
         },
 
         getDeleteLink:function (state) {
-            return '<a tabindex="-1" class="keyvalueeditor-delete">' + state.settings.deleteButton + '</a>';
+            if (state.settings.editableKeys) {
+                return '<a tabindex="-1" class="keyvalueeditor-delete">' + state.settings.deleteButton + '</a>';
+            }
+            else {
+                return "";
+            }
         },
 
 
@@ -150,6 +166,12 @@
         },
 
         focusEventHandler:function (event) {
+            var editableKeys = event.data.settings.editableKeys;
+
+            if (!editableKeys) {
+                return;
+            }
+
             var params = {key:"", value:""};
             var editor = event.data.editor;
             $(this).removeClass('keyvalueeditor-last');
@@ -181,7 +203,13 @@
                     param.type = "text";
                 }
 
-                $(state.editor).find('.keyvalueeditor-last').before(methods.getNewRow(param.key, param.value, param.type, state));
+                if (state.settings.editableKeys) {
+                    $(state.editor).find('.keyvalueeditor-last').before(methods.getNewRow(param.key, param.value, param.type, state));
+                }
+                else {
+                    $(state.editor).append(methods.getNewRow(param.key, param.value, param.type, state));
+                }
+
             }
         },
 
@@ -263,8 +291,11 @@
                 $(this).remove();
             });
 
-            var h = methods.getLastRow(state);
-            $(state.editor).append(h);
+            if (state.settings.editableKeys) {
+                var h = methods.getLastRow(state);
+                $(state.editor).append(h);
+            }
+
         },
 
         reset:function (params) {
@@ -310,6 +341,7 @@
         placeHolderKey:"Key",
         placeHolderValue:"Value",
         valueTypes:["text"],
+        editableKeys:true,
         onInit:function () {
         },
         onReset:function () {

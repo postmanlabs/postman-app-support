@@ -241,6 +241,17 @@ var Request = Backbone.Model.extend({
         }
     },
 
+    getFinalRequestUrl: function(url) {
+        var finalUrl;
+
+        finalUrl = replaceURLPathVariables(url, this.get("pathVariables"));
+        finalUrl = this.encodeUrl(finalUrl);
+        finalUrl = pm.envManager.getCurrentValue(finalUrl);
+        finalUrl = ensureProperUrl(finalUrl);
+
+        return finalUrl;
+    },
+
     prepareHeadersForProxy:function (headers) {
         var count = headers.length;
         for (var i = 0; i < count; i++) {
@@ -421,6 +432,8 @@ var Request = Backbone.Model.extend({
     },
 
     loadRequest: function(request, isFromCollection, isFromSample) {
+        console.log(request);
+
         var body = this.get("body");
         var response = this.get("response");
 
@@ -430,6 +443,9 @@ var Request = Backbone.Model.extend({
 
         if ("pathVariables" in request) {
             this.set("pathVariables", request.pathVariables);
+        }
+        else {
+            this.set("pathVariables", []);
         }
 
         this.set("isFromCollection", isFromCollection);
@@ -633,9 +649,7 @@ var Request = Backbone.Model.extend({
 
         var originalUrl = this.get("url"); //Store this for saving the request
 
-        var url = this.encodeUrl(this.get("url"));
-        url = pm.envManager.getCurrentValue(url);
-        url = ensureProperUrl(url);
+        var url = this.getFinalRequestUrl(this.get("url"));
 
         var method = this.get("method").toUpperCase();
 
@@ -660,7 +674,6 @@ var Request = Backbone.Model.extend({
         // Prepare body
         if (this.isMethodWithBody(method)) {
             var data = body.get("data");
-            console.log("Sending data", data);
             if(data === false) {
                 xhr.send();
             }
@@ -693,9 +706,7 @@ var Request = Backbone.Model.extend({
     generateCurl: function() {
         var method = this.get("method").toUpperCase();
 
-        var url = this.encodeUrl(this.get("url"));
-        url = pm.envManager.getCurrentValue(url);
-        url = ensureProperUrl(url);
+        var url = this.getFinalRequestUrl(this.get("url"));
 
         var headers = this.getXhrHeaders();
         var hasBody = this.isMethodWithBody(method);
@@ -727,9 +738,7 @@ var Request = Backbone.Model.extend({
         var method = this.get("method").toUpperCase();
         var httpVersion = "HTTP/1.1";
 
-        var url = this.encodeUrl(this.get("url"));
-        url = pm.envManager.getCurrentValue(url);
-        url = ensureProperUrl(url);
+        var url = this.getFinalRequestUrl(this.get("url"));
 
         var hostAndPath = this.splitUrlIntoHostAndPath(url);
 

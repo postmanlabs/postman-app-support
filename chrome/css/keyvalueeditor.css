@@ -27,3 +27,7 @@
     width: 100px;
     margin-right: 10px;
 }
+
+.keyvalueeditor-key[data-editable=false] {
+    background: white;
+}

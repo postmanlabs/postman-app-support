@@ -46,13 +46,15 @@ var RequestEditor = Backbone.View.extend({
             view.updateModel();
 
             var current = model.getAsObject();
+
             var collectionRequest = {
                 id: model.get("collectionRequestId"),
-                url: current.url,
-                data: current.data,
                 headers: current.headers,
-                dataMode: current.dataMode,
+                url: current.url,
+                pathVariables: current.pathVariables,
                 method: current.method,
+                data: current.data,
+                dataMode: current.dataMode,
                 version: current.version,
                 time: new Date().getTime()
             };

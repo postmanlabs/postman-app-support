@@ -254,6 +254,8 @@ pm.indexedDB = {
     },
 
     addCollectionRequest:function (req, callback) {
+        console.log("Saving the request", req);
+
         var db = pm.indexedDB.db;
         var trans = db.transaction(["collection_requests"], "readwrite");
         var store = trans.objectStore("collection_requests");
