@@ -54,8 +54,6 @@ var RequestURLPathVariablesEditor = Backbone.View.extend({
             }
         }
 
-        console.log("Load editor params", rows);
-
         $(this.editorId).keyvalueeditor('reset', rows);
     },
 

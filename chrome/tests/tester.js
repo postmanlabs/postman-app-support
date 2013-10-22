@@ -548,4 +548,22 @@ pm.tester = {
 	deleteSampleResponse: function(index) {
 		$("#request-samples-list .sample-response-actions-delete:nth-child(" + index + ")").click()
 	},
+
+	setPathVariables: function(params) {
+		var rows = [];
+		var row;
+
+		for (var key in params) {
+		    if (params.hasOwnProperty(key)) {
+		        row = {
+		            "key": key,
+		            "value": params[key]
+		        }
+
+		        rows.push(row);
+		    }
+		}
+
+		$("#pathvariables-keyvaleditor").keyvalueeditor("reset", rows);
+	}
 };
