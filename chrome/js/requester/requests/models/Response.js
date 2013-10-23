@@ -148,8 +148,6 @@ var Response = Backbone.Model.extend({
     // Renders the response from a request
     // Called with this = request
     load:function (response) {
-        console.log(response);
-
         var request = this;
         var model = request.get("response");
 

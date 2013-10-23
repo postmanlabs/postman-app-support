@@ -84,7 +84,7 @@ var Request = Backbone.Model.extend({
     },
 
     isMethodWithBody:function (method) {
-        return isMethodWithBody(method);
+        return pm.methods.isMethodWithBody(method);
     },
 
     packHeaders:function (headers) {
@@ -676,6 +676,7 @@ var Request = Backbone.Model.extend({
         // Prepare body
         if (this.isMethodWithBody(method)) {
             var data = body.get("data");
+            console.log("Send a method with body", data);
             if(data === false) {
                 xhr.send();
             }

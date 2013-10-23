@@ -248,6 +248,7 @@ function copyToClipboard(text){
     document.body.removeChild(copyDiv);
 }
 
+//Usage arrayObjectIndexOf(items, "Washington", "city");
 function arrayObjectIndexOf(myArray, searchTerm, property) {
     for(var i = 0, len = myArray.length; i < len; i++) {
         if (myArray[i][property] === searchTerm) return i;

@@ -38,7 +38,7 @@ var History = Backbone.Collection.extend({
         var index = -1;
         var method = request.method.toLowerCase();
 
-        if (isMethodWithBody(method)) {
+        if (pm.methods.isMethodWithBody(method)) {
             return -1;
         }
 

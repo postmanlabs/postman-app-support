@@ -3,6 +3,9 @@ var RequestMethodEditor = Backbone.View.extend({
         var model = this.model;
         var view = this;
 
+        // TODO Set select values using RequestMethods
+        console.log("Initialized request methods editor");
+
         model.on("startNew", this.onStartNew, this);
 
         $('#request-method-selector').change(function () {

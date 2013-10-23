@@ -96,6 +96,7 @@ var ResponseViewer = Backbone.View.extend({
         var presetPreviewType = pm.settings.getSetting("previewType");
 
         var activeSection = pm.settings.getSetting("responsePreviewDataSection");
+
         this.showScreen("success");
 
         $('#response').css("display", "block");

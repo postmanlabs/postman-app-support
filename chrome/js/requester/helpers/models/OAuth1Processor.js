@@ -128,7 +128,7 @@ var OAuth1Processor = Backbone.Model.extend({
 
         var bodyParams;
 
-        if (isMethodWithBody(method)) {
+        if (pm.methods.isMethodWithBody(method)) {
             bodyParams = requestBody.get("dataAsObjects");
         }
         else {

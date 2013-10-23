@@ -190,6 +190,11 @@ pm.init = function () {
         pm.storage = storage;
     }
 
+    function initializeRequestMethods() {
+        var requestMethods = new RequestMethods();
+        pm.methods = requestMethods;
+    }
+
     function initializeSidebar() {
         var sidebarState = new SidebarState({history: pm.history, collections: pm.collections});
         var sidebar = new Sidebar({ model: sidebarState });
@@ -224,29 +229,32 @@ pm.init = function () {
     pm.mediator = new Mediator();
 
     initializeStorage();
+
     pm.settings = new Settings();
 
-    pm.settings.init(function() {
-        var settingsModal = new SettingsModal({model: pm.settings});
-        pm.filesystem.init();
-        pm.indexedDB.open(function() {
-            initializePostmanAPI();
-            initializeRequester();
-            initializeHistory();
-            initializeCollections();
+    pm.methods = new RequestMethods(function() {
+        pm.settings.init(function() {
+            var settingsModal = new SettingsModal({model: pm.settings});
+            pm.filesystem.init();
+            pm.indexedDB.open(function() {
+                initializePostmanAPI();
+                initializeRequester();
+                initializeHistory();
+                initializeCollections();
 
-            initializeEnvironments();
-            initializeHeaderPresets();
+                initializeEnvironments();
+                initializeHeaderPresets();
 
-            initializeSidebar();
+                initializeSidebar();
 
-            pm.broadcasts.init();
+                pm.broadcasts.init();
 
-            initializeDriveSync();
-            initializeUser();
-            initializeDirectory();
+                initializeDriveSync();
+                initializeUser();
+                initializeDirectory();
 
-            pm.hasPostmanInitialized = true;
+                pm.hasPostmanInitialized = true;
+            });
         });
     });
 };
