@@ -45,8 +45,6 @@ var ResponseViewer = Backbone.View.extend({
 
             pm.settings.setSetting("responsePreviewDataSection", section);
 
-            console.log(pm.settings.getSetting("responsePreviewDataSection"));
-
             if (section === "body") {
                 view.showBody();
             }
@@ -98,9 +96,6 @@ var ResponseViewer = Backbone.View.extend({
         var presetPreviewType = pm.settings.getSetting("previewType");
 
         var activeSection = pm.settings.getSetting("responsePreviewDataSection");
-
-        console.log("Active section is ", activeSection);
-
         this.showScreen("success");
 
         $('#response').css("display", "block");
@@ -124,7 +119,6 @@ var ResponseViewer = Backbone.View.extend({
                     this.showBody();
                 }
             }
-
         }
 
         if (request.get("isFromCollection") === true) {

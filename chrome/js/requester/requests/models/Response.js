@@ -160,6 +160,7 @@ var Response = Backbone.Model.extend({
         if (response.readyState === 4) {
             //Something went wrong
             if (response.status === 0) {
+                console.log("response.status is 0");
                 var errorUrl = pm.envManager.getCurrentValue(request.get("url"));
                 model.trigger("failedRequest", errorUrl);
                 return;
@@ -213,6 +214,11 @@ var Response = Backbone.Model.extend({
                 model.trigger("loadResponse", model);
             }
         }
+    },
+
+    clear: function() {
+        console.log("Clear the response now");
+        this.trigger("clearResponse");
     },
 
     unpackResponseHeaders: function(data) {

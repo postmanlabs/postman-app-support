@@ -72,7 +72,7 @@ var Request = Backbone.Model.extend({
     },
 
     onCancelRequest: function() {
-        this.startNew();
+        this.cancel();
     },
 
     onStartNew: function() {
@@ -372,6 +372,8 @@ var Request = Backbone.Model.extend({
     },
 
     cancel:function () {
+        console.log("Cancel request");
+
         var response = this.get("response");
         var xhr = this.get("xhr");
         if (xhr !== null) {
