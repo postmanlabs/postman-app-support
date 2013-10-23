@@ -89,13 +89,7 @@ var OAuth1Processor = Backbone.Model.extend({
         var method = request.get("method");
         var requestBody = request.get("body");
 
-        if (realm === '') {
-            processedUrl = pm.envManager.getCurrentValue(url).trim();
-        }
-        else {
-            processedUrl = pm.envManager.getCurrentValue(realm);
-        }
-
+        processedUrl = pm.envManager.getCurrentValue(url).trim();
         processedUrl = ensureProperUrl(processedUrl);
 
         if (processedUrl.indexOf('?') > 0) {
@@ -247,17 +241,8 @@ var OAuth1Processor = Backbone.Model.extend({
 
         if (addToHeader) {
             var realm = this.get("realm");
-
-            if (realm === '') {
-                realm = pm.envManager.getCurrentValue(url.trim());
-            }
-
-            if (realm.indexOf('?') > 0) {
-                realm = realm.split("?")[0];
-            }
-
             var authHeaderKey = "Authorization";
-            var rawString = "OAuth realm=\"" + realm + "\",";
+            var rawString = "OAuth realm=\"" + encodeURIComponent(realm) + "\",";
             var len = oAuthParams.length;
 
             for (i = 0; i < len; i++) {
