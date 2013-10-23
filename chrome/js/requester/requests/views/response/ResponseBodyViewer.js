@@ -62,6 +62,8 @@ var ResponseBodyViewer = Backbone.View.extend({
         var language = response.get("language");
         var text = response.get("text");
 
+        var activeDataSection = pm.settings.getSetting("responsePreviewDataSection");
+
         var action = model.get("action");
 
         if (action === "download") {
@@ -100,6 +102,10 @@ var ResponseBodyViewer = Backbone.View.extend({
             }
             else {
                 this.displayTextResponse(language, text, presetPreviewType, true);
+            }
+
+            if (activeDataSection !== "body") {
+                $("#response-data-container").css("display", "none");
             }
         }
     },

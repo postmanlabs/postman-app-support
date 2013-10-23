@@ -42,6 +42,11 @@ var ResponseViewer = Backbone.View.extend({
 
         $('.response-tabs').on("click", "li", function () {
             var section = $(this).attr('data-section');
+
+            pm.settings.setSetting("responsePreviewDataSection", section);
+
+            console.log(pm.settings.getSetting("responsePreviewDataSection"));
+
             if (section === "body") {
                 view.showBody();
             }
@@ -77,8 +82,6 @@ var ResponseViewer = Backbone.View.extend({
     },
 
     load:function () {
-        console.log("Load response called");
-
         var model = this.model;
         var request = model;
         var response = model.get("response");
@@ -94,6 +97,10 @@ var ResponseViewer = Backbone.View.extend({
         var action = model.get("action");
         var presetPreviewType = pm.settings.getSetting("previewType");
 
+        var activeSection = pm.settings.getSetting("responsePreviewDataSection");
+
+        console.log("Active section is ", activeSection);
+
         this.showScreen("success");
 
         $('#response').css("display", "block");
@@ -107,7 +114,15 @@ var ResponseViewer = Backbone.View.extend({
                 this.showHeaders();
             }
             else {
-                this.showBody();
+                if (activeSection === "body") {
+                    this.showBody();
+                }
+                else if (activeSection === "headers") {
+                    this.showHeaders();
+                }
+                else {
+                    this.showBody();
+                }
             }
 
         }
@@ -123,8 +138,6 @@ var ResponseViewer = Backbone.View.extend({
     },
 
     showHeaders:function () {
-        console.log("Hide response data container");
-
         $('.response-tabs li').removeClass("active");
         $('.response-tabs li[data-section="headers"]').addClass("active");
         $('#response-data-container').css("display", "none");
