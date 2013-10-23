@@ -28,6 +28,16 @@ var SettingsModal = Backbone.View.extend({
             }
         });
 
+        $('#trim-keys-and-values').change(function () {
+            var val = $('#trim-keys-and-values').val();
+            if (val === "true") {
+                settings.setSetting("trimKeysAndValues", true);
+            }
+            else {
+                settings.setSetting("trimKeysAndValues", false);
+            }
+        });
+
         $('#retain-link-headers').change(function () {
             var val = $('#retain-link-headers').val();
             if (val === "true") {
@@ -158,6 +168,7 @@ var SettingsModal = Backbone.View.extend({
     render: function() {
         $('#history-count').val(this.model.getSetting("historyCount"));
         $('#auto-save-request').val(this.model.getSetting("autoSaveRequest") + "");
+        $('#trim-keys-and-values').val(this.model.getSetting("trimKeysAndValues") + "");
         $('#retain-link-headers').val(this.model.getSetting("retainLinkHeaders") + "");
         $('#send-no-cache-header').val(this.model.getSetting("sendNoCacheHeader") + "");
         $('#send-postman-token-header').val(this.model.getSetting("sendPostmanTokenHeader") + "");

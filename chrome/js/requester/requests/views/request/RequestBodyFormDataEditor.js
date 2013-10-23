@@ -59,6 +59,10 @@ var RequestBodyFormDataEditor = Backbone.View.extend({
                 var valueType = row.valueType;
                 var valueElement = row.valueElement;
 
+                if (pm.settings.getSetting("trimKeysAndValues")) {
+                    key = $.trim(key);
+                }
+
                 if (valueType === "file") {
                     var domEl = valueElement.get(0);
                     var len = domEl.files.length;
@@ -69,6 +73,11 @@ var RequestBodyFormDataEditor = Backbone.View.extend({
                 else {
                     value = valueElement.val();
                     value = pm.envManager.getCurrentValue(value);
+
+                    if (pm.settings.getSetting("trimKeysAndValues")) {
+                        value = $.trim(value);
+                    }
+
                     paramsBodyData.append(key, value);
                 }
             }
@@ -101,9 +110,16 @@ var RequestBodyFormDataEditor = Backbone.View.extend({
                 var valueType = row.valueType;
                 var valueElement = row.valueElement;
 
+
+                if (pm.settings.getSetting("trimKeysAndValues")) {
+                    key = $.trim(key);
+                }
+
                 if (valueType === "file") {
                     var domEl = valueElement.get(0);
                     var len = domEl.files.length;
+
+
                     for (i = 0; i < len; i++) {
                         var fileObj = {
                             key: key,
@@ -116,6 +132,11 @@ var RequestBodyFormDataEditor = Backbone.View.extend({
                 else {
                     value = valueElement.val();
                     value = pm.envManager.getCurrentValue(value);
+
+                    if (pm.settings.getSetting("trimKeysAndValues")) {
+                        value = $.trim(value);
+                    }
+
                     var textObj = {
                         key: key,
                         value: value,

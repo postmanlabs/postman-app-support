@@ -40,7 +40,6 @@ var RequestBodyURLEncodedEditor = Backbone.View.extend({
                 catch(e) {
                     console.log(e);
                 }
-
             }
 
         }
@@ -57,11 +56,21 @@ var RequestBodyURLEncodedEditor = Backbone.View.extend({
             for (j = 0; j < count; j++) {
                 row = rows[j];
                 value = row.valueElement.val();
+
+                if (pm.settings.getSetting("trimKeysAndValues")) {
+                    console.log("Trim value", value);
+                    value = $.trim(value);
+                }
+
                 value = pm.envManager.getCurrentValue(value);
                 value = encodeURIComponent(value);
                 value = value.replace(/%20/g, '+');
                 key = encodeURIComponent(row.keyElement.val());
                 key = key.replace(/%20/g, '+');
+
+                if (pm.settings.getSetting("trimKeysAndValues")) {
+                    key = $.trim(key);
+                }
 
                 urlEncodedBodyData += key + "=" + value + "&";
             }
