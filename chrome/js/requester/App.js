@@ -277,7 +277,7 @@ var App = Backbone.View.extend({
 	refreshScrollPanes:function () {
 	    var newMainHeight = $(document).height() - 55;
 	    $('#main').height(newMainHeight + "px");
-	    var newMainWidth = $('#container').width() - $('#sidebar').width();
+	    var newMainWidth = $('#container').width() - $('#sidebar').width() - 10;
 	    $('#main').width(newMainWidth + "px");
 
 	    $('#directory-browser').height(newMainHeight + "px");
