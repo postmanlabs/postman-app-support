@@ -2,12 +2,10 @@
 from twisted.internet import reactor
 from twisted.web import http
 from twisted.web.proxy import Proxy, ProxyRequest, ProxyClientFactory, ProxyClient
-from ImageFile import Parser
-from StringIO import StringIO
- 
+
 class InterceptingProxyClient(ProxyClient):
     def __init__(self, *args, **kwargs):
-        ProxyClient.__init__(self, *args, **kwargs)        
+        ProxyClient.__init__(self, *args, **kwargs)
         self.overrides = []
         self.restricted_headers = [
             'accept-charset',
@@ -35,7 +33,7 @@ class InterceptingProxyClient(ProxyClient):
 
         self.all_headers = []
         self.unsent_restricted_headers = []
- 
+
     def sendHeader(self, name, value):
         if "postman-" in name:
             new_header = name[8:]
@@ -76,23 +74,40 @@ class InterceptingProxyClient(ProxyClient):
     def handleResponseEnd(self):
         if not self._finished:
             self.father.responseHeaders.setRawHeaders("client", ["location"])
+
+        print "InterceptingProxyClient\n"
+        print self.__dict__.keys()
+
+        print "Headers"
+        print self.headers # Gets all headers
+
+        print "Data"
+        print self.data # Gets all data
+
+        print "InterceptingProxyClient father\n"
+        print self.father.__dict__.keys()
+
+        print "Uri %s" % self.father.uri
+        print "Host %s" % self.father.host
+        print "Path %s" % self.father.path
+        print "Method %s" % self.father.method
+
         ProxyClient.handleResponseEnd(self)
- 
+
 class InterceptingProxyClientFactory(ProxyClientFactory):
     protocol = InterceptingProxyClient
- 
+
 class InterceptingProxyRequest(ProxyRequest):
     protocols = {'http': InterceptingProxyClientFactory, 'https': InterceptingProxyClientFactory}
- 
+
 class InterceptingProxy(Proxy):
     requestFactory = InterceptingProxyRequest
- 
+
 factory = http.HTTPFactory()
 factory.protocol = InterceptingProxy
- 
+
 port = 8000
 
+print "Listening on port %d" % port
 reactor.listenTCP(8000, factory)
 reactor.run()
-
-print "Listening on port %d" % port
