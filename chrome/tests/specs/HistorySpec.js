@@ -36,12 +36,12 @@ describe("History ", function() {
 		runs(function() {
 			setTimeout(function() {
 				mockDataLoaded = pm.tester.historyHasString("http://localhost:5000/get");
-			}, 100);
+			}, 200);
 		});
 
 		waitsFor(function() {
 			return mockDataLoaded === true;
-		}, "Mock data not loaded", 100);
+		}, "Mock data not loaded", 250);
 
 		runs(function() {
 			pm.request.on("loadRequest", function() {
@@ -71,12 +71,12 @@ describe("History ", function() {
 		runs(function() {
 			setTimeout(function() {
 				mockDataLoaded = pm.tester.historyHasString("http://localhost:5000/post");
-			}, 100);
+			}, 250);
 		});
 
 		waitsFor(function() {
 			return mockDataLoaded === true;
-		}, "Mock data not loaded", 100);
+		}, "Mock data not loaded", 250);
 
 		runs(function() {
 			pm.request.on("loadRequest", function() {
@@ -107,7 +107,7 @@ describe("History ", function() {
 		runs(function() {
 			setTimeout(function() {
 				mockDataLoaded = pm.tester.historyHasString("http://localhost:5000/post");
-			}, 100);
+			}, 150);
 		});
 
 		waitsFor(function() {
@@ -123,7 +123,7 @@ describe("History ", function() {
 
 		waitsFor(function() {
 			return historyItemLoaded === true;
-		}, "History item not loaded", 200);
+		}, "History item not loaded", 250);
 
 		runs(function() {
 			expect(pm.tester.urlHasString("http://localhost:5000/post")).toBe(true);

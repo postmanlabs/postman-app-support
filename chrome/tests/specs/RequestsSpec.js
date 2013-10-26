@@ -214,7 +214,7 @@ describe("Postman requester", function() {
 			}, "Could not get response", waitTime);
 
 			runs(function() {
-				var foundString = pm.tester.prettyBodyHasString("some=start;val");
+				var foundString = pm.tester.prettyBodyHasString("some=start%3Bval");
 				expect(foundString).toBe(true);
 			});
 		});
