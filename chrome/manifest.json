@@ -40,7 +40,11 @@
         "fileSystem",
         "fileSystem.write",
         "identity",
-        "syncFileSystem"
+        "syncFileSystem",
+        {"socket": [
+          "tcp-connect:*:*",
+          "tcp-listen:*:*"
+        ]}
         ],
     "manifest_version": 2,
     "offline_enabled":true
