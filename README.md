@@ -11,7 +11,7 @@ Create requests quickly.
 - Compact layout
 - HTTP requests with file upload support
 - Formatted API responses for JSON and XML
-- HATEOS support
+- HATEOAS support
 - Image previews
 - Request history
 - Basic Auth and OAuth 1.0 helpers

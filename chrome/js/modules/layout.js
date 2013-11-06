@@ -59,8 +59,17 @@ pm.layout = {
 
         $('#download-all-data').on("click", function() {
             pm.indexedDB.downloadAllData(function() {
+                ga('send', 'event', 'data', 'download');
                 console.log("Downloaded all data");
             });
+        });
+
+        $('#postman-wiki').on("click", function() {
+            ga('send', 'event', 'wiki', 'view');
+        });
+
+        $('#upgrade').on("click", function() {
+            ga('send', 'event', 'upgrade', 'click');
         });
 
         var supportContent = "<div class='supporters'><div class='supporter clearfix'>";
@@ -82,9 +91,11 @@ pm.layout = {
             placement: "top",
             trigger: "manual",
             html: true,
-            title: "Postman is supported by Mashape"
+            title: "Postman is supported by some amazing companies"
         }).on("mouseenter", function () {
             var _this = this;
+            //hover event here - number of times ad is seen
+            ga('send', 'event', 'sponsors', 'view');
             $(this).popover("show");
             $(this).siblings(".popover").on("mouseleave", function () {
                 $(_this).popover('hide');
@@ -93,7 +104,7 @@ pm.layout = {
             var _this = this;
             setTimeout(function () {
                 if (!$(".popover:hover").length) {
-                    $(_this).popover("hide")
+                    $(_this).popover("hide");
                 }
             }, 100);
         });

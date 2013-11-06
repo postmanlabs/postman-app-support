@@ -10,10 +10,13 @@ _gaq.push(['_trackPageview']);
     var s = document.getElementsByTagName('script')[0];
     s.parentNode.insertBefore(ga, s);
 })();
-/**
- * Created with JetBrains PhpStorm.
- * User: asthana
- * Date: 06/08/12
- * Time: 11:25 AM
- * To change this template use File | Settings | File Templates.
- */
+
+//Universal Analytics - Testing
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://ssl.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-43979731-2');
+ga('set', 'checkProtocolTask', function(){});
+ga('send', 'pageview');
