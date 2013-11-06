@@ -64,16 +64,17 @@ pm.layout = {
         });
 
         var supportContent = "<div class='supporters'><div class='supporter clearfix'>";
-        supportContent += "<div class='supporter-image'>";
+        supportContent += "<div class='supporter-image supporter-image-mashape'>";
         supportContent += "<a href='http://www.getpostman.com/r?url=https://www.mashape.com/?utm_source=chrome%26utm_medium=app%26utm_campaign=postman' target='_blank'>";
         supportContent += "<img src='img/supporters/mashape.png'/></a></div>";
         supportContent += "<div class='supporter-tag'>Consume or provide cloud services with the Mashape API Platform.</div></div>";
         supportContent += "<div class='supporter clearfix'>";
         supportContent += "<div class='supporter-image'>";
-        supportContent += "<a href='http://www.getpostman.com/r?url=https://www.runscope.com/t/postman' target='_blank'>";
-        supportContent += "<img src='img/supporters/runscope.png'/></a></div>";
-        supportContent += "<div class='supporter-tag'>Everything is going to be 200 OK.</div>";
+        supportContent += "<a href='http://www.getpostman.com/donate' target='_blank' class='donate-popover-link'>";
+        supportContent += "Donate</a></div>";
+        supportContent += "<div class='supporter-tag'>If you like Postman help support the project!</div>";
         supportContent += "</div></div>";
+
 
         $('#donate').popover({
             animation: false,
@@ -81,7 +82,7 @@ pm.layout = {
             placement: "top",
             trigger: "manual",
             html: true,
-            title: "Postman is supported by some amazing companies"
+            title: "Postman is supported by Mashape"
         }).on("mouseenter", function () {
             var _this = this;
             $(this).popover("show");
