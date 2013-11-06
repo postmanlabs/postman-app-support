@@ -112,6 +112,20 @@
         @include navbar-text-link-hover;
     }
 
+    .donate-popover-link {
+        background: #333;
+        border-radius: 5px;
+        color: white;
+        display: block;
+        text-align: center;
+        vertical-align: center;
+        padding: 5px;
+    }
+
+    .donate-popover-link:hover {
+        background: #111 !important;
+        text-decoration: none !important;
+    }
 }
 
 .supporter {

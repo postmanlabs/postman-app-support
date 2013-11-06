@@ -48,9 +48,9 @@ var Header = Backbone.View.extend({
 		supportContent += "<div class='supporter-tag'>Consume or provide cloud services with the Mashape API Platform.</div></div>";
 		supportContent += "<div class='supporter clearfix'>";
 		supportContent += "<div class='supporter-image'>";
-		supportContent += "<a href='http://www.getpostman.com/r?url=https://www.runscope.com/t/postman' target='_blank'>";
-		supportContent += "<img src='img/supporters/runscope.png'/></a></div>";
-		supportContent += "<div class='supporter-tag'>Everything is going to be 200 OK.</div>";
+		supportContent += "<a href='http://www.getpostman.com/donate' target='_blank' class='donate-popover-link'>";
+		supportContent += "Donate</a></div>";
+		supportContent += "<div class='supporter-tag'>If you like Postman help support the project!</div>";
 		supportContent += "</div></div>";
 
 		$('#donate-link').popover({
