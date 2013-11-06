@@ -1,5 +1,6 @@
 // Constants
 var POSTMAN_WEB_URL_PRODUCTION = "https://www.getpostman.com";
+var POSTMAN_WEB_URL_STAGING = "http://stage.getpostman.com";
 var POSTMAN_WEB_URL_LOCAL = "http://localhost/postman/html";
 
 var POSTMAN_INDEXED_DB_PRODUCTION = "postman";
