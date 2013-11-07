@@ -338,6 +338,17 @@ li .right {
     background: #333;
     color: #AAA;
     text-decoration: none; }
+  .preferences .donate-popover-link {
+    background: #333;
+    border-radius: 5px;
+    color: white;
+    display: block;
+    text-align: center;
+    vertical-align: center;
+    padding: 5px; }
+  .preferences .donate-popover-link:hover {
+    background: #111 !important;
+    text-decoration: none !important; }
 
 .supporter {
   border-bottom: solid thin #efefef;

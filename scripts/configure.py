@@ -17,6 +17,8 @@ def generate_config_file(is_testing, web_url):
 
 	if web_url == "production":
 		web_url_constant = 'POSTMAN_WEB_URL_PRODUCTION'
+	elif web_url == "staging":
+		web_url_constant = 'POSTMAN_WEB_URL_STAGING'
 	else:
 		web_url_constant = 'POSTMAN_WEB_URL_LOCAL'
 
