@@ -259,6 +259,27 @@ pm.init = function () {
     });
 };
 
+var GruntLiveReload = GruntLiveReload || {};
+GruntLiveReload.init = function() {
+  var ws = new WebSocket("ws://localhost:35729/livereload");
+  ws.onopen = function() {
+    console.log("LiveReload WebSocket initialized and ready.");
+  };
+  ws.onmessage = function(evt) {
+    var wsData = JSON.parse(evt.data);
+    if (wsData.command == "reload") {
+      chrome.runtime.reload();
+    } else {
+      console.log("LiveReload Message", evt.data);
+    }
+  };
+  ws.onerror = function(evt) {
+    console.error("LiveReload WebSocket Error", evt);
+  };
+};
+
+GruntLiveReload.init();
+
 $(document).ready(function () {
     pm.init();
 });
