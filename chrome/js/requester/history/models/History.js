@@ -74,6 +74,11 @@ var History = Backbone.Collection.extend({
         this.trigger("loadRequest");
     },
 
+    addRequestFromJSON: function(requestJSON) {
+        request = JSON.parse(requestJSON);
+        this.addRequest(request.url, request.method, request.headers, request.data, request.dataMode);
+    },
+
     addRequest:function (url, method, headers, data, dataMode) {
         var id = guid();
         var maxHistoryCount = pm.settings.getSetting("historyCount");
