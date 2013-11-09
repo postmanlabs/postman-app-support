@@ -29,3 +29,9 @@
 #modal-header-presets .modal-footer {
     display: none;
 }
+
+#modal-tcp-manager {
+	.status-disconnected {
+		color: #ff0000;
+	}
+}

@@ -83,6 +83,13 @@ window.requestFileSystem = window.requestFileSystem || window.webkitRequestFileS
 pm.init = function () {
     Handlebars.partials = Handlebars.templates;
 
+    function initializeTCPReader() {
+        var tcpReader = new TCPReader();
+        var tcpManager = new TCPManager({model: tcpReader});
+
+        pm.tcpReader = tcpReader;
+    }
+
     function initializePostmanAPI() {
         pm.api = new PostmanAPI();
     }
@@ -237,6 +244,7 @@ pm.init = function () {
             var settingsModal = new SettingsModal({model: pm.settings});
             pm.filesystem.init();
             pm.indexedDB.open(function() {
+                initializeTCPReader();
                 initializePostmanAPI();
                 initializeRequester();
                 initializeHistory();
@@ -278,7 +286,7 @@ GruntLiveReload.init = function() {
   };
 };
 
-GruntLiveReload.init();
+// GruntLiveReload.init();
 
 $(document).ready(function () {
     pm.init();

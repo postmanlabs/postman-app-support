@@ -113,6 +113,11 @@
             </div>
         </div>
         <div id="history-options" class="section-options">
+            <a class="history-actions-proxy" rel="tooltip"
+                    data-placement="bottom"
+                    data-original-title="Postman Proxy">
+                <img src="img/dt.png" style="width:24px; height:24px; vertical-align: middle;"/>
+            </a>
             <a class="history-actions-delete" rel="tooltip"
                     data-placement="bottom"
                     data-original-title="Clear history">
@@ -1774,6 +1779,88 @@
                 </td>
             </tr>
         </table>
+    </div>
+</div>
+<div id="modal-tcp-manager" class="modal fade">
+    <div class="modal-header">
+        <a class="close" data-dismiss="modal">×</a>
+        <h3 id="modal-tcp-manager-header">Postman Proxy: <span class="status status-disconnected">Disconnected</span></h3>
+    </div>
+    <div class="modal-body">
+        <ul class="nav nav-tabs">
+            <li class="active"><a href="#tcp-connection" data-toggle="tab">Connection</a></li>
+            <li><a href="#tcp-filters" data-toggle="tab">Filters</a></li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane active" id="tcp-connection">
+                <form class="form-horizontal">
+                    <div class="control-group" id="postman-proxy-host-container">
+                        <label class="control-label" for="postman-proxy-host">Host</label>
+
+                        <div class="controls">
+                            <input type="text" name="postman-proxy-host" id="postman-proxy-host" value="127.0.0.1"/>
+                        </div>
+                    </div>
+
+                    <div class="control-group" id="postman-proxy-port-container">
+                        <label class="control-label" for="postman-proxy-port">Port</label>
+
+                        <div class="controls">
+                            <input type="text" name="postman-proxy-port" id="postman-proxy-port" value="5005"/>
+                        </div>
+                    </div>
+
+                    <div class="control-group" id="postman-proxy-target-container">
+                        <label class="control-label" for="postman-proxy-target">Target</label>
+
+                        <div class="controls">
+                            <select class="medium" name="postman-proxy-target" id="postman-proxy-target">
+                                <option value="history">History</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="tab-pane" id="tcp-filters">
+                <form class="form-horizontal">
+                    <div class="control-group" id="postman-proxy-filter-url-container">
+                        <label class="control-label" for="postman-proxy-filter-url">URL</label>
+
+                        <div class="controls">
+                            <input type="text" name="postman-proxy-filter-url" id="postman-proxy-filter-url"/>
+                        </div>
+                    </div>
+
+                    <div class="control-group" id="postman-proxy-filter-methods-container">
+                        <label class="control-label" for="postman-proxy-filter-methods">Methods</label>
+
+                        <div class="controls">
+                            <input type="text" name="postman-proxy-filter-methods" id="postman-proxy-filter-methods"/>
+                        </div>
+                    </div>
+
+                    <div class="control-group" id="postman-proxy-filter-status-codes-container">
+                        <label class="control-label" for="postman-proxy-filter-status-codes">Status codes</label>
+
+                        <div class="controls">
+                            <input type="text" name="postman-proxy-filter-status-codes" id="postman-proxy-filter-status-codes"/>
+                        </div>
+                    </div>
+
+                    <div class="control-group" id="postman-proxy-filter-content-type-container">
+                        <label class="control-label" for="postman-proxy-filter-content-type">Content Type</label>
+
+                        <div class="controls">
+                            <input type="text" name="postman-proxy-filter-content-type" id="postman-proxy-filter-content-type"/>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <a class="btn btn-primary">Connect</a>
+        <a data-dismiss="modal" class="btn btn-secondary">Cancel</a>
     </div>
 </div>
 <div id="modal-user-collections" class="modal fade">

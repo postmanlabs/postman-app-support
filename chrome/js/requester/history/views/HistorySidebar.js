@@ -12,6 +12,10 @@ var HistorySidebar = Backbone.View.extend({
         this.model.on("revertFilter", this.onRevertFilter, this);
         //Event: Delete request
 
+        $('.history-actions-proxy').click(function () {
+            pm.mediator.trigger("showTCPManager");
+        });
+
         $('.history-actions-delete').click(function () {
             model.clear();
         });

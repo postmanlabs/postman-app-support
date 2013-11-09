@@ -594,7 +594,7 @@ li .right {
     opacity: 1; }
 
 #history-options {
-  margin-left: 295px; }
+  margin-left: 270px; }
 
 #collections-options {
   margin-left: 270px; }
@@ -1609,6 +1609,9 @@ input[type="file"] {
 
 #modal-header-presets .modal-footer {
   display: none; }
+
+#modal-tcp-manager .status-disconnected {
+  color: #ff0000; }
 
 /*User status*/
 #user-status {
