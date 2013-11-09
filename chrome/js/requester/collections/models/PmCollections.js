@@ -1021,7 +1021,24 @@ var PmCollections = Backbone.Collection.extend({
         });
     },
 
-    // Add request to collection
+    // For the TCPReader. Not for the current request
+    addRequestToCollectionId: function(collectionRequest, collectionId) {
+        var pmCollection = this;
+
+        collectionRequest.collectionId = collectionId;
+
+        var targetCollection = pmCollection.get(collectionId);
+        targetCollection.addRequestIdToOrder(collectionRequest.id);
+
+
+        pmCollection.updateCollectionInDataStore(targetCollection.getAsJSON(), true, function() {
+            pmCollection.addRequestToDataStore(collectionRequest, true, function(req) {
+                pmCollection.trigger("addCollectionRequest", req);
+            });
+        });
+    },
+
+    // Add request to collection. For the current request
     addRequestToCollection:function (collectionRequest, collection) {
         console.log("Add request to collection", collectionRequest);
 

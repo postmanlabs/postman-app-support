@@ -78,6 +78,23 @@ var TCPReader = Backbone.Model.extend({
 		});
 	},
 
+	addRequest: function(data) {
+		var request = JSON.parse(data);
+
+		var target_type = this.get("target_type");
+		var collection;
+		var target_id;
+
+		if (target_type === "history") {
+			pm.history.addRequestFromJSON(data);
+		}
+		else {
+			target_id = this.get("target_id");
+			pm.collections.addRequestToCollectionId(request, target_id);
+		}
+
+	},
+
 	readFromSocket: function(socketId) {
 		var model = this;
 
@@ -87,7 +104,7 @@ var TCPReader = Backbone.Model.extend({
 			// Parse the request.
 			var data = arrayBufferToString(readInfo.data);
 			console.log("DATA", data);
-			pm.history.addRequestFromJSON(data);
+			model.addRequest(data);
 			model.writeResponse(socketId, "It worked!", false);
 		});
 	},
