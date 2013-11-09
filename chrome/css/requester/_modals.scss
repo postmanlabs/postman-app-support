@@ -31,7 +31,11 @@
 }
 
 #modal-tcp-manager {
+	.status-connected {
+		color: green;
+	}
+
 	.status-disconnected {
-		color: #ff0000;
+		color: red;
 	}
 }

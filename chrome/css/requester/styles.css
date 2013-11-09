@@ -1610,8 +1610,10 @@ input[type="file"] {
 #modal-header-presets .modal-footer {
   display: none; }
 
+#modal-tcp-manager .status-connected {
+  color: green; }
 #modal-tcp-manager .status-disconnected {
-  color: #ff0000; }
+  color: red; }
 
 /*User status*/
 #user-status {

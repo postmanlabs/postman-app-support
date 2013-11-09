@@ -4,15 +4,20 @@ var TCPReader = Backbone.Model.extend({
 			"socketId": null,
 			"socketInfo": null,
 			"host": "127.0.0.1",
-			"port": 5005,
+			"port": "5005",
 			"status": "disconnected",
-			"filters": {}
+			"filters": {
+				"url": "",
+				"methods": "",
+				"status_codes": "",
+				"content_type": ""
+			}
 		}
 	},
 
 	initialize: function() {
 		console.log("Initializing TCPReader");
-		this.startListening();
+		// this.startListening();
 	},
 
 	writeResponse: function(socketId, data, keepAlive) {
@@ -79,11 +84,11 @@ var TCPReader = Backbone.Model.extend({
 			socketId = _socketInfo.socketId;
 			console.log("CONNECTED", _socketInfo);
 
-			this.set("status", "connected");
+			model.set("status", "connected");
 
 			socket.listen(socketInfo.socketId, host, port, 50, function(result) {
 				console.log("LISTENING:", result);
-				this.set("status", "listening");
+				// this.set("status", "listening");
 				socket.accept(socketInfo.socketId, onAccept);
 			});
 		});
@@ -94,5 +99,15 @@ var TCPReader = Backbone.Model.extend({
 	stopListening: function() {
 		chrome.socket.destroy(this.get("socketId"));
 		this.set("status", "disconnected");
+	},
+
+	connect: function() {
+		this.startListening();
+		// this.set("status", "connected");
+	},
+
+	disconnect: function() {
+		this.stopListening();
+		// this.set("status", "disconnected");
 	}
 });
