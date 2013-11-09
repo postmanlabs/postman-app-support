@@ -64,6 +64,10 @@ var PmCollections = Backbone.Collection.extend({
         }
     },
 
+    getAllCollections: function() {
+        return this.models;
+    },
+
     // Load all collections
     loadAllCollections:function () {
         var pmCollection = this;
@@ -88,6 +92,8 @@ var PmCollections = Backbone.Collection.extend({
                 if (loaded === itemsLength) {
                     pmCollection.isLoaded = true;
                     pmCollection.trigger("startSync");
+
+                    pm.mediator.trigger("refreshCollections");
                 }
             }
 
@@ -299,6 +305,9 @@ var PmCollections = Backbone.Collection.extend({
 
             pmCollection.add(collection, {merge: true});
 
+            pm.mediator.trigger("refreshCollections");
+
+
             if (sync) {
                 pmCollection.addToSyncableFilesystem(collection.get("id"));
             }
@@ -315,6 +324,8 @@ var PmCollections = Backbone.Collection.extend({
         pm.indexedDB.updateCollection(collectionJSON, function (c) {
             var collection = pmCollection.get(c.id);
             pmCollection.add(collection, {merge: true});
+
+            pm.mediator.trigger("refreshCollections");
 
             if (sync) {
                 pmCollection.addToSyncableFilesystem(collection.get("id"));
@@ -354,6 +365,7 @@ var PmCollections = Backbone.Collection.extend({
                             }
 
                             if (deleted === requestCount) {
+                                pm.mediator.trigger("refreshCollections");
                                 if (callback) {
                                     callback();
                                 }

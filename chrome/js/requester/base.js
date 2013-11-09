@@ -244,7 +244,6 @@ pm.init = function () {
             var settingsModal = new SettingsModal({model: pm.settings});
             pm.filesystem.init();
             pm.indexedDB.open(function() {
-                initializeTCPReader();
                 initializePostmanAPI();
                 initializeRequester();
                 initializeHistory();
@@ -260,6 +259,8 @@ pm.init = function () {
                 initializeDriveSync();
                 initializeUser();
                 initializeDirectory();
+
+                initializeTCPReader();
 
                 pm.hasPostmanInitialized = true;
             });

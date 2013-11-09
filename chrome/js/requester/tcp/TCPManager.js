@@ -4,6 +4,7 @@ var TCPManager = Backbone.View.extend({
 		var view = this;
 
 		model.on("change", this.render, this);
+		pm.mediator.on("collectionsLoaded", this.renderTargetMenu, this);
 		pm.mediator.on("showTCPManager", this.show, this);
 
 		$("#modal-tcp-manager .nav li").on("click", function() {
@@ -40,6 +41,12 @@ var TCPManager = Backbone.View.extend({
 		};
 
 		model.set("filters", filters);
+
+		model.save();
+	},
+
+	renderTargetMenu: function() {
+		console.log(pm.collections.getAllCollections());
 	},
 
 	connect: function() {

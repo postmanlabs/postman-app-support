@@ -16,8 +16,33 @@ var TCPReader = Backbone.Model.extend({
 	},
 
 	initialize: function() {
+		var model = this;
+
 		console.log("Initializing TCPReader");
-		// this.startListening();
+
+		pm.storage.getValue("readerSettings", function(settings) {
+			if (settings) {
+				console.log("Loaded readerSettings", settings);
+				model.set("host", settings.host);
+				model.set("port", settings.port);
+				model.set("filters", settings.filters);
+			}
+		});
+	},
+
+	save: function() {
+		var readerSettings = {
+			"readerSettings": {
+				"host": this.get("host"),
+				"port": this.get("port"),
+				"filters": this.get("filters")
+			}
+		};
+
+		pm.storage.setValue(readerSettings, function() {
+			console.log("Saved readerSettings", readerSettings);
+		});
+
 	},
 
 	writeResponse: function(socketId, data, keepAlive) {
