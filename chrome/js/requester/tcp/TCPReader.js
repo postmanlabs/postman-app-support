@@ -5,6 +5,8 @@ var TCPReader = Backbone.Model.extend({
 			"socketInfo": null,
 			"host": "127.0.0.1",
 			"port": "5005",
+			"target_type": "",
+			"target_id": "",
 			"status": "disconnected",
 			"filters": {
 				"url": "",
@@ -25,6 +27,12 @@ var TCPReader = Backbone.Model.extend({
 				console.log("Loaded readerSettings", settings);
 				model.set("host", settings.host);
 				model.set("port", settings.port);
+
+				if ("target_type" in settings) {
+					model.set("target_type", settings.target_type);
+					model.set("target_id", settings.target_id);
+				}
+
 				model.set("filters", settings.filters);
 			}
 		});
@@ -35,6 +43,8 @@ var TCPReader = Backbone.Model.extend({
 			"readerSettings": {
 				"host": this.get("host"),
 				"port": this.get("port"),
+				"target_type": this.get("target_type"),
+				"target_id": this.get("target_id"),
 				"filters": this.get("filters")
 			}
 		};
