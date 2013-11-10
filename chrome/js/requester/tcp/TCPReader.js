@@ -10,6 +10,7 @@ var TCPReader = Backbone.Model.extend({
 			"status": "disconnected",
 			"filters": {
 				"url": "",
+				"url_disabled": "",
 				"methods": "",
 				"status_codes": "",
 				"content_type": ""
@@ -24,14 +25,10 @@ var TCPReader = Backbone.Model.extend({
 
 		pm.storage.getValue("readerSettings", function(settings) {
 			if (settings) {
-				console.log("Loaded readerSettings", settings);
 				model.set("host", settings.host);
 				model.set("port", settings.port);
-
-				if ("target_type" in settings) {
-					model.set("target_type", settings.target_type);
-					model.set("target_id", settings.target_id);
-				}
+				model.set("target_type", settings.target_type);
+				model.set("target_id", settings.target_id);
 
 				model.set("filters", settings.filters);
 			}
@@ -67,15 +64,66 @@ var TCPReader = Backbone.Model.extend({
 		view.set(header, 0);
 
 		function onAccept(acceptInfo) {
-			console.log("ACCEPT", acceptInfo)
 			model.readFromSocket(acceptInfo.socketId);
 		}
 
 		socket.write(socketId, outputBuffer, function(writeInfo) {
-			console.log("WRITE", writeInfo);
 			socket.destroy(socketId);
 			socket.accept(socketInfo.socketId, onAccept);
 		});
+	},
+
+	isAllowed: function(request) {
+		var filters = this.get("filters");
+		var methods = filters.methods.split(",");
+
+		function trim(s) {
+			return s.trim().toUpperCase();
+		}
+
+		var filterMethods = _.each(methods, trim);
+
+		var flagUrlContains = true;
+		var flagUrlDisabled = true;
+		var flagUrlMethods = true;
+
+		var result;
+
+		console.log("Filters are", filters);
+
+		if (filters.url === "") {
+			flagUrlContains = true;
+		}
+		else {
+			if (request.url.search(filters.url) >= 0) {
+				flagUrlContains = true;
+			}
+			else {
+				flagUrlContains = false;
+			}
+		}
+
+		if (filters.url_disabled === "") {
+			flagUrlDisabled = true;
+		}
+		else {
+			if (request.url.search(filters.url_disabled) < 0) {
+				flagUrlDisabled = true;
+			}
+			else {
+				flagUrlDisabled = false;
+			}
+		}
+
+		if (filterMethods.length > 0) {
+			flagUrlMethods = _.indexOf(filterMethods, request.method.toUpperCase());
+		}
+		else {
+			flagUrlMethods = true;
+		}
+
+		result = flagUrlMethods && flagUrlDisabled && flagUrlContains;
+		return result;
 	},
 
 	addRequest: function(data) {
@@ -85,14 +133,15 @@ var TCPReader = Backbone.Model.extend({
 		var collection;
 		var target_id;
 
-		if (target_type === "history") {
-			pm.history.addRequestFromJSON(data);
+		if (this.isAllowed(request)) {
+			if (target_type === "history") {
+				pm.history.addRequestFromJSON(data);
+			}
+			else {
+				target_id = this.get("target_id");
+				pm.collections.addRequestToCollectionId(request, target_id);
+			}
 		}
-		else {
-			target_id = this.get("target_id");
-			pm.collections.addRequestToCollectionId(request, target_id);
-		}
-
 	},
 
 	readFromSocket: function(socketId) {
@@ -103,7 +152,6 @@ var TCPReader = Backbone.Model.extend({
 			console.log("READ", readInfo);
 			// Parse the request.
 			var data = arrayBufferToString(readInfo.data);
-			console.log("DATA", data);
 			model.addRequest(data);
 			model.writeResponse(socketId, "It worked!", false);
 		});

@@ -45,30 +45,34 @@
 
                         <div class="controls">
                             <input type="text" name="postman-proxy-filter-url" id="postman-proxy-filter-url"/>
+
+                            <p class="help-block">
+                                Can use regular expressions.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="control-group" id="postman-proxy-filter-url-disabled-container">
+                        <label class="control-label" for="postman-proxy-filter-url-disabled">URL does not contain</label>
+
+                        <div class="controls">
+                            <input type="text" name="postman-proxy-filter-url-disabled" id="postman-proxy-filter-url-disabled"/>
+
+                            <p class="help-block">
+                                Can use regular expressions. For example, to exclude multiple strings use <strong>google|dropbox|github</strong>
+                            </p>
                         </div>
                     </div>
 
                     <div class="control-group" id="postman-proxy-filter-methods-container">
-                        <label class="control-label" for="postman-proxy-filter-methods">Methods (comma separated)</label>
+                        <label class="control-label" for="postman-proxy-filter-methods">Methods</label>
 
                         <div class="controls">
                             <input type="text" name="postman-proxy-filter-methods" id="postman-proxy-filter-methods"/>
-                        </div>
-                    </div>
 
-                    <div class="control-group" id="postman-proxy-filter-status-codes-container">
-                        <label class="control-label" for="postman-proxy-filter-status-codes">Status codes (comma separated)</label>
-
-                        <div class="controls">
-                            <input type="text" name="postman-proxy-filter-status-codes" id="postman-proxy-filter-status-codes"/>
-                        </div>
-                    </div>
-
-                    <div class="control-group" id="postman-proxy-filter-content-type-container">
-                        <label class="control-label" for="postman-proxy-filter-content-type">Content type contains</label>
-
-                        <div class="controls">
-                            <input type="text" name="postman-proxy-filter-content-type" id="postman-proxy-filter-content-type"/>
+                            <p class="help-block">
+                                Separate using commas. Example: PUT,GET,POST
+                            </p>
                         </div>
                     </div>
                 </form>

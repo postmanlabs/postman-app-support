@@ -85,6 +85,7 @@ pm.init = function () {
 
     function initializeTCPReader() {
         var tcpReader = new TCPReader();
+        var tcpReaderStatus = new TCPReaderStatus({model: tcpReader});
         var tcpManager = new TCPManager({model: tcpReader});
 
         pm.tcpReader = tcpReader;

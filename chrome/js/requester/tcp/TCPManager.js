@@ -50,9 +50,8 @@ var TCPManager = Backbone.View.extend({
 
 		var filters = {
 			"url": $("#postman-proxy-filter-url").val(),
-			"methods": $("#postman-proxy-filter-methods").val(),
-			"status_codes": $("#postman-proxy-filter-status-codes").val(),
-			"content_type": $("#postman-proxy-filter-content-type").val(),
+			"url_disabled": $("#postman-proxy-filter-url-disabled").val(),
+			"methods": $("#postman-proxy-filter-methods").val()
 		};
 
 		model.set("filters", filters);
@@ -66,6 +65,7 @@ var TCPManager = Backbone.View.extend({
 		var collections = pm.collections.getAllCollections();
 		var collection;
 		$("#postman-proxy-target").html("");
+
 		var history = {
 			"proxy_target_value": "history",
 			"name": "History",
@@ -81,7 +81,8 @@ var TCPManager = Backbone.View.extend({
 			$('#postman-proxy-target').append(Handlebars.templates.item_tcp_reader_target(collection));
 		}
 
-		$("#postman-proxy-target").val(model.get("target_id"));
+		var target_value = model.get("target_type") + "_" + model.get("target_id");
+		$("#postman-proxy-target").val(target_value);
 	},
 
 	connect: function() {
@@ -120,9 +121,8 @@ var TCPManager = Backbone.View.extend({
 
 		var filters = model.get("filters");
 		$("#postman-proxy-filter-url").val(filters.url);
+		$("#postman-proxy-filter-url-disabled").val(filters.url_disabled);
 		$("#postman-proxy-filter-methods").val(filters.methods);
-		$("#postman-proxy-filter-status-codes").val(filters.status_codes);
-		$("#postman-proxy-filter-content-type").val(filters.content_type);
 	},
 
 	show: function() {
