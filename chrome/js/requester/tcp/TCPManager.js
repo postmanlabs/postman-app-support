@@ -11,7 +11,12 @@ var TCPManager = Backbone.View.extend({
 			view.updateModel();
 		});
 
-		$("#modal-tcp-manager .btn-primary").on("click", function() {
+		$("#tcp-manager-save-filters").on("click", function() {
+			view.updateModel();
+			pm.mediator.trigger("notifySuccess", "Saved settings");
+		});
+
+		$("#tcp-manager-connect-toggle").on("click", function() {
 			var status = model.get("status");
 
 			if (status === "connected") {
@@ -88,12 +93,12 @@ var TCPManager = Backbone.View.extend({
 	connect: function() {
 		this.updateModel();
 		this.model.connect();
-		$("#modal-tcp-manager .btn-primary").html("Disconnect");
+		$("#tcp-manager-connect-toggle").html("Disconnect");
 	},
 
 	disconnect: function() {
 		this.model.disconnect();
-		$("#modal-tcp-manager .btn-primary").html("Connect");
+		$("#tcp-manager-connect-toggle").html("Connect");
 	},
 
 	render: function() {
@@ -104,13 +109,13 @@ var TCPManager = Backbone.View.extend({
 			$("#modal-tcp-manager .status").html("Connected");
 			$("#modal-tcp-manager .status").addClass("status-connected");
 			$("#modal-tcp-manager .status").removeClass("status-disconnected");
-			$("#modal-tcp-manager .btn-primary").html("Disconnect");
+			$("#tcp-manager-connect-toggle").html("Disconnect");
 		}
 		else if (status === "disconnected") {
 			$("#modal-tcp-manager .status").html("Disconnected");
 			$("#modal-tcp-manager .status").removeClass("status-connected");
 			$("#modal-tcp-manager .status").addClass("status-disconnected");
-			$("#modal-tcp-manager .btn-primary").html("Connect");
+			$("#tcp-manager-connect-toggle").html("Connect");
 		}
 
 		$("#postman-proxy-host").val(model.get("host"));
