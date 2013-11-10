@@ -20,7 +20,7 @@ def generate_base_icon(source, version, icon_type):
     font = ImageFont.truetype("Roboto/Roboto-bold.ttf", 25)
 
     draw = ImageDraw.Draw(image)
-    box = [(20, 40), (128, 80)]
+    box = [(20, 40), (122, 74)]
     draw.rectangle(box, fill=(50, 50, 50))
     draw.text((25, 40), version, (255, 255, 255), font=font)
     draw = ImageDraw.Draw(image)
