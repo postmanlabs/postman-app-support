@@ -21,8 +21,6 @@ var TCPReader = Backbone.Model.extend({
 	initialize: function() {
 		var model = this;
 
-		console.log("Initializing TCPReader");
-
 		pm.storage.getValue("readerSettings", function(settings) {
 			if (settings) {
 				model.set("host", settings.host);
@@ -47,7 +45,6 @@ var TCPReader = Backbone.Model.extend({
 		};
 
 		pm.storage.setValue(readerSettings, function() {
-			console.log("Saved readerSettings", readerSettings);
 		});
 
 	},
