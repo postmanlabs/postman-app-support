@@ -40,14 +40,22 @@ var OAuth2TokenFetcher = Backbone.Model.extend({
     },
 
     startAuthorization: function(params) {
+        var authParams = {
+            "authorization_url": pm.envManager.getCurrentValue(_.clone(params["authorization_url"])),
+            "access_token_url": pm.envManager.getCurrentValue(_.clone(params["access_token_url"])),
+            "client_id": pm.envManager.getCurrentValue(_.clone(params["client_id"])),
+            "client_secret": pm.envManager.getCurrentValue(_.clone(params["client_secret"])),
+            "scope": pm.envManager.getCurrentValue(_.clone(params["scope"])),
+        };
+
         this.set(params);
 
         var postmanAuthUrl = pm.webUrl + "/oauth2/start";
-        postmanAuthUrl += "?authorization_url=" + encodeURIComponent(this.get("authorization_url"));
-        postmanAuthUrl += "&access_token_url=" + encodeURIComponent(this.get("access_token_url"));
-        postmanAuthUrl += "&client_id=" + encodeURIComponent(this.get("client_id"));
-        postmanAuthUrl += "&client_secret=" + encodeURIComponent(this.get("client_secret"));
-        postmanAuthUrl += "&scope=" + encodeURIComponent(this.get("scope"));
+        postmanAuthUrl += "?authorization_url=" + encodeURIComponent(authParams["authorization_url"]);
+        postmanAuthUrl += "&access_token_url=" + encodeURIComponent(authParams["access_token_url"]);
+        postmanAuthUrl += "&client_id=" + encodeURIComponent(authParams["client_id"]);
+        postmanAuthUrl += "&client_secret=" + encodeURIComponent(authParams["client_secret"]);
+        postmanAuthUrl += "&scope=" + encodeURIComponent(authParams["scope"]);
 
         console.log(postmanAuthUrl);
 

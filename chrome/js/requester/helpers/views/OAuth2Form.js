@@ -22,11 +22,11 @@ var OAuth2Form = Backbone.View.extend({
 
         $('#request-helper-oAuth2 .request-helper-submit').on("click", function () {
             var params = {
-                "authorization_url": pm.envManager.getCurrentValue($("#request-helper-oauth2-authorization-url").val()),
-                "access_token_url": pm.envManager.getCurrentValue($("#request-helper-oauth2-access-token-url").val()),
-                "client_id": pm.envManager.getCurrentValue($("#request-helper-oauth2-client-id").val()),
-                "client_secret": pm.envManager.getCurrentValue($("#request-helper-oauth2-client-secret").val()),
-                "scope": pm.envManager.getCurrentValue($("#request-helper-oauth2-scope").val())
+                "authorization_url": $("#request-helper-oauth2-authorization-url").val(),
+                "access_token_url": $("#request-helper-oauth2-access-token-url").val(),
+                "client_id": $("#request-helper-oauth2-client-id").val(),
+                "client_secret": $("#request-helper-oauth2-client-secret").val(),
+                "scope": $("#request-helper-oauth2-scope").val()
             };
 
             view.save();

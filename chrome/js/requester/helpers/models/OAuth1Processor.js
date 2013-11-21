@@ -197,7 +197,6 @@ var OAuth1Processor = Backbone.Model.extend({
         var dataMode = body.get("dataMode");
         var method = request.get("method");
 
-        // TODO Need to test if this works
         var bodyParams = body.get("dataAsObjects");
 
         params = params.concat(urlParams);
