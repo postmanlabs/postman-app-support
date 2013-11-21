@@ -187,6 +187,7 @@ var Request = Backbone.Model.extend({
     },
 
     setUrlParamString:function (params, silent) {
+        console.log("Set the URL param string");
         var paramArr = [];
         var url = this.get("url");
 

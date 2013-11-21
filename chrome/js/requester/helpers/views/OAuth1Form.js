@@ -7,8 +7,13 @@ var OAuth1Form = Backbone.View.extend({
 
         $('#request-helper-oAuth1 .request-helper-submit').on("click", function () {
             $('#request-helpers').css("display", "none");
-            _.bind(view.save, view)();
-            _.bind(model.process, model)();
+            view.save();
+            model.process();
+        });
+
+        $('#request-helper-oAuth1 input').on("blur", function () {
+            console.log("Save helper");
+            view.save();
         });
 
         $('#request-helper-oAuth1 .request-helper-clear').on("click", function () {

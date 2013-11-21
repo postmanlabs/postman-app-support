@@ -65,7 +65,7 @@ var DirectoryBrowser = Backbone.View.extend({
             $(".directory-browser-navigator-previous").addClass("enabled");
         }
 
-        var start = model.totalCount - model.fetchCount + 1;
+        var start = model.totalCount - model.lastCount + 1;
 
         if (start < 0) {
             start = 1;
