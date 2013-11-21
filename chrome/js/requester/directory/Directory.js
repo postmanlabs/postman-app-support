@@ -19,7 +19,7 @@ var Directory = Backbone.Collection.extend({
 
     startId: 0,
     endId: 0,
-    fetchCount: 42,
+    fetchCount: 44,
     lastCount: 0,
     totalCount: 0,
     order: "descending",
@@ -28,7 +28,7 @@ var Directory = Backbone.Collection.extend({
 
     reload: function() {
         this.startId = 0;
-        this.fetchCount = 42;
+        this.fetchCount = 44;
         this.lastCount = 0;
         this.totalCount = 0;
         this.getCollections(this.startId, this.fetchCount, "descending");

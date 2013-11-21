@@ -30,7 +30,6 @@
     }
 
     .directory-collection {
-        height: 200px;
         width: 250px;
         overflow: hidden;
         border: solid thin #fff;
@@ -56,7 +55,7 @@
         }
 
         .description {
-            display: block;
+            display: none;
             height: 100px;
             overflow: hidden;
             margin-bottom: 10px;

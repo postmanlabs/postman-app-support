@@ -1679,7 +1679,6 @@ input[type="file"] {
     font-weight: normal;
     margin-left: 10px; }
   #directory-browser .directory-collection {
-    height: 200px;
     width: 250px;
     overflow: hidden;
     border: solid thin #fff;
@@ -1698,7 +1697,7 @@ input[type="file"] {
       color: #333;
       margin-bottom: 0; }
     #directory-browser .directory-collection .description {
-      display: block;
+      display: none;
       height: 100px;
       overflow: hidden;
       margin-bottom: 10px; }
