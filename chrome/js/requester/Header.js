@@ -35,6 +35,12 @@ var Header = Backbone.View.extend({
 			pm.mediator.trigger("openModule", "requester");
 		});
 
+		$('a[data-toggle="popover"]').popover({
+		    animation: true,
+		    placement: "bottom",
+		    trigger: "hover",
+		});
+
 		pm.mediator.on("openModule", this.onOpenModule, this);
 
 		this.render();

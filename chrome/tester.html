@@ -25,7 +25,12 @@
     <div id="add-ons" class="navbar-main-navigation">
       <ul>
         <li>
-          <a id="add-on-directory">API Directory</a>
+          <a id="add-on-directory"
+            data-toggle="popover"
+            data-placement="bottom"
+            data-content="Browse and download collections shared by the Postman community."
+            title=""
+            data-original-title="API directory">API Directory</a>
         </li>
       </ul>
     </div>
@@ -71,9 +76,13 @@
     </div>
     <div id="user-status">
       <div id="user-status-false">
-          <a href="#" id="user-status-not-logged-in" rel="tooltip"
+          <a href="#" id="user-status-not-logged-in"
             class="navbar-link"
-            data-placement="bottom" data-original-title"Sign in to manage your shared collections">
+            data-toggle="popover"
+            data-placement="bottom"
+            data-content="Sign in to your Postman account to upload and share collections"
+            title=""
+            data-original-title="Sign in">
             Sign in
           </a>
       </div>
