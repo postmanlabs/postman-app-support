@@ -16,7 +16,7 @@ pm.broadcasts = {
         }
 
         $("#broadcasts-count").on("click", function () {
-            ga('send', 'event', 'broadcast', 'view');
+            tracker.sendEvent('broadcast', 'view');
             pm.broadcasts.markAllAsRead();
         });
     },
