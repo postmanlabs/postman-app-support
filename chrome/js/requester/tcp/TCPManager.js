@@ -20,10 +20,12 @@ var TCPManager = Backbone.View.extend({
 			var status = model.get("status");
 
 			if (status === "connected") {
-				view.disconnect();
+				tracker.sendEvent('proxy', 'disconnect');
+                view.disconnect();
 			}
 			else if (status === "disconnected") {
-				view.connect();
+				tracker.sendEvent('proxy', 'connect');
+                view.connect();
 			}
 		});
 

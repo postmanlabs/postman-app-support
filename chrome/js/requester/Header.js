@@ -41,7 +41,15 @@ var Header = Backbone.View.extend({
 		    trigger: "hover",
 		});
 
-		pm.mediator.on("openModule", this.onOpenModule, this);
+        $("#twitter-profile").on("click", function() {
+            tracker.sendEvent('social', 'profileview', 'twitter');
+        });
+
+		$("#postman-docs").on("click", function() {
+            tracker.sendEvent('docs', 'view');
+        });
+
+        pm.mediator.on("openModule", this.onOpenModule, this);
 
 		this.render();
 	},
@@ -59,7 +67,8 @@ var Header = Backbone.View.extend({
 		supportContent += "<div class='supporter-tag'>If you like Postman help support the project!</div>";
 		supportContent += "</div></div>";
 
-		$('#donate-link').popover({
+		var donateTimeout;
+        $('#donate-link').popover({
 		    animation: false,
 		    content: supportContent,
 		    placement: "bottom",
@@ -72,8 +81,13 @@ var Header = Backbone.View.extend({
 		    $(this).siblings(".popover").on("mouseleave", function () {
 		        $(_this).popover('hide');
 		    });
+            donateTimeout = setTimeout(function () {
+                //hover event here - number of times ad is seen
+                tracker.sendEvent('sponsors', 'view');
+            }, 1000);
 		}).on("mouseleave", function () {
 		    var _this = this;
+            clearTimeout(donateTimeout);
 		    setTimeout(function () {
 		        if (!$(".popover:hover").length) {
 		            $(_this).popover("hide")

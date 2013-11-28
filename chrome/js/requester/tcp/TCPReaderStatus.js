@@ -4,7 +4,7 @@ var TCPReaderStatus = Backbone.View.extend({
 
 		model.on("change", this.render, this);
 		$('#tcp-reader-status').on("click", function () {
-			console.log("Clicked on TCP Reader");
+			tracker.sendEvent('proxy', 'click');
 		    pm.mediator.trigger("showTCPManager");
 		});
 	},
