@@ -59,17 +59,17 @@ pm.layout = {
 
         $('#download-all-data').on("click", function() {
             pm.indexedDB.downloadAllData(function() {
-                ga('send', 'event', 'data', 'download');
+                tracker.sendEvent('data', 'download');
                 console.log("Downloaded all data");
             });
         });
 
         $('#postman-wiki').on("click", function() {
-            ga('send', 'event', 'wiki', 'view');
+            tracker.sendEvent('wiki', 'click');
         });
 
         $('#upgrade').on("click", function() {
-            ga('send', 'event', 'upgrade', 'click');
+            tracker.sendEvent('upgrade', 'click');
         });
 
         var supportContent = "<div class='supporters'><div class='supporter clearfix'>";
@@ -85,6 +85,7 @@ pm.layout = {
         supportContent += "</div></div>";
 
 
+        var donateTimeout;
         $('#donate').popover({
             animation: false,
             content: supportContent,
@@ -94,14 +95,17 @@ pm.layout = {
             title: "Postman is supported by some amazing companies"
         }).on("mouseenter", function () {
             var _this = this;
-            //hover event here - number of times ad is seen
-            ga('send', 'event', 'sponsors', 'view');
             $(this).popover("show");
             $(this).siblings(".popover").on("mouseleave", function () {
                 $(_this).popover('hide');
             });
+            donateTimeout = setTimeout(function () {
+                //hover event here - number of times ad is seen
+                tracker.sendEvent('sponsors', 'view');
+            }, 1000);
         }).on("mouseleave", function () {
             var _this = this;
+            clearTimeout(donateTimeout);
             setTimeout(function () {
                 if (!$(".popover:hover").length) {
                     $(_this).popover("hide");
