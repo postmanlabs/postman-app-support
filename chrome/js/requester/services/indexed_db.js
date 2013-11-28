@@ -17,6 +17,7 @@ pm.indexedDB = {
     },
 
     onerror:function (event, callback) {
+        console.log("Could not load DB", event);
         pm.mediator.trigger("error");
     },
 
@@ -24,7 +25,7 @@ pm.indexedDB = {
 
         var request = indexedDB.open(pm.databaseName, "POSTman request history");
         request.onsuccess = function (e) {
-            var v = "0.7.5";
+            var v = "0.7.6";
             pm.indexedDB.db = e.target.result;
             var db = pm.indexedDB.db;
 
@@ -107,7 +108,7 @@ pm.indexedDB = {
     },
 
     open_latest:function (callback) {
-        var v = 21;
+        var v = 22;
         var request = indexedDB.open(pm.databaseName, v);
         request.onupgradeneeded = function (e) {
             console.log("Upgrade DB");

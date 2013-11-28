@@ -1,3 +1,7 @@
+function gapiIsLoaded() {
+
+}
+
 function isMethodWithBody(method) {
     var methodsWithBody = ["POST", "PUT", "PATCH", "DELETE", "LINK", "UNLINK"];
     method = method.toUpperCase();

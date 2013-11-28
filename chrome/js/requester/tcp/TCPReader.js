@@ -5,7 +5,7 @@ var TCPReader = Backbone.Model.extend({
 			"socketInfo": null,
 			"host": "127.0.0.1",
 			"port": "5005",
-			"target_type": "",
+			"target_type": "history",
 			"target_id": "",
 			"status": "disconnected",
 			"filters": {
@@ -130,6 +130,8 @@ var TCPReader = Backbone.Model.extend({
 		var collection;
 		var target_id;
 
+		console.log("Settings are", this.toJSON());
+
 		if (this.isAllowed(request)) {
 			if (target_type === "history") {
 				pm.history.addRequestFromJSON(data);
@@ -146,11 +148,17 @@ var TCPReader = Backbone.Model.extend({
 
 		var socket = chrome.socket;
 		socket.read(socketId, function(readInfo) {
-			console.log("READ", readInfo);
-			// Parse the request.
-			var data = arrayBufferToString(readInfo.data);
-			model.addRequest(data);
-			model.writeResponse(socketId, "It worked!", false);
+			try {
+			    console.log("READ", readInfo);
+			    // Parse the request.
+			    var data = arrayBufferToString(readInfo.data);
+			    model.addRequest(data);
+			    model.writeResponse(socketId, "received-request", false);
+			}
+			catch(e) {
+			    console.log("Something went wrong while reading a request", e);
+			    model.writeResponse(socketId, "received-request", false);
+			}
 		});
 	},
 
