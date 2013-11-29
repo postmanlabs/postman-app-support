@@ -1,7 +1,7 @@
 chrome.app.runtime.onLaunched.addListener(function() {
   chrome.app.window.create('{{ file_name }}', {
     "bounds": {
-      width: 1200,
+      width: 1000,
       height: 800
     }
   }, function(win) {
