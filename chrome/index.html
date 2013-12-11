@@ -101,6 +101,7 @@
                 <li data-id="basicAuth">Basic Auth</li>
                 <li data-id="digestAuth">Digest Auth</li>
                 <li data-id="oAuth1">OAuth 1.0</li>
+                <li data-id="wsse">WSSE</li>
             </ul>
             <div id="environment-selector-wrapper">
                 <div id="environment-quicklook-wrapper">
@@ -380,6 +381,37 @@
                 <div class="request-helper-form-description">
                     <h4>Note</h4>
                     If auto addition is enabled, OAuth parameters will be added when you send the request
+                </div>
+            </div>
+            <div id="request-helper-wsse" class="request-helpers">
+                <div class="request-helper-form-container">
+                    <form class="form form-horizontal">
+                        <div class="control-group">
+                            <label class="control-label">Username</label>
+
+                            <div class="controls">
+                                <input type="text" id="request-helper-wsse-username" class="clean-input"/>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">Password</label>
+
+                            <div class="controls">
+                                <input type="password" id="request-helper-wsse-password" class="clean-input"/>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <div class="controls">
+                                <a
+                                        class="btn btn-secondary request-helper-submit"
+                                        data-type="wsse">Refresh headers</a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="request-helper-form-description">
+                    <h4>Note</h4>
+                    The authorization header will be generated and added as a custom header.
                 </div>
             </div>
         </div>
@@ -1432,6 +1464,7 @@
 
 <!-- Crypto -->
 <script type="text/javascript" src="js/crypto/rollups/md5.js"></script>
+<script type="text/javascript" src="js/crypto/rollups/sha1.js"></script>
 <script type="text/javascript" src="js/crypto/rollups/hmac-sha1.js"></script>
 <script type="text/javascript" src="js/crypto/rollups/hmac-sha256.js"></script>
 <script type="text/javascript" src="js/crypto/components/enc-base64-min.js"></script>
