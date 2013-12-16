@@ -54,6 +54,12 @@ sudo npm install -g grunt grunt-cli
 </pre>
 3. For misc. grunt tasks, look at grunt.js.
 
+Submitting bugs
+===============
+
+Please add the Postman version along with your operating system and Chrome version along with bug requests. 
+
+
 Pull requests
 =========================
 
