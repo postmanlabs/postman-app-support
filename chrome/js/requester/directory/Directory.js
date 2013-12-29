@@ -34,6 +34,13 @@ var Directory = Backbone.Collection.extend({
         this.getCollections(this.startId, this.fetchCount, "descending");
     },
 
+    comparator: function(a, b) {
+        var aName = a.get("timestamp");
+        var bName = b.get("timestamp");
+
+        return aName > bName;
+    },
+
     initialize: function() {
     	pm.mediator.on("initializeDirectory", this.onInitializeDirectory, this);
         pm.mediator.on("getDirectoryCollection", this.onGetDirectoryCollection, this);
@@ -87,7 +94,10 @@ var Directory = Backbone.Collection.extend({
                     c = collections[i];
                     updated_at_formatted = new Date(c.updated_at).toDateString();
                     c.updated_at_formatted = updated_at_formatted;
+                    c.timestamp = new Date(c.updated_at).getTime();
                 }
+
+                collections.sort(sortById);
 
                 collection.reset([]);
                 collection.add(collections, {merge: true});

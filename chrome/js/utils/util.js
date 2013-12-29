@@ -17,6 +17,21 @@ function sortAscending(a, b) {
     }
 }
 
+function sortById(a, b) {
+    var aName = a.id;
+    var bName = b.id;
+
+    if (aName < bName) {
+        return 1;
+    }
+    else if (aName === bName) {
+        return 0;
+    }
+    else {
+        return -1;
+    }
+}
+
 function sortAlphabetical(a, b) {
     var counter;
     if (a.name.length > b.name.legnth)

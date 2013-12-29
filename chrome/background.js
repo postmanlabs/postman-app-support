@@ -1,8 +1,8 @@
 chrome.app.runtime.onLaunched.addListener(function() {
   chrome.app.window.create('requester.html', {
     "bounds": {
-      top: 100,
-      left: 2000,
+      top: 50,
+      left: 50,
       width: 1000,
       height: 800
     }
