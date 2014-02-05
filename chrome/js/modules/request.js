@@ -28,7 +28,7 @@ pm.request = {
             this.initPreview();
             this.initFormDataEditor();
             this.initUrlEncodedEditor();
-            this.initEditorListeners();            
+            this.initEditorListeners();
         },
 
         initPreview:function () {
@@ -44,12 +44,12 @@ pm.request = {
         //TODO: Complete this function
         setRequestBodyEditorType: function(type) {
             pm.request.body.rawEditorType = type;
-            
+
             if (type === "editor") {
 
             }
             else if (type === "textarea") {
-                
+
             }
         },
 
@@ -94,7 +94,7 @@ pm.request = {
                 stop: function() { pm.request.body.codeMirror.refresh(); },
                 resize: function(event, ui) {
                     ui.size.width = ui.originalSize.width;
-                    $(".CodeMirror-scroll").height($(this).height());                    
+                    $(".CodeMirror-scroll").height($(this).height());
                     pm.request.body.codeMirror.refresh();
                 }
             });
@@ -103,8 +103,8 @@ pm.request = {
             pm.request.body.codeMirror.refresh();
         },
 
-        setEditorMode:function (mode, language, toSetHeader) {            
-            var displayMode = $("#body-editor-mode-selector a[data-language='" + language + "']").html();          
+        setEditorMode:function (mode, language, toSetHeader) {
+            var displayMode = $("#body-editor-mode-selector a[data-language='" + language + "']").html();
             console.log(mode, language);
 
             $('#body-editor-mode-item-selected').html(displayMode);
@@ -148,8 +148,8 @@ pm.request = {
                     }
 
                     pm.request.headers = headers;
-                    $('#headers-keyvaleditor').keyvalueeditor('reset', headers);    
-                }                
+                    $('#headers-keyvaleditor').keyvalueeditor('reset', headers);
+                }
 
                 //pm.request.body.autoFormatEditor(mode);
                 pm.request.body.codeMirror.refresh();
@@ -159,15 +159,15 @@ pm.request = {
         autoFormatEditor:function (mode) {
           var content = pm.request.body.codeMirror.getValue(),
               validated = null, result = null;
-          
+
           $('#body-editor-mode-selector-format-result').empty().hide();
-          
+
           if (pm.request.body.isEditorInitialized) {
-            
+
             // In case its a JSON then just properly stringify it.
             // CodeMirror does not work well with pure JSON format.
             if (mode === 'javascript') {
-              
+
               // Validate code first.
               try {
                 validated = pm.jsonlint.instance.parse(content);
@@ -184,9 +184,9 @@ pm.request = {
             } else { // Otherwise use internal CodeMirror.autoFormatRage method for a specific mode.
               var totalLines = pm.request.body.codeMirror.lineCount(),
                   totalChars = pm.request.body.codeMirror.getValue().length;
-              
+
               pm.request.body.codeMirror.autoFormatRange(
-                {line: 0, ch: 0}, 
+                {line: 0, ch: 0},
                 {line: totalLines - 1, ch: pm.request.body.codeMirror.getLine(totalLines - 1).length}
               );
             }
@@ -235,7 +235,7 @@ pm.request = {
                 var language = $(event.target).attr("data-language");
                 pm.request.body.setEditorMode(editorMode, language, true);
             });
-            
+
             // 'Format code' button listener.
             $('#body-editor-mode-selector-format').on('click.postman', function(evt) {
               var editorMode = $(event.target).attr("data-editor-mode");
@@ -363,9 +363,9 @@ pm.request = {
                     return newParams;
                 }
                 else {
-                    data = pm.request.getBodyParamString(newParams);    
+                    data = pm.request.getBodyParamString(newParams);
                 }
-                
+
             }
             else if (mode === "raw") {
                 data = pm.request.body.getRawData();
@@ -387,13 +387,13 @@ pm.request = {
                     return newParams;
                 }
                 else {
-                    data = pm.request.getBodyParamString(newParams);    
-                }                
+                    data = pm.request.getBodyParamString(newParams);
+                }
             }
 
             return data;
         },
-        
+
         loadData:function (mode, data, asObjects) {
             var body = pm.request.body;
             body.setDataMode(mode);
@@ -402,14 +402,14 @@ pm.request = {
 
             var params;
             if (mode === "params") {
-                if(asObjects === true) {                    
-                    $('#formdata-keyvaleditor').keyvalueeditor('reset', data);        
+                if(asObjects === true) {
+                    $('#formdata-keyvaleditor').keyvalueeditor('reset', data);
                 }
                 else {
                     params = getBodyVars(data, false);
-                    $('#formdata-keyvaleditor').keyvalueeditor('reset', params);    
+                    $('#formdata-keyvaleditor').keyvalueeditor('reset', params);
                 }
-                
+
             }
             else if (mode === "raw") {
                 body.loadRawData(data);
@@ -420,9 +420,9 @@ pm.request = {
                 }
                 else {
                     params = getBodyVars(data, false);
-                    $('#urlencoded-keyvaleditor').keyvalueeditor('reset', params);    
+                    $('#urlencoded-keyvaleditor').keyvalueeditor('reset', params);
                 }
-                
+
             }
         }
     },
@@ -458,9 +458,9 @@ pm.request = {
     },
 
     intClipboardCopier:function () {
-        $("#response-copy-button").on("click", function() {            
+        $("#response-copy-button").on("click", function() {
             var scrollTop = $(window).scrollTop();
-            copyToClipboard(pm.request.response.text);            
+            copyToClipboard(pm.request.response.text);
             $(document).scrollTop(scrollTop);
         });
     },
@@ -520,24 +520,24 @@ pm.request = {
         return newHeaders;
     },
 
-    onHeaderAutoCompleteItemSelect:function(item) {        
+    onHeaderAutoCompleteItemSelect:function(item) {
         if(item.type == "preset") {
             var preset = pm.headerPresets.getHeaderPreset(item.id);
-            if("headers" in preset) {                    
+            if("headers" in preset) {
                 var headers = $('#headers-keyvaleditor').keyvalueeditor('getValues');
-                var loc = -1;    
+                var loc = -1;
                 for(var i = 0; i < headers.length; i++) {
                     if(headers[i].key === item.label) {
                         loc = i;
                         break;
                     }
-                }          
+                }
 
                 if(loc >= 0) {
-                    headers.splice(loc, 1);        
-                }                                            
-                
-                var newHeaders = _.union(headers, preset.headers);                
+                    headers.splice(loc, 1);
+                }
+
+                var newHeaders = _.union(headers, preset.headers);
                 $('#headers-keyvaleditor').keyvalueeditor('reset', newHeaders);
 
                 //Ensures that the key gets focus
@@ -545,7 +545,7 @@ pm.request = {
                 $('#headers-keyvaleditor .keyvalueeditor-last input:first-child')[0].focus();
                 setTimeout(function() {
                     element.focus();
-                }, 10);                
+                }, 10);
             }
         }
     },
@@ -796,60 +796,56 @@ pm.request = {
         },
 
         stripScriptTag:function (text) {
-            var re = /<script\b[^>]*>([\s\S]*?)<\/script>/gm;            
-            text = text.replace(re, "");            
+            var re = /<script\b[^>]*>([\s\S]*?)<\/script>/gm;
+            text = text.replace(re, "");
             return text;
         },
 
         changePreviewType:function (newType) {
+
             if (this.previewType === newType) {
                 return;
             }
 
-            this.previewType = newType;
-            $('#response-formatting a').removeClass('active');
-            $('#response-formatting a[data-type="' + this.previewType + '"]').addClass('active');
-
+            var selector;
+            this.previewType = selector = newType;
             pm.settings.set("previewType", newType);
 
+            $('#response-formatting a').removeClass('active');
+            $('#response-formatting a[data-type="' + this.previewType + '"]').addClass('active');
+            $("#response-editors > div, #code-data, #response-pretty-modifiers").css("display", "none");
+
             if (newType === 'raw') {
-                $('#response-as-text').css("display", "block");
-                $('#response-as-code').css("display", "none");
-                $('#response-as-preview').css("display", "none");
                 $('#code-data-raw').val(this.text);
                 var codeDataWidth = $(document).width() - $('#sidebar').width() - 60;
-                $('#code-data-raw').css("width", codeDataWidth + "px");
-                $('#code-data-raw').css("height", "600px");
-                $('#response-pretty-modifiers').css("display", "none");
+                $('#code-data-raw').css({
+                    width: codeDataWidth + "px",
+                    height: "600px"
+                });
+                selector = "text";
             }
-            else if (newType === 'parsed') {
-                $('#response-as-text').css("display", "none");
+
+            if (newType === 'parsed') {
                 $('#response-as-code').css("display", "block");
-                $('#response-as-preview').css("display", "none");
-                $('#code-data').css("display", "none");
                 $('#response-pretty-modifiers').css("display", "block");
                 pm.editor.codeMirror.refresh();
+                selector = "code";
             }
-            else if (newType === 'preview') {
-                $('#response-as-text').css("display", "none");
-                $('#response-as-code').css("display", "none");
-                $('#code-data').css("display", "none");
-                $('#response-as-preview').css("display", "block");
-                $('#response-pretty-modifiers').css("display", "none");                
-            }
+
+            $('#response-as-' + selector).css("display", "block");
         },
 
         loadHeaders:function (data) {
-            this.headers = pm.request.unpackResponseHeaders(data);            
+            this.headers = pm.request.unpackResponseHeaders(data);
 
             if(pm.settings.get("usePostmanProxy") === true) {
-                var count = this.headers.length;                
+                var count = this.headers.length;
                 for(var i = 0; i < count; i++) {
                     if(this.headers[i].key == "Postman-Location") {
                         this.headers[i].key = "Location";
                         this.headers[i].name = "Location";
                         break;
-                    }                        
+                    }
                 }
             }
 
@@ -933,14 +929,14 @@ pm.request = {
                 }
 
                 $('#language').val(language);
-                
+
                 if (contentType.search(/image/i) >= 0) {
                     responsePreviewType = 'image';
 
                     $('#response-as-code').css("display", "none");
                     $('#response-as-text').css("display", "none");
                     $('#response-as-image').css("display", "block");
-                    
+
                     var imgLink = pm.request.processUrl($('#url').val());
 
                     $('#response-formatting').css("display", "none");
@@ -949,7 +945,7 @@ pm.request = {
                     $("#response-as-preview").css("display", "none");
                     $("#response-pretty-modifiers").css("display", "none");
                     $("#response-as-image").html("<img src='" + imgLink + "'/>");
-                } 
+                }
                 else {
                     responsePreviewType = 'html';
                     pm.request.response.setFormat(language, response.text, pm.settings.get("previewType"), true);
@@ -965,7 +961,7 @@ pm.request = {
             pm.request.response.renderCookies(response.cookies);
             if (responsePreviewType === "html") {
                 $("#response-as-preview").html("");
-                
+
                 var cleanResponseText = pm.request.response.stripScriptTag(pm.request.response.text);
                 pm.filesystem.renderResponsePreview("response.html", cleanResponseText, "html", function (response_url) {
                     $("#response-as-preview").html("<iframe></iframe>");
@@ -1021,7 +1017,7 @@ pm.request = {
                 else {
                     if (response.status in httpStatusCodes) {
                         responseCodeName = httpStatusCodes[response.status]['name'];
-                        responseCodeDetail = httpStatusCodes[response.status]['detail'];    
+                        responseCodeDetail = httpStatusCodes[response.status]['detail'];
                     }
                     else {
                         responseCodeName = "";
@@ -1140,12 +1136,12 @@ pm.request = {
                 pm.request.response.loadCookies(url);
 
                 if (responsePreviewType === "html") {
-                    $("#response-as-preview").html("");                                    
-                    var cleanResponseText = pm.request.response.stripScriptTag(pm.request.response.text);                    
+                    $("#response-as-preview").html("");
+                    var cleanResponseText = pm.request.response.stripScriptTag(pm.request.response.text);
                     pm.filesystem.renderResponsePreview("response.html", cleanResponseText, "html", function (response_url) {
                         $("#response-as-preview").html("<iframe></iframe>");
                         $("#response-as-preview iframe").attr("src", response_url);
-                    });    
+                    });
                 }
 
                 if (pm.request.method === "HEAD") {
@@ -1161,6 +1157,7 @@ pm.request = {
             }
 
             pm.layout.setLayout();
+            $("html").trigger("server-response");
             return true;
         },
 
@@ -1209,8 +1206,10 @@ pm.request = {
         },
 
         setFormat:function (language, response, format, forceCreate) {
+
             //Keep CodeMirror div visible otherwise the response gets cut off
             $('#response-as-code').css("display", "block");
+            document.getElementById("response-as-jsonview").style.display = "block";
             $('#response-as-text').css("display", "none");
 
             $('#response-as-image').css("display", "none");
@@ -1222,9 +1221,8 @@ pm.request = {
             $('#code-data').css("display", "none");
             $('#code-data').attr("data-mime", language);
 
-            var codeDataArea = document.getElementById("code-data");
-            var foldFunc;
-            var mode;
+            var codeDataArea = document.getElementById("code-data"),
+                foldFunc, mode;
 
             $('#response-language').css("display", "block");
             $('#response-language a').removeClass("active");
@@ -1267,7 +1265,7 @@ pm.request = {
             var renderMode = mode;
             if ($.inArray(mode, ["javascript", "xml", "html"]) >= 0) {
                 renderMode = "links";
-            }            
+            }
 
             if (!pm.editor.codeMirror || forceCreate) {
                 $('#response .CodeMirror').remove();
@@ -1293,7 +1291,7 @@ pm.request = {
                 pm.editor.codeMirror.setOption("readOnly", false);
                 pm.editor.codeMirror.setValue(response);
                 pm.editor.codeMirror.refresh();
-                
+
                 CodeMirror.commands["goDocStart"](pm.editor.codeMirror);
                 $(window).scrollTop(0);
             }
@@ -1396,7 +1394,7 @@ pm.request = {
     startNew:function () {
         pm.request.showRequestBuilder();
         $('.sidebar-collection-request').removeClass('sidebar-collection-request-active');
-        
+
         if (pm.request.xhr !== null) {
             pm.request.xhr.abort();
         }
@@ -1683,16 +1681,16 @@ pm.request = {
 
             if("version" in request) {
                 if(request.version == 2) {
-                    pm.request.body.loadData(request.dataMode, request.data, true);        
+                    pm.request.body.loadData(request.dataMode, request.data, true);
                 }
                 else {
-                    pm.request.body.loadData(request.dataMode, request.data);        
+                    pm.request.body.loadData(request.dataMode, request.data);
                 }
             }
             else {
-                pm.request.body.loadData(request.dataMode, request.data);    
+                pm.request.body.loadData(request.dataMode, request.data);
             }
-            
+
         }
         else {
             $('#data').css("display", "none");
@@ -1815,20 +1813,20 @@ pm.request = {
 
     prepareForSending: function() {
         // Set state as if change event of input handlers was called
-        pm.request.setUrlParamString(pm.request.getUrlEditorParams());        
+        pm.request.setUrlParamString(pm.request.getUrlEditorParams());
 
-        if (pm.helpers.activeHelper == "oauth1" && pm.helpers.oAuth1.isAutoEnabled) {            
+        if (pm.helpers.activeHelper == "oauth1" && pm.helpers.oAuth1.isAutoEnabled) {
             pm.helpers.oAuth1.generateHelper();
             pm.helpers.oAuth1.process();
         }
 
-        $('#headers-keyvaleditor-actions-open .headers-count').html(pm.request.headers.length);        
+        $('#headers-keyvaleditor-actions-open .headers-count').html(pm.request.headers.length);
         pm.request.url = pm.request.processUrl($('#url').val());
-        pm.request.startTime = new Date().getTime();     
+        pm.request.startTime = new Date().getTime();
     },
 
     getXhrHeaders: function() {
-        pm.request.headers = pm.request.getHeaderEditorParams();        
+        pm.request.headers = pm.request.getHeaderEditorParams();
         var headers = pm.request.getHeaderEditorParams();
         if(pm.settings.get("sendNoCacheHeader") === true) {
             var noCacheHeader = {
@@ -1837,7 +1835,7 @@ pm.request = {
                 value: "no-cache"
             };
 
-            headers.push(noCacheHeader);            
+            headers.push(noCacheHeader);
         }
 
         if(pm.request.dataMode === "urlencoded") {
@@ -1910,7 +1908,7 @@ pm.request = {
                     params.push(textObj);
                 }
             }
-            
+
             var paramsCount = params.length;
             var body = "";
             for(i = 0; i < paramsCount; i++) {
@@ -1939,10 +1937,10 @@ pm.request = {
         }
     },
 
-    getFormDataBody: function() {                
+    getFormDataBody: function() {
         var rows, count, j;
         var i;
-        var row, key, value;        
+        var row, key, value;
         var paramsBodyData = new FormData();
         rows = $('#formdata-keyvaleditor').keyvalueeditor('getElements');
         count = rows.length;
@@ -1987,11 +1985,11 @@ pm.request = {
                 row = rows[j];
                 value = row.valueElement.val();
                 value = pm.envManager.getCurrentValue(value);
-                value = encodeURIComponent(value);                    
+                value = encodeURIComponent(value);
                 value = value.replace(/%20/g, '+');
                 key = encodeURIComponent(row.keyElement.val());
                 key = key.replace(/%20/g, '+');
-                
+
                 urlEncodedBodyData += key + "=" + value + "&";
             }
 
@@ -2001,7 +1999,7 @@ pm.request = {
         }
         else {
             return false;
-        }                
+        }
     },
 
     getRequestBodyPreview: function() {
@@ -2058,15 +2056,15 @@ pm.request = {
 
     //Send the current request
     send:function (responseRawDataType) {
-        pm.request.prepareForSending();                                        
+        pm.request.prepareForSending();
         if (pm.request.url === "") {
             return;
-        }        
+        }
 
         var originalUrl = $('#url').val(); //Store this for saving the request
-        var url = pm.request.encodeUrl(pm.request.url);        
-        var method = pm.request.method.toUpperCase();        
-        var originalData = pm.request.body.getData(true);        
+        var url = pm.request.encodeUrl(pm.request.url);
+        var method = pm.request.method.toUpperCase();
+        var originalData = pm.request.body.getData(true);
 
         //Start setting up XHR
         var xhr = new XMLHttpRequest();
@@ -2081,9 +2079,9 @@ pm.request = {
         }
 
         xhr.responseType = responseRawDataType;
-        var headers = pm.request.getXhrHeaders(headers);        
-        for (var i = 0; i < headers.length; i++) {            
-            xhr.setRequestHeader(headers[i].name, headers[i].value);            
+        var headers = pm.request.getXhrHeaders(headers);
+        for (var i = 0; i < headers.length; i++) {
+            xhr.setRequestHeader(headers[i].name, headers[i].value);
         }
 
         // Prepare body

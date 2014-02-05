@@ -956,7 +956,7 @@ li .right {
 #sync-status {
     cursor: pointer;
     float: left;
-    margin-right: 10px;        
+    margin-right: 10px;
 }
 
 #sync-status img {
@@ -973,7 +973,7 @@ li .right {
     -webkit-animation-duration: 4000ms;
     -webkit-animation-iteration-count: infinite;
     -webkit-animation-timing-function: linear;
-    
+
     animation-name: spin;
     animation-duration: 4000ms;
     animation-iteration-count: infinite;
@@ -1548,7 +1548,7 @@ input[type="file"] {
 
 .request-preview-header-title {
     padding-left: 20px;
-    font-size: 16px; 
+    font-size: 16px;
     font-weight: bold;
     margin-right: 20px;
     padding-top: 20px;
@@ -1586,7 +1586,7 @@ input[type="file"] {
 }
 
 #response-copy-button.zeroclipboard-is-hover { background-color:#eee; }
-#response-copy-button.zeroclipboard-is-active { background-color:#aaa; } 
+#response-copy-button.zeroclipboard-is-active { background-color:#aaa; }
 
 #drive-first-time-sync-step2 {
     display: none;
@@ -1627,7 +1627,7 @@ input[type="file"] {
 }
 #sync-details {
     color: #999;
-    font-size: 11px;  
+    font-size: 11px;
     margin-top: 2px;
 }
 
@@ -1643,7 +1643,7 @@ input[type="file"] {
 #user-details-name {
     font-size: 16px;
     font-weight: bold;
-    margin-top: 3px;    
+    margin-top: 3px;
 }
 
 #drive-user-enable {
@@ -1658,3 +1658,97 @@ input[type="file"] {
     font-size: 14px;
     font-weight: bold;
 }
+
+
+
+
+
+
+
+
+/*================================
+=            JSONVIEW            =
+================================*/
+
+body {
+  font-family: sans-serif;
+}
+
+.prop {
+  font-weight: bold;
+}
+
+.null {
+  color: red;
+}
+
+.bool {
+  color: blue;
+}
+
+.num {
+  color: blue;
+}
+
+.string {
+  color: green;
+  white-space: pre-wrap;
+}
+
+.collapser {
+  position: absolute;
+  left: -1em;
+  cursor: pointer;
+  -moz-user-select: none;
+}
+
+.q {
+  display: inline-block;
+  width: 0px;
+  color: transparent;
+}
+
+li {
+  position: relative;
+}
+
+#error {
+  -moz-border-radius: 8px;
+  border: 1px solid #970000;
+  background-color: #F7E8E8;
+  margin: .5em;
+  padding: .5em;
+}
+
+.errormessage {
+  font-family: monospace;
+}
+
+#json {
+  font-family: monospace;
+  font-size: 1.1em;
+  white-space: pre-wrap;
+}
+
+ul {
+  list-style: none;
+  margin: 0 0 0 2em;
+  padding: 0;
+}
+
+h1 {
+  font-size: 1.2em;
+}
+
+/* Indent JSON when there's a callback. */
+.callback + #json {
+  padding-left: 1em;
+}
+
+.callback {
+  font-family: monospace;
+  color: #A52A2A;
+}
+
+/*-----  End of JSONVIEW  ------*/
+

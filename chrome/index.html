@@ -132,8 +132,8 @@
                 <a data-toggle="dropdown" rel="tooltip" id="broadcasts-count">0</a>
                 <ul class="dropdown-menu">
                 </ul>
-            </div>            
-            <div class="preferences">                
+            </div>
+            <div class="preferences">
                 <a href="#modal-settings" data-toggle="modal"
                    rel="tooltip"
                    data-placement="bottom" data-original-title="Settings">
@@ -146,7 +146,7 @@
                         <img src="img/sync.png" style="vertical-align: middle;"/>
                     </a>
                 </div>
-                <div id="user-img">                    
+                <div id="user-img">
                 </div>
                 <div id="user-status">
                     <a id="user-status-text">Not connected</a>
@@ -259,7 +259,7 @@
                                 <a class="btn btn-secondary request-helper-clear"
                                         data-type="digest">Clear</a>
                                 <a class="btn btn-secondary request-helper-submit"
-                                        data-type="digest">Refresh headers</a>                                                                        
+                                        data-type="digest">Refresh headers</a>
                             </div>
                         </div>
                     </form>
@@ -357,11 +357,11 @@
                                 <input type="checkbox" class="checkbox" id="request-helper-oauth1-header"/>
                             </div>
                         </div>
-                        
+
                         <div class="control-group">
                             <label class="control-label">Auto add parameters</label>
                             <div class="controls">
-                                <input type="checkbox" class="checkbox" id="request-helper-oauth1-auto"/>                        
+                                <input type="checkbox" class="checkbox" id="request-helper-oauth1-auto"/>
                             </div>
                         </div>
 
@@ -372,7 +372,7 @@
                                 <a class="btn btn-secondary request-helper-submit"
                                    data-type="oAuth1">
                                     Refresh request
-                                </a>                                
+                                </a>
                             </div>
                         </div>
                     </form>
@@ -419,7 +419,7 @@
                         <option value="DELETE">DELETE</option>
                         <option value="COPY">COPY</option>
                         <option value="HEAD">HEAD</option>
-                        <option value="OPTIONS">OPTIONS</option>                            
+                        <option value="OPTIONS">OPTIONS</option>
                         <option value="LINK">LINK</option>
                         <option value="UNLINK">UNLINK</option>
                         <option value="PURGE">PURGE</option>
@@ -440,7 +440,7 @@
         </div>
 
         <div id="url-keyvaleditor-container" class="row" style="margin-left: 0px; display: none;">
-            <div id="url-keyvaleditor"></div>    
+            <div id="url-keyvaleditor"></div>
         </div>
 
         <div id="headers-keyvaleditor-container" class="row clearfix" style="margin-left: 0px; display: none;">
@@ -459,10 +459,10 @@
                     </div>
                     <input type="button" id="headers-keyvaleditor-actions-manage-presets"
                            class="btn"
-                           rel="popover" 
+                           rel="popover"
                            data-trigger="hover"
                            data-placement="bottom" data-content="Presets let you define groups of headers for quick addition" data-original-title="Header presets"
-                           value="Manage presets"/><br/>           
+                           value="Manage presets"/><br/>
                 </div>
             </div>
         </div>
@@ -485,12 +485,12 @@
                             <li><a data-editor-mode="text" data-language="text">Text (No Content-Type header)</a></li>
                             <li><a data-editor-mode="text" data-language="text/plain">Text (text/plain)</a></li>
                             <li><a data-editor-mode="javascript" data-language="application/json">JSON (application/json)</a></li>
-                            <li><a data-editor-mode="javascript" data-language="text/json">JSON (text/json)</a></li>                            
+                            <li><a data-editor-mode="javascript" data-language="text/json">JSON (text/json)</a></li>
                             <li><a data-editor-mode="xml" data-language="application/xml">XML (application/xml)</a></li>
                             <li><a data-editor-mode="xml" data-language="text/xml">XML (text/xml)</a></li>
                             <li><a data-editor-mode="xml" data-language="text/html">HTML (text/html)</a></li>
-                        </ul>                
-                    </div>                    
+                        </ul>
+                    </div>
                 </div>
             </div>
             <div id="body-data-containers">
@@ -511,7 +511,7 @@
                     </div>
                 </div>
             </div>
-        </div>    
+        </div>
     </div>
 
     <div id="request-preview">
@@ -597,6 +597,7 @@
                 <div id="response-data-options" class="clearfix">
                     <div id="response-formatting" class="btn-group clearfix" data-toggle="buttons-radio">
                         <a data-type="parsed" class="btn">Pretty</a>
+                        <a data-type="jsonview" class="btn">JSONView</a>
                         <a data-type="raw" class="btn">Raw</a>
                         <a data-type="preview" class="btn">Preview</a>
                     </div>
@@ -623,12 +624,12 @@
                         <div id="response-language" class="btn-group clearfix" data-toggle="buttons-radio">
                             <a data-mode="javascript" class="btn">JSON</a>
                             <a data-mode="html" class="btn">XML</a>
-                        </div>                        
+                        </div>
                     </div>
                     <div id="response-copy-container">
                         <div class="btn" id="response-copy-button" data-clipboard-text="Copy Me!">Copy</div>
-                    </div>                    
-                    <div id="response-collection-request-actions" class="clearfix">                        
+                    </div>
+                    <div id="response-collection-request-actions" class="clearfix">
                         <span id="response-sample-save-start-container">
                             <a class="btn"
                                rel="tooltip"
@@ -663,6 +664,9 @@
                 <div id="response-editors">
                     <div id="response-as-code">
                         <textarea id="code-data" data-formatted="false"></textarea>
+                    </div>
+                    <div id="response-as-jsonview">
+                        <div id="jsonview"></div>
                     </div>
                     <div id="response-as-text">
                         <textarea id="code-data-raw"></textarea>
@@ -736,10 +740,10 @@
 
         <div id="edit-collection-drive">
             <div>
-                <div id="edit-collection-drive-status-container">                    
+                <div id="edit-collection-drive-status-container">
                     <span id="edit-collection-drive-status" title=""></span>
                 </div>
-            </div>        
+            </div>
         </div>
 
         <div id="edit-collection-requests">
@@ -839,7 +843,7 @@
         <h3>Share collection</h3>
     </div>
 
-    <div class="modal-body">        
+    <div class="modal-body">
         <div>
             <h4>Share as a link</h4>
 
@@ -852,7 +856,7 @@
 
             <p>Get a JSON file to share with others or for backing up the collection.</p>
             <a id="share-collection-download" data-collection-id="" class="btn">Download</a>
-        </div>        
+        </div>
         <hr/>
     </div>
 </div>
@@ -1061,7 +1065,7 @@
 <div id="modal-drive-first-time-sync" class="modal fade">
     <div class="modal-header">
         <a class="close" data-dismiss="modal">x</a>
-        <h3>Sync Postman with Google Drive (Beta)</h3>        
+        <h3>Sync Postman with Google Drive (Beta)</h3>
     </div>
     <div class="modal-body">
         <div id="drive-first-time-sync-step1">
@@ -1073,14 +1077,14 @@
                 <a id="drive-sync-start-backup">Download Postman data</a>
             </p>
             <p>
-                Click connect to give Postman access to your Google Drive account. 
+                Click connect to give Postman access to your Google Drive account.
                 If you don't want to do it now you can click Cancel.
             </p>
 
-            <div class="modal-footer">                
+            <div class="modal-footer">
                 <a id="drive-sync-start-auth" class="btn">Connect</a>
                 <a id="drive-sync-start-cancel" class="btn">Cancel</a>
-            </div>  
+            </div>
         </div>
 
         <div id="drive-first-time-sync-step2">
@@ -1098,7 +1102,7 @@
         <a class="close" data-dismiss="modal">x</a>
         <h3>Connected to Google Drive</h3>
     </div>
-    <div class="modal-body">        
+    <div class="modal-body">
         <div id="user-details" class="clearfix">
             <div id="user-details-image"></div>
             <div id="user-details-meta-container">
@@ -1106,8 +1110,8 @@
                 <div id="sync-details">
                     <div id="sync-details-last-modified"></div>
                 </div>
-            </div>  
-        </div>        
+            </div>
+        </div>
 
         <div id="drive-user-status-actions">
         </div>
@@ -1127,8 +1131,8 @@
         <ul class="nav nav-tabs">
             <li class="active"><a href="#settings-settings" data-toggle="tab">Settings</a></li>
             <li><a href="#settings-shortcuts" data-toggle="tab">Shortcuts</a></li>
-            <li><a href="#settings-data" data-toggle="tab">Data</a></li>            
-            <li><a href="#settings-add-ons" data-toggle="tab">Add-ons</a></li>            
+            <li><a href="#settings-data" data-toggle="tab">Data</a></li>
+            <li><a href="#settings-add-ons" data-toggle="tab">Add-ons</a></li>
         </ul>
         <div class="tab-content">
             <div class="tab-pane active" id="settings-settings">
@@ -1330,8 +1334,8 @@
                     <a target="_blank" href="https://github.com/a85/POSTMan-Chrome-Extension/wiki/Postman-Proxy">Postman Proxy</a>
                     <p>Postman Proxy allows you to bypass Chrome’s XMLHttpRequest restrictions. You can send headers not allowed by Chrome as well as receive and inspect responses which have a Location header set. For setting up the proxy you would require Python and Twisted.</p>
                 </div>
-            </div>            
-        </div>        
+            </div>
+        </div>
     </div>
 </div>
 </div>
@@ -1456,6 +1460,8 @@
 <script type="text/javascript" src="js/httpheaders.js"></script>
 <script type="text/javascript" src="js/templates.js"></script>
 <script type="text/javascript" src="js/requester.js"></script>
+
+<script type="text/javascript" src="js/jsonview/jsonview.js"></script>
 
 <script type="text/javascript" src="https://apis.google.com/js/client.js?onload=handleClientLoad"></script>
 </body>
