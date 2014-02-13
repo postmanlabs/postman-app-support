@@ -36,12 +36,6 @@ Document and share APIs.
 - Document requests inside collections. You can even store entire HTML notes. Postman uses Bootstrap so you can use it too to style your notes.
 - Download and share collections with your team of developers.
 
-For more details checkout the Postman wiki - https://github.com/a85/POSTMan-Chrome-Extension/wiki.
-
-Postman for Chrome can be downloaded from https://chrome.google.com/webstore/detail/fdmmgilgnpjigdojojpjoooidkmcomcm
-
-Postman for Google Chrome is licensed under the Apache Licence, Version 2.0 (http://www.apache.org/licenses/LICENSE-2.0.html).
-
 Installing the zip file
 =========================
 
@@ -68,9 +62,3 @@ Submitting bugs
 ===============
 
 Please add the Postman version along with your operating system and Chrome version along with bug requests. 
-
-
-Pull requests
-=========================
-
-Please send pull requests to the dev branch. The master branch contains the latest code which has been put in production.
