@@ -3,6 +3,7 @@ Quick links
 - Homepage - http://www.getpostman.com
 - Blog (Tutorials/Updates) - http://blog.getpostman.com
 - Packaged app (v0.9.6) - https://chrome.google.com/webstore/detail/postman-rest-client/fhbjgbiflinjbdggehcddcbncdddomop
+- Jetpacks for Postman - http://blog.getpostman.com/index.php/2014/01/16/ridiculously-easy-api-testing-introducing-jetpacks-for-postman/
 - Documentation - http://www.getpostman.com/docs/
 - Interceptor - https://chrome.google.com/webstore/detail/postman-interceptor/aicmkgpgakddgnaphhhpliifpcfhicfo
 - Donate - https://gumroad.com/l/wqbB
