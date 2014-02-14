@@ -175,12 +175,14 @@ pm.init = function () {
         var digestAuthProcessor = new DigestAuthProcessor({request: request});
         var oAuth1Processor = new OAuth1Processor({request: request});
         var oAuth2TokenFetcher = new OAuth2TokenFetcher({request: request});
+        var wsseAuthProcessor = new WsseAuthProcessor({request: request});
 
         var helpers = new Helpers({
             "basicAuth": basicAuthProcessor,
             "digestAuth": digestAuthProcessor,
             "oAuth1": oAuth1Processor,
             "oAuth2": oAuth2TokenFetcher,
+            "wsse": wsseAuthProcessor,
             "request": request
         });
 

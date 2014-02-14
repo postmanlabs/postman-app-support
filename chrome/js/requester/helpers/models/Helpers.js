@@ -5,7 +5,8 @@ var Helpers = Backbone.Model.extend({
             "basicAuth": null,
             "digestAuth": null,
             "oAuth1": null,
-            "oAuth2": null
+            "oAuth2": null,
+            "wsse": null
         };
     }
 });

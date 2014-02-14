@@ -548,6 +548,10 @@ var Request = Backbone.Model.extend({
             pm.helpers.getHelper("oAuth1").process();
         }
 
+        if (pm.helpers.activeHelper == "wsse") {
+            pm.helpers.wsse.process();
+        }
+
         this.set("startTime", new Date().getTime());
     },
 
