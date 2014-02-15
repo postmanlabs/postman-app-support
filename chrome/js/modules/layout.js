@@ -10,18 +10,18 @@ pm.layout = {
 
     detectLauncher: function() {
         if(pm.debug) {
-            return;    
+            return;
         }
 
-        var launcherNotificationCount = pm.settings.get("launcherNotificationCount");        
+        var launcherNotificationCount = pm.settings.get("launcherNotificationCount");
         var maxCount = 1;
         if(launcherNotificationCount >= 1) {
             return true;
-        }        
+        }
 
         var extension_id = "igofndmniooofoabmmpfonmdnhgchoka";
-        var extension_url = "https://chrome.google.com/webstore/detail/" + extension_id;        
-        
+        var extension_url = "https://chrome.google.com/webstore/detail/" + extension_id;
+
         noty(
         {
             type:'information',
@@ -33,15 +33,15 @@ pm.layout = {
                     window.open(url, '_blank');
                     window.focus();
                 }
-            }            
-        });        
+            }
+        });
 
-        var launcherNotificationCount = parseInt(pm.settings.get("launcherNotificationCount")) + 1;        
-        pm.settings.set("launcherNotificationCount", launcherNotificationCount);       
+        var launcherNotificationCount = parseInt(pm.settings.get("launcherNotificationCount")) + 1;
+        pm.settings.set("launcherNotificationCount", launcherNotificationCount);
     },
 
     init:function () {
-        pm.layout.detectLauncher()   
+        pm.layout.detectLauncher()
 
         if (pm.settings.get("haveDonated") == true) {
             console.log("Donated");
@@ -57,12 +57,60 @@ pm.layout = {
             $('#donate-form form').submit();
         });
 
+        $('#download-all-data').on("click", function() {
+            pm.indexedDB.downloadAllData(function() {
+                tracker.sendEvent('data', 'download');
+                console.log("Downloaded all data");
+            });
+        });
+
+        $('#postman-wiki').on("click", function() {
+            tracker.sendEvent('wiki', 'click');
+        });
+
+        $('#upgrade').on("click", function() {
+            tracker.sendEvent('upgrade', 'click');
+        });
+
+        var supportContent = "<div class='supporters'><div class='supporter clearfix'>";
+        supportContent += "<div class='supporter-image supporter-image-mashape'>";
+        supportContent += "<a href='http://www.getpostman.com/r?url=https://www.mashape.com/?utm_source=chrome%26utm_medium=app%26utm_campaign=postman' target='_blank'>";
+        supportContent += "<img src='img/supporters/mashape.png'/></a></div>";
+        supportContent += "<div class='supporter-tag'>Consume or provide cloud services with the Mashape API Platform.</div></div>";
+        supportContent += "<div class='supporter clearfix'>";
+        supportContent += "<div class='supporter-image'>";
+        supportContent += "<a href='http://www.getpostman.com/donate' target='_blank' class='donate-popover-link'>";
+        supportContent += "Donate</a></div>";
+        supportContent += "<div class='supporter-tag'>If you like Postman help support the project!</div>";
+        supportContent += "</div></div>";
+
+
+        var donateTimeout;
         $('#donate').popover({
-            animation: true,
-            content: "Please donate $5 only if you like Postman! This will help a lot in the development and maintenance of the project.",
+            animation: false,
+            content: supportContent,
             placement: "top",
-            trigger: "hover",
-            title: "Donate"
+            trigger: "manual",
+            html: true,
+            title: "Postman is supported by some amazing companies"
+        }).on("mouseenter", function () {
+            var _this = this;
+            $(this).popover("show");
+            $(this).siblings(".popover").on("mouseleave", function () {
+                $(_this).popover('hide');
+            });
+            donateTimeout = setTimeout(function () {
+                //hover event here - number of times ad is seen
+                tracker.sendEvent('sponsors', 'view');
+            }, 1000);
+        }).on("mouseleave", function () {
+            var _this = this;
+            clearTimeout(donateTimeout);
+            setTimeout(function () {
+                if (!$(".popover:hover").length) {
+                    $(_this).popover("hide");
+                }
+            }, 100);
         });
 
         $('#response-body-toggle').on("click", function () {
@@ -184,7 +232,7 @@ pm.layout = {
 
         $('#modal-edit-collection .btn-primary').click(function () {
             var id = $('#form-edit-collection .collection-id').val();
-            var name = $('#form-edit-collection .collection-name').val();            
+            var name = $('#form-edit-collection .collection-name').val();
 
             pm.collections.updateCollectionMeta(id, name);
             $('#modal-edit-collection').modal('hide');
@@ -233,7 +281,7 @@ pm.layout = {
     },
 
     onModalOpen:function (activeModal) {
-        pm.layout.activeModal = activeModal;        
+        pm.layout.activeModal = activeModal;
         pm.layout.isModalOpen = true;
     },
 
@@ -252,7 +300,7 @@ pm.layout = {
             pm.layout.onModalClose();
         });
 
-        $("#modal-edit-collection").on("shown", function () {            
+        $("#modal-edit-collection").on("shown", function () {
             $("#modal-edit-collection .collection-name").focus();
             pm.layout.onModalOpen("#modal-edit-collection");
         });
@@ -365,7 +413,7 @@ pm.layout = {
     },
 
     setLayout:function () {
-        this.refreshScrollPanes();        
+        this.refreshScrollPanes();
     },
 
     refreshScrollPanes:function () {

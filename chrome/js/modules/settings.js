@@ -9,10 +9,11 @@ pm.settings = {
         pm.settings.create("autoSaveRequest", true);
         pm.settings.create("selectedEnvironmentId", true);
         pm.settings.create("lineWrapping", true);
+        pm.settings.create("disableIframePreview", false);
         pm.settings.create("previewType", "parsed");
         pm.settings.create("retainLinkHeaders", false);
         pm.settings.create("sendNoCacheHeader", true);
-        pm.settings.create("usePostmanProxy", false);        
+        pm.settings.create("usePostmanProxy", false);
         pm.settings.create("proxyURL", "");
         pm.settings.create("lastRequest", "");
         pm.settings.create("launcherNotificationCount", 0);
@@ -31,6 +32,7 @@ pm.settings = {
         $('#variable-delimiter').val(pm.settings.get("variableDelimiter"));
         $('#language-detection').val(pm.settings.get("languageDetection"));
         $('#have-donated').val(pm.settings.get("haveDonated") + "");
+        $('#disable-iframe-preview').val(pm.settings.get("disableIframePreview") + "");
     },
 
     initListeners: function() {
@@ -56,7 +58,7 @@ pm.settings = {
             else {
                 pm.settings.set("retainLinkHeaders", false);
             }
-        });        
+        });
 
         $('#send-no-cache-header').change(function () {
             var val = $('#send-no-cache-header').val();
@@ -77,6 +79,16 @@ pm.settings = {
             else {
                 pm.settings.set("usePostmanProxy", false);
                 $('#postman-proxy-url-container').css("display", "none");
+            }
+        });
+
+        $('#disable-iframe-preview').change(function () {
+            var val = $('#disable-iframe-preview').val();
+            if (val == "true") {
+                pm.settings.set("disableIframePreview", true);
+            }
+            else {
+                pm.settings.set("disableIframePreview", false);
             }
         });
 
@@ -110,8 +122,8 @@ pm.settings = {
             $('#postman-proxy-url-container').css("display", "none");
         }
     },
-    
-    init:function () {                
+
+    init:function () {
         pm.settings.createSettings();
         pm.settings.initValues();
         pm.settings.initListeners();

@@ -16,6 +16,7 @@ pm.broadcasts = {
         }
 
         $("#broadcasts-count").on("click", function () {
+            tracker.sendEvent('broadcast', 'view');
             pm.broadcasts.markAllAsRead();
         });
     },
@@ -28,7 +29,7 @@ pm.broadcasts = {
     },
 
     fetch:function () {
-        var broadcast_url = "http://www.getpostman.com/broadcasts";        
+        var broadcast_url = "http://www.getpostman.com/broadcasts";
         $.get(broadcast_url, function (data) {
             pm.broadcasts.setBroadcasts(data["broadcasts"]);
             pm.broadcasts.renderBroadcasts();

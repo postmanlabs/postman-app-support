@@ -1511,3 +1511,58 @@ input[type="file"] {
 #request-preview-header .dropdown-menu li:last-child {
     border-bottom: none;
 }
+
+#sidebar-footer .popover {
+    width: 250px;
+    height: 195px;
+}
+
+.supporter {
+    border-bottom: solid thin #efefef;
+    margin-bottom: 5px;
+    padding-bottom: 5px;
+}
+
+#sidebar-footer .popover .support-link {
+    color: #555;
+    display: block;
+    float: right;
+}
+
+#sidebar-footer .popover .support-link:hover {
+    background: white;
+}
+
+.supporter:first {
+    border-bottom: none;
+}
+
+.supporter-image {
+    float: left;
+    margin-right: 10px;
+    margin-top: 5px;
+    width: 100px;
+}
+.supporter-tag {
+    float: left;
+    margin-top: 5px;
+    font-weight: normal;
+    line-height: 1.2em !important;
+    width: 100px;
+}
+
+.donate-popover-link {
+    background: #333;
+    border-radius: 5px;
+    color: white;
+    display: block;
+    text-align: center;
+    vertical-align: center;
+    padding: 5px;
+    width: 80px;
+}
+
+.donate-popover-link:hover {
+    background: #111 !important;
+    text-decoration: none !important;
+}

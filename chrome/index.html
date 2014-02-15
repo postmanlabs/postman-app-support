@@ -15,16 +15,8 @@
 <body>
 <div id="container" class="clearfix">
 <div id="sidebar-footer">
-    <div id="donate-form">
-        <form action="https://www.paypal.com/cgi-bin/webscr" method="post">
-            <input type="hidden" name="cmd" value="_s-xclick">
-            <input type="hidden" name="hosted_button_id" value="UZTSEWB887WDJ">
-            <input type="image" src="https://www.paypalobjects.com/en_GB/i/btn/btn_paynowCC_LG.gif" border="0" name="submit" alt="PayPal — The safer, easier way to pay online.">
-            <img alt="" border="0" src="https://www.paypalobjects.com/en_GB/i/scr/pixel.gif" width="1" height="1">
-        </form>
-    </div>
-    <a id="make-postman-better">Make Postman better!</a>
-    <a id="donate">Donate</a>
+    <a id="upgrade" href="http://blog.getpostman.com/?p=19&src=legacy">Upgrade to v0.9.x</a>
+    <a id="donate" href="http://www.getpostman.com/supporters" target="_blank">Check out our supporters</a>
 </div>
 <div id="sidebar-toggle">
     <img src="img/tri_arrow_left.png"/>
@@ -40,12 +32,17 @@
         <div id="external-links">
             <ul>
                 <li>
+                    <a  rel="tooltip" data-placement="bottom"
+                        data-original-title="Download all data" id="download-all-data"><img src="img/download.png"/>
+                    </a>
+                </li>
+                <li>
                     <a href="http://www.twitter.com/postmanclient"
                         target="_blank"><img src="img/twitter.png"/>
                     </a>
                 </li>
                 <li>
-                    <a href="http://www.github.com/a85/POSTMan-Chrome-Extension/wiki"
+                    <a id="postman-wiki" href="http://www.github.com/a85/POSTMan-Chrome-Extension/wiki"
                        target="_blank"><img src="img/question_mark.png"/>
                     </a>
                 </li>
@@ -344,11 +341,11 @@
                                 <input type="checkbox" class="checkbox" id="request-helper-oauth1-header"/>
                             </div>
                         </div>
-                        
+
                         <div class="control-group">
                             <label class="control-label">Auto add parameters</label>
                             <div class="controls">
-                                <input type="checkbox" class="checkbox" id="request-helper-oauth1-auto"/>                        
+                                <input type="checkbox" class="checkbox" id="request-helper-oauth1-auto"/>
                             </div>
                         </div>
 
@@ -404,7 +401,7 @@
                         <option value="DELETE">DELETE</option>
                         <option value="COPY">COPY</option>
                         <option value="HEAD">HEAD</option>
-                        <option value="OPTIONS">OPTIONS</option>                            
+                        <option value="OPTIONS">OPTIONS</option>
                         <option value="LINK">LINK</option>
                         <option value="UNLINK">UNLINK</option>
                         <option value="PURGE">PURGE</option>
@@ -425,7 +422,7 @@
         </div>
 
         <div id="url-keyvaleditor-container" class="row" style="margin-left: 0px; display: none;">
-            <div id="url-keyvaleditor"></div>    
+            <div id="url-keyvaleditor"></div>
         </div>
 
         <div id="headers-keyvaleditor-container" class="row clearfix" style="margin-left: 0px; display: none;">
@@ -436,10 +433,10 @@
                 <div id="headers-keyvaleditor-actions">
                     <input type="button" id="headers-keyvaleditor-actions-manage-presets"
                            class="btn"
-                           rel="popover" 
+                           rel="popover"
                            data-trigger="hover"
                            data-placement="bottom" data-content="Presets let you define groups of headers for quick addition" data-original-title="Header presets"
-                           value="Manage presets"/><br/>           
+                           value="Manage presets"/><br/>
                 </div>
             </div>
         </div>
@@ -463,7 +460,7 @@
                             <li><a data-editor-mode="javascript" data-language="json">JSON</a></li>
                             <li><a data-editor-mode="xml" data-language="xml">XML</a></li>
                             <li><a data-editor-mode="xml" data-language="html">HTML</a></li>
-                        </ul>                
+                        </ul>
                     </div>
                 </div>
             </div>
@@ -480,7 +477,7 @@
                     </pre>
                 </div>
             </div>
-        </div>    
+        </div>
     </div>
 
     <div id="request-preview">
@@ -593,8 +590,8 @@
                             <a data-mode="javascript" class="btn">JSON</a>
                             <a data-mode="html" class="btn">XML</a>
                         </div>
-                    </div>                    
-                    <div id="response-collection-request-actions" class="clearfix">                        
+                    </div>
+                    <div id="response-collection-request-actions" class="clearfix">
                         <span id="response-sample-save-start-container">
                             <a class="btn"
                                rel="tooltip"
@@ -1069,6 +1066,17 @@
             </div>
 
             <div class="control-group">
+                <label class="control-label" for="disable-iframe-preview">Disable IFrame Preview</label>
+
+                <div class="controls">
+                    <select class="medium" name="disable-iframe-preview" id="disable-iframe-preview">
+                        <option value="true">Yes</option>
+                        <option value="false">No</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="control-group">
                 <label class="control-label" for="use-postman-proxy">Use Postman proxy?</label>
 
                 <div class="controls">
@@ -1240,6 +1248,7 @@
         </table>
     </div>
 </div>
+<script type="text/javascript" src="js/google-analytics-bundle.js"></script>
 <script type="text/javascript" src="js/ga.js"></script>
 <script type="text/javascript" src="js/jquery.min.js"></script>
 <script type="text/javascript" src="js/underscore-min.js"></script>
