@@ -10,10 +10,10 @@ _gaq.push(['_trackPageview']);
     var s = document.getElementsByTagName('script')[0];
     s.parentNode.insertBefore(ga, s);
 })();
-/**
- * Created with JetBrains PhpStorm.
- * User: asthana
- * Date: 06/08/12
- * Time: 11:25 AM
- * To change this template use File | Settings | File Templates.
- */
+
+//CPA - Testing
+var service = analytics.getService('Postman - REST Client');
+var tracker = service.getTracker('UA-43979731-5');
+// TODO - add permission for tracking users.
+tracker.sendAppView('MainView');
+

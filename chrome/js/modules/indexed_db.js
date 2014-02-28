@@ -215,7 +215,7 @@ pm.indexedDB = {
                 "timestamp":new Date().getTime()
             });
         }
-        
+
 
         request.onsuccess = function () {
             callback(collection);            
@@ -256,7 +256,7 @@ pm.indexedDB = {
         else {
             version = 1;
         }
-        
+
         var collectionRequest = store.put({
             "collectionId":req.collectionId,
             "id":req.id,
@@ -786,6 +786,7 @@ pm.indexedDB = {
         }
     },
 
+<<<<<<< HEAD
     driveFiles: {
         addDriveFile:function (driveFile, callback) {
             var db = pm.indexedDB.db;
@@ -1027,6 +1028,23 @@ pm.indexedDB = {
         var headerPresets = [];
 
         var onFinishGettingCollectionRequests = function(collection) {
+            var requests = collection.requests;
+            console.log("Found collection", collection);
+            for(var i = 0; i < requests.length; i++) {
+                console.log(requests[i].name);
+
+                if (requests[i].hasOwnProperty("name")) {
+                    if (typeof requests[i].name === "undefined") {
+                        console.log("No name found");
+                        requests[i].name = requests[i].url;
+                    }
+                }
+                else {
+                    console.log("No name found");
+                    requests[i].name = requests[i].url;
+                }
+            }
+
             collections.push(collection);
 
             currentCount++;
@@ -1038,13 +1056,12 @@ pm.indexedDB = {
 
         var onFinishExportingCollections = function(c) {            
             globals = pm.envManager.globals;            
-
             //Get environments
             pm.indexedDB.environments.getAllEnvironments(function (e) {
                 environments = e;
                 pm.indexedDB.headerPresets.getAllHeaderPresets(function (hp) {
-                    headerPresets = hp;           
-                    onFinishExporttingAllData();         
+                    headerPresets = hp;
+                    onFinishExporttingAllData(callback);
                 });
             });
         }
@@ -1090,7 +1107,50 @@ pm.indexedDB = {
         });
     },
 
-    importAllData: function(callback) {
+    importAllData: function(callback) {                
 
+            var name = "Backup.postman_dump";
+            var filedata = JSON.stringify(dump);
+            var type = "application/json";
+
+            console.log("File data is ", filedata);
+
+            pm.filesystem.saveAndOpenFile(name, filedata, type, function () {
+                if (callback) {
+                    callback();
+                }
+            });
+        }
+
+        //Get collections
+        //Get header presets
+        pm.indexedDB.getCollections(function (items) {
+            totalCount = items.length;
+            pm.collections.items = items;
+            var itemsLength = items.length;
+
+            function onGetAllRequestsInCollection(collection, requests) {
+                collection.requests = requests;
+                onFinishGettingCollectionRequests(collection);
+            }
+
+            if (itemsLength !== 0) {
+                for (var i = 0; i < itemsLength; i++) {
+                    var collection = items[i];
+                    pm.indexedDB.getAllRequestsInCollection(collection, onGetAllRequestsInCollection);
+                }
+            }
+            else {
+                globals = pm.envManager.globals;
+
+                pm.indexedDB.environments.getAllEnvironments(function (e) {
+                    environments = e;
+                    pm.indexedDB.headerPresets.getAllHeaderPresets(function (hp) {
+                        headerPresets = hp;
+                        onFinishExporttingAllData(callback);
+                    });
+                });
+            }
+        });
     }
 };

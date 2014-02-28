@@ -2,8 +2,8 @@ this["Handlebars"] = this["Handlebars"] || {};
 this["Handlebars"]["templates"] = this["Handlebars"]["templates"] || {};
 
 this["Handlebars"]["templates"]["broadcasts"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [2,'>= 1.0.0-rc.3'];
-helpers = helpers || Handlebars.helpers; partials = partials || Handlebars.partials; data = data || {};
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); partials = this.merge(partials, Handlebars.partials); data = data || {};
   var buffer = "", stack1, self=this;
 
 function program1(depth0,data) {
@@ -23,8 +23,8 @@ function program1(depth0,data) {
   });
 
 this["Handlebars"]["templates"]["collection_selector_list"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [2,'>= 1.0.0-rc.3'];
-helpers = helpers || Handlebars.helpers; partials = partials || Handlebars.partials; data = data || {};
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); partials = this.merge(partials, Handlebars.partials); data = data || {};
   var stack1, self=this;
 
 function program1(depth0,data) {
@@ -43,8 +43,8 @@ function program1(depth0,data) {
   });
 
 this["Handlebars"]["templates"]["collection_sidebar"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [2,'>= 1.0.0-rc.3'];
-helpers = helpers || Handlebars.helpers; partials = partials || Handlebars.partials; data = data || {};
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); partials = this.merge(partials, Handlebars.partials); data = data || {};
   var stack1, self=this;
 
 function program1(depth0,data) {
@@ -63,8 +63,8 @@ function program1(depth0,data) {
   });
 
 this["Handlebars"]["templates"]["environment_list"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [2,'>= 1.0.0-rc.3'];
-helpers = helpers || Handlebars.helpers; partials = partials || Handlebars.partials; data = data || {};
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); partials = this.merge(partials, Handlebars.partials); data = data || {};
   var stack1, self=this;
 
 function program1(depth0,data) {
@@ -83,8 +83,8 @@ function program1(depth0,data) {
   });
 
 this["Handlebars"]["templates"]["environment_quicklook"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [2,'>= 1.0.0-rc.3'];
-helpers = helpers || Handlebars.helpers; partials = partials || Handlebars.partials; data = data || {};
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); partials = this.merge(partials, Handlebars.partials); data = data || {};
   var stack1, self=this;
 
 function program1(depth0,data) {
@@ -103,8 +103,8 @@ function program1(depth0,data) {
   });
 
 this["Handlebars"]["templates"]["environment_selector"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [2,'>= 1.0.0-rc.3'];
-helpers = helpers || Handlebars.helpers; partials = partials || Handlebars.partials; data = data || {};
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); partials = this.merge(partials, Handlebars.partials); data = data || {};
   var stack1, self=this;
 
 function program1(depth0,data) {
@@ -123,8 +123,8 @@ function program1(depth0,data) {
   });
 
 this["Handlebars"]["templates"]["environment_selector_actions"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [2,'>= 1.0.0-rc.3'];
-helpers = helpers || Handlebars.helpers; data = data || {};
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   
 
 
@@ -152,8 +152,8 @@ function program1(depth0,data) {
   });
 
 this["Handlebars"]["templates"]["header_preset_list"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [2,'>= 1.0.0-rc.3'];
-helpers = helpers || Handlebars.helpers; partials = partials || Handlebars.partials; data = data || {};
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); partials = this.merge(partials, Handlebars.partials); data = data || {};
   var stack1, self=this;
 
 function program1(depth0,data) {
@@ -172,8 +172,8 @@ function program1(depth0,data) {
   });
 
 this["Handlebars"]["templates"]["history_sidebar_requests"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [2,'>= 1.0.0-rc.3'];
-helpers = helpers || Handlebars.helpers; partials = partials || Handlebars.partials; data = data || {};
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); partials = this.merge(partials, Handlebars.partials); data = data || {};
   var stack1, self=this;
 
 function program1(depth0,data) {
@@ -192,22 +192,22 @@ function program1(depth0,data) {
   });
 
 this["Handlebars"]["templates"]["item_broadcast"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [2,'>= 1.0.0-rc.3'];
-helpers = helpers || Handlebars.helpers; data = data || {};
-  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, functionType="function";
 
 
   buffer += "<li class=\"broadcast\">\n<div>";
   if (stack1 = helpers.content) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.content; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "</div>\n</li>";
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "</div>\n</li>";
   return buffer;
   });
 
 this["Handlebars"]["templates"]["item_collection_selector_list"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [2,'>= 1.0.0-rc.3'];
-helpers = helpers || Handlebars.helpers; data = data || {};
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
 
 
@@ -224,8 +224,8 @@ helpers = helpers || Handlebars.helpers; data = data || {};
   });
 
 this["Handlebars"]["templates"]["item_collection_sidebar_head"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [2,'>= 1.0.0-rc.3'];
-helpers = helpers || Handlebars.helpers; data = data || {};
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
 
 
@@ -274,8 +274,8 @@ helpers = helpers || Handlebars.helpers; data = data || {};
   });
 
 this["Handlebars"]["templates"]["item_collection_sidebar_request"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [2,'>= 1.0.0-rc.3'];
-helpers = helpers || Handlebars.helpers; data = data || {};
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
 
 
@@ -312,8 +312,8 @@ helpers = helpers || Handlebars.helpers; data = data || {};
   });
 
 this["Handlebars"]["templates"]["item_editor_standard"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [2,'>= 1.0.0-rc.3'];
-helpers = helpers || Handlebars.helpers; data = data || {};
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "";
 
 
@@ -321,8 +321,8 @@ helpers = helpers || Handlebars.helpers; data = data || {};
   });
 
 this["Handlebars"]["templates"]["item_environment_list"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [2,'>= 1.0.0-rc.3'];
-helpers = helpers || Handlebars.helpers; data = data || {};
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
 
 
@@ -355,8 +355,8 @@ helpers = helpers || Handlebars.helpers; data = data || {};
   });
 
 this["Handlebars"]["templates"]["item_environment_quicklook"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [2,'>= 1.0.0-rc.3'];
-helpers = helpers || Handlebars.helpers; data = data || {};
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
 
 
@@ -373,8 +373,8 @@ helpers = helpers || Handlebars.helpers; data = data || {};
   });
 
 this["Handlebars"]["templates"]["item_environment_selector"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [2,'>= 1.0.0-rc.3'];
-helpers = helpers || Handlebars.helpers; data = data || {};
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
 
 
@@ -409,8 +409,8 @@ helpers = helpers || Handlebars.helpers; data = data || {};
   });
 
 this["Handlebars"]["templates"]["item_header_preset_list"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [2,'>= 1.0.0-rc.3'];
-helpers = helpers || Handlebars.helpers; data = data || {};
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
 
 
@@ -435,8 +435,8 @@ helpers = helpers || Handlebars.helpers; data = data || {};
   });
 
 this["Handlebars"]["templates"]["item_history_sidebar_request"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [2,'>= 1.0.0-rc.3'];
-helpers = helpers || Handlebars.helpers; data = data || {};
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
 
 
@@ -473,8 +473,8 @@ helpers = helpers || Handlebars.helpers; data = data || {};
   });
 
 this["Handlebars"]["templates"]["item_response_code"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [2,'>= 1.0.0-rc.3'];
-helpers = helpers || Handlebars.helpers; data = data || {};
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
 
 
@@ -503,8 +503,8 @@ helpers = helpers || Handlebars.helpers; data = data || {};
   });
 
 this["Handlebars"]["templates"]["item_response_cookie"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [2,'>= 1.0.0-rc.3'];
-helpers = helpers || Handlebars.helpers; data = data || {};
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
 
 
@@ -541,8 +541,8 @@ helpers = helpers || Handlebars.helpers; data = data || {};
   });
 
 this["Handlebars"]["templates"]["item_response_header"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [2,'>= 1.0.0-rc.3'];
-helpers = helpers || Handlebars.helpers; data = data || {};
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
 
 
@@ -567,8 +567,8 @@ helpers = helpers || Handlebars.helpers; data = data || {};
   });
 
 this["Handlebars"]["templates"]["item_sample_response"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [2,'>= 1.0.0-rc.3'];
-helpers = helpers || Handlebars.helpers; data = data || {};
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
 
 
@@ -593,8 +593,8 @@ helpers = helpers || Handlebars.helpers; data = data || {};
   });
 
 this["Handlebars"]["templates"]["message_collection_added"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [2,'>= 1.0.0-rc.3'];
-helpers = helpers || Handlebars.helpers; data = data || {};
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
 
 
@@ -611,8 +611,8 @@ helpers = helpers || Handlebars.helpers; data = data || {};
   });
 
 this["Handlebars"]["templates"]["message_environment_added"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [2,'>= 1.0.0-rc.3'];
-helpers = helpers || Handlebars.helpers; data = data || {};
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
 
 
@@ -629,8 +629,8 @@ helpers = helpers || Handlebars.helpers; data = data || {};
   });
 
 this["Handlebars"]["templates"]["message_no_collection"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [2,'>= 1.0.0-rc.3'];
-helpers = helpers || Handlebars.helpers; data = data || {};
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   
 
 
@@ -638,8 +638,8 @@ helpers = helpers || Handlebars.helpers; data = data || {};
   });
 
 this["Handlebars"]["templates"]["message_no_history"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [2,'>= 1.0.0-rc.3'];
-helpers = helpers || Handlebars.helpers; data = data || {};
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   
 
 
@@ -647,8 +647,8 @@ helpers = helpers || Handlebars.helpers; data = data || {};
   });
 
 this["Handlebars"]["templates"]["response_cookies"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [2,'>= 1.0.0-rc.3'];
-helpers = helpers || Handlebars.helpers; partials = partials || Handlebars.partials; data = data || {};
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); partials = this.merge(partials, Handlebars.partials); data = data || {};
   var stack1, self=this;
 
 function program1(depth0,data) {
@@ -667,8 +667,8 @@ function program1(depth0,data) {
   });
 
 this["Handlebars"]["templates"]["response_headers"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [2,'>= 1.0.0-rc.3'];
-helpers = helpers || Handlebars.helpers; partials = partials || Handlebars.partials; data = data || {};
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); partials = this.merge(partials, Handlebars.partials); data = data || {};
   var stack1, self=this;
 
 function program1(depth0,data) {
@@ -687,8 +687,8 @@ function program1(depth0,data) {
   });
 
 this["Handlebars"]["templates"]["sample_responses"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [2,'>= 1.0.0-rc.3'];
-helpers = helpers || Handlebars.helpers; partials = partials || Handlebars.partials; data = data || {};
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); partials = this.merge(partials, Handlebars.partials); data = data || {};
   var stack1, self=this;
 
 function program1(depth0,data) {

@@ -1,4 +1,14 @@
-Postman
+Quick links
+=======
+- Homepage - http://www.getpostman.com
+- Blog (Tutorials/Updates) - http://blog.getpostman.com
+- Packaged app (v0.9.6) - https://chrome.google.com/webstore/detail/postman-rest-client/fhbjgbiflinjbdggehcddcbncdddomop
+- Jetpacks for Postman - http://blog.getpostman.com/index.php/2014/01/16/ridiculously-easy-api-testing-introducing-jetpacks-for-postman/
+- Documentation - http://www.getpostman.com/docs/
+- Interceptor - https://chrome.google.com/webstore/detail/postman-interceptor/aicmkgpgakddgnaphhhpliifpcfhicfo
+- Donate - https://gumroad.com/l/wqbB
+
+About Postman
 =======
 Postman helps you be more efficient while working with APIs. Postman is a scratch-your-own-itch project. The need for it arose while one of the developers was creating an API for his project. After looking around for a number of tools, nothing felt just right. The primary features added were a history of sent requests and collections.
 A number of other features have been added since the initial release. A small list is below. To see a fancier page and a video tutorial, check out http://www.getpostman.com
@@ -11,7 +21,7 @@ Create requests quickly.
 - Compact layout
 - HTTP requests with file upload support
 - Formatted API responses for JSON and XML
-- HATEOS support
+- HATEOAS support
 - Image previews
 - Request history
 - Basic Auth and OAuth 1.0 helpers
@@ -25,12 +35,6 @@ Document and share APIs.
 - Use collections to organize requests.
 - Document requests inside collections. You can even store entire HTML notes. Postman uses Bootstrap so you can use it too to style your notes.
 - Download and share collections with your team of developers.
-
-For more details checkout the Postman wiki - https://github.com/a85/POSTMan-Chrome-Extension/wiki.
-
-Postman for Chrome can be downloaded from https://chrome.google.com/webstore/detail/fdmmgilgnpjigdojojpjoooidkmcomcm
-
-Postman for Google Chrome is licensed under the Apache Licence, Version 2.0 (http://www.apache.org/licenses/LICENSE-2.0.html).
 
 Installing the zip file
 =========================
@@ -46,10 +50,15 @@ Building and Developing
 =========================
 1. Install the dependencies
 <pre>
-sudo npm install -g grunt grunt-handlebars grunt-contrib-handlebars
+sudo npm install -g grunt grunt-cli
 </pre>
-2. Generate the template.js
+2. Generate the template.js and request.js files by running grunt. You can watch the folder for changes using:
 <pre>
-	grunt handlebars
+	grunt watch
 </pre>
 3. For misc. grunt tasks, look at grunt.js.
+
+Submitting bugs
+===============
+
+Please add the Postman version along with your operating system and Chrome version along with bug requests. 

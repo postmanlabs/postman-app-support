@@ -69,7 +69,7 @@ module.exports = function(grunt) {
 
   // These plugins provide necessary tasks.
   grunt.loadNpmTasks('grunt-contrib-handlebars');
-  grunt.loadNpmTasks('grunt-contrib-concat');      
+  grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-mindirect');
   grunt.loadNpmTasks('grunt-contrib-watch');
