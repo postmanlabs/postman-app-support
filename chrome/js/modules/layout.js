@@ -86,6 +86,8 @@ pm.layout = {
 
 
         var donateTimeout;
+        $("#upgrade").popover();
+
         $('#donate').popover({
             animation: false,
             content: supportContent,

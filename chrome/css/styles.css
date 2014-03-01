@@ -1517,6 +1517,12 @@ input[type="file"] {
     height: 195px;
 }
 
+#sidebar-footer .fade {
+    width: 250px;
+    height: 125px;
+    left: 4px !important;
+}
+
 .supporter {
     border-bottom: solid thin #efefef;
     margin-bottom: 5px;

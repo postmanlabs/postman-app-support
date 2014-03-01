@@ -942,6 +942,17 @@ pm.request = {
                 pm.request.response.showBody();
 
                 var responseCodeName;
+                var responseCodeDetail;
+
+                if (response.status in httpStatusCodes) {
+                    responseCodeName = httpStatusCodes[response.status]['name'];
+                    responseCodeDetail = httpStatusCodes[response.status]['detail'];
+                }
+                else {
+                    responseCodeName = "";
+                    responseCodeDetail = "";
+                }
+
                 if ("statusText" in response) {
                     responseCodeName = response.statusText;
                 }
@@ -952,7 +963,7 @@ pm.request = {
                 var responseCode = {
                     'code':response.status,
                     'name':responseCodeName,
-                    'detail':httpStatusCodes[response.status]['detail']
+                    'detail':responseCodeDetail
                 };
 
                 var responseData;
