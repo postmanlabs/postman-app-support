@@ -29,7 +29,7 @@ pm.broadcasts = {
     },
 
     fetch:function () {
-        var broadcast_url = "http://www.getpostman.com/broadcasts";
+        var broadcast_url = pm.webUrl + "/broadcasts";
         $.get(broadcast_url, function (data) {
             pm.broadcasts.setBroadcasts(data["broadcasts"]);
             pm.broadcasts.renderBroadcasts();
