@@ -1237,7 +1237,11 @@ pm.request = {
                 try {
                     if ('string' ===  typeof response && response.match(/^[\)\]\}]/))
                         response = response.substring(response.indexOf('\n'));
-                    response = vkbeautify.json(response);
+                    var jsonp = response.match(/^([a-zA-Z_$][0-9a-zA-Z_$]*\()([\s\S]*)(\);?)$/)
+                    if (jsonp && jsonp.length === 4)
+                        response = jsonp[1] + vkbeautify.json(jsonp[2]) + jsonp[3];
+                    else
+                        response = vkbeautify.json(response);
                     mode = 'javascript';
                     foldFunc = CodeMirror.newFoldFunction(CodeMirror.braceRangeFinder);
                 }
