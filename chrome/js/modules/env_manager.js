@@ -261,8 +261,8 @@ pm.envManager = {
 
     getAllEnvironments:function () {
         pm.indexedDB.environments.getAllEnvironments(function (environments) {
-            environments.sort(sortAlphabetical);            
-            
+            environments.sort(sortAlphabetical);
+
             $('#environment-selector .dropdown-menu').html("");
             $('#environments-list tbody').html("");
             pm.envManager.environments = environments;
@@ -390,10 +390,10 @@ pm.envManager = {
 
     duplicateEnvironment:function (id) {
         var env = pm.envManager.getEnvironmentFromId(id);
-        
+
         //get a new name for this duplicated environment
         env.name = env.name + " " + "copy";
-        
+
         //change the env guid
         env.id = guid();
 
@@ -405,7 +405,7 @@ pm.envManager = {
             };
 
             pm.envManager.getAllEnvironments();
-        });        
+        });
     },
 
     downloadEnvironment:function (id) {
@@ -427,18 +427,28 @@ pm.envManager = {
                 return function (e) {
                     // Render thumbnail.
                     var data = e.currentTarget.result;
-                    var environment = JSON.parse(data);
+                    var obj = JSON.parse(data);
 
-                    pm.indexedDB.environments.addEnvironment(environment, function () {
-                        //Add confirmation
-                        var o = {
-                            name:environment.name,
-                            action:'added'
-                        };
+                    var ii = obj.environments.length;
 
-                        $('#environment-importer-confirmations').append(Handlebars.templates.message_environment_added(o));
-                        pm.envManager.getAllEnvironments();
-                    });
+                    while ( ii-- ) {
+
+                        pm.indexedDB.environments.addEnvironment( obj.environments[ii], function (env) {
+
+                            //Add confirmation
+                            var o = {
+                                name:env.name,
+                                action:'added'
+                            };
+
+                            $('#environment-importer-confirmations').append(Handlebars.templates.message_environment_added(o));
+
+                            pm.envManager.getAllEnvironments();
+
+                        });
+
+                    }
+
                 };
             })(f);
 
