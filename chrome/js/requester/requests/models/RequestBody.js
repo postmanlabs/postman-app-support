@@ -24,7 +24,7 @@ var RequestBody = Backbone.Model.extend({
         var body = "";
         for(var i = 0; i < dataAsObjects.length; i++) {
             value = pm.envManager.getCurrentValue(dataAsObjects[i].value);
-            body += " -F " + dataAsObjects[i].key + "=" + value;
+            body += " -F \"" + dataAsObjects[i].key + "=" + value + "\"";
         }
 
         return body;
