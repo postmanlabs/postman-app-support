@@ -724,7 +724,7 @@ var Request = Backbone.Model.extend({
         var headersCount = headers.length;
 
         for(var i = 0; i < headersCount; i++) {
-            requestPreview += " -H " + headers[i].key + ":" + headers[i].value;
+            requestPreview += " -H \"" + headers[i].key + ":" + headers[i].value + "\"";
         }
 
         if(hasBody && body !== false) {
