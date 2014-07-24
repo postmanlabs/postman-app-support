@@ -80,7 +80,7 @@ pm.layout = {
 
         supportContent += "<div class='supporter clearfix'>";        
         supportContent += "<div class='supporter-image supporter-image-mashape'>";
-        supportContent += "<a href='http://www.getpostman.com/r?url=http://restlet.com/?utm_souce=POSTMAN' target='_blank'>";
+        supportContent += "<a href='http://www.getpostman.com/r?url=http://restlet.com/?utm_source=POSTMAN' target='_blank'>";
         supportContent += "<img src='img/supporters/restlet.png'/></a></div>";
         supportContent += "<div class='supporter-tag'>The all-in-one platform for web APIs.</div></div>";
 
