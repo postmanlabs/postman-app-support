@@ -1514,7 +1514,13 @@ input[type="file"] {
 
 #sidebar-footer .popover {
     width: 250px;
-    height: 195px;
+    height: 235px;
+}
+
+#sidebar-footer .fade {
+    width: 250px;
+    height: 125px;
+    left: 4px !important;
 }
 
 .supporter {
