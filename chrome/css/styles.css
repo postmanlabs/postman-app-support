@@ -1310,7 +1310,8 @@ li .right {
 /* CodeMirror overrides */
 #response .CodeMirror {
     margin-left: -1px;
-    overflow-x: auto;
+    overflow-x: visible;
+    overflow-y: visible;
 }
 
 .CodeMirror pre {
