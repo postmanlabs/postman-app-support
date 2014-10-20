@@ -899,7 +899,7 @@ pm.request = {
                 var cleanResponseText = pm.request.response.stripScriptTag(pm.request.response.text);
                 pm.filesystem.renderResponsePreview("response.html", cleanResponseText, "html", function (response_url) {
                     $("#response-as-preview").html("<iframe></iframe>");
-                    $("#response-as-preview iframe").attr("src", response_url);
+                    $("#response-as-preview>iframe").attr("src", response_url).attr("height",800);
                 });
             }
 
@@ -1078,7 +1078,7 @@ pm.request = {
                         var cleanResponseText = pm.request.response.stripScriptTag(pm.request.response.text);
                         pm.filesystem.renderResponsePreview("response.html", cleanResponseText, "html", function (response_url) {
                             $("#response-as-preview").html("<iframe></iframe>");
-                            $("#response-as-preview iframe").attr("src", response_url);
+	                        $("#response-as-preview>iframe").attr("src", response_url).attr("height",800);
                         });
                     }
                 }
