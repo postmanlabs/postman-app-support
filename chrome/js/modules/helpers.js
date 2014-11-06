@@ -264,7 +264,7 @@ pm.helpers = {
 
             //all the fields defined by oauth
             $('input.signatureParam').each(function () {
-                if ($(this).val() != '') {
+                if ($(this).val() != '' || $('#request-helper-keep-empty-parameters').attr('checked')) {
                     var val = $(this).val();
                     val = pm.envManager.convertString(val);
                     message.parameters.push([$(this).attr('key'), val]);
@@ -352,7 +352,7 @@ pm.helpers = {
             var signatureKey = "oauth_signature";
 
             $('input.signatureParam').each(function () {
-                if ($(this).val() != '') {
+                if ($(this).val() != '' || $('#request-helper-keep-empty-parameters').attr('checked')) {
                     var val = $(this).val();
                     params.push({key: $(this).attr('key'), value: val});
                 }
