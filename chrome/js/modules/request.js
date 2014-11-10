@@ -1420,6 +1420,8 @@ pm.request = {
         }
 
         this.refreshLayout();
+        var newRows = getUrlVars($('#url').val(), false);
+        $('#url-keyvaleditor').keyvalueeditor('reset', newRows);
     },
 
     isMethodWithBody:function (method) {
