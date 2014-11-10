@@ -264,6 +264,12 @@ pm.layout = {
             pm.request.loadRequestFromLink(link, headers);
         });
 
+        $('#response-headers').on("mousedown", ".cm-link", function () {
+            var link = $(this).text();
+            var headers = $('#headers-keyvaleditor').keyvalueeditor('getValues');
+            pm.request.loadRequestFromLink(link, headers);
+        });
+
         $('.response-tabs').on("click", "li", function () {
             var section = $(this).attr('data-section');
             if (section === "body") {
@@ -283,6 +289,21 @@ pm.layout = {
 
         $('#request-meta').on("mouseleave", function () {
             $('.request-meta-actions').css("display", "none");
+        });
+
+        var linkRegex = /(\s*<\s*)([^>]*)(\s*>[^,]*,?)/g;
+
+        var linkFunc = function (all, pre_uri, uri, post_uri) {
+            return Handlebars.Utils.escapeExpression(pre_uri)
+                + "<span class=\"cm-link\">"
+                + uri
+                + "</span>"
+                + Handlebars.Utils.escapeExpression(post_uri);
+        };
+
+        Handlebars.registerHelper('link_to_hyperlink', function(linkValue) {
+            var output = linkValue.replace(linkRegex, linkFunc);
+            return new Handlebars.SafeString(output);
         });
 
         this.attachModalHandlers();

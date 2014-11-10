@@ -3,5 +3,11 @@
          data-content="{{description}}"
          data-trigger="hover"
          rel="popover">{{name}} &rarr;</div>
-    <div class="response-header-value">{{value}}</div>
+    <div class="response-header-value">
+        {{#if isLink}}
+            {{link_to_hyperlink value}}
+        {{else}}
+            {{value}}
+        {{/if}}
+    </div>
 </li>

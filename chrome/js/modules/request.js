@@ -1470,6 +1470,10 @@ pm.request = {
                         "description":headerDetails[name.toLowerCase()]
                     };
 
+                    if (name.toLowerCase() === "link") {
+                        header.isLink = true;
+                    }
+
                     vars.push(header);
                 }
             }
