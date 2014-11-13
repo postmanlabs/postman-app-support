@@ -1558,6 +1558,14 @@ input[type="file"] {
     width: 100px;
 }
 
+.supporter-tag a {
+    color: #0088cc !important;
+}
+
+.supporter-tag a:hover {
+    background: none !important;
+}
+
 .donate-popover-link {
     background: #333;
     border-radius: 5px;
