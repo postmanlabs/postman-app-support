@@ -184,7 +184,7 @@ pm.collections = {
         });
     },
 
-    importCollectionData:function (collection) {        
+    importCollectionData:function (collection) {
         pm.indexedDB.addCollection(collection, function (c) {
             var message = {
                 name:collection.name,
@@ -203,6 +203,13 @@ pm.collections = {
             for (var i = 0; i < collection.requests.length; i++) {
                 var request = collection.requests[i];
                 request.collectionId = collection.id;
+
+                  /*Handling rawModeData */
+                if(request.hasOwnProperty("rawModeData")) {
+                    request.data = request.rawModeData;
+                }  
+
+
                 var newId = guid();
 
                 if (ordered) {

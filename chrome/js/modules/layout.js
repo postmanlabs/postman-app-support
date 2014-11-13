@@ -85,6 +85,13 @@ pm.layout = {
         supportContent += "<div class='supporter-tag'>The all-in-one platform for web APIs.</div></div>";
 
         supportContent += "<div class='supporter clearfix'>";
+        supportContent += "<div class='supporter-image supporter-image-mashape'>";
+        supportContent += "<a href='http://www.getpostman.com/r?url=http://www.nextbigwhat.com/bighackathon-details-297/' target='_blank'>";
+        supportContent += "<img src='img/supporters/nextbigwhat.png'/></a></div>";
+        supportContent += "<div class='supporter-tag'>Use the code <strong>nextbigwhat</strong> to participate in the NBW hackathon for free! ";
+        supportContent += "<a href='http://www.getpostman.com/r?url=http://www.nextbigwhat.com/bighackathon-details-297/'>See details</a></div></div>";
+
+        supportContent += "<div class='supporter clearfix'>";
         supportContent += "<div class='supporter-image'>";
         supportContent += "<a href='http://www.getpostman.com/donate' target='_blank' class='donate-popover-link'>";
         supportContent += "Donate</a></div>";
