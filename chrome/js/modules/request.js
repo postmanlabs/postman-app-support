@@ -1420,6 +1420,8 @@ pm.request = {
         }
 
         this.refreshLayout();
+        var newRows = getUrlVars($('#url').val(), false);
+        $('#url-keyvaleditor').keyvalueeditor('reset', newRows);
     },
 
     isMethodWithBody:function (method) {
@@ -1467,6 +1469,10 @@ pm.request = {
                         "value":value,
                         "description":headerDetails[name.toLowerCase()]
                     };
+
+                    if (name.toLowerCase() === "link") {
+                        header.isLink = true;
+                    }
 
                     vars.push(header);
                 }

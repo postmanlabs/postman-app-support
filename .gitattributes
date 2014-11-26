@@ -1,0 +1,4 @@
+# Set the default behavior.
+* text=lf
+
+*.handlebars text eol=lf
