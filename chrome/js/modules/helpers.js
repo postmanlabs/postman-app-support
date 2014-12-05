@@ -28,6 +28,9 @@ pm.helpers = {
         else if (type === 'digest') {
             this.digest.process();
         }
+        else if (type === 'hawkAuth') {
+            this.hawkAuth.process();
+        }
         return false;
     },
 
@@ -423,6 +426,62 @@ pm.helpers = {
                     }
                 }
             }
+        }
+    },
+
+    hawkAuth: {
+        isAutoEnabled: true,
+
+        generateSignature : function () {
+            if ($('#url').val() === '') {
+                $('#request-helpers').css("display", "block");
+                alert('Please enter the URL first.');
+                return null;
+            }
+            var url = pm.request.processUrl($('#url').val());
+            var credentials = {
+                id: $('#request-helper-hawkauth-user').val(),
+                key: $('#request-helper-hawkauth-key').val(),
+                algorithm: $('#request-helper-hawkauth-algorithm').val()
+            };
+            return hawk.client.header(url, pm.request.method ,{credentials: credentials});
+
+        },
+
+        process: function () {
+            var signatureKey = "Authorization";
+            var signature = this.generateSignature();
+
+            if (signature == null || signature.err) {
+                alert('Error generating hawk request: ' + signature.err);
+                return;
+            }
+
+            var headers = pm.request.headers;
+            var authHeaderKey = signatureKey;
+            var pos = findPosition(headers, "key", authHeaderKey);
+
+            /*var rawString = "OAuth realm=\"" + realm + "\",";
+             var len = params.length;
+             for (i = 0; i < len; i++) {
+             rawString += encodeURIComponent(params[i].key) + "=\"" + encodeURIComponent(params[i].value) + "\",";
+             }
+             rawString = rawString.substring(0, rawString.length - 1);*/
+
+            if (pos >= 0) {
+                headers[pos] = {
+                    key: authHeaderKey,
+                    name: authHeaderKey,
+                    value: signature.field
+                };
+            }
+            else {
+                headers.push({key: authHeaderKey, name: authHeaderKey, value: signature.field});
+            }
+
+            pm.request.headers = headers;
+            $('#headers-keyvaleditor').keyvalueeditor('reset', headers);
+            pm.request.openHeaderEditor();
         }
     }
 };
