@@ -217,7 +217,7 @@ pm.envManager = {
         for (var i = 0; i < count; i++) {
             patString = startDelimiter + values[i].key + endDelimiter;
             pattern = new RegExp(patString, 'g');
-            finalString = finalString.replace(patString, values[i].value);
+            finalString = finalString.replace(pattern, values[i].value);
         }
 
         var globals = pm.envManager.globals;
@@ -225,7 +225,7 @@ pm.envManager = {
         for (i = 0; i < count; i++) {
             patString = startDelimiter + globals[i].key + endDelimiter;
             pattern = new RegExp(patString, 'g');
-            finalString = finalString.replace(patString, globals[i].value);
+            finalString = finalString.replace(pattern, globals[i].value);
         }
 
         if (pm.envManager.containsVariable(finalString, values)) {
