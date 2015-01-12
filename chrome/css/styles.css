@@ -539,6 +539,11 @@ li .right {
     background: #08C;
 }
 
+.supporter-image a:hover {
+    background-color: transparent !important;
+}
+
+
 #donate {
     float: right;
     margin-right: 25px;

@@ -75,13 +75,13 @@ pm.layout = {
         var supportContent = "<div class='supporters'><div class='supporter clearfix'>";
         supportContent += "<div class='supporter-image supporter-image-mashape'>";
         supportContent += "<a href='http://www.getpostman.com/r?url=https://www.mashape.com/?utm_source=chrome%26utm_medium=app%26utm_campaign=postman' target='_blank'>";
-        supportContent += "<img src='img/supporters/mashape.png'/></a></div>";
+        supportContent += "<img src='img/supporters/mashape-new.png'/></a></div>";
         supportContent += "<div class='supporter-tag'>Consume or provide cloud services with the Mashape API Platform.</div></div>";
 
         supportContent += "<div class='supporter clearfix'>";        
         supportContent += "<div class='supporter-image supporter-image-mashape'>";
         supportContent += "<a href='http://www.getpostman.com/r?url=http://restlet.com/?utm_source=POSTMAN' target='_blank'>";
-        supportContent += "<img src='img/supporters/restlet.png'/></a></div>";
+        supportContent += "<img src='img/supporters/restlet-new.png'/></a></div>";
         supportContent += "<div class='supporter-tag'>The all-in-one platform for web APIs.</div></div>";
 
 
