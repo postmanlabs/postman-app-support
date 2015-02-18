@@ -896,9 +896,32 @@ pm.request = {
             if (responsePreviewType === "html") {
                 $("#response-as-preview").html("");
 
+                pm.request.response.iframeRefreshedRecently = false;
+                pm.request.response.iframeRefreshWarning = null;
                 var cleanResponseText = pm.request.response.stripScriptTag(pm.request.response.text);
                 pm.filesystem.renderResponsePreview("response.html", cleanResponseText, "html", function (response_url) {
                     $("#response-as-preview").html("<iframe></iframe>");
+                    $("#response-as-preview>iframe").load(function() {
+                        //prevent multiple refreshes
+                        if(pm.request.response.iframeRefreshedRecently) {
+                            jQuery("#response-as-preview>iframe").attr("src","");
+                            console.log("Iframe multi-refresh");
+                            clearTimeout(pm.request.response.iframeRefreshWarning);
+                            pm.request.response.iframeRefreshWarning = setTimeout(function() {
+                                noty(
+                                {
+                                    type:'error',
+                                    text:'The page is being infinitely refreshed. Cannot render preview.',
+                                    layout:'topCenter',
+                                    timeout:750
+                                });
+                            }, 500);
+                        }
+                        pm.request.response.iframeRefreshedRecently = true;
+                        setTimeout(function() {
+                            pm.request.response.iframeRefreshedRecently = false;
+                        }, 300);
+                    });
                     $("#response-as-preview>iframe").attr("src", response_url).attr("height",800);
                 });
             }
@@ -1074,10 +1097,34 @@ pm.request = {
                 if (responsePreviewType === "html") {
                     $("#response-as-preview").html("");
 
+                    pm.request.response.iframeRefreshedRecently = false;
+                    pm.request.response.iframeRefreshWarning = null;
+
                     if (!pm.settings.get("disableIframePreview")) {
                         var cleanResponseText = pm.request.response.stripScriptTag(pm.request.response.text);
                         pm.filesystem.renderResponsePreview("response.html", cleanResponseText, "html", function (response_url) {
                             $("#response-as-preview").html("<iframe></iframe>");
+                            $("#response-as-preview>iframe").load(function() {
+                                //prevent multiple refreshes
+                                if(pm.request.response.iframeRefreshedRecently) {
+                                    jQuery("#response-as-preview>iframe").attr("src","");
+                                    console.log("Iframe multi-refresh");
+                                    clearTimeout(pm.request.response.iframeRefreshWarning);
+                                    pm.request.response.iframeRefreshWarning = setTimeout(function() {
+                                        noty(
+                                        {
+                                            type:'error',
+                                            text:'The page is being infinitely refreshed. Cannot render preview.',
+                                            layout:'topCenter',
+                                            timeout:750
+                                        });
+                                    }, 500);
+                                }
+                                pm.request.response.iframeRefreshedRecently = true;
+                                setTimeout(function() {
+                                    pm.request.response.iframeRefreshedRecently = false;
+                                }, 300);
+                            });
 	                        $("#response-as-preview>iframe").attr("src", response_url).attr("height",800);
                         });
                     }
@@ -2034,6 +2081,8 @@ pm.request = {
         } else {
             xhr.send();
         }
+
+        pm.request.response.iframeRefreshedRecently = false;
 
         pm.request.xhr = xhr;
 
