@@ -58,6 +58,16 @@ sudo npm install -g grunt grunt-cli
 </pre>
 3. For misc. grunt tasks, look at grunt.js.
 
+If JavaScript is disabled for all sites
+=======================================
+
+If JavaScript is disabled for all sites, in order to use the Postman packaged app, you will need to set an exception for it.
+
+In chrome settings, go to `Privacy > Content Settings > JavaScript > Manage Exceptions` and add the following exception `chrome-extensions://<postman_extension_id>/`.
+
+Postman packaged app's' extension ID can be found at `chrome-extensions://`.  Ensure `developer mode` is enabled and look for the ID under `Postman - REST Client (Packaged App)`.
+
+
 Submitting bugs
 ===============
 
