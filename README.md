@@ -6,7 +6,6 @@ Quick links
 - Jetpacks for Postman - http://blog.getpostman.com/index.php/2014/01/16/ridiculously-easy-api-testing-introducing-jetpacks-for-postman/
 - Documentation - http://www.getpostman.com/docs/
 - Interceptor - https://chrome.google.com/webstore/detail/postman-interceptor/aicmkgpgakddgnaphhhpliifpcfhicfo
-- Donate - https://gumroad.com/l/wqbB
 
 About Postman
 =======
