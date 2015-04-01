@@ -105,6 +105,7 @@
                 <li data-id="basicAuth">Basic Auth</li>
                 <li data-id="digestAuth">Digest Auth</li>
                 <li data-id="oAuth1">OAuth 1.0</li>
+                <li data-id="hawkAuth">Hawk</li>
             </ul>
             <div id="environment-selector-wrapper">
                 <div id="environment-quicklook-wrapper">
@@ -376,6 +377,40 @@
                 <div class="request-helper-form-description">
                     <h4>Note</h4>
                     If auto addition is enabled, OAuth parameters will be added when you send the request
+                </div>
+            </div>
+            <div id="request-helper-hawkAuth" class="request-helpers">
+                <div class="request-helper-form-container">
+                    <form class="form-horizontal">
+                        <div class="control-group">
+                            <label class="control-label">User</label>
+
+                            <div class="controls">
+                                <input type="text" id="request-helper-hawkauth-user" class="clean-input"
+                                       key="hawkauth_user"/>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">Key</label>
+
+                            <div class="controls">
+                                <input type="text" id="request-helper-hawkauth-key" class="clean-input"
+                                       key="hawkauth_key"/>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">Algorithm</label>
+
+                            <div class="controls">
+                                <input type="text" id="request-helper-hawkauth-algorithm" class="clean-input"
+                                       value="sha256" key="hawkauth_algorithm"/>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="request-helper-form-description">
+                    <h4>Note</h4>
+                    Hawk parameters will be added automatically when you send the request
                 </div>
             </div>
         </div>
@@ -1286,5 +1321,6 @@
 <script type="text/javascript" src="js/handlebars.js"></script>
 <script type="text/javascript" src="js/templates.js"></script>
 <script type="text/javascript" src="js/requester.js"></script>
+<script type="text/javascript" src="js/hawk.browser.js"></script>
 </body>
 </html>

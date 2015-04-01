@@ -1803,6 +1803,9 @@ pm.request = {
             pm.helpers.oAuth1.generateHelper();
             pm.helpers.oAuth1.process();
         }
+        else if (pm.helpers.activeHelper == "hawkauth" && pm.helpers.hawkAuth.isAutoEnabled) {
+            pm.helpers.hawkAuth.process();
+        }
 
         $('#headers-keyvaleditor-actions-open .headers-count').html(pm.request.headers.length);
         pm.request.url = pm.request.processUrl($('#url').val());
