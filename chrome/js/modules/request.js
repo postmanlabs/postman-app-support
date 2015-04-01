@@ -1602,8 +1602,8 @@ pm.request = {
             //Disabling this. Will enable after resolving indexedDB issues
             //$('#response-sample-save-start-container').css("display", "inline-block");
 
-            $('.request-meta-actions-togglesize').attr('data-action', 'minimize');
-            $('.request-meta-actions-togglesize img').attr('src', 'img/circle_minus.png');
+            $('.request-meta-actions-togglesize').attr('data-action', ($('.request-meta-actions-togglesize').attr('data-action') == 'minimize' ? 'minimize' : 'maximize'));
+            $('.request-meta-actions-togglesize img').attr('src', ($('.request-meta-actions-togglesize').attr('data-action') == 'minimize' ? 'img/circle_minus.png' : 'img/circle_plus.png'));
 
             //Load sample
             if ("responses" in request) {
