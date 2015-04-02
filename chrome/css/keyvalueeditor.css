@@ -9,7 +9,16 @@
     border-radius: 0 !important;
     outline: none !important;
     margin-right: 10px !important;
-    width: 224px !important;
+}
+
+.keyvalueeditor-key
+{
+    width: 10% !important;
+}
+
+.keyvalueeditor-value
+{
+    width: 80% !important;
 }
 
 .keyvalueeditor-value-file {
