@@ -40,7 +40,7 @@ Installing the zip file
 
 If you downloaded the Postman zip file here is what you need to do to install it as a developer extension:
 
-1. Go to Tools > Extensions inside Chrome by clicking on the wrench icon on top right.
+1. Go to More Tools > Extensions inside Chrome by clicking on the wrench icon on top right.
 2. Select "Load unpacked extension"
 3. Select the "chrome" folder with manifest.json in it's root
 4. Postman will be installed as a developer extension. The installation from the Chrome Web Store will remain independent with all your data.
@@ -62,9 +62,9 @@ If JavaScript is disabled for all sites
 
 If JavaScript is disabled for all sites, in order to use the Postman packaged app, you will need to set an exception for it.
 
-In chrome settings, go to `Privacy > Content Settings > JavaScript > Manage Exceptions` and add the following exception `chrome-extensions://<postman_extension_id>/`.
+In chrome settings, go to `Privacy > Content Settings > JavaScript > Manage Exceptions` and add the following exception `chrome-extension://<postman_extension_id>/`.
 
-Postman packaged app's' extension ID can be found at `chrome-extensions://`.  Ensure `developer mode` is enabled and look for the ID under `Postman - REST Client (Packaged App)`.
+Postman packaged app's' extension ID can be found at `chrome://extensions`.  Ensure `developer mode` is enabled and look for the ID under `Postman - REST Client (Packaged App)`.
 
 
 Submitting bugs
