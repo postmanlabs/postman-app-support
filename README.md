@@ -8,8 +8,6 @@ If you have a suggestion or an issue to report, please use the [Github issue tra
 
 ![Postman REST Client Screenshot](https://raw.githubusercontent.com/postmanlabs/postmanlabs.github.io/develop/global-artefacts/postman-app-screenshot-01.jpg)
 
----
-
 ## About Postman
 
 Postman is a powerful API testing suite which has become a must-have tool for many developers. We make beautiful products to build amazing APIs and improve developer productivity. Postman is now used by well over a million developers around the world, and this number is rapidly growing. With more products in the pipeline, we aim to provide the most comprehensive API development and testing solution to developers.
