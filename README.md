@@ -4,7 +4,9 @@ _Supercharge your API workflow<br/>Build, test, and document your APIs faster. M
 
 # Postman App Support
 
-If you have a suggestion or an issue to report, please use the [Github issue tracker](https://github.com/postmanlabs/postman-app-support/issues).
+If you have a suggestion or an issue to report, please use the [Github issue tracker](https://github.com/postmanlabs/postman-app-support/issues). We recommend that you search the issue tracker to check if someone else has already reported the issue and whether there is a known solution that you can use.
+
+![Postman REST Client Screenshot](https://raw.githubusercontent.com/postmanlabs/postmanlabs.github.io/develop/global-artefacts/postman-app-screenshot-01.jpg)
 
 ---
 
