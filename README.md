@@ -32,3 +32,7 @@ Read more on our website: [https://www.getpostman.com/](https://www.getpostman.c
 - Run entire collections or folders with a single click, and view all test results on one screen
 
 Head over to the features section on our website to see the [complete list of features](https://www.getpostman.com/all_features) to make API development a lot less tedious.
+
+---
+
+If you have issues or code contribution pertaining to Postman legacy version, head over to the [postmanlabs/postman-chrome-extension-legacy](https://github.com/postmanlabs/postman-chrome-extension-legacy) repository.
