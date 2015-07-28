@@ -6,8 +6,6 @@ _Supercharge your API workflow<br/>Build, test, and document your APIs faster. M
 
 If you have a suggestion or an issue to report, please use this [Github issue tracker](https://github.com/postmanlabs/postman-app-support/issues). We recommend that you search the issue tracker to check if someone else has already reported the issue and whether there is a known solution that you can use. This probably is the fastest way for you to find a solution to any issue that you are facing.
 
-If you are adding an issue, please tag it with the appropriate tag so we can respond faster.
-
 If you are adding a bug report, please add steps to reproduce the bug, Postman version, Chrome version and OS version. Any additonal files (collections, data dumps, console errors, screenshots) would be helpful.
 
 > **Account Specific Queries:**<br />
@@ -19,7 +17,7 @@ We are also there as [@postmanclient](https://www.twitter.com/postmanclient) on 
 
 If you are interested in talking to the team, we are there on <a href="https://gitter.im/postmanlabs/postman-app-support" target="_blank">Gitter</a>. Feel free to drop by and say hello. Our upcoming features and beta releases are discussed here along with world peace.
 
-[![Join the chat at https://gitter.im/postmanlabs/postman-app-support](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/postmanlabs/postman-app-support)<br />
+<a href="https://gitter.im/postmanlabs/postman-app-support" target="_blank"><img src="https://badges.gitter.im/Join%20Chat.svg" /></a><br />
 _IRC fans use <a href="https://irc.gitter.im/" target="_blank">https://irc.gitter.im/</a>_
 
 ### Documentation and Tutorials
