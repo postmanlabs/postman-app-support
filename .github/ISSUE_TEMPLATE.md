@@ -15,4 +15,4 @@ Some guidelines:
 
 2. If it’s a Cloud-related issue, or you want to include personal information like your username / collection names, mail us at help@getpostman.com
 
-3. If it’s a question (anything along the lines of “How do I … in Postman”), the answer might lie in our documentation - http://getpostman.com/docs. There are a few areas where the docs are lacking, and we’re trying to patch this up.
+3. If it’s a question (anything along the lines of “How do I … in Postman”), the answer might lie in our documentation - http://getpostman.com/docs.
