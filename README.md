@@ -1,6 +1,5 @@
-<a href="https://gitter.im/postmanlabs/postman-app-support" target="_blank"><img src="https://badges.gitter.im/Join%20Chat.svg" align="right" /></a>
 <a href="https://www.getpostman.com/"><img src="https://raw.githubusercontent.com/postmanlabs/postmanlabs.github.io/develop/global-artefacts/postman-logo%2Btext-320x132.png" /></a><br />
-_Supercharge your API workflow<br/>Build, test, and document your APIs faster. More than a million developers already do._
+_Supercharge your API workflow<br/>Modern software is built on APIs. Postman helps you develop APIs faster._
 
 # Postman App Support
 
@@ -15,10 +14,11 @@ We are also there as [@postmanclient](https://www.twitter.com/postmanclient) on 
 
 ### Community
 
-If you are interested in talking to the team, we are there on <a href="https://gitter.im/postmanlabs/postman-app-support" target="_blank">Gitter</a>. Feel free to drop by and say hello. Our upcoming features and beta releases are discussed here along with world peace.
+<img src="https://www.getpostman.com/img/v2/icons/slack.svg" align="right" />
+If you are interested in talking to the team, we are there on <a href="https://www.getpostman.com/slack-invite" target="_blank">Slack</a>. Feel free to drop by and say hello. Our upcoming features and beta releases are discussed here along with world peace.
 
-<a href="https://gitter.im/postmanlabs/postman-app-support" target="_blank"><img src="https://badges.gitter.im/Join%20Chat.svg" /></a><br />
-_IRC fans use <a href="https://irc.gitter.im/" target="_blank">https://irc.gitter.im/</a>_
+Get your invitation for Postman Slack Community from: <a href="https://www.getpostman.com/slack-invite">https://www.getpostman.com/slack-invite</a>.<br />
+Already member? Sign in at <a href="https://postmancommunity.slack.com">https://postmancommunity.slack.com</a>
 
 ### Documentation and Tutorials
 
