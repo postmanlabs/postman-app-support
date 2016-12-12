@@ -467,7 +467,7 @@ OAuth.setProperties(OAuth.SignatureMethod, // class members
         }
         return OAuth.percentEncode(message.method.toUpperCase())
          +'&'+ OAuth.percentEncode(OAuth.SignatureMethod.normalizeUrl(URL))
-         +'&'+ OAuth.percentEncode(OAuth.SignatureMethod.normalizeParameters(parameters));
+         +'&'+ OAuth.SignatureMethod.normalizeParameters(parameters);
     }
 ,
     normalizeUrl: function normalizeUrl(url) {
