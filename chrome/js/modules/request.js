@@ -9,7 +9,7 @@ pm.request = {
     dataMode:"params",
     isFromCollection:false,
     collectionRequestId:"",
-    methodsWithBody:["POST", "PUT", "PATCH", "DELETE", "LINK", "UNLINK"],
+    methodsWithBody:["POST", "PUT", "PATCH", "DELETE", "LINK", "UNLINK", "PROPFIND", "PROPATCH"],
     areListenersAdded:false,
     startTime:0,
     endTime:0,
