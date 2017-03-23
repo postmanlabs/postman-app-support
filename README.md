@@ -20,6 +20,10 @@ If you are interested in talking to the team, we are there on Slack. Feel free t
 Get your invitation for Postman Slack Community from: <a href="https://www.getpostman.com/slack-invite">https://www.getpostman.com/slack-invite</a>.<br />
 Already member? Sign in at <a href="https://postmancommunity.slack.com">https://postmancommunity.slack.com</a>
 
+### Product Roadmap
+
+If you are curious about the features and enhancements planned for upcoming releases, check out Postman's roadmap for developers at [https://trello.com/b/4N7PnHAz/postman-roadmap-for-developers](https://trello.com/b/4N7PnHAz/postman-roadmap-for-developers).
+
 ### Documentation and Tutorials
 
 If you are looking for more information regarding features, installation and usage of the app, head over to the <a target="_blank" href="https://www.getpostman.com/docs/">documentation section at our website</a>. You can also have a look at our blog at <a target="_blank" href="https://blog.getpostman.com">https://blog.getpostman.com</a> for interesting tutorials, development stories and platform updates.
