@@ -1,20 +1,26 @@
 <!--
 Welcome to the Postman Issue tracker. Any feature requests / bug reports can be posted here.
 Any security-related bugs should be reported directly to security@getpostman.com
-
-Version/App Information:
 -->
- 1. Postman Version:
- 2. App (Chrome app or Mac app):
- 3. OS details:
- 4. Is the Interceptor on and enabled in the app:
- 5. Did you encounter this recently, or has this bug always been there:
- 6. Expected behaviour:
- 7. Console logs (http://blog.getpostman.com/2014/01/27/enabling-chrome-developer-tools-inside-postman/ for the Chrome App, View->Toggle Dev Tools for the Mac app):
- 8. Screenshots (if applicable)
+
+## App Details:
+<!--
+Copy paste this from Settings > About
+-->
+```
+Postman for Mac
+Version 4.11.0
+OS X 16.4.0 / x64
+```
+
+## Issue Report:
+ 1. Did you encounter this recently, or has this bug always been there:
+ 2. Expected behaviour:
+ 3. Console logs (http://blog.getpostman.com/2014/01/27/enabling-chrome-developer-tools-inside-postman/ for the Chrome App, View->Toggle Dev Tools for the Mac app):
+ 4. Screenshots (if applicable)
 
 <!--
-Steps to reproduce the problem:
+Steps to reproduce the problem
 -->
 
 
