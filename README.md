@@ -24,6 +24,8 @@ Already member? Sign in at <a href="https://postmancommunity.slack.com">https://
 
 If you are curious about the features and enhancements planned for upcoming releases, check out Postman's roadmap for developers at [https://trello.com/b/4N7PnHAz/postman-roadmap-for-developers](https://trello.com/b/4N7PnHAz/postman-roadmap-for-developers).
 
+Want early access to these features? Some of the enhancements are available in our latest Canary builds available for download on OSX ([x64](https://dl.pstmn.io/download/channel/canary/osx_64)) / Windows ([x86](https://dl.pstmn.io/download/channel/canary/windows_32) or [x64](https://dl.pstmn.io/download/channel/canary/windows_64)) / Linux ([x86](https://dl.pstmn.io/download/channel/canary/linux_32) or [x64](https://dl.pstmn.io/download/channel/canary/linux_64)). 
+
 ### Documentation and Tutorials
 
 If you are looking for more information regarding features, installation and usage of the app, head over to the <a target="_blank" href="https://www.getpostman.com/docs/">documentation section at our website</a>. You can also have a look at our blog at <a target="_blank" href="https://blog.getpostman.com">https://blog.getpostman.com</a> for interesting tutorials, development stories and platform updates.
