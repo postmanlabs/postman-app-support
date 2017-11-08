@@ -14,11 +14,10 @@ We are also there as [@postmanclient](https://www.twitter.com/postmanclient) on 
 
 ### The Community
 
-<img src="https://www.getpostman.com/img/v2/icons/slack.svg" align="right" />
-If you are interested in talking to the team, we are there on Slack. Feel free to drop by and say hello. Our upcoming features and beta releases are discussed here along with world peace.
+<img src="https://avatars1.githubusercontent.com/u/3220138?v=3&s=120" align="right" />
+The <a href="https://community.getpostman.com">Postman Community Forum</a> offers you different ways to engage with other Postman enthusiasts. Feel free to drop by and say hello.<br />
 
-Get your invitation for Postman Slack Community from: <a href="https://www.getpostman.com/slack-invite">https://www.getpostman.com/slack-invite</a>.<br />
-Already member? Sign in at <a href="https://postmancommunity.slack.com">https://postmancommunity.slack.com</a>
+Sign in using your Postman account to participate in the discussions. Don’t want to log in? Then lurk on the sidelines and absorb all the knowledge.
 
 ### Product Roadmap
 
