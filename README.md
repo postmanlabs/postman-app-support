@@ -1,6 +1,10 @@
 <a href="https://www.getpostman.com/"><img src="https://raw.githubusercontent.com/postmanlabs/postmanlabs.github.io/develop/global-artefacts/postman-logo%2Btext-320x132.png" /></a><br />
 _Supercharge your API workflow<br/>Modern software is built on APIs. Postman helps you develop APIs faster._
 
+# We are hiring!
+
+Want to help make Postman us solve [these issues]https://github.com/postmanlabs/postman-app-support/issues? [We are hiring](https://www.getpostman.com/jobs/) engineers! Postman has grown a lot since it started as a side-project. More than 5 million developers use Postman across thousands of companies across the world for everything API related. We are working hard to meet the expectations of the developer community. If you want to build something amazing with us, [reach out](https://www.getpostman.com/jobs/)!
+
 # Postman App Support
 
 If you have a suggestion or an issue to report, please use this [Github issue tracker](https://github.com/postmanlabs/postman-app-support/issues). We recommend that you search the issue tracker to check if someone else has already reported the issue and whether there is a known solution that you can use. This probably is the fastest way for you to find a solution to any issue that you are facing.
