@@ -3,7 +3,7 @@ _Supercharge your API workflow<br/>Modern software is built on APIs. Postman hel
 
 # We are hiring!
 
-Want to help make Postman us solve [these issues](https://github.com/postmanlabs/postman-app-support/issues)? [We are hiring](https://www.getpostman.com/jobs/) engineers! Postman has grown a lot since it started as a side-project. More than 5 million developers use Postman across thousands of companies across the world for everything API related. We are working hard to meet the expectations of the developer community. If you want to build something amazing with us, [reach out](https://www.getpostman.com/jobs/)!
+Want to help us solve [these issues](https://github.com/postmanlabs/postman-app-support/issues)? [We are hiring](https://www.getpostman.com/jobs/) engineers! Postman has grown a lot since it started as a side-project. More than 5 million developers use Postman across thousands of companies across the world for everything API related. We are working hard to meet the expectations of the developer community. If you want to build something amazing with us, [reach out](https://www.getpostman.com/jobs/)!
 
 # Postman App Support
 
@@ -33,7 +33,7 @@ Want early access to these features? Some of the enhancements are available in o
 
 If you are looking for more information regarding features, installation and usage of the app, head over to the <a target="_blank" href="https://www.getpostman.com/docs/">documentation section at our website</a>. You can also have a look at our blog at <a target="_blank" href="https://blog.getpostman.com">https://blog.getpostman.com</a> for interesting tutorials, development stories and platform updates.
 
-<a target="_blank" href="https://www.getpostman.com/">![Postman REST Client Screenshot](https://raw.githubusercontent.com/postmanlabs/postmanlabs.github.io/develop/global-artefacts/postman-app-screenshot-01.jpg)</a>
+![[screenshot](https://s3.amazonaws.com/postman-static-getpostman-com/postman-docs/authExample.png)](https://s3.amazonaws.com/postman-static-getpostman-com/postman-docs/authExample.png)
 
 ## Guidelines for reporting issues
 
