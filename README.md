@@ -3,7 +3,7 @@ _Supercharge your API workflow<br/>Modern software is built on APIs. Postman hel
 
 # We are hiring!
 
-Want to help make Postman us solve [these issues](https://github.com/postmanlabs/postman-app-support/issues)? [We are hiring](https://www.getpostman.com/jobs/) engineers! Postman has grown a lot since it started as a side-project. More than 5 million developers use Postman across thousands of companies across the world for everything API related. We are working hard to meet the expectations of the developer community. If you want to build something amazing with us, [reach out](https://www.getpostman.com/jobs/)!
+Want to help make Postman solve [these issues](https://github.com/postmanlabs/postman-app-support/issues)? [We are hiring](https://www.getpostman.com/jobs/) engineers! Postman has grown a lot since it started as a side-project. More than 5 million developers use Postman across thousands of companies across the world for everything API related. We are working hard to meet the expectations of the developer community. If you want to build something amazing with us, [reach out](https://www.getpostman.com/jobs/)!
 
 # Postman App Support
 
