@@ -22,8 +22,8 @@ If applicable, add screenshots to help explain your problem.
 
 **App information (please complete the following information):**
  - App Type [e.g. Chrome App, Native App]
- - Postman Version [e.g. 22]
- - OS: [e.g. iOS]
+ - Postman Version [e.g. 6.0.1]
+ - OS: [e.g. macOS High Sierra 10.13.2]
 
 **Additional context**
 Add any other context about the problem here.
