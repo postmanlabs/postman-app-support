@@ -4,6 +4,8 @@ about: Create a report to help us improve
 
 ---
 
+Please read through the [guidelines](https://github.com/postmanlabs/postman-app-support#guidelines-for-reporting-issues) before creating a new issue.
+
 **Describe the bug**
 A clear and concise description of what the bug is.
 
