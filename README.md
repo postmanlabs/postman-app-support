@@ -44,7 +44,7 @@ We have put together a short set of guidelines you can follow while adding an is
 
 2. If you are facing [Postman Cloud](https://www.getpostman.com/docs/cloud) related issue (such as sync, cloud-api, documenter, etc) and you want to include personal information such as your username or collection names, then mail us at [help@getpostman.com](mailto:help@getpostman.com).
 
-3. If you want to report a security issue in any Postman’s services or products, Read our [security reporting guidelines and policy](https://www.getpostman.com/vulnerability-reporting) for more details.
+3. If you want to report a security issue in any Postman’s services or products, read our [security reporting guidelines and policy](https://www.getpostman.com/vulnerability-reporting) for more details.
 
 4. Answer to questions along the lines of "How do I... in Postman" should be in our online documentation at [http://getpostman.com/docs](http://getpostman.com/docs). If you are unable to find a how-to guide in our online documentation, feel free to ask your question on our [Postman Community](#the-community).
 
