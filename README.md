@@ -44,11 +44,13 @@ We have put together a short set of guidelines you can follow while adding an is
 
 2. If you are facing [Postman Cloud](https://www.getpostman.com/docs/cloud) related issue (such as sync, cloud-api, documenter, etc) and you want to include personal information such as your username or collection names, then mail us at [help@getpostman.com](mailto:help@getpostman.com).
 
-3. Answer to questions along the lines of "How do I... in Postman" should be in our online documentation at [http://getpostman.com/docs](http://getpostman.com/docs). If you are unable to find a how-to guide in our online documentation, feel free to ask your question on our [Postman Community](#the-community).
+3. If you want to report a security issue in any Postman’s services or products, read our [security reporting guidelines and policy](https://www.getpostman.com/vulnerability-reporting) for more details.
 
-4. Before reporting an issue use the search feature on the issues page to check if there are issues similar to yours. A lot of issues are duplicates, and it is hard to keep track of them or respond when the issues are solved. If you find your issue already reported, feel free to add "+1" reaction and we will keep a note of it.
+4. Answer to questions along the lines of "How do I... in Postman" should be in our online documentation at [http://getpostman.com/docs](http://getpostman.com/docs). If you are unable to find a how-to guide in our online documentation, feel free to ask your question on our [Postman Community](#the-community).
 
-5. When reporting a new issue in the issue tracker, check whether it helps to answer the following questions:
+5. Before reporting an issue use the search feature on the issues page to check if there are issues similar to yours. A lot of issues are duplicates, and it is hard to keep track of them or respond when the issues are solved. If you find your issue already reported, feel free to add "+1" reaction and we will keep a note of it.
+
+6. When reporting a new issue in the issue tracker, check whether it helps to answer the following questions:
 
    - Which Postman App, Chrome and Operating System version you are using. You can check this out in _Settings -> About_ section.
 
