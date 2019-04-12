@@ -1,35 +1,27 @@
 <!--
-Welcome to the Postman Issue tracker. Any feature requests / bug reports can be posted here.
-Any security-related bugs should be reported directly to security@getpostman.com
+Please read through the [guidelines](https://github.com/postmanlabs/postman-app-support#guidelines-for-reporting-issues) before creating a new issue.
 -->
 
-## App Details:
-<!--
-Copy paste this from Settings > About
--->
-```
-Postman for Mac
-Version 4.11.0
-OS X 16.4.0 / x64
-```
+**Describe the bug**
+A clear and concise description of what the bug is.
 
-## Issue Report:
- 1. Did you encounter this recently, or has this bug always been there:
- 2. Expected behaviour:
- 3. Console logs (http://blog.getpostman.com/2014/01/27/enabling-chrome-developer-tools-inside-postman/ for the Chrome App, View->Toggle Dev Tools for the Mac app):
- 4. Screenshots (if applicable)
+**To Reproduce**
+Steps to reproduce the behavior:
+1. Go to '...'
+2. Click on '....'
+3. Scroll down to '....'
+4. See error
 
-<!--
-Steps to reproduce the problem
--->
+**Expected behavior**
+A clear and concise description of what you expected to happen.
 
+**Screenshots**
+If applicable, add screenshots to help explain your problem.
 
-<!--
-Some guidelines: 
+**App information (please complete the following information):**
+ - App Type [e.g. Chrome App, Native App]
+ - Postman Version [e.g. 7.0.0]
+ - OS: [e.g. macOS High Sierra 10.13.2]
 
-1. Please file Newman-related issues at https://github.com/postmanlabs/newman/issues
-
-2. If it’s a Cloud-related issue, or you want to include personal information like your username / collection names, mail us at help@getpostman.com
-
-3. If it’s a question (anything along the lines of “How do I … in Postman”), the answer might lie in our documentation - http://getpostman.com/docs.
--->
+**Additional context**
+Add any other context about the problem here.
