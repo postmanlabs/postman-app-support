@@ -7,7 +7,7 @@ Want to help us solve [these issues](https://github.com/postmanlabs/postman-app-
 
 # Postman App Support
 
-If you have a suggestion or an issue to report, please use this [Github issue tracker](https://github.com/postmanlabs/postman-app-support/issues). We recommend that you search the issue tracker to check if someone else has already reported the issue and whether there is a known solution that you can use. This probably is the fastest way for you to find a solution to any issue that you are facing.
+If you have a feature request or bug report, please use this [Github issue tracker](https://github.com/postmanlabs/postman-app-support/issues). We recommend that you search the issue tracker to check if someone else has already reported the issue and whether there is a known solution that you can use. This probably is the fastest way for you to find a solution to any issue that you are facing.
 
 If you are adding a bug report, please add steps to reproduce the bug, Postman version, Chrome version and OS version. Any additional files (collections, data dumps, console errors, screenshots) would be helpful. We have compiled a quick set of [guidelines for reporting issues](#guidelines-for-reporting-issues).
 
