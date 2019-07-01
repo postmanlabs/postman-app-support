@@ -22,7 +22,7 @@ Steps to reproduce the behavior:
 A clear and concise description of what you expected to happen.
 
 **Screenshots**
-If applicable, add screenshots to help explain your problem. Make sure the screenshot does not contain any API keys or access tokens. 
+If applicable, add screenshots to help explain your problem. Please make sure the screenshot does not contain any API keys or access tokens. 
 
 **App information (please complete the following information):**
  - App Type [e.g. Chrome App, Native App]
