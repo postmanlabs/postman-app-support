@@ -1,9 +1,9 @@
-<a href="https://www.getpostman.com/"><img src="https://assets.getpostman.com/common-share/postman-logo-horizontal-320x132.png" /></a><br />
+<a href="https://www.postman.com/"><img src="https://assets.getpostman.com/common-share/postman-logo-horizontal-320x132.png" /></a><br />
 _Manage all of your organization's APIs in Postman, with the industry's most complete API development environment._
 
 # We are hiring!
 
-Want to help us solve [these issues](https://github.com/postmanlabs/postman-app-support/issues)? [We are hiring](https://www.getpostman.com/jobs/) engineers! Postman has grown a lot since it started as a side-project. More than 5 million developers use Postman across thousands of companies across the world for everything API related. We are working hard to meet the expectations of the developer community. If you want to build something amazing with us, [reach out](https://www.getpostman.com/jobs/)!
+Want to help us solve [these issues](https://github.com/postmanlabs/postman-app-support/issues)? [We are hiring](https://www.postman.com/jobs/) engineers! Postman has grown a lot since it started as a side-project. More than 5 million developers use Postman across thousands of companies across the world for everything API related. We are working hard to meet the expectations of the developer community. If you want to build something amazing with us, [reach out](https://www.postman.com/jobs/)!
 
 # Postman App Support
 
@@ -14,7 +14,7 @@ If you are adding a bug report, please add steps to reproduce the bug, Postman v
 > **Account Specific Queries:**<br />
 > If you have any billing or account specific queries, reach out to us at [help@getpostman.com](mailto:help@getpostman.com).
 
-We are also there as [@postmanclient](https://www.twitter.com/postmanclient) on Twitter. Feel free to drop in a line wherever it is easiest for you. Twitter would be the best place for you to stay updated with latest news, features and releases regarding Postman.
+We are also there as [@getpostman](https://www.twitter.com/getpostman) on Twitter. Feel free to drop in a line wherever it is easiest for you. Twitter would be the best place for you to stay updated with latest news, features and releases regarding Postman.
 
 ### The Community
 
@@ -31,7 +31,7 @@ Want early access to these features? Some of the enhancements are available in o
 
 ### Documentation and Tutorials
 
-If you are looking for more information regarding features, installation and usage of the app, head over to the <a target="_blank" href="https://www.getpostman.com/docs/">documentation section at our website</a>. You can also have a look at our blog at <a target="_blank" href="https://blog.getpostman.com">https://blog.getpostman.com</a> for interesting tutorials, development stories and platform updates.
+If you are looking for more information regarding features, installation and usage of the app, head over to the <a target="_blank" href="https://learning.postman.com/">documentation section at our website</a>. You can also have a look at our blog at <a target="_blank" href="https://blog.postman.com">https://blog.postman.com</a> for interesting tutorials, development stories and platform updates.
 
 ![[screenshot](https://s3.amazonaws.com/postman-static-getpostman-com/postman-docs/authExample.png)](https://s3.amazonaws.com/postman-static-getpostman-com/postman-docs/authExample.png)
 
@@ -42,11 +42,11 @@ We have put together a short set of guidelines you can follow while adding an is
 1. This issue tracker is only for Postman App related issues, along with other services accessible from the app.
   If you have Newman specific issues, a better place to report them would be the Newman issue tracker at [https://github.com/postmanlabs/newman/issues](https://github.com/postmanlabs/newman/issues)
 
-2. If you are facing [Postman Cloud](https://www.getpostman.com/docs/cloud) related issue (such as sync, cloud-api, documenter, etc) and you want to include personal information such as your username or collection names, then mail us at [help@getpostman.com](mailto:help@getpostman.com).
+2. If you are facing a Postman Cloud related issue (such as sync, cloud-api, documenter, etc) and you want to include personal information such as your username or collection names, then mail us at [help@getpostman.com](mailto:help@getpostman.com).
 
-3. If you want to report a security issue in any Postman’s services or products, read our [security reporting guidelines and policy](https://www.getpostman.com/vulnerability-reporting) for more details.
+3. If you want to report a security issue in any Postman’s services or products, read our [security reporting guidelines and policy](https://www.postman.com/vulnerability-reporting) for more details.
 
-4. Answer to questions along the lines of "How do I... in Postman" should be in our online documentation at [http://getpostman.com/docs](http://getpostman.com/docs). If you are unable to find a how-to guide in our online documentation, feel free to ask your question on our [Postman Community](#the-community).
+4. Answer to questions along the lines of "How do I... in Postman" should be in our online documentation at [https://learning.postman.com/](https://learning.postman.com/). If you are unable to find a how-to guide in our online documentation, feel free to ask your question on our [Postman Community](#the-community).
 
 5. Before reporting an issue use the search feature on the issues page to check if there are issues similar to yours. A lot of issues are duplicates, and it is hard to keep track of them or respond when the issues are solved. If you find your issue already reported, feel free to add "+1" reaction and we will keep a note of it.
 
@@ -60,18 +60,18 @@ We have put together a short set of guidelines you can follow while adding an is
 
    - If it is a UI issue, a screenshot or GIF will help tremendously. (Tip: For quick gifs, check out [http://www.cockos.com/licecap/](http://www.cockos.com/licecap/))
 
-   - Do you have the [Postman Interceptor](https://www.getpostman.com/docs/capture) switched on? (applicable for the Chrome app)
+   - Do you have the [Postman Interceptor](https://learning.postman.com/docs/postman/sending-api-requests/capturing-http-requests/) switched on? (applicable for the Chrome app)
 
-   - If the request/response flow is not working, be sure to check and include details from the DevTools window (More on this at [https://www.getpostman.com/docs/errors](https://www.getpostman.com/docs/errors)).
+   - If the request/response flow is not working, be sure to check and include details from the DevTools window (More on this at [https://learning.postman.com/docs/postman/sending-api-requests/debugging-and-logs/](https://learning.postman.com/docs/postman/sending-api-requests/debugging-and-logs/)).
 
 ## About Postman
 
 Postman is a powerful API testing suite which has become a must-have tool for many developers. We make beautiful products to build amazing APIs and improve developer productivity. Postman is now used by well over a million developers around the world, and this number is rapidly growing. With more products in the pipeline, we aim to provide the most comprehensive API development and testing solution to developers.
 
-Read more on our website: [https://www.getpostman.com/](https://www.getpostman.com/)
+Read more on our website: [https://www.postman.com/](https://www.postman.com/)
 
 ---
 
 If you have issues or code contribution pertaining to Postman legacy version, head over to the [postmanlabs/postman-chrome-extension-legacy](https://github.com/postmanlabs/postman-chrome-extension-legacy) repository.
 
-[![Analytics](https://ga-beacon.appspot.com/UA-43979731-9/postman-app-support/readme)](https://www.getpostman.com)
+[![Analytics](https://ga-beacon.appspot.com/UA-43979731-9/postman-app-support/readme)](https://www.postman.com)
