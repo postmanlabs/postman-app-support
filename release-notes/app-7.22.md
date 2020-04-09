@@ -1,4 +1,4 @@
-# Postman v7.22.0
+# Postman v7.22.1
 
 Hello. We hope you’re safe and well. There’s a lot going on right now, so we really appreciate you taking the time to read about what we’ve we released to make working with APIs easier.
 
@@ -15,8 +15,6 @@ Get the latest version of the app here: https://www.postman.com/downloads/
 * On top of that, you can now directly import a GraphQL schema as an API
 [#6719](https://github.com/postmanlabs/postman-app-support/issues/6719).
 * If you want to suggest changes to a collection but you’re only a Viewer, you can now fork the collection, make your changes and create a pull request to have them reviewed.
-* We upped how much you can zoom in from 150%-500%, so you can appreciate the beauty of every individual pixel
-[#8130](https://github.com/postmanlabs/postman-app-support/issues/8130).
 * We moved the “Use Token” button to the top of the OAuth 2.0 “Manage Access Tokens” screen, so you won’t have to scroll in order to find it. We also found and fixed a related issue where the “Get New Access Token” screen would overflow, hiding buttons and form fields
 [#8067](https://github.com/postmanlabs/postman-app-support/issues/8067).
 * The tooltips for the response’s status, time and size were a bit temperamental. Now they won’t disappear the instant you move your cursor.
