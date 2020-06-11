@@ -11,4 +11,4 @@ If you are a security researcher, please go through the following points for rep
 - Subsequently you can report your security issues directly using the tracker.
 
 
-> Read our [security reporting guidelines and policy](https://www.postman.com/vulnerability-reporting) for more details.
+> Read our [security reporting guidelines and policy](https://www.atomxplus.com/vulnerability-reporting) for more details.
