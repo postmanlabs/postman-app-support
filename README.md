@@ -19,7 +19,7 @@ We are also there as [@getpostman](https://www.twitter.com/getpostman) on Twitte
 ### The Community
 
 <img src="https://avatars1.githubusercontent.com/u/3220138?v=3&s=120" align="right" />
-The <a href="https://community.getpostman.com">Postman Community Forum</a> offers you different ways to engage with other Postman enthusiasts. Feel free to drop by and say hello.<br />
+<a href="https://community.postman.com">The Postman Community Forum</a> offers you different ways to engage with other Postman enthusiasts. Feel free to drop by and say hello.<br />
 
 Sign in using your Postman account to participate in the discussions. Don’t want to log in? Then lurk on the sidelines and absorb all the knowledge.
 
@@ -33,7 +33,7 @@ Want early access to these features? Some of the enhancements are available in o
 
 If you are looking for more information regarding features, installation and usage of the app, head over to the <a target="_blank" href="https://learning.postman.com/">documentation section at our website</a>. You can also have a look at our blog at <a target="_blank" href="https://blog.postman.com">https://blog.postman.com</a> for interesting tutorials, development stories and platform updates.
 
-![[screenshot](https://s3.amazonaws.com/postman-static-getpostman-com/postman-docs/authExample.png)](https://s3.amazonaws.com/postman-static-getpostman-com/postman-docs/authExample.png)
+![[screenshot](https://assets.postman.com/postman-docs/readme-image.png](https://assets.postman.com/postman-docs/readme-image.png)
 
 ## Guidelines for reporting issues
 
