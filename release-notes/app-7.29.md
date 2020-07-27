@@ -8,9 +8,8 @@ Here’s what you can find in this Postman release:
 
 ### Improvements
 
-* No more orphaned API elements. If an element - collection, API, environment, etc. - is only in a single workspace it can no longer be removed from that workspace
+* A collection or environment that exists only in a single workspace, cannot be removed, but only deleted or shared
 [#4509](https://github.com/postmanlabs/postman-app-support/issues/4509)
-* When using the workspace switcher, users with only an Admin or Billing role will see more helpful information letting them know how to join a workspace.
 * When using the workspace switcher, you can now use your keyboard’s arrow keys to navigate between the menu options.
 * When importing an OpenAPI specification, there is now support for parameter serialization.
 
