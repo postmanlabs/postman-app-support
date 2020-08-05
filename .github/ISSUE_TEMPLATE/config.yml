@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security Vulnerability
+    url: https://github.com/postmanlabs/postman-app-support/security/policy
+    about: Read our security policy and report vulnerabilities
+  - name: Postman Learning Center
+    url: https://learning.postman.com
+    about: Learn how to use Postman in our Learning Center 
+  - name: Postman Community Forum
+    url: https://community.postman.com
+    about: Get support and connect to the community on our forum
