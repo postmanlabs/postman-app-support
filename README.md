@@ -1,15 +1,11 @@
 <a href="https://www.postman.com/"><img src="https://assets.getpostman.com/common-share/postman-logo-horizontal-320x132.png" /></a><br />
 _Manage all of your organization's APIs in Postman, with the industry's most complete API development environment._
 
-# We are hiring!
-
-Want to help us solve [these issues](https://github.com/postmanlabs/postman-app-support/issues)? [We are hiring](https://www.postman.com/jobs/) engineers! Postman has grown a lot since it started as a side-project. More than 5 million developers use Postman across thousands of companies across the world for everything API related. We are working hard to meet the expectations of the developer community. If you want to build something amazing with us, [reach out](https://www.postman.com/jobs/)!
-
 # Postman App Support
 
 If you have a feature request or bug report, please use this [Github issue tracker](https://github.com/postmanlabs/postman-app-support/issues). We recommend that you search the issue tracker to check if someone else has already reported the issue and whether there is a known solution that you can use. This probably is the fastest way for you to find a solution to any issue that you are facing.
 
-If you are adding a bug report, please add steps to reproduce the bug, Postman version, Chrome version and OS version. Any additional files (collections, data dumps, console errors, screenshots) would be helpful. We have compiled a quick set of [guidelines for reporting issues](#guidelines-for-reporting-issues).
+If you are adding a bug report, please add steps to reproduce the bug, Postman version and OS version. Any additional files (collections, data dumps, console errors, screenshots) would be very helpful. We have compiled a quick set of [guidelines for reporting issues](#guidelines-for-reporting-issues).
 
 > **Account Specific Queries:**<br />
 > If you have any billing or account specific queries, reach out to us at [help@postman.com](mailto:help@postman.com).
@@ -25,7 +21,7 @@ Sign in using your Postman account to participate in the discussions. Don’t wa
 
 ### Product Roadmap
 
-If you are curious about the features and enhancements planned for upcoming releases, check out Postman's roadmap for developers at [https://trello.com/b/4N7PnHAz/postman-roadmap-for-developers](https://trello.com/b/4N7PnHAz/postman-roadmap-for-developers).
+If you are curious about the features and enhancements planned for upcoming releases, check out [Postman's roadmap](https://trello.com/b/4N7PnHAz/postman-roadmap-for-developers).
 
 Want early access to these features? Some of the enhancements are available in our latest Canary builds available for download on OSX ([x64](https://dl.pstmn.io/download/channel/canary/osx_64)) / Windows ([x86](https://dl.pstmn.io/download/channel/canary/windows_32) or [x64](https://dl.pstmn.io/download/channel/canary/windows_64)) / Linux ([x86](https://dl.pstmn.io/download/channel/canary/linux_32) or [x64](https://dl.pstmn.io/download/channel/canary/linux_64)). 
 
@@ -44,15 +40,15 @@ We have put together a short set of guidelines you can follow while adding an is
 
 2. If you are facing a Postman Cloud related issue (such as sync, cloud-api, documenter, etc) and you want to include personal information such as your username or collection names, then mail us at [help@postman.com](mailto:help@postman.com).
 
-3. If you want to report a security issue in any Postman’s services or products, read our [security reporting guidelines and policy](https://www.postman.com/vulnerability-reporting) for more details.
+3. If you want to report a security issue in any of Postman’s services or products, read our [security reporting guidelines and policy](https://www.postman.com/vulnerability-reporting) for more details.
 
-4. Answer to questions along the lines of "How do I... in Postman" should be in our online documentation at [https://learning.postman.com/](https://learning.postman.com/). If you are unable to find a how-to guide in our online documentation, feel free to ask your question on our [Postman Community](#the-community).
+4. Answer to questions along the lines of "How do I... in Postman" should be in our online documentation at [https://learning.postman.com/](https://learning.postman.com/). If you are unable to find a how-to guide in our online documentation, feel free to ask your question on our [Postman Community Forum](https://community.postman.com).
 
 5. Before reporting an issue use the search feature on the issues page to check if there are issues similar to yours. A lot of issues are duplicates, and it is hard to keep track of them or respond when the issues are solved. If you find your issue already reported, feel free to add "+1" reaction and we will keep a note of it.
 
 6. When reporting a new issue in the issue tracker, check whether it helps to answer the following questions:
 
-   - Which Postman App, Chrome and Operating System version you are using. You can check this out in _Settings -> About_ section.
+   - Which Postman App and Operating System version you are using. You can check this out in _Settings -> About_ section.
 
    - Is the bug reproducible every time, or do you see it occasionally?
 
@@ -63,10 +59,14 @@ We have put together a short set of guidelines you can follow while adding an is
    - Do you have the [Postman Interceptor](https://learning.postman.com/docs/postman/sending-api-requests/capturing-http-requests/) switched on? (applicable for the Chrome app)
 
    - If the request/response flow is not working, be sure to check and include details from the DevTools window (More on this at [https://learning.postman.com/docs/postman/sending-api-requests/debugging-and-logs/](https://learning.postman.com/docs/postman/sending-api-requests/debugging-and-logs/)).
+   
+# We are hiring!
+
+Want to help us solve [these issues](https://github.com/postmanlabs/postman-app-support/issues)? [We are hiring](https://www.postman.com/jobs/) engineers! Postman has grown a lot since it started as a side-project. More than 10 million people use Postman within thousands of companies across the world for everything API related. We are working hard to meet the expectations of the Postman community. If you want to build something amazing with us, [reach out](https://www.postman.com/jobs/)!
 
 ## About Postman
 
-Postman is a powerful API testing suite which has become a must-have tool for many developers. We make beautiful products to build amazing APIs and improve developer productivity. Postman is now used by well over a million developers around the world, and this number is rapidly growing. With more products in the pipeline, we aim to provide the most comprehensive API development and testing solution to developers.
+Postman is a collaboration platform for API development. Postman's features simplify each step of building an API and streamline collaboration so you can create better APIs—faster.
 
 Read more on our website: [https://www.postman.com/](https://www.postman.com/)
 
