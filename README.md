@@ -1,10 +1,6 @@
 <a href="https://www.postman.com/"><img src="https://assets.getpostman.com/common-share/postman-logo-horizontal-320x132.png" /></a><br />
 _Manage all of your organization's APIs in Postman, with the industry's most complete API development environment._
 
-# We are hiring!
-
-Want to help us solve [these issues](https://github.com/postmanlabs/postman-app-support/issues)? [We are hiring](https://www.postman.com/jobs/) engineers! Postman has grown a lot since it started as a side-project. More than 10 million people use Postman within thousands of companies across the world for everything API related. We are working hard to meet the expectations of the Postman community. If you want to build something amazing with us, [reach out](https://www.postman.com/jobs/)!
-
 # Postman App Support
 
 If you have a feature request or bug report, please use this [Github issue tracker](https://github.com/postmanlabs/postman-app-support/issues). We recommend that you search the issue tracker to check if someone else has already reported the issue and whether there is a known solution that you can use. This probably is the fastest way for you to find a solution to any issue that you are facing.
@@ -63,6 +59,10 @@ We have put together a short set of guidelines you can follow while adding an is
    - Do you have the [Postman Interceptor](https://learning.postman.com/docs/postman/sending-api-requests/capturing-http-requests/) switched on? (applicable for the Chrome app)
 
    - If the request/response flow is not working, be sure to check and include details from the DevTools window (More on this at [https://learning.postman.com/docs/postman/sending-api-requests/debugging-and-logs/](https://learning.postman.com/docs/postman/sending-api-requests/debugging-and-logs/)).
+   
+# We are hiring!
+
+Want to help us solve [these issues](https://github.com/postmanlabs/postman-app-support/issues)? [We are hiring](https://www.postman.com/jobs/) engineers! Postman has grown a lot since it started as a side-project. More than 10 million people use Postman within thousands of companies across the world for everything API related. We are working hard to meet the expectations of the Postman community. If you want to build something amazing with us, [reach out](https://www.postman.com/jobs/)!
 
 ## About Postman
 
