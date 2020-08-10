@@ -16,5 +16,5 @@
 [#8825](https://github.com/postmanlabs/postman-app-support/issues/8825)
 * Fixed a bug where IPv6 requests didn't work with the next-generation URL processor
 [#8847](https://github.com/postmanlabs/postman-app-support/issues/8847)
-* Fixed a bug where saving response was not persisting the last chosen directory
+* Fixed a bug where saving a response was not persisting the last chosen directory
 [#8864](https://github.com/postmanlabs/postman-app-support/issues/8864)
