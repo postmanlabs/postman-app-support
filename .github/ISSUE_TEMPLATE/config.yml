@@ -6,3 +6,6 @@ contact_links:
   - name: Postman Community Forum
     url: https://community.postman.com
     about: Get support and connect to the community on our forum
+  - name: Support Center
+    url: https://support.postman.com/hc/en-us/requests/new/
+    about: Reach out to Postman Support 
