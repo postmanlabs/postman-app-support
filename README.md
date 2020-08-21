@@ -3,9 +3,13 @@ _Manage all of your organization's APIs in Postman, with the industry's most com
 
 # Postman App Support
 
-If you have a feature request or bug report, please use this [Github issue tracker](https://github.com/postmanlabs/postman-app-support/issues). We recommend that you search the issue tracker to check if someone else has already reported the issue and whether there is a known solution that you can use. This probably is the fastest way for you to find a solution to any issue that you are facing.
+If you have a feature request, a new integration idea or you would like to file a bug report, please use this [Github issue tracker](https://github.com/postmanlabs/postman-app-support/issues). 
 
-If you are adding a bug report, please add steps to reproduce the bug, Postman version and OS version. Any additional files (collections, data dumps, console errors, screenshots) would be very helpful. We have compiled a quick set of [guidelines for reporting issues](#guidelines-for-reporting-issues).
+We _recommend_ that you search the issue tracker to check if someone else has already reported the issue and whether there is a known solution that you can use. This would be the fastest way for you to find a solution to any issue that you are currently facing.
+
+If you are adding a bug report, please add detailed steps to reproduce the bug, the Postman version you're using and your OS version. Any additional files (collections, data dumps, console errors, screenshots) would be very helpful and would help us to narrow down the issue as quickly as possible. 
+
+We have compiled a quick set of [guidelines for reporting issues](#guidelines-for-reporting-issues).
 
 > **Account Specific Queries:**<br />
 > If you have any billing or account specific queries, reach out to us at [help@postman.com](mailto:help@postman.com).
@@ -44,7 +48,7 @@ We have put together a short set of guidelines you can follow while adding an is
 
 4. Answer to questions along the lines of "How do I... in Postman" should be in our online documentation at [https://learning.postman.com/](https://learning.postman.com/). If you are unable to find a how-to guide in our online documentation, feel free to ask your question on our [Postman Community Forum](https://community.postman.com).
 
-5. Before reporting an issue use the search feature on the issues page to check if there are issues similar to yours. A lot of issues are duplicates, and it is hard to keep track of them or respond when the issues are solved. If you find your issue already reported, feel free to add "+1" reaction and we will keep a note of it.
+5. Before reporting an issue use the search feature on the issues page to check if there are issues similar to yours. A lot of issues are duplicates, and it is hard to keep track of them or respond when the issues are solved. If you find your issue already reported, feel free to add "thumbs up" reaction and we will keep a note of it.
 
 6. When reporting a new issue in the issue tracker, check whether it helps to answer the following questions:
 
@@ -55,6 +59,8 @@ We have put together a short set of guidelines you can follow while adding an is
    - Did you first encounter it recently, or has it always been there?
 
    - If it is a UI issue, a screenshot or GIF will help tremendously. (Tip: For quick gifs, check out [http://www.cockos.com/licecap/](http://www.cockos.com/licecap/))
+   
+   - If the issue is related to a script in the sandbox, attach the full code snippet and ensure that this is formatted correctly using the code block [markdown syntax](https://docs.github.com/en/github/writing-on-github/creating-and-highlighting-code-blocks) 
 
    - Do you have the [Postman Interceptor](https://learning.postman.com/docs/postman/sending-api-requests/capturing-http-requests/) switched on? (applicable for the Chrome app)
 
