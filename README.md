@@ -78,4 +78,4 @@ Read more on our website: [https://www.postman.com/](https://www.postman.com/)
 
 ---
 
-If you have issues or code contributions about the Postman legacy version, head over to the [postmanlabs/postman-chrome-extension-legacy](https://github.com/postmanlabs/postman-chrome-extension-legacy) repository.
+If you have issues or code contribution pertaining to Postman legacy version, head over to the [postmanlabs/postman-chrome-extension-legacy](https://github.com/postmanlabs/postman-chrome-extension-legacy) repository.
