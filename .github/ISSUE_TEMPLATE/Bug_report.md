@@ -12,11 +12,11 @@ Please read through the [guidelines](https://github.com/postmanlabs/postman-app-
 The more information that you can provide when raising an issue, will give us the best possible chance to quickly get to the root of the problem.
 -->
 
-**Describe The Issue**
+**Describe the Issue**
 
 > A high-level summary or description of the problem that you're facing.
 
-**Steps To Reproduce**
+**Steps to Reproduce**
 
 > A list of steps that can be followed to recreate the issue.
 
