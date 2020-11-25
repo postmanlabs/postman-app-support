@@ -1,5 +1,8 @@
 blank_issues_enabled: false
 contact_links:
+  - name: Postman Documentation Issues
+    url: https://github.com/postmanlabs/postman-docs/issues/new
+    about: Please file all documentation related issues here
   - name: Postman Learning Center
     url: https://learning.postman.com
     about: Learn how to use Postman in our Learning Center 
