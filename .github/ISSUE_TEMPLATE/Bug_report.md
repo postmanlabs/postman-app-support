@@ -1,6 +1,6 @@
 ---
 name: Bug report
-about: Create a report to help us improve
+about: Report an issue with the Postman platform
 title: ''
 labels: ''
 assignees: ''
@@ -9,28 +9,30 @@ assignees: ''
 
 <!--
 Please read through the [guidelines](https://github.com/postmanlabs/postman-app-support#guidelines-for-reporting-issues) before creating a new issue.
+Provide as much information as you can as this will give us the best possible chance to quickly get to the root of the problem.
 -->
 
-**Describe the bug**
-A clear and concise description of what the bug is.
+**Describe the Issue**
 
-**To Reproduce**
-Steps to reproduce the behavior:
-1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See error
+> A high-level summary or description of the problem that you're facing.
 
-**Expected behavior**
-A clear and concise description of what you expected to happen.
+**Steps to Reproduce**
 
-**Screenshots**
-If applicable, add screenshots to help explain your problem. Please make sure the screenshot does not contain any sensitive information such as API keys or access tokens. 
+> A list of steps that can be followed to recreate the issue.
 
-**App information (please complete the following information):**
- - App Type [e.g. Chrome App, Native App]
- - Postman Version [e.g. 6.0.1]
- - OS: [e.g. macOS High Sierra 10.13.2]
 
-**Additional context**
-Add any other context about the problem here.
+**Screenshots or Videos**
+
+> Please add screenshots or a short video to help visually explain the problem. 
+> Ensure that the screenshots/videos do not contain any sensitive information such as API keys or Access Tokens. 
+
+
+**Environment Information**
+
+ - Platform Type: [e.g. Native Desktop App, Postman On The Web, Web Dashboard]
+ - Postman Version:
+ - Operating System:
+
+**Additional Context**
+
+> Please add any other contextual information about the problem, that might be relevant and help explain the issue you're facing.
