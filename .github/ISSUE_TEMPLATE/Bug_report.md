@@ -9,7 +9,7 @@ assignees: ''
 
 <!--
 Please read through the [guidelines](https://github.com/postmanlabs/postman-app-support#guidelines-for-reporting-issues) before creating a new issue.
-The more information that you can provide when raising an issue, will give us the best possible chance to quickly get to the root of the problem.
+Provide as much information as you can as this will give us the best possible chance to quickly get to the root of the problem.
 -->
 
 **Describe the Issue**
