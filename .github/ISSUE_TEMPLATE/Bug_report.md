@@ -13,26 +13,28 @@ Provide as much information as you can as this will give us the best possible ch
 -->
 
 **Describe the Issue**
-
-> A high-level summary or description of the problem that you're facing.
+<!--
+A high-level summary or description of the problem that you're facing.
+-->
 
 **Steps to Reproduce**
-
-> A list of steps that can be followed to recreate the issue.
-
+<!--
+A list of steps that can be followed to recreate the issue.
+-->
 
 **Screenshots or Videos**
-
-> Please add screenshots or a short video to help visually explain the problem. 
-> Ensure that the screenshots/videos do not contain any sensitive information such as API keys or Access Tokens. 
-
+<!--
+Please add screenshots or a short video to help visually explain the problem. 
+Ensure that the screenshots/videos do not contain any sensitive information such as API keys or Access Tokens. 
+-->
 
 **Environment Information**
 
- - Platform Type: [e.g. Native Desktop App, Postman On The Web, Web Dashboard]
+ - Platform Type: 
  - Postman Version:
  - Operating System:
 
 **Additional Context**
-
-> Please add any other contextual information about the problem, that might be relevant and help explain the issue you're facing.
+<!--
+Please add any other contextual information about the problem, that might be relevant and help explain the issue you're facing.
+-->
