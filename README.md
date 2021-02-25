@@ -33,7 +33,7 @@ Want early access to these features? Some of the enhancements are available in o
 
 If you are looking for more information regarding features, installation, and usage of the app, head over to the <a target="_blank" href="https://learning.postman.com/">documentation section on our website</a>. You can also have a look at our blog at <a target="_blank" href="https://blog.postman.com">https://blog.postman.com</a> for interesting tutorials, development stories, and platform updates.
 
-![[screenshot](https://assets.postman.com/postman-docs/readme-image.png](https://assets.postman.com/postman-docs/readme-image.png)
+![[screenshot](https://assets.postman.com/postman-docs/postman-app-default-v8.jpg](https://assets.postman.com/postman-docs/postman-app-default-v8.jpg)
 
 ## Guidelines for reporting issues
 
