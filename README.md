@@ -3,14 +3,18 @@ _Manage all of your organization's APIs in Postman, with the industry's most com
 
 # Postman App Support
 
-If you have a feature request or bug report, please use this [Github issue tracker](https://github.com/postmanlabs/postman-app-support/issues). We recommend that you search the issue tracker to check if someone else has already reported the issue and whether there is a known solution that you can use. This probably is the fastest way for you to find a solution to any issue that you are facing.
+If you have a feature request, a new integration idea or you would like to file a bug report, please use this [Github issue tracker](https://github.com/postmanlabs/postman-app-support/issues). 
 
-If you are adding a bug report, please add steps to reproduce the bug, Postman version and OS version. Any additional files (collections, data dumps, console errors, screenshots) would be very helpful. We have compiled a quick set of [guidelines for reporting issues](#guidelines-for-reporting-issues).
+We _recommend_ that you search the issue tracker to check if someone else has already reported the issue and whether there is a known solution that you can use. This would be the fastest way for you to find a solution to any issue that you are currently facing.
+
+If you are adding a bug report, please add detailed steps to reproduce the bug, the Postman version you're using, and your OS version. Any additional files (collections, data dumps, console errors, screenshots) would be very helpful and would help us to narrow down the issue as quickly as possible. 
+
+We have compiled a quick set of [guidelines for reporting issues](#guidelines-for-reporting-issues).
 
 > **Account Specific Queries:**<br />
-> If you have any billing or account specific queries, reach out to us at [help@postman.com](mailto:help@postman.com).
+> If you have any billing or account-specific queries, reach out to us at [help@postman.com](mailto:help@postman.com).
 
-We are also there as [@getpostman](https://www.twitter.com/getpostman) on Twitter. Feel free to drop in a line wherever it is easiest for you. Twitter would be the best place for you to stay updated with latest news, features and releases regarding Postman.
+We are also there as [@getpostman](https://www.twitter.com/getpostman) on Twitter. Feel free to drop in a line wherever it is easiest for you. Twitter would be the best place for you to stay updated with the latest news, features, and releases regarding Postman.
 
 ### The Community
 
@@ -27,9 +31,9 @@ Want early access to these features? Some of the enhancements are available in o
 
 ### Documentation and Tutorials
 
-If you are looking for more information regarding features, installation and usage of the app, head over to the <a target="_blank" href="https://learning.postman.com/">documentation section at our website</a>. You can also have a look at our blog at <a target="_blank" href="https://blog.postman.com">https://blog.postman.com</a> for interesting tutorials, development stories and platform updates.
+If you are looking for more information regarding features, installation, and usage of the app, head over to the <a target="_blank" href="https://learning.postman.com/">documentation section on our website</a>. You can also have a look at our blog at <a target="_blank" href="https://blog.postman.com">https://blog.postman.com</a> for interesting tutorials, development stories, and platform updates.
 
-![[screenshot](https://assets.postman.com/postman-docs/readme-image.png](https://assets.postman.com/postman-docs/readme-image.png)
+![[screenshot](https://assets.postman.com/postman-docs/postman-app-default-v8.jpg](https://assets.postman.com/postman-docs/postman-app-default-v8.jpg)
 
 ## Guidelines for reporting issues
 
@@ -38,13 +42,13 @@ We have put together a short set of guidelines you can follow while adding an is
 1. This issue tracker is only for Postman App related issues, along with other services accessible from the app.
   If you have Newman specific issues, a better place to report them would be the Newman issue tracker at [https://github.com/postmanlabs/newman/issues](https://github.com/postmanlabs/newman/issues)
 
-2. If you are facing a Postman Cloud related issue (such as sync, cloud-api, documenter, etc) and you want to include personal information such as your username or collection names, then mail us at [help@postman.com](mailto:help@postman.com).
+2. If you are facing a Postman Cloud-related issue (such as sync, cloud-api, documenter, etc) and you want to include personal information such as your username or collection names, then mail us at [help@postman.com](mailto:help@postman.com).
 
 3. If you want to report a security issue in any of Postman’s services or products, read our [security reporting guidelines and policy](https://www.postman.com/vulnerability-reporting) for more details.
 
 4. Answer to questions along the lines of "How do I... in Postman" should be in our online documentation at [https://learning.postman.com/](https://learning.postman.com/). If you are unable to find a how-to guide in our online documentation, feel free to ask your question on our [Postman Community Forum](https://community.postman.com).
 
-5. Before reporting an issue use the search feature on the issues page to check if there are issues similar to yours. A lot of issues are duplicates, and it is hard to keep track of them or respond when the issues are solved. If you find your issue already reported, feel free to add "+1" reaction and we will keep a note of it.
+5. Before reporting an issue use the search feature on the issues page to check if there are issues similar to yours. A lot of issues are duplicates, and it is hard to keep track of them or respond when the issues are solved. If you find your issue already reported, feel free to add a "thumbs up" reaction and we will keep a note of it.
 
 6. When reporting a new issue in the issue tracker, check whether it helps to answer the following questions:
 
@@ -55,6 +59,8 @@ We have put together a short set of guidelines you can follow while adding an is
    - Did you first encounter it recently, or has it always been there?
 
    - If it is a UI issue, a screenshot or GIF will help tremendously. (Tip: For quick gifs, check out [http://www.cockos.com/licecap/](http://www.cockos.com/licecap/))
+   
+   - If the issue is related to a script in the sandbox, attach the full code snippet and ensure that this is formatted correctly using the code block [markdown syntax](https://docs.github.com/en/github/writing-on-github/creating-and-highlighting-code-blocks) 
 
    - Do you have the [Postman Interceptor](https://learning.postman.com/docs/postman/sending-api-requests/capturing-http-requests/) switched on? (applicable for the Chrome app)
 
@@ -73,5 +79,3 @@ Read more on our website: [https://www.postman.com/](https://www.postman.com/)
 ---
 
 If you have issues or code contribution pertaining to Postman legacy version, head over to the [postmanlabs/postman-chrome-extension-legacy](https://github.com/postmanlabs/postman-chrome-extension-legacy) repository.
-
-[![Analytics](https://ga-beacon.appspot.com/UA-43979731-9/postman-app-support/readme)](https://www.postman.com)
