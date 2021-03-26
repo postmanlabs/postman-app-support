@@ -1,0 +1,13 @@
+name: Greetings
+
+on: [pull_request, issues]
+
+jobs:
+  greeting:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/first-interaction@v1
+      with:
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        issue-message: '<h3>Thank you for the issue, be calm and keep patience :smile:, we will review it soon</h3><h4>Till that time make sure to check our official website:- <a href="https://www.postman.com/">https://www.postman.com/</a></h4>'
+        pr-message: '<h3>Thank you for the pull request, be calm and keep patience :smile:, we will review it soon</h3><h4>Till that time make sure to check our official website:- <a href="https://www.postman.com/">https://www.postman.com/</a></h4>'
