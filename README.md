@@ -12,7 +12,7 @@ If you are adding a bug report, please add detailed steps to reproduce the bug, 
 We have compiled a quick set of [guidelines for reporting issues](#guidelines-for-reporting-issues).
 
 > **Account Specific Queries:**<br />
-> If you have any billing or account-specific queries, reach out to us at [help@postman.com](mailto:help@postman.com).
+> If you have any billing or account-specific queries, reach out to us by submitting a ticket on our [support page](https://www.postman.com/support/).
 
 We are also there as [@getpostman](https://www.twitter.com/getpostman) on Twitter. Feel free to drop in a line wherever it is easiest for you. Twitter would be the best place for you to stay updated with the latest news, features, and releases regarding Postman.
 
@@ -42,7 +42,7 @@ We have put together a short set of guidelines you can follow while adding an is
 1. This issue tracker is only for Postman App related issues, along with other services accessible from the app.
   If you have Newman specific issues, a better place to report them would be the Newman issue tracker at [https://github.com/postmanlabs/newman/issues](https://github.com/postmanlabs/newman/issues)
 
-2. If you are facing a Postman Cloud-related issue (such as sync, cloud-api, documenter, etc) and you want to include personal information such as your username or collection names, then mail us at [help@postman.com](mailto:help@postman.com).
+2. If you are facing a Postman Cloud-related issue (such as sync, cloud-api, documenter, etc) and you want to include personal information such as your username or collection names, reach out to us by submitting a ticket on our [support page](https://www.postman.com/support/).
 
 3. If you want to report a security issue in any of Postman’s services or products, read our [security reporting guidelines and policy](https://www.postman.com/vulnerability-reporting) for more details.
 
