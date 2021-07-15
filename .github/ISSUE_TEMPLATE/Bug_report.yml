@@ -4,9 +4,8 @@ title: "<title>"
 body:
 - type: checkboxes
   attributes:
-    label: Is there an [existing issue](https://github.com/postmanlabs/postman-app-support/issues) for this?
+    label: Is there an existing issue for this?
     description: Please search to see if an issue already exists for the issue you encountered.
-    render: markdown
     options:
     - label: I have searched the existing issues
       required: true
