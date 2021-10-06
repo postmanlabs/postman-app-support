@@ -1,6 +1,6 @@
 name: Bug Report
 description: Report an issue with the Postman platform. 
-title: "Replace With Issue Title"
+title: "<<REPLACE WITH ISSUE TITLE>>"
 body:
 - type: checkboxes
   attributes:
