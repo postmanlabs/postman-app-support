@@ -1,6 +1,6 @@
 name: Bug Report
 description: Report an issue with the Postman platform. 
-title: ""
+title: " "
 body:
 - type: checkboxes
   attributes:
