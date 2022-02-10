@@ -1,13 +1,13 @@
 name: Bug Report
 description: Report an issue with the Postman platform. 
-title: "<<REPLACE WITH ISSUE TITLE>>"
+title: ""
 body:
 - type: checkboxes
   attributes:
     label: Is there an existing issue for this?
     description: Please search to see if an issue already exists for the issue you encountered. Duplicate issues will be closed. [Github Issue Tracker](https://github.com/postmanlabs/postman-app-support/issues)
     options:
-    - label: I have searched the existing issues
+    - label: I have searched the tracker for existing similar issues
       required: true
 - type: textarea
   attributes:
