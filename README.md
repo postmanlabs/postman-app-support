@@ -1,5 +1,5 @@
 <a href="https://www.postman.com/"><img src="https://assets.getpostman.com/common-share/postman-logo-horizontal-320x132.png" /></a><br />
-_Manage all of your organization's APIs in Postman, with the industry's most complete API development environment._
+_Postman is an API platform for building and using APIs. Postman simplifies each step of the API lifecycle and streamlines collaboration so you can create better APIs—faster._
 
 # Postman App Support
 
