@@ -1,4 +1,4 @@
-<a href="https://www.postman.com/"><img src="https://assets.getpostman.com/common-share/postman-logo-horizontal-320x132.png" /></a><br />
+<a href="https://www.postman.com/"><img src="https://voyager.postman.com/illustration/toolbox-postman.svg" /></a><br />
 _Postman is an API platform for building and using APIs. Postman simplifies each step of the API lifecycle and streamlines collaboration so you can create better APIs—faster._
 
 # Postman App Support
@@ -27,13 +27,11 @@ Sign in using your Postman account to participate in the discussions. Don’t wa
 
 If you are curious about the features and enhancements planned for upcoming releases, check out [Postman's roadmap](https://trello.com/b/4N7PnHAz/postman-roadmap-for-developers).
 
-Want early access to these features? Some of the enhancements are available in our latest Canary builds available for download on OSX ([x64](https://dl.pstmn.io/download/channel/canary/osx_64)) / Windows ([x86](https://dl.pstmn.io/download/channel/canary/windows_32) or [x64](https://dl.pstmn.io/download/channel/canary/windows_64)) / Linux ([x86](https://dl.pstmn.io/download/channel/canary/linux_32) or [x64](https://dl.pstmn.io/download/channel/canary/linux_64)). 
+Want early access to these features? Some of the enhancements are available in our latest Canary builds, [available for download here](https://www.postman.com/downloads/canary/).
 
 ### Documentation and Tutorials
 
 If you are looking for more information regarding features, installation, and usage of the app, head over to the <a target="_blank" href="https://learning.postman.com/">documentation section on our website</a>. You can also have a look at our blog at <a target="_blank" href="https://blog.postman.com">https://blog.postman.com</a> for interesting tutorials, development stories, and platform updates.
-
-![[screenshot](https://assets.postman.com/postman-docs/postman-app-default-v8.jpg](https://assets.postman.com/postman-docs/postman-app-default-v8.jpg)
 
 ## Guidelines for reporting issues
 
@@ -68,11 +66,11 @@ We have put together a short set of guidelines you can follow while adding an is
    
 # We are hiring!
 
-Want to help us solve [these issues](https://github.com/postmanlabs/postman-app-support/issues)? [We are hiring](https://www.postman.com/jobs/) engineers! Postman has grown a lot since it started as a side-project. More than 10 million people use Postman within thousands of companies across the world for everything API related. We are working hard to meet the expectations of the Postman community. If you want to build something amazing with us, [reach out](https://www.postman.com/jobs/)!
+Want to help us solve [these issues](https://github.com/postmanlabs/postman-app-support/issues)? [We are hiring](https://www.postman.com/jobs/) engineers! Postman has grown a lot since it started as a side-project. More than 19 million people use Postman within thousands of companies across the world for everything API related. We are working hard to meet the expectations of the Postman community. If you want to build something amazing with us, [reach out](https://www.postman.com/jobs/)!
 
 ## About Postman
 
-Postman is a collaboration platform for API development. Postman's features simplify each step of building an API and streamline collaboration so you can create better APIs—faster.
+Postman is an API platform for building and using APIs. Postman simplifies each step of the API lifecycle and streamlines collaboration so you can create better APIs—faster.
 
 Read more on our website: [https://www.postman.com/](https://www.postman.com/)
 
