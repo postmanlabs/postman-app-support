@@ -25,7 +25,7 @@ Sign in using your Postman account to participate in the discussions. Don’t wa
 
 ### Product Roadmap
 
-If you are curious about the features and enhancements planned for upcoming releases, check out [Postman's roadmap](https://trello.com/b/4N7PnHAz/postman-roadmap-for-developers).
+If you are curious about the features and enhancements planned for upcoming releases, check out [Postman's roadmap](https://github.com/postmanlabs/postman-app-support/projects/45).
 
 Want early access to these features? Some of the enhancements are available in our latest Canary builds, [available for download here](https://www.postman.com/downloads/canary/).
 
