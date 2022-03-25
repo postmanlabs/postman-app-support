@@ -53,7 +53,8 @@ body:
     required: true
 - type: dropdown
   attributes:
-    label: Which Postman platform are you using?
+    label: Postman Platform
+    description: Which Postman platform are you using?
     options:
       - Postman App
       - Postman Web
