@@ -6,7 +6,7 @@ body:
     label: Is there an existing issue for this?
     description: Please search to see if an issue already exists for the issue you encountered. Duplicate issues will be closed. [Github Issue Tracker](https://github.com/postmanlabs/postman-app-support/issues)
     options:
-    - label: I have searched the tracker for existing similar issues
+    - label: I have searched the tracker for existing similar issues and I know that duplicates will be closed
       required: true
 - type: textarea
   attributes:
@@ -26,27 +26,38 @@ body:
       4. See error message...
   validations:
     required: true
+- type: markdown
+  attributes:
+    value: '> **Tip**: You can attach images and recordings to textareas by dragging in the files. More visual examples will help us to understand the issue.'
 - type: textarea
   attributes:
     label: Screenshots or Videos
     description: | 
-      Please add screenshots or a short video to help visually explain the problem.
-      Ensure that the screenshots/videos do not contain any sensitive information such as API keys or Access Tokens. 
+      If you are reporting a UI based issue, please include screenshots or a short video to help visually explain the problem.
+      Ensure that the screenshots/videos are full screen and do not contain any sensitive information such as API keys or Access Tokens. 
   validations:
     required: false
-- type: textarea
+- type: input
   attributes:
-    label: Environment Information
-    description: |
-      examples:
-        - **Operating System**: Ubuntu 20.04
-        - **Platform Type**: Native App / Postman Web
-        - **Postman Version**: 8.8.0 [Can be found in Settings > About]
-    value: |
-        - Operating System: 
-        - Platform Type: 
-        - Postman Version: 
-    render: markdown
+    label: Operating System
+    description: Which OS are you using?
+    placeholder: "Windows/macOS/Linux"
+  validations:
+    required: true
+- type: input
+  attributes:
+    label: Postman Version
+    description: What version of the platform are you using?
+    placeholder: "9.14.0"
+  validations:
+    required: true
+- type: dropdown
+  attributes:
+    label: Which Postman platform are you using?
+    options:
+      - Postman App
+      - Postman Web
+      - Other
   validations:
     required: true
 - type: textarea
