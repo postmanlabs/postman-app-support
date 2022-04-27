@@ -58,6 +58,7 @@ body:
     options:
       - Postman App
       - Postman Web
+      - Both
       - Other
   validations:
     required: true
