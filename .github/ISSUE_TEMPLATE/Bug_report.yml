@@ -62,6 +62,15 @@ body:
       - Other
   validations:
     required: true
+- type: dropdown
+  attributes:
+    label: User Account Type
+    description: Are you using Postman as a signed in or signed out user?
+    options:
+      - Signed In User
+      - Signed Out User
+  validations:
+    required: true
 - type: textarea
   attributes:
     label: Additional Context?
