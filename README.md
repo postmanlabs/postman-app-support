@@ -9,6 +9,8 @@ We _strongly encourage_ that you search the issue tracker to check if someone el
 
 If you are adding a bug report, please add detailed steps to reproduce the bug, the Postman version you're using, and your OS version. Any additional files (collections, data dumps, console errors, screenshots) would be very helpful and would help us to narrow down the issue as quickly as possible. 
 
+We have compiled a quick set of [guidelines for reporting issues](./CONTRIBUTING.md), which we encourage you to read!
+
 > **Account Specific Queries:**<br />
 > If you have any billing or account-specific queries, reach out to us by submitting a ticket on our [support page](https://www.postman.com/support/).
 
