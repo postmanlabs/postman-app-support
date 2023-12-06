@@ -1,6 +1,5 @@
 name: Feature Request
 description: Request a new feature that you would like to be part of the Postman platform. 
-title: "<title>"
 labels: "feature"
 body:
 - type: checkboxes

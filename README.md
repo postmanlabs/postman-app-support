@@ -3,18 +3,18 @@ _Postman is an API platform for building and using APIs. Postman simplifies each
 
 # Postman App Support
 
-If you have a feature request, a new integration idea or you would like to file a bug report, please use this [Github issue tracker](https://github.com/postmanlabs/postman-app-support/issues). 
+If you have a feature request, a new integration idea, or you would like to file a bug report, please use this [Github issue tracker](https://github.com/postmanlabs/postman-app-support/issues). 
 
-We _recommend_ that you search the issue tracker to check if someone else has already reported the issue and whether there is a known solution that you can use. This would be the fastest way for you to find a solution to any issue that you are currently facing.
+We _strongly encourage_ that you search the issue tracker to check if someone else has already reported the issue and whether there is a known solution that you can use. This would be the fastest way for you to find a solution to any issue that you are currently facing.
 
 If you are adding a bug report, please add detailed steps to reproduce the bug, the Postman version you're using, and your OS version. Any additional files (collections, data dumps, console errors, screenshots) would be very helpful and would help us to narrow down the issue as quickly as possible. 
 
-We have compiled a quick set of [guidelines for reporting issues](#guidelines-for-reporting-issues).
+We have compiled a quick set of [guidelines for reporting issues](./CONTRIBUTING.md), which we encourage you to read!
 
 > **Account Specific Queries:**<br />
 > If you have any billing or account-specific queries, reach out to us by submitting a ticket on our [support page](https://www.postman.com/support/).
 
-We are also there as [@getpostman](https://www.twitter.com/getpostman) on Twitter. Feel free to drop in a line wherever it is easiest for you. Twitter would be the best place for you to stay updated with the latest news, features, and releases regarding Postman.
+We also are available [@getpostman](https://www.x.com/getpostman) on X (formerly Twitter). Feel free to drop in a line wherever it is easiest for you. X would be the best place for you to stay updated with the latest news, features, and releases regarding Postman.
 
 ### The Community
 
@@ -22,12 +22,6 @@ We are also there as [@getpostman](https://www.twitter.com/getpostman) on Twitte
 <a href="https://community.postman.com">The Postman Community Forum</a> offers you different ways to engage with other Postman enthusiasts. Feel free to drop by and say hello.<br />
 
 Sign in using your Postman account to participate in the discussions. Don’t want to log in? Then lurk on the sidelines and absorb all the knowledge.
-
-### Product Roadmap
-
-If you are curious about the features and enhancements planned for upcoming releases, check out [Postman's roadmap](https://github.com/postmanlabs/postman-app-support/projects/45).
-
-Want early access to these features? Some of the enhancements are available in our latest Canary builds, [available for download here](https://www.postman.com/downloads/canary/).
 
 ### Documentation and Tutorials
 

@@ -37,11 +37,14 @@ body:
       Ensure that the screenshots/videos are full screen and do not contain any sensitive information such as API keys or Access Tokens. 
   validations:
     required: false
-- type: input
+- type: dropdown
   attributes:
     label: Operating System
     description: Which OS are you using?
-    placeholder: "Windows/macOS/Linux"
+    options:
+      - Windows
+      - macOS
+      - Linux
   validations:
     required: true
 - type: input
