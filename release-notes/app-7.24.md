@@ -1,6 +1,9 @@
 ## Postman v7.24.0
+
 Hello! We hope you're staying safe and healthy. Here's what you can find in this Postman release:
-### What's New
+
+### New Features
+
 * Some big changes to the API Builder that make creating and linking API elements even easier:
   * When you generate a collection, you now have the additional option to create a mock server or monitor on top of that collection. If you'd rather create a collection from scratch for a monitor or mock server, you can also do that directly from the API Builder. 
   * You can generate collections for documentation and test suites from the "Develop" and "Test" tabs that are automatically linked to your API. Previously, you could only link existing collections. 
@@ -9,13 +12,17 @@ Hello! We hope you're staying safe and healthy. Here's what you can find in this
 [#7700](https://github.com/postmanlabs/postman-app-support/issues/7700),
 [#8059](https://github.com/postmanlabs/postman-app-support/issues/8059)
 * You can check in real-time whether your schema is synced to your GitHub repository.
+
 ### Improvements
+
 * We've made various improvements to the code and description editors. Markdown descriptions have better syntax highlighting support now. In pre-request and test scripts, Postman variable suggestions now show up within relevant Postman Sandbox methods.
 * You can now "move" a collection or API to another workspace. When sharing it to another workspace, select the option to remove it from the current workspace.
 * Added additional import configurations for OpenAPI, RAML, and GraphQL files so that you can import your data exactly how you like it
 [#82](https://github.com/postmanlabs/openapi-to-postman/issues/82)
 * We've also optimized the workspace switcher modal for better performance.
+
 ### Bug Fixes
+
 * Fixed an issue when importing schemas where path-level server objects in OpenAPI definitions were not handled correctly
 [#160](https://github.com/postmanlabs/openapi-to-postman/issues/160)
 * Fixed an issue where validation against OpenAPI definitions containing schemas of `type: array` didn't work properly

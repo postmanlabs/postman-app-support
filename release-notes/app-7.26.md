@@ -2,7 +2,7 @@
 
 Hello! We hope you’re staying safe and healthy. Here’s what you can find in this Postman release:
 
-### What's New
+### New Features
 * We’ve added support for an additional language when generating code snippets: You can now generate code snippets for Axios, to use in both the browser and node.js
 [#135](https://github.com/postmanlabs/postman-code-generators/issues/135),
 [#3822](https://github.com/postmanlabs/postman-app-support/issues/3822)

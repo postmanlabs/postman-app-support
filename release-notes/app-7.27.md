@@ -2,7 +2,7 @@
 
 Hello! We hope you’re staying safe and healthy. Here’s what you can find in this Postman release:
 
-### What's New
+### New Features
 * You can now update collections generated from the API builder and keep your API elements in sync with the API schema
 [#6722](https://github.com/postmanlabs/postman-app-support/issues/6722)
 * We have added a new overview tab for APIs which consolidates important information about your API
@@ -28,7 +28,6 @@ Hello! We hope you’re staying safe and healthy. Here’s what you can find in 
 * Removed the dropdown list which appeared on clicking the New button in the App header
 * Use faked value instead of schema as fallback when an example is not defined or invalid for OpenAPI importer
 * Improve collection-run syncing flow to only load details on-demand
-
 
 ### Bug Fixes
 * Added Read-Only mode to view collection and folder level data for users with view permissions only
