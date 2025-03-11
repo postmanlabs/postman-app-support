@@ -1,47 +1,53 @@
 # Contributing to Postman App Support
 
-Thank you for your interest in contributing to the Postman App Support repository! We appreciate your help in improving our project. Please follow the guidelines below to ensure a smooth and efficient contribution process.
+Thank you for your interest in contributing to the Postman App Support repository! We appreciate your help in making this project better. Please follow the guidelines below to ensure a smooth contribution process.
 
-## How to Report Issues
+## How to Contribute
 
-If you encounter any issues or have suggestions for improvements, please follow these steps to report them:
+1. **Fork the repository**: Click the "Fork" button at the top right corner of this repository to create a copy of the repository in your GitHub account.
 
-1. **Search for existing issues**: Before creating a new issue, please search the [issue tracker](https://github.com/postmanlabs/postman-app-support/issues) to see if someone else has already reported the issue. If you find a similar issue, feel free to add your comments or reactions to it.
+2. **Clone the repository**: Clone the forked repository to your local machine using the following command:
+   ```
+   git clone https://github.com/your-username/postman-app-support.git
+   ```
 
-2. **Create a new issue**: If you don't find an existing issue, create a new one by clicking the "New Issue" button in the issue tracker. Please provide a clear and concise description of the issue, including steps to reproduce it, the Postman version you're using, and your OS version. Any additional files (collections, data dumps, console errors, screenshots) would be very helpful.
+3. **Create a new branch**: Create a new branch for your changes using the following command:
+   ```
+   git checkout -b your-branch-name
+   ```
 
-3. **Use issue templates**: We have provided issue templates for different types of issues, such as bug reports, feature requests, and documentation improvements. Please use the appropriate template to ensure that all necessary information is included.
+4. **Make your changes**: Make the necessary changes to the codebase. Ensure that your changes follow the coding standards and guidelines of the project.
 
-## How to Submit Pull Requests
+5. **Commit your changes**: Commit your changes with a clear and concise commit message using the following command:
+   ```
+   git commit -m "Your commit message"
+   ```
 
-We welcome pull requests for bug fixes, new features, and improvements. Please follow these steps to submit a pull request:
+6. **Push your changes**: Push your changes to your forked repository using the following command:
+   ```
+   git push origin your-branch-name
+   ```
 
-1. **Fork the repository**: Start by forking the Postman App Support repository to your GitHub account.
+7. **Create a pull request**: Create a pull request (PR) from your forked repository to the main repository. Provide a detailed description of your changes and any relevant information.
 
-2. **Create a new branch**: Create a new branch in your forked repository for your changes. Use a descriptive name for your branch, such as `fix-issue-123` or `add-new-feature`.
+## Guidelines for Contributing
 
-3. **Make your changes**: Make the necessary changes in your branch. Please ensure that your code follows our coding standards and best practices.
+- **Code Style**: Follow the coding style and conventions used in the project. Ensure that your code is clean, well-documented, and easy to understand.
 
-4. **Write tests**: If your changes include new functionality or bug fixes, please write tests to cover the new code. This will help ensure that your changes do not introduce any new issues.
+- **Testing**: Write tests for your changes to ensure that they work as expected. Run the existing tests to make sure that your changes do not break any existing functionality.
 
-5. **Commit your changes**: Commit your changes with a clear and concise commit message. Please reference any related issues in your commit message, such as `Fixes #123`.
+- **Documentation**: Update the documentation if your changes affect the usage or functionality of the project. Ensure that the documentation is clear, concise, and up-to-date.
 
-6. **Push your changes**: Push your changes to your forked repository on GitHub.
+- **Issue Tracker**: Use the issue tracker to report bugs, request features, or discuss any issues related to the project. Provide as much detail as possible to help us understand and address the issue.
 
-7. **Create a pull request**: Create a pull request from your branch to the `main` branch of the Postman App Support repository. Please provide a clear and concise description of your changes, including any related issues and additional context or screenshots.
+- **Code of Conduct**: Follow the project's code of conduct to maintain a positive and inclusive community. Be respectful, considerate, and constructive in your interactions with other contributors.
 
-## Coding Standards and Best Practices
+## Process and Expectations
 
-To ensure consistency and maintainability, please follow these coding standards and best practices when contributing to the Postman App Support repository:
+- **Review Process**: Once you create a pull request, it will be reviewed by the project maintainers. They may provide feedback or request changes before merging your pull request. Please be responsive to their feedback and make the necessary changes.
 
-1. **Code style**: Follow the existing code style in the repository. Use consistent indentation, spacing, and naming conventions.
+- **Continuous Integration**: The project uses continuous integration (CI) to automatically run tests and checks on your pull request. Ensure that your changes pass all the CI checks before requesting a review.
 
-2. **Comments**: Write clear and concise comments to explain the purpose of your code. This will help other contributors understand your changes.
+- **Communication**: If you have any questions or need assistance, feel free to reach out to the project maintainers or other contributors. We are here to help and support you throughout the contribution process.
 
-3. **Documentation**: Update any relevant documentation to reflect your changes. This includes updating the `README.md` file, adding or updating code comments, and providing examples if necessary.
-
-4. **Testing**: Write tests to cover your changes and ensure that they do not introduce any new issues. Run the existing test suite to verify that your changes do not break any existing functionality.
-
-5. **Commit messages**: Write clear and concise commit messages that describe the purpose of your changes. Reference any related issues in your commit messages.
-
-Thank you for your contributions! We appreciate your help in making the Postman App Support repository better for everyone.
+Thank you for your contributions and for helping to improve the Postman App Support repository!

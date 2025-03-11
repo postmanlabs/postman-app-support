@@ -8,10 +8,10 @@ assignees: ''
 ---
 
 **Question**
-<!-- Describe your question in detail. -->
+A clear and concise description of your question.
 
-**Context**
-<!-- Provide any relevant context or background information. -->
+**Relevant context**
+Provide any relevant context or background information related to your question.
 
-**Attempts to find an answer**
-<!-- Describe any attempts you have made to find an answer, such as searching documentation or forums. -->
+**Additional information**
+Add any other information or screenshots that might help in answering your question.

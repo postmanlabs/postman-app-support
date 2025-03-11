@@ -3,7 +3,6 @@
 Here’s what you can find in this Postman release:
 
 ### New Features
-
 * When writing pre-request and test scripts, global pm.* functions, Node.js, and other Node modules from the Postman Sandbox will now appear in the autocomplete menu.
 * When authoring requests, you can now insert an `$isoTimestamp` variable from our library of dynamic variables.
 * You can now automatically validate your OpenAPI 3.0 specification while importing or editing it. 

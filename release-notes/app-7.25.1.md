@@ -1,6 +1,6 @@
 ## Postman v7.25.1
 
-### What’s New
+### New Features
 
 * We now support system-wide theme in native dialogs and menus
 [#5302](https://github.com/postmanlabs/postman-app-support/issues/5302)

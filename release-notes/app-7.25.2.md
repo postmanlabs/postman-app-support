@@ -1,6 +1,6 @@
 ## Postman v7.25.2
 
-### What's New
+### New Features
 
 * We now support the latest security protocol TLS v1.3 for your APIs
 [#5628](https://github.com/postmanlabs/postman-app-support/issues/5628)

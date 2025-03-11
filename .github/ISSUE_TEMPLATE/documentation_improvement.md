@@ -7,11 +7,11 @@ assignees: ''
 
 ---
 
-**Current Documentation**
-<!-- Describe the current state of the documentation. Include any relevant links or resources. -->
+**Describe the improvement**
+A clear and concise description of the documentation improvement you are suggesting.
 
-**Suggested Improvements**
-<!-- Describe the improvements you would like to see. Be as detailed as possible. -->
+**Current state**
+Describe the current state of the documentation that you want to improve.
 
-**Relevant Links/Resources**
-<!-- Include any relevant links or resources that can help with the suggested improvements. -->
+**Additional context**
+Add any other context or screenshots about the documentation improvement here.
