@@ -1,0 +1,6 @@
+{
+  "tasks": {
+    "test": "ls .github",
+    "build": "echo \"No build process is required for this repository.\""
+  }
+}
