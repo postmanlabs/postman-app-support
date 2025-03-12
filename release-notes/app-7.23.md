@@ -2,7 +2,7 @@
 
 Hello! We hope you're staying safe and healthy. Here's what you can find in this Postman release:
 
-### What's New
+### New Features
 
 * This release has an important security update: we're adding PKCE support for the Authorization Code Grant in OAuth 2.0 to help prevent authorization code interception attacks. (Fun fact: apparently, PKCE is pronounced "pixy." The more you know!)
 [#3825](https://github.com/postmanlabs/postman-app-support/issues/3825)

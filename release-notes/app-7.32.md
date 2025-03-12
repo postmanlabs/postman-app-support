@@ -1,6 +1,6 @@
 ## Postman v7.32.0
 
-### What's New
+### New Features
 * Static IPs are enabled by default on monitors for Business and Enterprise teams. You can also view the static IP details on the Create Monitor page for easy reference.
 * It’s easier to draft OpenAPI2 and OpenAPI3 schemas with new support for auto-complete.
 * You can more accurately depict API behavior with mock servers by simulating a 100ms, 300ms, or custom network delay. 

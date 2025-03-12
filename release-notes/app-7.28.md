@@ -2,18 +2,18 @@
 
 Hello! We hope you’re staying safe and healthy. Here’s what you can find in this Postman release:
 
+### New Features
+
+* You can now drag the request and response panes, the sidebar, and the Find and Replace pane to resize and collapse them. This makes the app easier to navigate and customize. [Learn more](https://github.com/postmanlabs/postman-app-support/issues/7035)
+* We have also removed the top-level scroll to fix the scroll-within-a-scroll issue. [Learn more](https://github.com/postmanlabs/postman-app-support/issues/5903)
+* You can now join any workspace you don’t already belong to directly from the workspace switcher.
+
 ### Improvements
 
-* We've made several improvements to the request authoring experience by making the app easier to navigate and customize
-[#7035](https://github.com/postmanlabs/postman-app-support/issues/7035),
-[#5903](https://github.com/postmanlabs/postman-app-support/issues/5903):
-    * You can now drag the request and response panes, the sidebar, and the Find and Replace pane to resize and collapse them.
-    * We have also removed the top-level scroll to fix the scroll-within-a-scroll issue.
-* We have also improved the debugging experience by showing Console data directly in the app:
+* We have improved the debugging experience by showing Console data directly in the app:
     * When inspecting a response, you can now view the pre-request scripts, tests, and request logs by selecting the `Console` button on the app footer.
     * You can also access the same Console pane from the Collection Runner, allowing you to get right to debugging all your runs without a moment's delay.
 * When sending requests, the “Use next generation URL processing” setting will be enabled by default. Learn more about this [URL processing system](https://github.com/postmanlabs/postman-app-support/issues/8154).
-* You can now join any workspace you don’t already belong to directly from the workspace switcher.
 
 ### Bug Fixes
 

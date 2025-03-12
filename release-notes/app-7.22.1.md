@@ -4,7 +4,7 @@ Hello. We hope you’re safe and well. There’s a lot going on right now, so we
 
 Get the latest version of the app here: https://www.postman.com/downloads/
 
-### What’s new
+### New Features
 * We’re really excited to announce that Postman now supports writing RAML 1.0-type APIs. This new version brings a lot of new improvements including support for declaring Data Types, Libraries and Annotations, while also enhancing the way security schemas are written.
 * See who’s in your workspace with new avatars next to the workspace menu. For workspaces with more than 3 users, click on the number next to the avatars for a full list of workspace members and to see who’s currently active. [Learn more](https://go.pstmn.io/docs-presence).
 * Take a tour of the API Builder to learn how Postman can help you design, develop and manage your API throughout its lifecycle.

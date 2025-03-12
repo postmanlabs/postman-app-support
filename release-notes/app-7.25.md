@@ -2,7 +2,7 @@
 
 Hello! We hope you’re staying safe and healthy. Here’s what you can find in this Postman release:
 
-### What’s New
+### New Features
 
 * This release introduces Viewer and Editor roles for environments [#6596](https://github.com/postmanlabs/postman-app-support/issues/6596)
     * Viewers can access variable values to send requests and edit the Current Value

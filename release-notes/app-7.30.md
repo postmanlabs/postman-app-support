@@ -1,6 +1,6 @@
 ## Postman v7.30.0
 
-### What's New
+### New Features
 * Collaborate more effectively and in greater detail now by leaving comments on specific request elements, including params, headers, body, pre-request script, and tests. [Learn More](https://learning.postman.com/docs/collaborating-in-postman/commenting-on-collections/#commenting-in-the-app)
 
 ### Improvements
