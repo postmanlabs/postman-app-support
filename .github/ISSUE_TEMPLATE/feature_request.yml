@@ -1,0 +1,39 @@
+name: Feature Request
+description: Request a new feature that you would like to be part of the Postman platform. 
+labels: "feature"
+body:
+- type: checkboxes
+  attributes:
+    label: Is there an existing request for this feature?
+    description: Please search to see if a feature request already exists. Duplicate issues will be closed. [Github Issue Tracker](https://github.com/postmanlabs/postman-app-support/issues)
+    options:
+    - label: I have searched the existing issues for this feature request and I know that duplicates will be closed
+      required: true
+- type: textarea
+  attributes:
+    label: Is your feature request related to a problem?
+    description: |
+      A clear and concise description of what the problem is.
+  validations:
+    required: true
+- type: textarea
+  attributes:
+    label: Describe the solution you'd like
+    description: |
+      A clear and concise description of what you want to happen.
+  validations:
+    required: true
+- type: textarea
+  attributes:
+    label: Describe alternatives you've considered
+    description: |
+      A clear and concise description of any alternative solutions or features you've considered.
+  validations:
+    required: false
+- type: textarea
+  attributes:
+    label: Additional context
+    description: | 
+      Add any other context or screenshots about the feature request here.
+  validations:
+    required: false
