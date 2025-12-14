@@ -1,0 +1,68 @@
+name: Issue Triage
+
+on:
+  issues:
+    types: [opened, edited]
+
+jobs:
+  auto-label:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - name: Label based on form data
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = context.payload.issue.body;
+            if (!body) return;
+
+            const labelsToAdd = [];
+
+            // Helper to find regex match in body
+            const findMatch = (regex) => {
+              const match = body.match(regex);
+              return match ? match[1].trim() : null;
+            };
+
+            // 1. Operating System
+            // Matches "### Operating System\n\nmacOS"
+            const osMatch = findMatch(/### Operating System\s*\n\s*(.+)/);
+            if (osMatch) {
+              const osMap = {
+                'macOS': 'os/macOS',
+                'Windows': 'os/windows',
+                'Linux': 'os/linux'
+              };
+              if (osMap[osMatch]) labelsToAdd.push(osMap[osMatch]);
+            }
+
+            // 2. Postman Platform
+            // Matches "### Postman Platform\n\nPostman App"
+            const platformMatch = findMatch(/### Postman Platform\s*\n\s*(.+)/);
+            if (platformMatch) {
+              const platformMap = {
+                'Postman App': 'platform/app',
+                'Postman Web': 'platform/web',
+                'Postman VSCode Extension': 'platform/vscode',
+                'Both Postman App and Web': 'platform/both'
+              };
+              if (platformMap[platformMatch]) labelsToAdd.push(platformMap[platformMatch]);
+            }
+
+            // 3. User Account Type
+            const accountMatch = findMatch(/### User Account Type\s*\n\s*(.+)/);
+            if (accountMatch) {
+               if (accountMatch === 'Signed In User') labelsToAdd.push('account/signed-in');
+               if (accountMatch === 'Signed Out User') labelsToAdd.push('account/signed-out');
+            }
+
+            if (labelsToAdd.length > 0) {
+              console.log(`Adding labels: ${labelsToAdd.join(', ')}`);
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                labels: labelsToAdd
+              });
+            }
