@@ -29,7 +29,7 @@ If you are looking for more information regarding features, installation, and us
    
 # We are hiring!
 
-Want to help us solve [these issues](https://github.com/postmanlabs/postman-app-support/issues)? [We are hiring](https://www.postman.com/company/careers/) engineers! Postman has grown a lot since it started as a side-project. More than 19 million people use Postman within thousands of companies across the world for everything API related. We are working hard to meet the expectations of the Postman community. If you want to build something amazing with us, [reach out](https://www.postman.com/company/careers/)!
+Want to help us solve [these issues](https://github.com/postmanlabs/postman-app-support/issues)? [We are hiring](https://www.postman.com/company/careers/) engineers! Postman is the world’s leading API platform, used by more than 45 million developers and 500,000 organizations, including 98% of the Fortune 500. We are working hard to meet the expectations of the Postman community. If you want to build something amazing with us, [reach out](https://www.postman.com/company/careers/)!
 
 ## About Postman
 
