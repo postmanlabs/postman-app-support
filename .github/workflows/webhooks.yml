@@ -1,0 +1,13 @@
+name: API Client Summary
+on:
+  schedule:
+    # Runs at 08:00 UTC (12:00 AM PST) every Thursday
+    - cron: '0 8 * * 4'
+jobs:
+  webhook-invocation:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Invoke Webhook
+      run: |
+        curl -X POST -H "Content-Type: application/json" ${{ secrets.API_CLIENT_URL }}
