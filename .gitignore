@@ -1,0 +1,32 @@
+# Generic .gitignore — no primary language detected for this repository.
+# Deliberately minimal: OS/editor noise and local environment files only.
+# If this repo gains code in a specific language, replace this with the matching
+# template from https://github.com/github/gitignore
+
+# OS metadata
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+ehthumbs.db
+desktop.ini
+
+# Editor / IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Logs and temporary files
+*.log
+*.tmp
+.cache/
+
+# --- Local environment files (PM_GH_REPO_005) ---
+# Ignore every .env variant; keep the committed example so contributors know the shape.
+.env
+.env.*
+!.env.example
