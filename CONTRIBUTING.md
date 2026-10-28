@@ -1,6 +1,6 @@
 ## Guidelines for reporting issues
 
-We have put together a short set of guidelines you can follow while adding an issue to our [GitHub issue tracker](https://github.com/postmanlabs/postman-app-support/issues). Following the information in this guide will help us to trige the issues quickly, reduce the feedback loop and ensure a speedy resolution.
+We have put together a short set of guidelines you can follow while adding an issue to our [GitHub issue tracker](https://github.com/postmanlabs/postman-app-support/issues). Following the information in this guide will help us to triage the issues quickly, reduce the feedback loop and ensure a speedy resolution.
 
 1. This issue tracker is only for the Postman App and Web platform related issues. If you have `Newman` specific issues, a better place to report them would be the [Newman issue tracker](https://github.com/postmanlabs/newman/issues).
 
@@ -8,7 +8,7 @@ We have put together a short set of guidelines you can follow while adding an is
 
 3. If you want to report a security issue in any of Postman’s services or products, read our [security reporting guidelines and policy](https://www.postman.com/vulnerability-reporting) for more details.
 
-4. For answers to questions along the lines of _"How do I... in Postman"_ should be in our online documentation at [https://learning.postman.com/](https://learning.postman.com/). If you are unable to find a how-to guide in our online documentation, feel free to ask your question on our [Postman Community Forum](https://community.postman.com).
+4. For answers to questions along the lines of _"How do I... in Postman"_ should be in our online documentation at [https://learning.postman.com/](https://learning.postman.com/). If you are unable to find a how-to guide in our online documentation, feel free to ask your question on our [Postman Discord Server](https://discord.com/channels/831210428314157076).
 
 5. Before reporting an issue, please use the search feature on the issues page to check if there are issues similar to yours. A lot of issues are duplicates, and it is hard to keep track of them or respond when the issues are solved. If you find your issue already reported, feel free to add a "thumbs up" reaction or provide a comment on the open issues thread.
 
